@@ -1,0 +1,18 @@
+# Node
+node_modules/
+dist/
+build/
+*.log
+.env
+.env.*
+!.env.example
+
+# Génération d'issues (état local, non versionné)
+plan/.issues.jsonl
+plan/.issues-state.json
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
