@@ -1,0 +1,32 @@
+@startuml UC-01
+title UC-01 — Créer un compte par code envoyé par courriel
+autonumber
+
+actor "AN · Visiteur" as AN
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Service courriel" as NOT
+
+AN -> APP : saisit son adresse
+APP -> API : POST /auth/otp {email}
+API -> API : contrôle de débit (R-C7)
+API --> APP : [débit dépassé] 429 + délai restant (R-C8)
+APP --> AN : [débit dépassé] « Réessayez dans 4 minutes »
+API -> DB : [débit autorisé] invalide les codes actifs de cette adresse
+API -> DB : [débit autorisé] INSERT code_otp (empreinte, expire_le)
+API -> NOT : [débit autorisé] file d'envoi (asynchrone)
+API --> APP : [débit autorisé] 200 (réponse identique si le compte existe ou non)
+NOT --> AN : [débit autorisé] courriel avec le code à 6 chiffres
+AN -> APP : [débit autorisé] saisit le code
+APP -> API : [débit autorisé] POST /auth/otp/verifier {email, code}
+API -> DB : [débit autorisé] SELECT code_otp FOR UPDATE
+API --> APP : [débit autorisé / code expiré ou consommé] 410 OTP_EXPIRE
+API -> DB : [débit autorisé / code faux] tentatives + 1 (invalidation à 5)
+API --> APP : [débit autorisé / code faux] 400 + essais restants
+API -> DB : [débit autorisé / code correct] marque consommé
+API -> DB : [débit autorisé / code correct] crée l'utilisateur si l'adresse est inconnue
+API -> DB : [débit autorisé / code correct] crée la session (jeton long, R-C2)
+API --> APP : [débit autorisé / code correct] 200 {jeton, utilisateur, estNouveau}
+APP --> AN : [débit autorisé / code correct] choix du prénom, puis le fil
+@enduml

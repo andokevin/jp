@@ -105,16 +105,26 @@ function ancre(id, titre) {
     .replace(/\s+/g, '-');
 }
 
-/** Lit une valeur scalaire ou une liste depuis une ligne « clé: valeur ». */
+/** Lit un bloc « clé: valeur », les listes en ligne `[a, b]` et les listes en tirets. */
 function lireBloc(texte) {
   const obj = {};
+  let listeCourante = null;
   for (const ligne of texte.split('\n')) {
+    const tiret = ligne.match(/^\s+-\s+(.*)$/);
+    if (tiret && listeCourante) {
+      obj[listeCourante].push(tiret[1].trim().replace(/^["']|["']$/g, ''));
+      continue;
+    }
     const m = ligne.match(/^([a-z_]+):\s*(.*)$/);
     if (!m) continue;
     const [, cle, brut] = m;
-    let valeur = brut.replace(/\s*#.*$/, '').trim();
+    const valeur = brut.replace(/\s*#.*$/, '').trim();
+    listeCourante = null;
     if (valeur.startsWith('[')) {
       obj[cle] = valeur.slice(1, -1).split(',').map((v) => v.trim()).filter(Boolean);
+    } else if (valeur === '') {
+      obj[cle] = [];              // liste en tirets sur les lignes suivantes
+      listeCourante = cle;
     } else {
       obj[cle] = valeur.replace(/^["']|["']$/g, '');
     }
@@ -125,6 +135,67 @@ function lireBloc(texte) {
 const fichiers = readdirSync(DOSSIER_PLAN).filter((f) => /^EP\d\d-.*\.md$/.test(f)).sort();
 const issues = [];
 const parFonctionnalite = new Map();
+
+// ── Vague 0 : le socle ───────────────────────────────────────────────────────
+// Publié en premier : rien ne peut démarrer avant. Une issue par tâche.
+const FICHIER_SOCLE = 'VAGUE0-socle.md';
+const MILESTONE_SOCLE = 'Vague 0 — le socle';
+
+function ancreSocle(id, titre) {
+  return (`${id} — ${titre}`)
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
+try {
+  const contenu = readFileSync(join(DOSSIER_PLAN, FICHIER_SOCLE), 'utf8');
+  for (const [, brut] of contenu.matchAll(/```issues\n([\s\S]*?)```/g)) {
+    const b = lireBloc(brut);
+    if (!b.socle || !b.titre) continue;
+    const taches = b.taches ?? [];
+    const lien = `plan/${FICHIER_SOCLE}#${ancreSocle(b.socle, b.titre)}`;
+
+    taches.forEach((tache, i) => {
+      const corps = [
+        `**Élément de socle :** \`${b.socle}\` — ${b.titre}`,
+        `**Tâche :** ${i + 1} sur ${taches.length}`,
+        '',
+        `📄 **Détail :** [${FICHIER_SOCLE} → ${b.socle}](${lien})`,
+        '',
+        '## Attendu',
+        `- [ ] ${tache}`,
+        '',
+        '## Définition de terminé',
+        '- [ ] Le critère « terminé quand » de la section est atteint',
+        '- [ ] Testé, et le test tourne en intégration continue',
+        '- [ ] Les conventions de `plan/PLAN_SOCLE.md` sont respectées',
+        '',
+        `## Les autres tâches de ${b.socle}`,
+        ...taches.map((t, j) => `- ${j === i ? `**${t}** ← cette issue` : t}`),
+      ];
+      if ((b.depend ?? []).length) {
+        corps.push('', '## Dépend de', ...b.depend.map((d) => `- \`${d}\``));
+      }
+      corps.push('', '---', '',
+        `<sub>Vague 0. Rien ne démarre avant. Généré depuis \`plan/${FICHIER_SOCLE}\`.</sub>`);
+
+      issues.push({
+        cle: `${b.socle}#${i + 1}`,
+        title: `${b.socle}.${i + 1} · [socle] ${tache.length > 70 ? tache.slice(0, 67) + '…' : tache}`,
+        body: corps.join('\n'),
+        labels: ['epic:socle', 'step:socle', 'prio:M', 'phase:P1', 'status:todo', 'tranche:0'],
+        milestone: MILESTONE_SOCLE,
+      });
+    });
+  }
+} catch (e) {
+  if (e.code !== 'ENOENT') throw e;
+  console.warn(`⚠  ${FICHIER_SOCLE} absent — aucune issue de socle`);
+}
+const nbSocle = issues.length;
 
 for (const fichier of fichiers) {
   const contenu = readFileSync(join(DOSSIER_PLAN, fichier), 'utf8');

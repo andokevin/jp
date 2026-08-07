@@ -1,0 +1,33 @@
+@startuml UC-13
+title UC-13 — Remplir un panier et le payer en une fois
+autonumber
+
+actor "A · Acheteur" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+
+A -> APP : ajoute des articles de vendeurs différents
+APP -> API : POST /panier/lignes
+API -> DB : INSERT reservation (durée catalogue)
+API --> APP : 201
+A -> APP : ouvre le panier
+APP -> API : GET /panier
+API -> DB : SELECT lignes, réservations, promotions, rang client
+API -> API : regroupe par vendeur — frais et expédition par vendeur
+API -> API : retient UNE remise par ligne, la plus favorable (R-U7)
+API --> APP : [une réservation a expiré (A1)] 200 avec la ligne signalée « expirée »
+APP --> A : [une réservation a expiré (A1)] bandeau « Reprendre » AVANT toute tentative de paiement
+API --> APP : [toutes valides] 200 sous-total, remise NOMMÉE, frais par vendeur, total
+APP --> A : [toutes valides] « Regrouper au même point relais et économiser X Ar »
+A -> APP : « Payer »
+APP -> API : POST /commandes {panier, Idempotency-Key}
+API -> DB : recalcule les remises au moment du paiement
+API --> APP : [promotion expirée depuis l'affichage (A2)] 409 TOTAL_MODIFIE + nouveau total
+APP --> A : [promotion expirée depuis l'affichage (A2)] confirmation EXPLICITE exigée
+API -> DB : [palier perdu entre-temps (A3)] retire la remise — la commande n'échoue pas (R-U5)
+API --> APP : [palier perdu entre-temps (A3)] 201 une commande par vendeur + message clair
+API -> DB : [inchangé] INSERT commande ×n vendeurs, un seul paiement
+API --> APP : [inchangé] 201
+APP --> A : paiement unique (UC-30)
+@enduml

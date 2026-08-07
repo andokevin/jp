@@ -1,0 +1,32 @@
+@startuml UC-31
+title UC-31 — Confirmer la réception et libérer les fonds
+autonumber
+
+participant "Plateforme" as SYS
+actor "A · Acheteuse" as A
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "V · Vendeur" as V
+
+SYS -> A : « Avez-vous bien reçu votre colis ? »
+A -> API : [A confirme] POST /commandes/:id/confirmer
+API -> DB : [A confirme] BEGIN
+API -> DB : [A confirme] sequestre = LIBERE (motif = confirmation)
+API -> DB : [A confirme] écritures : séquestre → portefeuille vendeur (disponible)
+API -> DB : [A confirme] commande = CONFIRMEE
+API -> DB : [A confirme] INSERT vente_confirmee_journal (R-R11)
+API -> DB : [A confirme] COMMIT
+API -> V : [A confirme] « 47 500 Ar disponibles au retrait »
+API -> A : [A confirme] invitation à laisser un avis
+API -> DB : [A confirme] file : entrée au dressing (asynchrone, idempotent)
+A -> API : [A publie un unboxing] POST /commandes/:id/unboxing
+API -> DB : [A publie un unboxing] confirmation + contenu + crédit (transaction)
+API -> DB : [A publie un unboxing] file : avis, notification vendeur, dressing
+A -> API : [A signale un problème] POST /commandes/:id/litige
+API -> DB : [A signale un problème] litige OUVERT · sequestre reste RETENU
+API -> DB : [A signale un problème] libération automatique SUSPENDUE
+API -> V : [A signale un problème] « Un litige a été ouvert »
+SYS -> API : [aucune réponse au terme du délai] tâche de libération automatique
+API -> DB : [aucune réponse au terme du délai] sequestre = LIBERE (motif = automatique)
+API -> V : [aucune réponse au terme du délai] « 47 500 Ar disponibles »
+@enduml

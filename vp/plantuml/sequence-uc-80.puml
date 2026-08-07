@@ -1,0 +1,27 @@
+@startuml UC-80
+title UC-80 — Demander un panier en cadeau
+autonumber
+
+actor "A · Acheteur" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "D · Donateur" as D
+
+A -> APP : compose son panier
+A -> APP : « Demander en cadeau »
+APP -> API : POST /cadeaux {panier}
+API -> DB : FIGE le panier — copie des lignes, des prix et des frais
+API -> DB : génère un jeton opaque à durée limitée, révocable
+API --> APP : 201 lien public
+APP --> A : aperçu de ce que verra le destinataire
+A -> APP : partage sur WhatsApp ou Messenger
+A --> D : lien
+D -> API : GET /cadeaux/:jeton
+API --> D : [lien expiré ou révoqué (A2)] page d'état explicite, JAMAIS une erreur brute
+API -> DB : [valide] SELECT le panier FIGÉ
+API --> D : [valide] articles, montant total — aucune adresse, aucun nom de rue
+A -> APP : [A modifie son panier après coup (A1)] ajoute un article
+APP -> API : [A modifie son panier après coup (A1)] PUT /panier
+API -> DB : [A modifie son panier après coup (A1)] le cadeau reste sur la COPIE FIGÉE
+@enduml

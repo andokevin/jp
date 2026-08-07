@@ -1,0 +1,35 @@
+@startuml UC-40
+title UC-40 — Préparer et expédier une commande
+autonumber
+
+actor "V · Vendeur" as V
+participant "Studio vendeur" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Notifications" as NOT
+actor "A · Acheteur" as A
+
+V -> APP : ouvre « À préparer »
+APP -> API : GET /commandes?statut=PAYEE
+API -> DB : SELECT commandes triées par échéance
+API --> APP : file UNIQUE, marqueur d'origine direct / catalogue (R-H2)
+V -> APP : ouvre le bordereau
+APP -> API : GET /commandes/:id/bordereau
+API --> APP : articles, tailles, mode de livraison, destinataire, note
+V -> APP : [refus par le vendeur (A1)] « Refuser » + motif OBLIGATOIRE
+APP -> API : [refus par le vendeur (A1)] POST /commandes/:id/refus {motif}
+API -> DB : [refus par le vendeur (A1)] remboursement automatique et intégral
+API -> DB : [refus par le vendeur (A1)] remise en stock + impact sur le score de confiance
+API -> NOT : [refus par le vendeur (A1)] notifie A
+NOT --> A : [refus par le vendeur (A1)] « Commande refusée · remboursée »
+API -> DB : [délai d'acceptation dépassé (A2)] la réservation est protégée (R-H8)
+API -> NOT : [délai d'acceptation dépassé (A2)] notifie A
+NOT --> A : [délai d'acceptation dépassé (A2)] « Le vendeur n'a pas répondu »
+V -> APP : [préparé] marque « Prêt »
+APP -> API : [préparé] POST /commandes/:id/pret
+API -> DB : [préparé] colis → PRET, statut partagé DES DEUX CÔTÉS (R-L4)
+API -> NOT : [préparé] notifie A
+NOT --> A : [préparé] « Votre colis est prêt »
+API --> APP : [préparé] 200
+V -> APP : [plusieurs colis du même vendeur (A3)] regroupe pour un enlèvement en une seule validation (F5.6)
+@enduml

@@ -1,0 +1,37 @@
+@startuml UC-30
+title UC-30 — Payer une commande en mobile money
+autonumber
+
+actor "A · Acheteuse" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "MVola" as PSP
+actor "V · Vendeur" as V
+
+A -> APP : « Payer 55 000 Ar »
+APP -> API : POST /commandes/:id/paiement + Idempotency-Key
+API -> DB : INSERT paiement (INITIE, cle_idempotence)
+API -> DB : reservation.suspendu_depuis = now() (R-S5)
+API -> PSP : demande de paiement
+PSP --> API : accepté, en attente de l'utilisateur
+API -> DB : paiement = EN_ATTENTE_OPERATEUR
+API --> APP : 202 {paiementId}
+APP --> A : écran d'attente ANIMÉ + « réservation en pause »
+PSP --> A : demande de validation sur le téléphone
+A -> PSP : saisit son code secret
+PSP -> API : [rappel asynchrone] POST /webhooks/paiement/mvola (signé)
+APP -> API : [rappel asynchrone] GET /paiements/:id
+API -> API : vérifie la signature · traitement idempotent
+API -> DB : BEGIN
+API -> DB : paiement = CONFIRME
+API -> DB : reservation = CONSOMMEE
+API -> DB : commande = PAYEE
+API -> DB : INSERT sequestre (RETENU)
+API -> DB : écritures financières (séquestre, commission_jp)
+API -> DB : COMMIT
+API -> DB : file : génération de la facture
+API --> APP : paiement confirmé
+APP --> A : « Votre argent est gardé par JP jusqu'à la livraison » (R-E1)
+API -> V : « Commande payée — vous recevrez 47 500 Ar (commission 2 500 Ar) »
+@enduml

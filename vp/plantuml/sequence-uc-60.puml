@@ -1,0 +1,31 @@
+@startuml UC-60
+title UC-60 — Suivre une boutique et recevoir ses nouveautés
+autonumber
+
+actor "A · Acheteur" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+
+A -> APP : appuie sur « Suivre » (vitrine, fiche, direct, clip ou story)
+APP --> A : [non connectée (A1)] parcours d'inscription (UC-01)
+A -> APP : [non connectée (A1)] compte créé
+APP -> API : [non connectée (A1)] POST /abonnements — posé APRÈS la connexion
+APP -> APP : [hors ligne (A2)] état affiché localement, mis en file
+APP -> API : [hors ligne (A2)] synchronisation à la reconnexion
+API -> DB : [hors ligne (A2)] INSERT abonnement — clé composite, AUCUN doublon
+APP -> API : [connectée] POST /abonnements {vendeur}
+API --> APP : [vendeur suspendu (A3)] 409 VENDEUR_SUSPENDU
+APP --> A : [vendeur suspendu (A3)] action indisponible, état expliqué
+API -> DB : INSERT abonnement
+API -> DB : incrémente le compteur public (R-Q2)
+API --> APP : 201
+APP --> A : « Abonnée » + compteur à jour
+A -> APP : ouvre le fil « Abonnements »
+APP -> API : GET /fil/abonnements
+API -> DB : directs + NOUVEAUTÉS CATALOGUE + promotions + événements (R-Q5)
+API --> APP : 200 fil
+A -> APP : [couper les notifications de promotion sans se désabonner (R-Q6)] règle par vendeur
+APP -> API : [couper les notifications de promotion sans se désabonner (R-Q6)] PUT /abonnements/:id/notifications {promotions: false}
+API --> APP : [couper les notifications de promotion sans se désabonner (R-Q6)] 200 — l'abonnement est conservé
+@enduml

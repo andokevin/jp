@@ -1,0 +1,33 @@
+@startuml UC-81
+title UC-81 — Offrir un panier depuis l'étranger
+autonumber
+
+actor "A · Hanta (Antananarivo)" as A
+actor "D · Naina (France, sans compte)" as D
+participant "Page web cadeau" as WEB
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Agrégateur carte" as PSP
+
+A -> API : POST /commandes/:id/cadeau
+API -> DB : panier FIGÉ + jeton opaque à durée limitée
+API --> A : lien partageable
+A -> D : envoie le lien par WhatsApp
+D -> WEB : ouvre le lien (navigateur, aucun compte)
+WEB -> API : GET /cadeau/:jeton
+API -> DB : projectionDonateur()
+API --> WEB : articles, total, frais, vendeuse vérifiée,<br/>livraison « point relais à Antananarivo » (agrégé)
+WEB --> D : 135 000 Ar ≈ 28,90 € · frais de conversion annoncés (RB7)
+D -> WEB : message + paiement par carte
+WEB -> API : POST /cadeau/:jeton/paiement + Idempotency-Key
+API -> PSP : débit carte
+PSP --> API : confirmé
+API -> DB : commande PAYEE + sequestre RETENU + donateur_ref
+API -> A : « Naina vous a offert votre panier » + message
+D -> WEB : suit la livraison depuis son lien
+WEB -> API : GET /cadeau/:jeton/suivi
+API --> WEB : frise + preuve de remise, TOUJOURS sans adresse
+WEB --> D : « Remis le 16 août à 14 h 20 » + photo du colis
+A -> API : publie son unboxing de remerciement (UC-61)
+API -> D : « Hanta a reçu votre cadeau » + vidéo
+@enduml

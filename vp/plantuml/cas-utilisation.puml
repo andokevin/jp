@@ -1,0 +1,174 @@
+@startuml JP-cas-utilisation
+left to right direction
+
+actor "AN · Visiteur non inscrit" as AN
+actor "A · Acheteur" as A
+actor "P · Vendeur particulier" as P
+actor "V · Vendeur professionnel" as V
+actor "VE · Employé du vendeur" as VE
+actor "C · Créatrice" as C
+actor "D · Donateur / diaspora" as D
+actor "L · Livreur" as L
+actor "PR · Point relais" as PR
+actor "MO · Modérateur JP" as MO
+actor "OP · Opérateur JP" as OP
+actor "PM · Partenaire marque" as PM
+actor "SYS · Plateforme JP" as SYS
+actor "PSP · Prestataire de paiement" as PSP
+actor "VID · Service vidéo" as VID
+actor "NOT · Service de notification" as NOT
+
+rectangle "Authentification" {
+  usecase "UC-01\nCréer un compte par code envoyé par courriel" as UC01
+  usecase "UC-02\nSe connecter" as UC02
+  usecase "UC-03\nRécupérer un compte inaccessible" as UC03
+}
+
+rectangle "Catalogue et vente" {
+  usecase "UC-10\nPublier un article avec ses variantes" as UC10
+  usecase "UC-11\nDéposer une annonce de particulier" as UC11
+  usecase "UC-12\nAcheter un article hors direct" as UC12
+  usecase "UC-13\nRemplir un panier et le payer en une fois" as UC13
+}
+
+rectangle "Direct" {
+  usecase "UC-20\nDiffuser un direct et vendre" as UC20
+  usecase "UC-21\nAcheter pendant un direct" as UC21
+}
+
+rectangle "Paiement et argent" {
+  usecase "UC-30\nPayer une commande en mobile money" as UC30
+  usecase "UC-31\nConfirmer la réception et libérer les fonds" as UC31
+  usecase "UC-32\nRetirer son argent" as UC32
+}
+
+rectangle "Livraison" {
+  usecase "UC-40\nPréparer et expédier une commande" as UC40
+  usecase "UC-41\nLivrer un colis à domicile" as UC41
+  usecase "UC-42\nRecevoir et remettre un colis au point relais" as UC42
+}
+
+rectangle "Confiance" {
+  usecase "UC-50\nOuvrir un litige sur une commande" as UC50
+  usecase "UC-51\nArbitrer un litige" as UC51
+  usecase "UC-52\nVérifier l'identité d'un vendeur" as UC52
+}
+
+rectangle "Social, fidélité et contenu" {
+  usecase "UC-60\nSuivre une boutique et recevoir ses nouveautés" as UC60
+  usecase "UC-61\nPublier un unboxing" as UC61
+  usecase "UC-62\nConsulter ses clientes et leur rang" as UC62
+  usecase "UC-92\nPublier un contenu avec articles attachés" as UC92
+}
+
+rectangle "Promotions et événements" {
+  usecase "UC-70\nLancer une promotion et notifier ses abonnés" as UC70
+  usecase "UC-71\nOffrir une promotion réservée aux clientes VIP" as UC71
+  usecase "UC-72\nCréer un événement thématique" as UC72
+  usecase "UC-73\nParticiper à un événement" as UC73
+}
+
+rectangle "Cadeau" {
+  usecase "UC-80\nDemander un panier en cadeau" as UC80
+  usecase "UC-81\nOffrir un panier depuis l'étranger" as UC81
+}
+
+rectangle "Modération" {
+  usecase "UC-90\nSignaler un contenu ou une personne" as UC90
+  usecase "UC-91\nTraiter un signalement" as UC91
+}
+
+AN -- UC01
+SYS --. UC01
+NOT --. UC01
+A -- UC02
+A -- UC03
+OP --. UC03
+SYS --. UC03
+V -- UC10
+VE --. UC10
+SYS --. UC10
+P -- UC11
+A --. UC11
+OP --. UC11
+SYS --. UC11
+A -- UC12
+AN -- UC12
+V --. UC12
+SYS --. UC12
+PSP --. UC12
+A -- UC13
+V -- UC20
+VE --. UC20
+A --. UC20
+VID --. UC20
+SYS --. UC20
+A -- UC21
+AN --. UC21
+V --. UC21
+SYS --. UC21
+PSP --. UC21
+A -- UC30
+PSP --. UC30
+V --. UC30
+SYS --. UC30
+A -- UC31
+V --. UC31
+SYS --. UC31
+V -- UC32
+C -- UC32
+V -- UC40
+VE -- UC40
+L -- UC41
+A --. UC41
+V --. UC41
+SYS --. UC41
+PR -- UC42
+A --. UC42
+L --. UC42
+SYS --. UC42
+NOT --. UC42
+A -- UC50
+V --. UC50
+OP --. UC50
+SYS --. UC50
+OP -- UC51
+A --. UC51
+V --. UC51
+SYS --. UC51
+OP -- UC52
+V --. UC52
+P --. UC52
+C --. UC52
+SYS --. UC52
+A -- UC60
+A -- UC61
+V --. UC61
+SYS --. UC61
+V -- UC62
+VE --. UC62
+SYS --. UC62
+C -- UC92
+V -- UC92
+A -- UC92
+V -- UC70
+A --. UC70
+NOT --. UC70
+SYS --. UC70
+V -- UC71
+OP -- UC72
+V -- UC73
+C -- UC73
+OP --. UC73
+A --. UC73
+SYS --. UC73
+A -- UC80
+D -- UC81
+A --. UC81
+PSP --. UC81
+SYS --. UC81
+A -- UC90
+C -- UC90
+V -- UC90
+MO -- UC91
+@enduml

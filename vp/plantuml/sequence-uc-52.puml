@@ -1,0 +1,36 @@
+@startuml UC-52
+title UC-52 — Vérifier l'identité d'un vendeur
+autonumber
+
+actor "OP · Opérateur JP" as OP
+participant "Back-office" as BO
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Notifications" as NOT
+actor "V · Vendeur" as V
+
+OP -> BO : ouvre la file de vérification
+BO -> API : GET /verifications?tri=anciennete
+API --> BO : dossiers + délai d'engagement affiché
+OP -> BO : ouvre un dossier
+BO -> API : GET /verifications/:id/documents
+API -> DB : INSERT journal_audit — accès NOMINATIF aux documents
+API --> BO : pièce recto/verso, selfie, titulaire du compte mobile money
+OP -> BO : coche EXPLICITEMENT chaque point de comparaison (R-V2)
+OP -> BO : [discordance de noms (A1)] refuse
+BO -> API : [discordance de noms (A1)] POST /verifications/:id/refus {motif précis}
+API -> NOT : [discordance de noms (A1)] notifie V
+NOT --> V : [discordance de noms (A1)] refus motivé, précis sur ce qui manque (R-V3)
+BO -> API : [pièce illisible (A2)] POST /verifications/:id/complement
+API -> DB : [pièce illisible (A2)] statut intermédiaire
+NOT --> V : [pièce illisible (A2)] « Pièce complémentaire demandée »
+OP -> BO : [mineur (A3)] refuse DÉFINITIVEMENT
+BO -> API : [mineur (A3)] POST /verifications/:id/refus-definitif
+API -> DB : [mineur (A3)] blocage de la publication vidéo (R-V6, RB6)
+NOT --> V : [mineur (A3)] refus définitif et motivé
+OP -> BO : [conforme] valide
+BO -> API : [conforme] POST /verifications/:id/validation
+API -> DB : [conforme] débloque l'encaissement, attribue le badge (F0.7)
+API -> NOT : [conforme] notifie V
+NOT --> V : [conforme] « Vendeur vérifié »
+@enduml

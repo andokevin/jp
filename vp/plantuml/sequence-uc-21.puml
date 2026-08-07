@@ -1,0 +1,35 @@
+@startuml UC-21
+title UC-21 — Acheter pendant un direct
+autonumber
+
+actor "A · Hanta" as A1
+actor "A · Fara" as A2
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Canal du direct" as WS
+actor "V · Vendeur" as V
+
+A1 -> API : [Hanta] POST /reservations {variante, origine: direct}
+A2 -> API : [Hanta] POST /reservations {variante, origine: direct}
+API -> DB : BEGIN · SELECT variante FOR UPDATE (Hanta)
+DB --> API : disponible = 1
+API -> DB : quantite_reservee = 1 · INSERT reservation (rang 1)
+API -> DB : COMMIT
+API --> A1 : 201 {expireLe: +5 min}
+API -> WS : stock_change {reste: 0}
+API -> DB : BEGIN · SELECT variante FOR UPDATE (Fara)
+DB --> API : disponible = 0
+API -> DB : ROLLBACK
+API --> A2 : 409 STOCK_INSUFFISANT {rang proposé: 2}
+A2 -> API : accepte la file d'attente
+API -> DB : INSERT reservation (statut = en_file, rang 2)
+WS --> V : panneau : 1 réservation en cours
+A1 -> API : [Hanta paie dans le délai] POST /commandes/:id/paiement
+API -> DB : [Hanta paie dans le délai] reservation CONSOMMEE · commande PAYEE
+API -> WS : [Hanta paie dans le délai] commande_payee {prénom: Hanta}
+WS --> V : [Hanta paie dans le délai] « Hanta a payé — 55 000 Ar »
+API -> DB : [le minuteur expire] reservation EXPIREE · quantite_reservee - 1
+API -> A1 : [le minuteur expire] « Votre réservation a expiré » + Reprendre
+API -> A2 : [le minuteur expire] « C'est pour vous ! » (R-S7)
+API -> WS : [le minuteur expire] stock_change {reste: 1}
+@enduml

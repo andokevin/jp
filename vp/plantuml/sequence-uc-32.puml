@@ -1,0 +1,31 @@
+@startuml UC-32
+title UC-32 — Retirer son argent
+autonumber
+
+actor "V · Vendeur ou créatrice" as V
+participant "Studio vendeur" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Prestataire mobile money" as PSP
+
+V -> APP : ouvre « Mon argent »
+APP -> API : GET /portefeuille
+API -> DB : agrège les écritures financières
+API --> APP : DEUX soldes distincts — en attente, disponible (R-E6)
+APP --> V : « En attente 120 000 Ar · Disponible 340 000 Ar »
+V -> APP : saisit un montant et confirme
+APP -> API : POST /retraits {montant, Idempotency-Key}
+API -> DB : SELECT portefeuille FOR UPDATE
+API --> APP : [retraits gelés — récupération de compte en cours (A2)] 403 RETRAIT_GELE + motif + numéro de dossier (R-C14)
+API --> APP : [destination ≠ numéro vérifié (A1)] 403 DESTINATION_NON_VERIFIEE
+API --> APP : [solde insuffisant] 422 SOLDE_INSUFFISANT
+API -> DB : [autorisé] INSERT ecriture_financiere (disponible → engagé)
+API -> PSP : [autorisé] virement vers le numéro vérifié, clé d'idempotence
+PSP --> API : [autorisé / échec du prestataire (A3)] échec
+API -> DB : [autorisé / échec du prestataire (A3)] écriture INVERSE — le montant revient au disponible
+API --> APP : [autorisé / échec du prestataire (A3)] 502 RETRAIT_ECHOUE — montant jamais perdu
+PSP --> API : [autorisé / succès] référence de virement
+API -> DB : [autorisé / succès] INSERT ecriture_financiere (sortie) + reçu
+API --> APP : [autorisé / succès] 200 reçu
+APP --> V : [autorisé / succès] « Virement envoyé · reçu disponible »
+@enduml

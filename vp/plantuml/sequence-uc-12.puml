@@ -1,0 +1,32 @@
+@startuml UC-12
+title UC-12 — Acheter un article hors direct
+autonumber
+
+actor "A · Acheteuse" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "V · Vendeur" as V
+
+A -> APP : ouvre une fiche article
+APP -> API : GET /articles/:id
+API -> DB : article, variantes, disponible = stock - réservé (R-S2)
+API --> APP : fiche complète (prix, tailles, état, mesures, délai, badge)
+APP --> A : affiche · les tailles épuisées sont barrées (R-A3)
+A -> APP : « Je prends » puis taille, quantité, livraison
+APP --> A : total AVEC frais de livraison (RB7)
+A -> APP : valide
+APP -> API : POST /reservations {varianteId, origine: catalogue} + Idempotency-Key
+API -> DB : BEGIN
+API -> DB : SELECT variante FOR UPDATE
+API -> DB : [disponible insuffisant] ROLLBACK
+API --> APP : [disponible insuffisant] 409 STOCK_INSUFFISANT {rang}
+APP --> A : [disponible insuffisant] « Le dernier vient de partir » + alerte retour en stock
+API -> DB : [disponible suffisant] quantite_reservee + q · INSERT reservation (expire_le = +30 min)
+API -> DB : [disponible suffisant] COMMIT
+API --> APP : [disponible suffisant] 201 {reservationId, expireLe}
+APP --> A : [disponible suffisant] minuteur « Réservé 29:58 »
+A -> API : [disponible suffisant] paie (UC-30)
+API -> DB : [disponible suffisant] commande (origine = catalogue)
+API -> V : [disponible suffisant] notification « Nouvelle commande »
+@enduml

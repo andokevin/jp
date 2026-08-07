@@ -1,0 +1,38 @@
+@startuml UC-02
+title UC-02 — Se connecter
+autonumber
+
+actor "A · Acheteur" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Google" as GO
+
+A -> APP : ouvre l'application
+APP -> APP : lit le jeton de session stocké
+APP -> API : [session encore valide (A1)] POST /auth/rafraichir {jeton}
+API -> DB : [session encore valide (A1)] vérifie la famille de jetons
+API -> DB : [session encore valide (A1) / jeton déjà utilisé (A3)] révoque TOUTE la famille de jetons
+API --> APP : [session encore valide (A1) / jeton déjà utilisé (A3)] 401 REJEU_DETECTE
+APP --> A : [session encore valide (A1) / jeton déjà utilisé (A3)] « Reconnectez-vous »
+API -> DB : [session encore valide (A1) / jeton valide] rotation du jeton de rafraîchissement
+API --> APP : [session encore valide (A1) / jeton valide] 200 nouveau couple de jetons
+APP --> A : [session encore valide (A1) / jeton valide] écran d'accueil, sans aucune saisie
+A -> APP : [aucune session] saisit son adresse
+APP -> API : [aucune session] POST /auth/otp {email}
+API --> APP : [aucune session] 200 réponse indiscernable
+A -> APP : [aucune session] saisit le code reçu
+APP -> API : [aucune session] POST /auth/otp/verifier
+API -> DB : [aucune session] SELECT utilisateur — compte existant, aucun doublon
+API -> DB : [aucune session] INSERT session (appareil, adresse IP)
+API --> APP : [aucune session] 200 session longue
+APP --> A : [aucune session] écran d'accueil
+A -> APP : [connexion Google (A2)] « Continuer avec Google »
+APP -> GO : [connexion Google (A2)] demande de jeton d'identité
+GO --> APP : [connexion Google (A2)] jeton d'identité
+APP -> API : [connexion Google (A2)] POST /auth/google {jeton}
+API -> GO : [connexion Google (A2)] vérification du jeton CÔTÉ SERVEUR (R-C11)
+API --> APP : [connexion Google (A2) / adresse non déclarée vérifiée] 403 EMAIL_NON_VERIFIE
+API -> DB : [connexion Google (A2) / adresse vérifiée] rattache identite_externe au compte existant (R-C12)
+API --> APP : [connexion Google (A2) / adresse vérifiée] 200 session longue
+@enduml

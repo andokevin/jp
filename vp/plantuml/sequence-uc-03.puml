@@ -1,0 +1,32 @@
+@startuml UC-03
+title UC-03 — Récupérer un compte inaccessible
+autonumber
+
+actor "A · Acheteur" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "OP · Opérateur" as OP
+participant "Back-office" as BO
+
+A -> APP : « Je n'ai plus accès à mon email »
+APP -> API : POST /auth/recuperation {formulaire}
+API -> DB : INSERT demande_recuperation
+API -> DB : portefeuille.retraits_geles = true (R-C14)
+API --> APP : 202 {numeroDossier, delai: 24h}
+OP -> BO : ouvre la file « récupérations »
+BO -> API : GET /admin/recuperations/:id
+API -> DB : dossier + historique réel du compte visé
+API --> BO : déclarations vs historique, côte à côte
+OP -> BO : [déclarations cohérentes] valide + nouvelle adresse
+BO -> API : [déclarations cohérentes] POST /admin/recuperations/:id/decision {validee}
+API -> DB : [déclarations cohérentes] journal_audit
+API -> A : [déclarations cohérentes] code de vérification à la nouvelle adresse
+A -> API : [déclarations cohérentes] POST /auth/otp/verifier
+API -> DB : [déclarations cohérentes] réattribue le compte, dégèle les retraits
+API --> A : [déclarations cohérentes] session ouverte
+OP -> BO : [déclarations insuffisantes] refuse + motif écrit
+BO -> API : [déclarations insuffisantes] POST /admin/recuperations/:id/decision {refusee, motif}
+API -> DB : [déclarations insuffisantes] journal_audit, compte inchangé
+API --> A : [déclarations insuffisantes] notification du refus motivé
+@enduml

@@ -1,0 +1,30 @@
+@startuml UC-51
+title UC-51 — Arbitrer un litige
+autonumber
+
+actor "OP · Opérateur" as OP
+participant "Back-office" as BO
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "A · Acheteuse" as A
+actor "V · Vendeur" as V
+
+OP -> BO : file d'arbitrage (triée par âge, urgences en tête)
+BO -> API : POST /admin/litiges/:id/affectation
+API -> DB : affecte_a_id = OP (exclusif)
+BO -> API : GET /admin/litiges/:id/dossier
+API -> DB : assemble les preuves
+API --> BO : dossier d'instruction complet
+OP -> BO : décision + motif écrit (obligatoire)
+BO -> API : POST /admin/litiges/:id/decision {decision, motif}
+API --> BO : [motif absent] refusé par la contrainte decision_motivee
+API -> DB : [motif présent] BEGIN
+API -> DB : [motif présent] litige = RESOLU (decision_texte, decide_par_id, decide_le)
+API -> DB : [motif présent / en faveur de l'acheteuse] remboursement + écritures inverses
+API -> DB : [motif présent / en faveur du vendeur] sequestre = LIBERE (motif = arbitrage)
+API -> DB : [motif présent] mise à jour du score de confiance du vendeur
+API -> DB : [motif présent] journal_audit
+API -> DB : [motif présent] COMMIT
+API -> A : [motif présent] décision écrite et motivée
+API -> V : [motif présent] décision écrite et motivée
+@enduml

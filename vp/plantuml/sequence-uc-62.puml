@@ -1,0 +1,29 @@
+@startuml UC-62
+title UC-62 — Consulter ses clientes et leur rang
+autonumber
+
+participant "Travailleur « rang client »" as JOB
+participant "PostgreSQL" as DB
+actor "V · Vendeur" as V
+participant "Studio vendeur" as APP
+participant "API JP" as API
+
+JOB -> DB : recalcule — montant cumulé, fréquence, récence décotée, fiabilité (R-R3)
+JOB -> DB : UPDATE rang_client (vendeur_id, utilisateur_id)
+V -> APP : ouvre « Mes clientes »
+APP -> API : GET /vendeurs/:id/clients
+API -> DB : SELECT rang_client ORDER BY score DESC
+API --> APP : [moins de 5 clientes (A1)] liste SANS palmarès (R-R6)
+APP --> V : [moins de 5 clientes (A1)] liste simple
+API --> APP : [employé VE (A2)] lecture seule — montants ABSENTS de la réponse (R-R8)
+API --> APP : liste ordonnée, filtrable par palier et par inactivité
+APP --> V : une liste de noms, une action par ligne (R-R7)
+V -> APP : ouvre une fiche cliente
+APP -> API : GET /vendeurs/:id/clients/:uid
+API -> DB : historique, tailles, articles préférés, litiges, note privée
+API --> APP : [cliente ayant supprimé son compte (A3)] ligne ANONYMISÉE, agrégats conservés pour la comptabilité
+API --> APP : 200 fiche
+V -> APP : « Offrir une promo » (UC-71) ou « Envoyer un code » (F7.9)
+JOB -> DB : [palier perdu par décote (A4)] détecte la bascule à venir
+JOB -> DB : [palier perdu par décote (A4)] notifie la cliente AVANT la bascule (R-R10)
+@enduml

@@ -1,0 +1,875 @@
+@startuml JP-classes
+skinparam classAttributeIconSize 0
+hide circle
+
+package "3. Domaine Identité" {
+  class Utilisateur {
+    + id : uuid «PK»
+    - email : string «UK»
+    - email_verifie_le : timestamp
+    - telephone : string
+    - telephone_verifie_le : timestamp
+    - prenom : string
+    - photo_url : string
+    - langue : enum
+    - date_naissance : date
+    - statut : enum
+    - classements_publics : bool
+    - cree_le : timestamp
+  }
+  class ProfilAcheteur {
+    + utilisateur_id : uuid «PK»
+    - taille_haut : string
+    - taille_bas : string
+    - taille_chaussure : string
+    - morphologie : string
+    - budget_min : int
+    - budget_max : int
+    - styles : json
+    - couleurs : json
+  }
+  class ProfilVendeur {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - type_vendeur : enum
+    - nom_boutique : string
+    - slug : string «UK»
+    - statut_verification : enum
+    - msisdn_mobile_money : string
+    - affiliation_autorisee : bool
+    - encaissement_gele : bool
+    - score_confiance : numeric
+    - delai_expedition_moyen : int
+    - nb_abonnes : int
+    - fidelite_activee : bool
+  }
+  class ProfilCreateur {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - nom_public : string
+    - slug : string «UK»
+    - reseaux : json
+    - statut_verification : enum
+    - palier : int
+    - badge_verifie : bool
+    - nb_abonnes : int
+    - nb_ventes_generees : int
+  }
+  class IdentiteExterne {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - fournisseur : enum
+    - sujet_externe : string
+    - email_verifie : bool
+  }
+  class Session {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - famille_id : uuid
+    - empreinte_rafraichissement : string
+    - appareil_libelle : string
+    - revoquee_le : timestamp
+  }
+  class DocumentIdentite {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - type : enum
+    - url_chiffree : string
+    - empreinte : string
+  }
+  class Adresse {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - libelle : string
+    - quartier : string
+    - reperes : string
+    - telephone_destinataire : string
+  }
+  class MembreEquipe {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    # utilisateur_id : uuid «FK»
+    - permissions : json
+    - revoque_le : timestamp
+  }
+  class DemandeRecuperation {
+    + id : uuid «PK»
+    - numero : string «UK»
+    # utilisateur_cible_id : uuid «FK»
+    - email_ancien : string
+    - email_nouveau : string
+    - statut : enum
+    - motif_decision : string
+    - decide_par_id : uuid
+  }
+  class DemandeChangementEmail {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - nouvel_email : string
+    - etape : enum
+    - expire_le : timestamp
+  }
+  class CodeOtp {
+    + id : uuid «PK»
+    - email : string
+    - code_empreinte : string
+    - tentatives : int
+    - expire_le : timestamp
+    - consomme_le : timestamp
+    - adresse_ip : string
+  }
+}
+
+package "4. Domaine Catalogue et stock" {
+  class Article {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    - nom : string
+    - description : string
+    # categorie_id : uuid «FK»
+    - marque : string
+    - matiere : string
+    - prix_ariary : int
+    - prix_barre_ariary : int
+    - statut : enum
+    - piece_unique : bool
+    - type_vente : enum
+    - etat_vetement : enum
+    - mesures : json
+    - a_mesures : bool
+    - achat_direct_actif : bool
+    - epingle : bool
+    - position_vitrine : int
+  }
+  class Categorie {
+    + id : uuid «PK»
+    # parent_id : uuid «FK»
+    - nom_mg : string
+    - nom_fr : string
+    - position : int
+  }
+  class Variante {
+    + id : uuid «PK»
+    # article_id : uuid «FK»
+    - taille : string
+    - couleur : string
+    - sku : string
+    - quantite_stock : int
+    - quantite_reservee : int
+    - seuil_alerte : int
+  }
+  class Reservation {
+    + id : uuid «PK»
+    # variante_id : uuid «FK»
+    # utilisateur_id : uuid «FK»
+    - session_invitee_id : uuid
+    - quantite : int
+    - statut : enum
+    - origine : enum
+    # direct_id : uuid «FK»
+    - rang : int
+    - expire_le : timestamp
+    - suspendu_depuis : timestamp
+  }
+  class MouvementStock {
+    + id : uuid «PK»
+    # variante_id : uuid «FK»
+    - type : enum
+    - quantite_delta : int
+    - reference : string
+    - auteur_id : uuid
+  }
+  class QuestionArticle {
+    + id : uuid «PK»
+    # article_id : uuid «FK»
+    # auteur_id : uuid «FK»
+    - texte : string
+    - reponse_texte : string
+    - statut : enum
+  }
+  class AlerteStock {
+    + variante_id : uuid «PK»
+    + utilisateur_id : uuid «PK»
+    - notifie_le : timestamp
+  }
+}
+
+package "5. Domaine Commande, paiement et argent" {
+  class Commande {
+    + id : uuid «PK»
+    - numero : string «UK»
+    # acheteur_id : uuid «FK»
+    # createur_id : uuid «FK»
+    # evenement_id : uuid «FK»
+    # direct_id : uuid «FK»
+    - donateur_ref : string
+    - statut : enum
+    - origine : enum
+    - mode_livraison : enum
+    # adresse_id : uuid «FK»
+    # relais_id : uuid «FK»
+    - code_promo : string
+    - sous_total : int
+    - frais_livraison : int
+    - remise : int
+    - remise_livraison : int
+    - credit_cagnotte_utilise : int
+    - total : int
+    - note_acheteur : string
+  }
+  class LigneCommande {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    # variante_id : uuid «FK»
+    # vendeur_id : uuid «FK»
+    - quantite : int
+    - prix_unitaire : int
+    - remise_ligne : int
+    # promotion_id : uuid «FK»
+    - commission_jp : int
+    - commission_createur : int
+    # bareme_id : uuid «FK»
+  }
+  class Paiement {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    - moyen : enum
+    - montant : int
+    - statut : enum
+    - reference_externe : string
+    - cle_idempotence : string «UK»
+    - motif_echec : string
+    - payeur_utilisateur_id : uuid
+    - payeur_pays : string
+    - montant_devise_origine : int
+    - devise_origine : string
+    - taux_indicatif : numeric
+  }
+  class Sequestre {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    - montant_retenu : int
+    - statut : enum
+    - liberable_le : timestamp
+    - libere_le : timestamp
+    - motif_liberation : enum
+  }
+  class Facture {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    - numero : string «UK»
+    - url_pdf : string
+    - emise_le : timestamp
+  }
+  class Remboursement {
+    + id : uuid «PK»
+    # paiement_id : uuid «FK»
+    - montant : int
+    - motif : string
+    - cle_idempotence : string «UK»
+    - statut : enum
+  }
+  class EcritureFinanciere {
+    + id : uuid «PK»
+    - type : enum
+    - reference : string
+    - montant : int
+    - sens : enum
+    - compte : enum
+    - titulaire_id : uuid
+    - cree_le : timestamp
+  }
+  class Portefeuille {
+    + id : uuid «PK»
+    # titulaire_id : uuid «FK»
+    - type : enum
+    - solde_en_attente : int
+    - solde_disponible : int
+    - retraits_geles : bool
+  }
+  class Retrait {
+    + id : uuid «PK»
+    # portefeuille_id : uuid «FK»
+    - montant : int
+    - msisdn_destination : string
+    - statut : enum
+    - cle_idempotence : string «UK»
+  }
+  class Promotion {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    # evenement_id : uuid «FK»
+    - type : enum
+    - valeur : int
+    - perimetre : enum
+    # categorie_id : uuid «FK»
+    - cible : enum
+    # palier_min_id : uuid «FK»
+    - code : string «UK»
+    - plafond_utilisation : int
+    - utilisations : int
+    - debut_le : timestamp
+    - fin_le : timestamp
+    - statut : enum
+    - notifier_abonnes : bool
+    - notifiee_le : timestamp
+  }
+}
+
+package "6. Domaine Livraison" {
+  class Colis {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    # vendeur_id : uuid «FK»
+    - statut : enum
+    # livreur_id : uuid «FK»
+    # relais_id : uuid «FK»
+    - code_retrait : string
+    - garde_jusqu_au : timestamp
+    - preuve_remise_url : string
+    - montant_a_encaisser : int
+    - montant_encaisse : int
+    - telephone_verifie : bool
+    - nb_tentatives : int
+    - motif_echec : string
+  }
+  class EvenementLivraison {
+    + id : uuid «PK»
+    # colis_id : uuid «FK»
+    - statut : enum
+    - auteur_id : uuid
+    - horodatage : timestamp
+    - commentaire : string
+  }
+  class PointRelais {
+    + id : uuid «PK»
+    - nom : string
+    - quartier : string
+    - latitude : numeric
+    - longitude : numeric
+    - horaires : json
+    - photo_devanture : string
+    - delai_garde_jours : int
+    - capacite_max : int
+    - nb_colis_en_stock : int
+    - statut : enum
+  }
+  class Livreur {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - vehicule : string
+    # zone_id : uuid «FK»
+    - statut : enum
+  }
+  class Tournee {
+    + id : uuid «PK»
+    # livreur_id : uuid «FK»
+    - date : date
+    - statut : enum
+  }
+  class TourneePoint {
+    + id : uuid «PK»
+    # tournee_id : uuid «FK»
+    - ordre : int
+    - type : enum
+    # colis_id : uuid «FK»
+    - arrive_le : timestamp
+    - termine_le : timestamp
+  }
+  class Retour {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    - motif : enum
+    - type : enum
+    # variante_echange_id : uuid «FK»
+    - statut : enum
+    - frais_a_charge_de : enum
+  }
+  class ZoneLivraison {
+    + id : uuid «PK»
+    - nom : string
+    - quartiers : json
+    - delai_transport_j : int
+  }
+  class TarifLivraison {
+    + zone_id : uuid «PK»
+    + mode : enum «PK»
+    - montant : int
+  }
+  class CollecteEspeces {
+    + id : uuid «PK»
+    # porteur_id : uuid «FK»
+    - porteur_type : enum
+    - montant_du : int
+    - montant_reverse : int
+    - periode_debut : date
+    - periode_fin : date
+  }
+}
+
+package "7. Domaine Contenu, direct et créatrices" {
+  class Contenu {
+    + id : uuid «PK»
+    # auteur_id : uuid «FK»
+    - type : enum
+    - media_url : string
+    - miniature_url : string
+    - duree_s : int
+    - statut : enum
+    # commande_source_id : uuid «FK»
+    - commentaires_ouverts : enum
+    - publie_le : timestamp
+    - expire_le : timestamp
+    - empreinte_video : string
+    # partenariat_id : uuid «FK»
+    # campagne_id : uuid «FK»
+    - sponsorise_declare : bool
+    - auteur_majeur : bool
+  }
+  class ContenuArticle {
+    + contenu_id : uuid «PK»
+    + article_id : uuid «PK»
+    # createur_id : uuid «FK»
+    - position : int
+  }
+  class StatistiqueContenu {
+    + contenu_id : uuid «PK»
+    - vues : int
+    - duree_moyenne_s : int
+    - clics_article : int
+    - je_prends : int
+    - ventes : int
+    - gains : int
+  }
+  class Interaction {
+    + id : uuid «PK»
+    # contenu_id : uuid «FK»
+    # utilisateur_id : uuid «FK»
+    - type : enum
+    - texte : string
+    - statut : enum
+  }
+  class ContenuHashtag {
+  }
+  class Hashtag {
+  }
+  class Abonnement {
+    + suiveur_id : uuid «PK»
+    + suivi_id : uuid «PK»
+    - type : enum
+    - notifications_promo : bool
+  }
+  class Direct {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    - titre : string
+    - affiche_url : string
+    - statut : enum
+    - debut_prevu_le : timestamp
+    - debut_le : timestamp
+    - ingest_ref : string
+    - lecture_url : string
+    - enregistrement_url : string
+    # article_a_lecran_id : uuid «FK»
+    - nb_spectateurs_pic : int
+    - rediffusion_facebook : bool
+  }
+  class DirectArticle {
+    + direct_id : uuid «PK»
+    + article_id : uuid «PK»
+    - position : int
+    - a_lecran_le : timestamp
+  }
+  class MessageDirect {
+    + id : uuid «PK»
+    # direct_id : uuid «FK»
+    # auteur_id : uuid «FK»
+    - texte : string
+    - statut : enum
+    - epingle : bool
+    - automatique : bool
+  }
+  class DirectBilan {
+    + direct_id : uuid «PK»
+    - duree_s : int
+    - spectateurs_uniques : int
+    - pic_audience : int
+    - nb_vendus : int
+    - ca : int
+    - taux_conversion : numeric
+    - nb_expirees : int
+    - articles_sans_vente : json
+  }
+  class Selection {
+    + id : uuid «PK»
+    # createur_id : uuid «FK»
+    - nom_theme : string
+    - position : int
+  }
+  class SelectionArticle {
+    + selection_id : uuid «PK»
+    + article_id : uuid «PK»
+    - position : int
+  }
+  class ClicAffiliation {
+    + id : uuid «PK»
+    # createur_id : uuid «FK»
+    # article_id : uuid «FK»
+    # utilisateur_id : uuid «FK»
+    - expire_le : timestamp
+  }
+  class Precommande {
+    + id : uuid «PK»
+    # article_id : uuid «FK»
+    # organisateur_id : uuid «FK»
+    - seuil : int
+    - date_limite : timestamp
+    - compteur_actuel : int
+    - statut : enum
+    - avance_liberee : int
+    - date_expedition_max : timestamp
+  }
+  class PrecommandeEngagement {
+    + id : uuid «PK»
+    # precommande_id : uuid «FK»
+    # commande_id : uuid «FK»
+    - statut : enum
+  }
+}
+
+package "8. Domaine Fidélité, promotions et événements" {
+  class PalierFidelite {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    - nom : string
+    - rang_ordre : int
+    - seuil_montant : int
+    - seuil_commandes : int
+    - avantage_texte : string
+  }
+  class RangClient {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    # utilisateur_id : uuid «FK»
+    # palier_id : uuid «FK»
+    - score : int
+    - montant_cumule : int
+    - nb_commandes : int
+    - derniere_commande_le : timestamp
+    - nb_litiges_perdus : int
+    - nb_annulations : int
+    - calcule_le : timestamp
+  }
+  class NoteClient {
+    + vendeur_id : uuid «PK»
+    + utilisateur_id : uuid «PK»
+    - texte : string
+  }
+  class VenteConfirmeeJournal {
+    + id : uuid «PK»
+    # vendeur_id : uuid «FK»
+    # utilisateur_id : uuid «FK»
+    # commande_id : uuid «FK»
+    - montant_confirme : int
+    - confirme_le : timestamp
+  }
+  class PromotionArticle {
+    + promotion_id : uuid «PK»
+    + article_id : uuid «PK»
+  }
+  class PromotionBeneficiaire {
+    + promotion_id : uuid «PK»
+    + utilisateur_id : uuid «PK»
+    - code_personnel : string «UK»
+    - utilise_le : timestamp
+    # commande_id : uuid «FK»
+  }
+  class Evenement {
+    + id : uuid «PK»
+    - portee : enum
+    # proprietaire_id : uuid «FK»
+    - nom : string
+    - theme : string
+    - slug : string «UK»
+    - visuel_url : string
+    - couleur_accent : string
+    - hashtag : string
+    - debut_le : timestamp
+    - fin_le : timestamp
+    - statut : enum
+    - candidatures_ouvertes : bool
+  }
+  class EvenementParticipation {
+    + id : uuid «PK»
+    # evenement_id : uuid «FK»
+    # participant_id : uuid «FK»
+    - role : enum
+    - statut : enum
+    - motif_refus : string
+    - decide_par_id : uuid
+  }
+  class EvenementElement {
+    + evenement_id : uuid «PK»
+    + cible_type : string «PK»
+    + cible_id : uuid «PK»
+    # participation_id : uuid «FK»
+    - position : int
+  }
+  class EvenementRappel {
+    + evenement_id : uuid «PK»
+    + utilisateur_id : uuid «PK»
+    - notifications_envoyees : int
+  }
+  class EvenementBilan {
+    + evenement_id : uuid «PK»
+    + participant_id : uuid «PK»
+    - nb_articles_vendus : int
+    - ca_ariary : int
+    - ca_reference_ariary : int
+    - nouveaux_abonnes : int
+    - trafic_page : int
+  }
+  class Cagnotte {
+    + utilisateur_id : uuid «PK»
+    - solde : int
+  }
+  class MouvementCagnotte {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - type : enum
+    - montant : int
+    - reference : string
+  }
+  class PieceDressing {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - origine : enum
+    # commande_id : uuid «FK»
+    # article_id : uuid «FK»
+    - photo_url : string
+    - categorie : string
+  }
+  class LookPiece {
+    + look_id : uuid «PK»
+    + piece_id : uuid «PK»
+    - position : json
+  }
+  class Look {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - nom : string
+    # contenu_id : uuid «FK»
+  }
+}
+
+package "9. Domaine Confiance et modération" {
+  class Litige {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    # ouvert_par_id : uuid «FK»
+    - motif : enum
+    - statut : enum
+    - decision_texte : string
+    - decide_par_id : uuid
+    - decide_le : timestamp
+    - affecte_a_id : uuid
+  }
+  class MessageLitige {
+    + id : uuid «PK»
+    # litige_id : uuid «FK»
+    # auteur_id : uuid «FK»
+    - texte : string
+    - pieces_jointes : json
+  }
+  class Avis {
+    + id : uuid «PK»
+    # commande_id : uuid «FK»
+    # auteur_id : uuid «FK»
+    # vendeur_id : uuid «FK»
+    # article_id : uuid «FK»
+    - note : int
+    - texte : string
+    - photo_url : string
+    - conformite_taille : enum
+    - morphologie_autrice : json
+    # contenu_id : uuid «FK»
+    - reponse_texte : string
+  }
+  class Signalement {
+    + id : uuid «PK»
+    - cible_type : string
+    - cible_id : uuid
+    # signale_par_id : uuid «FK»
+    - motif : string
+    - niveau : enum
+    - statut : enum
+    - affecte_a_id : uuid
+    - traite_par_id : uuid
+    - decision : string
+  }
+  class Sanction {
+    + id : uuid «PK»
+    # utilisateur_id : uuid «FK»
+    - type : enum
+    - motif_texte : string
+    - duree : int
+    - applique_par_id : uuid
+    - conteste : bool
+    - resultat_contestation : string
+  }
+  class Blocage {
+    + bloqueur_id : uuid «PK»
+    + bloque_id : uuid «PK»
+  }
+  class MotBloquePersonnel {
+    + utilisateur_id : uuid «PK»
+    + mot : string «PK»
+  }
+  class RepublicationSuspectee {
+    + id : uuid «PK»
+    # contenu_id : uuid «FK»
+    # contenu_origine_id : uuid «FK»
+    - proximite : numeric
+    - statut : enum
+  }
+  class ScoreConfiance {
+    + vendeur_id : uuid «PK»
+    - score : numeric
+    - nb_ventes_honorees : int
+    - delai_expedition_reel_h : int
+    - taux_annulation : numeric
+    - taux_litige : numeric
+    - decomposition : json
+    - calcule_le : timestamp
+  }
+}
+
+package "Domaine Exploitation" {
+  class Parametre {
+  }
+  class ParametreModification {
+  }
+  class JournalAudit {
+  }
+  class EvenementUsage {
+  }
+  class AgregatQuotidien {
+  }
+  class AgregatVendeur {
+  }
+  class Notification {
+  }
+  class NotificationCompteur {
+  }
+  class PreferenceNotification {
+  }
+  class NotificationSms {
+  }
+  class Reconciliation {
+  }
+  class Ecart {
+  }
+  class BaremeCommission {
+  }
+  class MiseEnAvant {
+  }
+  class AbonnementVendeur {
+  }
+  class AdhesionClub {
+  }
+  class LienPartage {
+  }
+  class TauxChange {
+  }
+}
+
+Utilisateur "1..1" -- "0..1" ProfilAcheteur : a
+Utilisateur "1..1" -- "0..1" ProfilVendeur : a
+Utilisateur "1..1" -- "0..1" ProfilCreateur : a
+Utilisateur "1..1" -- "0..*" IdentiteExterne : rattache
+Utilisateur "1..1" -- "0..*" Session : ouvre
+Utilisateur "1..1" -- "0..*" DocumentIdentite : fournit
+Utilisateur "1..1" -- "0..*" Adresse : enregistre
+ProfilVendeur "1..1" -- "0..*" MembreEquipe : invite
+Utilisateur "1..1" -- "0..*" MembreEquipe : est membre de
+Utilisateur "1..1" -- "0..*" DemandeRecuperation : demande
+Utilisateur "1..1" -- "0..*" DemandeChangementEmail : demande
+ProfilVendeur "1..1" -- "0..*" Article : publie
+Categorie "1..1" -- "0..*" Article : classe
+Categorie "1..1" -- "0..*" Categorie : parent
+Article "1..1" -- "1..*" Variante : décline
+Variante "1..1" -- "0..*" Reservation : réserve
+Variante "1..1" -- "0..*" MouvementStock : trace
+Article "1..1" -- "0..*" QuestionArticle : reçoit
+Utilisateur "1..1" -- "0..*" Reservation : pose
+Variante "1..1" -- "0..*" AlerteStock : attend
+Utilisateur "1..1" -- "0..*" Commande : passe
+Commande "1..1" -- "1..*" LigneCommande : contient
+Commande "1..1" -- "0..*" Paiement : réglée par
+Commande "1..1" -- "0..1" Sequestre : protégée par
+Commande "1..1" -- "0..1" Facture : génère
+Paiement "1..1" -- "0..*" Remboursement : peut être
+Sequestre "1..1" -- "0..*" EcritureFinanciere : produit
+Portefeuille "1..1" -- "0..*" EcritureFinanciere : alimenté par
+Portefeuille "1..1" -- "0..*" Retrait : sort par
+Promotion "1..1" -- "0..*" LigneCommande : remise
+Variante "1..1" -- "0..*" LigneCommande : vendue
+Commande "1..1" -- "1..*" Colis : expédiée en
+Colis "1..1" -- "0..*" EvenementLivraison : historique partagé
+PointRelais "1..1" -- "0..*" Colis : stocke
+Livreur "1..1" -- "0..*" Colis : transporte
+Livreur "1..1" -- "0..*" Tournee : effectue
+Tournee "1..1" -- "1..*" TourneePoint : ordonne
+Colis "1..1" -- "0..1" Retour : peut faire l'objet de
+ZoneLivraison "1..1" -- "0..*" TarifLivraison : tarifie
+Livreur "1..1" -- "0..*" CollecteEspeces : doit
+PointRelais "1..1" -- "0..*" CollecteEspeces : doit
+Utilisateur "1..1" -- "0..*" Contenu : publie
+Contenu "1..1" -- "1..*" ContenuArticle : OBLIGATOIRE >= 1 (RB5)
+Article "1..1" -- "0..*" ContenuArticle : attaché
+Contenu "1..1" -- "0..1" StatistiqueContenu : mesuré par
+Contenu "1..1" -- "0..*" Interaction : reçoit
+Contenu "1..1" -- "0..*" ContenuHashtag : porte
+Hashtag "1..1" -- "0..*" ContenuHashtag : rassemble
+Commande "1..1" -- "0..1" Contenu : source d'unboxing (R-K2)
+Utilisateur "1..1" -- "0..*" Abonnement : suit
+ProfilVendeur "1..1" -- "0..*" Direct : diffuse
+Direct "1..1" -- "0..*" DirectArticle : prépare
+Direct "1..1" -- "0..*" MessageDirect : chat
+Direct "1..1" -- "0..1" DirectBilan : conclut
+ProfilCreateur "1..1" -- "0..*" Selection : compose
+Selection "1..1" -- "0..*" SelectionArticle : contient
+ProfilCreateur "1..1" -- "0..*" ClicAffiliation : génère
+ProfilCreateur "1..1" -- "0..*" Precommande : ouvre
+Precommande "1..1" -- "0..*" PrecommandeEngagement : collecte
+ProfilVendeur "1..1" -- "0..*" PalierFidelite : définit
+ProfilVendeur "1..1" -- "0..*" RangClient : classe
+Utilisateur "1..1" -- "0..*" RangClient : est classé
+PalierFidelite "1..1" -- "0..*" RangClient : attribue
+ProfilVendeur "1..1" -- "0..*" NoteClient : annote
+Commande "1..1" -- "0..1" VenteConfirmeeJournal : journalise (R-R11)
+ProfilVendeur "1..1" -- "0..*" Promotion : lance
+Promotion "1..1" -- "0..*" PromotionArticle : cible
+Promotion "1..1" -- "0..*" PromotionBeneficiaire : nomme
+PalierFidelite "1..1" -- "0..*" Promotion : réserve à
+Evenement "1..1" -- "0..*" Promotion : rassemble
+Evenement "1..1" -- "0..*" EvenementParticipation : accueille
+Evenement "1..1" -- "0..*" EvenementElement : expose
+Evenement "1..1" -- "0..*" EvenementRappel : notifie
+Evenement "1..1" -- "0..*" EvenementBilan : mesure
+Utilisateur "1..1" -- "0..1" Cagnotte : cumule
+Cagnotte "1..1" -- "0..*" MouvementCagnotte : trace
+Utilisateur "1..1" -- "0..*" PieceDressing : possède
+PieceDressing "1..1" -- "0..*" LookPiece : compose
+Look "1..1" -- "1..*" LookPiece : assemble
+Commande "1..1" -- "0..*" Litige : peut faire l'objet de
+Litige "1..1" -- "0..*" MessageLitige : fil
+Commande "1..1" -- "0..1" Avis : permet
+Contenu "1..1" -- "0..1" Avis : généré par unboxing (R-T7)
+Utilisateur "1..1" -- "0..*" Signalement : émet
+Utilisateur "1..1" -- "0..*" Sanction : subit
+Utilisateur "1..1" -- "0..*" Blocage : bloque
+Utilisateur "1..1" -- "0..*" MotBloquePersonnel : définit
+Contenu "1..1" -- "0..*" RepublicationSuspectee : suspectée
+ProfilVendeur "1..1" -- "0..1" ScoreConfiance : noté par
+@enduml

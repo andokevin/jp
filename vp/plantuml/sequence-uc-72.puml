@@ -1,0 +1,28 @@
+@startuml UC-72
+title UC-72 — Créer un événement thématique
+autonumber
+
+actor "OP · Opérateur JP" as OP
+participant "Back-office" as BO
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Ordonnanceur" as JOB
+participant "Notifications" as NOT
+
+OP -> BO : nom, thème, dates, visuel, couleur, mot-dièse, règles de participation
+BO -> API : POST /evenements
+API --> BO : [dates incohérentes (A1)] 422 DATES_INVALIDES — refus AVANT enregistrement
+API -> DB : [valide] génère un slug unique, INSERT evenement (brouillon)
+API --> BO : [valide] 201 brouillon
+OP -> BO : « Annoncer » — action humaine, volontaire
+BO -> API : POST /evenements/:id/annonce
+API -> DB : statut → annonce
+API --> BO : 200 adresse publique partageable
+JOB -> DB : à la date de début — statut → en_cours
+JOB -> DB : refuse AUTOMATIQUEMENT les candidatures restées en attente (R-W4)
+JOB -> NOT : notifie les candidats refusés
+NOT --> OP : récapitulatif
+JOB -> DB : à la date de fin — statut → termine
+JOB -> DB : produit le bilan (F20.8)
+OP -> BO : [annulation (A3)] annule — possible depuis tout statut sauf termine
+@enduml

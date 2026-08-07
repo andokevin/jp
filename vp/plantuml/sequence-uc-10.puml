@@ -1,0 +1,37 @@
+@startuml UC-10
+title UC-10 — Publier un article avec ses variantes
+autonumber
+
+actor "V · Vendeur" as V
+participant "Studio vendeur" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Service images" as IMG
+
+V -> APP : choisit 1 à 8 photos, recadre
+APP -> IMG : envoi des photos
+IMG --> APP : URL dimensionnées
+V -> APP : nom, prix, catégorie
+V -> APP : état du vêtement et mesures réelles (R-H4)
+APP -> API : POST /articles/valider-mesures
+API --> APP : [mesures hors bornes (A4)] 422 MESURE_INVALIDE + bornes attendues
+APP --> V : [mesures hors bornes (A4)] message explicite, saisie corrigée
+API --> APP : [mesures cohérentes] 200
+V -> APP : tailles, couleurs, quantité par variante
+APP -> API : GET /commissions/simulation {prix}
+API --> APP : commission simulée (R-G1)
+APP --> V : « Vous recevrez X Ar sur Y Ar »
+V -> APP : « Mettre en ligne »
+APP -> API : POST /articles
+API --> APP : [employé tentant de poser un prix (A2)] 403 CHAMP_INTERDIT
+API -> DB : [autorisé] BEGIN
+API -> DB : [autorisé] INSERT article
+API -> DB : [autorisé] INSERT variante ×n
+API -> DB : [autorisé] INSERT mouvement_stock (entrée) ×n
+API -> DB : [autorisé] COMMIT
+API --> APP : [autorisé] 201 article en ligne, achetable 24 h/24 (R-H7)
+APP --> V : [autorisé] « En ligne »
+APP --> V : [moins de 3 photos pour la vente hors direct (A3)] avertissement NON bloquant
+V -> APP : [brouillon (A5)] « Enregistrer sans publier »
+APP -> API : [brouillon (A5)] POST /articles {statut: brouillon}
+@enduml

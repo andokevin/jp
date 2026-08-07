@@ -1,0 +1,39 @@
+@startuml UC-41
+title UC-41 — Livrer un colis à domicile
+autonumber
+
+actor "L · Livreur" as L
+participant "Application terrain" as TER
+participant "File hors ligne locale" as FILE
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "A · Acheteuse" as A
+actor "V · Vendeur" as V
+
+L -> TER : ouvre sa tournée
+TER -> API : GET /livreur/tournee
+API --> TER : points ordonnés (enlèvements puis remises)
+TER -> TER : met la tournée en cache local
+L -> TER : « Arrivé » chez le vendeur
+L -> TER : enlève 5 colis (une seule validation)
+TER -> FILE : action locale (clé d'idempotence)
+TER -> API : POST /enlevements {colisIds}
+API -> DB : 5 colis = ENLEVE + 5 événements
+API -> V : « Vos colis ont été enlevés »
+L -> TER : « Arrivé » chez l'acheteuse
+L -> TER : photo du colis remis
+L -> TER : [paiement à la livraison] saisit le montant encaissé
+TER -> FILE : action locale
+TER -> API : [réseau disponible] POST /colis/:id/remise-livreur {preuve, montant}
+API -> DB : [réseau disponible] colis = REMIS + événement horodaté et attribué
+API -> DB : [réseau disponible] écritures espèces si applicable
+API -> A : [réseau disponible] « Colis remis » + demande de confirmation (UC-31)
+API -> V : [réseau disponible] statut mis à jour
+TER --> L : [hors réseau] « Enregistré — 3 actions en attente »
+TER -> API : [hors réseau] POST /livreur/synchronisation {lot}
+API -> DB : [hors réseau] applique le lot · aucun doublon
+L -> TER : [échec de livraison] motif + photo
+TER -> API : [échec de livraison] POST /colis/:id/echec {motif}
+API -> DB : [échec de livraison] colis = ECHEC_LIVRAISON
+API -> A : [échec de livraison] options : nouvelle tentative ou remboursement (F5.7)
+@enduml

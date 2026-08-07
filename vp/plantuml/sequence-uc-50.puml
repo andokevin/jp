@@ -1,0 +1,28 @@
+@startuml UC-50
+title UC-50 — Ouvrir un litige sur une commande
+autonumber
+
+actor "A · Acheteuse" as A
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "V · Vendeur" as V
+participant "Plateforme" as SYS
+actor "OP · Opérateur" as OP
+
+A -> API : POST /commandes/:id/litige {motif, photos, description}
+API -> DB : INSERT litige (OUVERT) + numéro de dossier
+API -> DB : sequestre reste RETENU · libération auto SUSPENDUE
+API --> A : « Votre argent reste bloqué chez JP » + n° de dossier
+API -> V : notification du litige (motif + photos)
+V -> API : POST /litiges/:id/messages (réponse)
+V -> API : POST /litiges/:id/proposition {remboursement partiel 20 000 Ar}
+API -> A : notification de la proposition
+A -> API : [A accepte] POST /litiges/:id/accord
+API -> DB : [A accepte] litige = RESOLU (par accord) · exécution
+API -> DB : [A accepte] remboursement partiel + libération du solde
+SYS -> API : [pas d'accord sous 48 h] tâche d'escalade
+API -> DB : [pas d'accord sous 48 h] litige = ARBITRAGE
+API -> OP : [pas d'accord sous 48 h] entrée en file d'arbitrage
+API -> A : [pas d'accord sous 48 h] « JP va trancher »
+API -> V : [pas d'accord sous 48 h] « JP va trancher »
+@enduml

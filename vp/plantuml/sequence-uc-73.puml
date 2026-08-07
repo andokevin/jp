@@ -1,0 +1,34 @@
+@startuml UC-73
+title UC-73 — Participer à un événement
+autonumber
+
+actor "V · Vendeur" as V
+participant "Studio" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "OP · Opérateur" as OP
+participant "Tâche planifiée" as JOB
+actor "AN · Visiteur" as AN
+
+V -> APP : « Participer à Noël JP »
+APP -> API : POST /evenements/:id/participations {articles, promotion}
+API -> DB : vérifie statut_verification du vendeur
+API --> APP : [vendeur non vérifié] 403 + condition manquante + lien vers la vérification
+API -> DB : [vendeur vérifié] participation = CANDIDATE
+API --> V : [vendeur vérifié] « Candidature envoyée · réponse sous 48 h »
+OP -> API : [vendeur vérifié] GET /admin/evenements/:id/candidatures
+API --> OP : [vendeur vérifié] articles engagés, avec vignettes
+OP -> API : [vendeur vérifié / acceptée] POST .../decision {acceptee}
+API -> DB : [vendeur vérifié / acceptée] participation = ACCEPTEE
+API --> V : [vendeur vérifié / acceptée] « Candidature acceptée »
+V -> API : [vendeur vérifié / acceptée] POST /evenements/:id/elements {articles, promo, clips, direct}
+API -> DB : [vendeur vérifié / acceptée] INSERT evenement_element
+OP -> API : [vendeur vérifié / refusée] POST .../decision {refusee, motif}
+API --> V : [vendeur vérifié / refusée] refus + motif écrit (R-W4)
+JOB -> DB : evenement = EN_COURS
+JOB -> DB : candidatures restées CANDIDATE → REFUSEE_SANS_REPONSE
+JOB -> V : notification aux non-répondus (R-W4)
+AN -> API : GET /evenements/noel-2026 (public, sans compte)
+API -> DB : compose la page : directs, articles en promo, clips, boutiques
+API --> AN : page événement + filtres (taille pré-remplie si connectée)
+@enduml

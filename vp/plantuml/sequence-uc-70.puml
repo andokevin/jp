@@ -1,0 +1,33 @@
+@startuml UC-70
+title UC-70 — Lancer une promotion et notifier ses abonnés
+autonumber
+
+actor "V · Vendeur" as V
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Tâche planifiée" as JOB
+participant "Service notification" as NOT
+actor "A · abonnée" as A1
+actor "A · abonnée (promos coupées)" as A2
+
+V -> APP : type, valeur, période, périmètre, cible
+APP -> API : POST /vendeur/promotions
+API -> DB : détection de chevauchement (R-U7)
+API --> APP : avertissement + règle « une seule remise, la plus favorable »
+API --> APP : aperçu du net vendeur (R-U10)
+APP --> V : « Robe 50 000 → 40 000 Ar · commission 2 000 · vous recevez 38 000 »
+APP --> V : « Vos 1 240 abonnés seront prévenus » + interrupteur
+V -> APP : « Lancer la promotion »
+APP -> API : confirmation
+API -> DB : promotion ACTIVE (notifiee_le = NULL)
+API -> JOB : fan-out de notification par lots
+JOB -> NOT : [pour chaque abonné] envoyer(abonné, promo)
+NOT -> DB : [pour chaque abonné] réglage individuel ? (R-Q6)
+NOT -> DB : [pour chaque abonné] plafond vendeur / 24 h ? (R-U4)
+NOT -> DB : [pour chaque abonné] seuil de regroupement atteint ?
+NOT --> A1 : [pour chaque abonné / autorisé] « Miora lance -20 % jusqu'à dimanche »
+NOT --> A1 : [pour chaque abonné / plus de 3 promos ce jour] message groupé « 4 boutiques en promotion »
+JOB -> DB : promotion.notifiee_le = now()
+JOB -> DB : promotion TERMINEE · prix d'origine rétablis (R-U11)
+@enduml

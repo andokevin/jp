@@ -1,0 +1,30 @@
+@startuml UC-71
+title UC-71 — Offrir une promotion réservée aux clientes VIP
+autonumber
+
+actor "V · Vendeur" as V
+participant "Studio vendeur" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "A · Cliente" as A
+
+V -> APP : depuis « Mes clientes » (UC-62), sélectionne un palier
+V -> APP : crée une promotion réservée à ce palier et aux supérieurs
+APP -> API : POST /promotions {cible: palier, palier_min}
+API -> DB : INSERT promotion (cible = palier)
+API --> APP : 201
+A -> APP : ouvre la boutique
+APP -> API : GET /promotions/mes-offres
+API -> DB : SELECT rang_client de A CHEZ CE VENDEUR
+API --> APP : [cliente éligible] offre nommée « Offre réservée aux clientes VIP de Miora »
+API --> APP : [non éligible (A1)] offre VISIBLE mais grisée + progression restante
+A -> APP : ajoute au panier et paie
+APP -> API : POST /commandes {Idempotency-Key}
+API -> DB : vérifie l'éligibilité CÔTÉ SERVEUR au calcul du panier (R-U5)
+API -> DB : [palier perdu entre la réservation et le paiement (A2)] retire la remise
+API --> APP : [palier perdu entre la réservation et le paiement (A2)] 201 commande + message clair
+API --> APP : [code nominatif présenté par une autre personne (A3)] 403 CODE_NOMINATIF
+API -> DB : [éligible] applique la remise, trace promotion_id sur la ligne
+API --> APP : [éligible] 201
+API -> DB : [commande annulée] le code nominatif est RESTITUÉ (R-U6)
+@enduml

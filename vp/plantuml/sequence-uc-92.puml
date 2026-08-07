@@ -1,0 +1,28 @@
+@startuml UC-92
+title UC-92 — Publier un contenu avec articles attachés
+autonumber
+
+actor "C, V ou A selon le type" as U
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+
+U -> APP : choisit un média, rédige une légende
+U -> APP : attache un ou plusieurs articles
+APP -> API : GET /articles/attachables
+API -> DB : catalogue autorisé SELON LE RÔLE
+API --> APP : liste filtrée
+API --> APP : [créatrice, vendeur refusant l'affiliation (A2)] 403 AFFILIATION_REFUSEE (R-N3)
+API --> APP : [acheteuse, article non acheté (A3)] 403 ARTICLE_NON_ACHETE
+U -> APP : « Publier »
+APP --> U : [aucun article attaché (A1)] le bouton est déjà inactif
+APP -> API : [aucun article attaché (A1)] POST /contenus {articles: []}
+API --> APP : [aucun article attaché (A1)] 422 CONTENU_SANS_ARTICLE
+API -> DB : [au moins un article] BEGIN
+API -> DB : [au moins un article] INSERT contenu
+API -> DB : [au moins un article] INSERT contenu_article ×n
+API -> DB : [au moins un article] COMMIT — contrainte différée vérifiée au commit
+API --> APP : [au moins un article] 201 publié
+API -> DB : [contenu sponsorisé (A4)] étiquette « Partenariat rémunéré », automatique et NON retirable (F18.8)
+API -> DB : [publication d'une créatrice] identifiant de créatrice porté par le contenu — rattache la vente (F15.4)
+@enduml

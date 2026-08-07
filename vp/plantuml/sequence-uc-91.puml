@@ -1,0 +1,36 @@
+@startuml UC-91
+title UC-91 — Traiter un signalement
+autonumber
+
+actor "MO · Modérateur" as MO
+participant "Back-office" as BO
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Notifications" as NOT
+actor "Auteur du contenu" as AU
+actor "Signalant" as SI
+
+MO -> BO : ouvre la file, urgences en tête
+BO -> API : GET /signalements?tri=priorite
+API --> BO : file priorisée
+MO -> BO : s'attribue le dossier
+BO -> API : POST /signalements/:id/affectation
+API -> DB : affectation EXCLUSIVE
+BO -> API : GET /signalements/:id
+API -> DB : contenu + historique de l'auteur + signalements antérieurs
+API --> BO : les trois CÔTE À CÔTE
+MO -> BO : [direct en cours (A1)] « Couper la diffusion »
+BO -> API : [direct en cours (A1)] POST /directs/:id/coupure
+API --> BO : [direct en cours (A1)] 200 en quelques secondes (F11.2)
+API --> BO : [suspicion de contenu volé (A2)] comparaison des deux vidéos + score de proximité
+MO -> BO : retire, avertit, suspend ou classe — motif OBLIGATOIRE
+BO -> API : POST /signalements/:id/decision {action, motif}
+API -> DB : INSERT decision + sanction graduée
+API -> NOT : notifie LES DEUX parties (R-X6)
+NOT --> AU : décision écrite et motivée
+NOT --> SI : décision écrite et motivée
+API -> DB : [mineur détecté (A3)] retrait + blocage de la publication vidéo (RB6)
+API -> DB : [crédit d'unboxing lié au contenu retiré (A5)] écriture INVERSE — jamais de suppression (F19.6)
+AU -> BO : [contestation (A4)] conteste la décision
+API -> DB : [contestation (A4)] instruite par une personne DIFFÉRENTE (F19.9)
+@enduml

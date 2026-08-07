@@ -1,0 +1,34 @@
+@startuml UC-42
+title UC-42 — Recevoir et remettre un colis au point relais
+autonumber
+
+actor "L · Livreur" as L
+actor "PR · Point relais" as PR
+participant "Application relais" as TER
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Push + SMS" as NOT
+actor "A · Acheteuse" as A
+
+L -> PR : dépose 5 colis
+PR -> TER : « Réception » (5 colis, une validation)
+TER -> API : POST /relais/receptions {colisIds}
+API -> DB : colis = AU_RELAIS · garde_jusqu_au = +X jours
+API -> DB : génère le code, stocke son EMPREINTE (jamais en clair)
+API -> NOT : notification + SMS obligatoire (R-L6)
+NOT --> A : « Colis arrivé — code 482913 »
+A -> PR : se présente et donne le code
+PR -> TER : saisit 482913
+TER -> API : POST /colis/:id/remise {code}
+API -> DB : BEGIN · vérifie l'empreinte du code
+API -> DB : [code valide et non consommé] code consommé · colis = REMIS · événement
+API -> DB : [code valide et non consommé] COMMIT
+API --> TER : [code valide et non consommé] « Code valide » + photo et nom
+TER --> PR : [code valide et non consommé] remet le colis
+API -> A : [code valide et non consommé] demande de confirmation (UC-31)
+API -> DB : [code déjà utilisé] ROLLBACK
+API --> TER : [code déjà utilisé] refus + « utilisé le 14 août à 15 h 02 »
+API --> TER : [code inconnu] refus explicite
+API -> DB : [délai de garde dépassé] colis = RETOUR_VENDEUR
+API -> A : [délai de garde dépassé] « Votre colis repart chez la vendeuse »
+@enduml

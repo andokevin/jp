@@ -1,0 +1,29 @@
+@startuml UC-61
+title UC-61 — Publier un unboxing
+autonumber
+
+participant "Plateforme" as SYS
+actor "A · Acheteuse" as A
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "File asynchrone" as JOB
+actor "V · Vendeur" as V
+
+SYS -> A : « Votre colis est arrivé — filmez et gagnez 2 000 Ar »
+A -> APP : enregistre 30 s
+A -> APP : note de taille + étoiles
+APP -> API : POST /commandes/:id/unboxing
+API -> DB : BEGIN
+API -> DB : 1 · commande = CONFIRMEE, sequestre = LIBERE
+API -> DB : 2 · INSERT contenu (type=unboxing) + contenu_article
+API -> DB : 3 · crédit de cagnotte (unique par commande)
+API -> DB : COMMIT
+API --> A : « Merci ! » + les 4 résultats affichés
+API -> JOB : effets asynchrones
+JOB -> DB : 4 · INSERT avis vérifié (avec la note de taille)
+JOB -> V : 5 · « Hanta a publié son unboxing »
+JOB -> DB : entrée au dressing (F17.10)
+A -> API : [chemin sans vidéo] POST /commandes/:id/confirmer
+API -> DB : [chemin sans vidéo] confirmation seule, PAS de crédit
+@enduml

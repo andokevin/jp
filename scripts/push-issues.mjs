@@ -51,6 +51,8 @@ const LABELS = [
   ...['00','01','02','03','04','05','06','07','08','09','10',
       '11','12','13','14','15','16','17','18','19','20']
     .map((n) => [`epic:${n}`, '1D76DB', `Épique ${n}`]),
+  ['epic:socle', '000000', 'Vague 0 — le socle, avant toute fonctionnalité'],
+  ['step:socle',      '000000', 'Élément de socle — vague 0'],
   ['step:conception', 'C5DEF5', 'Spécification fonctionnelle et technique'],
   ['step:squelette',  'BFD4F2', 'Arborescence des fichiers et modules'],
   ['step:bdd',        '5319E7', 'Schéma, migration, index, contraintes'],
@@ -67,6 +69,8 @@ const LABELS = [
   ['status:todo',  'EDEDED', 'À faire'],
   ['status:doing', 'FBCA04', 'En cours'],
   ['status:done',  '0E8A16', 'Terminé'],
+  ['tranche:0', '000000', 'Vague 0 — socle, bloque tout le reste'],
+  ['tranche:1', '0E8A16', 'Tranche 1 — la première vente réelle'],
   ['decision-ouverte', 'E99695', 'Bloqué par un arbitrage produit'],
 ];
 

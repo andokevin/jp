@@ -1,0 +1,26 @@
+@startuml UC-90
+title UC-90 — Signaler un contenu ou une personne
+autonumber
+
+actor "A, C ou V" as U
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+participant "Notifications" as NOT
+actor "MO · Modérateur" as MO
+
+U -> APP : appui long sur un contenu, un commentaire, un message ou un profil
+APP --> U : « Signaler »
+U -> APP : choisit un motif dans une liste courte
+APP -> API : POST /signalements {cible, motif}
+API -> DB : INSERT signalement — ANONYME pour la personne signalée (R-X4)
+API -> DB : [motif d'urgence (A1)] place le dossier EN TÊTE de file
+API -> NOT : [motif d'urgence (A1)] alerte l'équipe
+NOT --> MO : [motif d'urgence (A1)] alerte immédiate
+API --> APP : [motif d'urgence (A1)] 201 + délai court annoncé
+APP --> U : [motif d'urgence (A1)] propose immédiatement « Bloquer » ou « Masquer » (F19.4)
+API -> DB : [motif ordinaire] file normale
+API --> APP : [motif ordinaire] 201 numéro de dossier + délai d'engagement
+API -> DB : [plusieurs signalements sur la même cible (A2)] regroupe les signalements dans la file
+APP --> U : « Signalement n° 4821 · réponse sous 48 h »
+@enduml

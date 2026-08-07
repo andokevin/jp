@@ -1,0 +1,30 @@
+@startuml UC-11
+title UC-11 — Déposer une annonce de particulier
+autonumber
+
+actor "P · Particulier" as P
+participant "Application" as APP
+participant "API JP" as API
+participant "PostgreSQL" as DB
+actor "A · Acheteuse" as A
+actor "OP · Opérateur" as OP
+
+P -> APP : « Vendre un article que je ne porte plus »
+APP -> API : POST /moi/roles/particulier
+API -> DB : profil_vendeur (type=particulier, nom_boutique=NULL)
+P -> APP : 4 champs (photos, prix, taille, état)
+APP -> API : POST /articles/annonce-particulier
+API -> DB : article (piece_unique=true, stock=1)
+API --> P : annonce en ligne
+A -> API : achète et paie (UC-30)
+API -> DB : séquestre RETENU
+API -> P : « Vous avez été payée — 38 000 Ar en attente »
+P -> API : [P se vérifie] POST /vendeur/verification (pièce, selfie, mobile money)
+OP -> API : [P se vérifie] POST /admin/verifications/:id/decision {validee}
+API -> DB : [P se vérifie] statut_verification = verifie
+API --> P : [P se vérifie] encaissement débloqué
+API -> DB : [P ne se vérifie pas dans le délai] commande ANNULEE, remboursement intégral
+API -> A : [P ne se vérifie pas dans le délai] remboursée intégralement
+API -> DB : [P ne se vérifie pas dans le délai] compte fermé aux nouvelles commandes (R-H10)
+API --> P : [P ne se vérifie pas dans le délai] « Votre compte ne peut plus recevoir de commandes »
+@enduml

@@ -298,6 +298,56 @@ sequenceDiagram
 - **A2 — connexion Google** *(depuis 1)* : SYS vérifie le jeton d'identité côté serveur, refuse si l'adresse n'est pas déclarée vérifiée *(R-C11)*, et **rattache** l'identité au compte existant si l'adresse correspond *(R-C12)*.
 - **A3 — jeton de rafraîchissement réutilisé** : SYS détecte la réutilisation et **révoque toute la famille de jetons** *(F0.2)*.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor A as A · Acheteur
+    participant APP as Application
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant GO as Google
+    A->>APP: ouvre l'application
+    APP->>APP: lit le jeton de session stocké
+    alt session encore valide (A1)
+        APP->>API: POST /auth/rafraichir {jeton}
+        API->>DB: vérifie la famille de jetons
+        alt jeton déjà utilisé (A3)
+            API->>DB: révoque TOUTE la famille de jetons
+            API-->>APP: 401 REJEU_DETECTE
+            APP-->>A: « Reconnectez-vous »
+        else jeton valide
+            API->>DB: rotation du jeton de rafraîchissement
+            API-->>APP: 200 nouveau couple de jetons
+            APP-->>A: écran d'accueil, sans aucune saisie
+        end
+    else aucune session
+        A->>APP: saisit son adresse
+        APP->>API: POST /auth/otp {email}
+        Note over API,DB: parcours identique à UC-01, étapes 1 à 7 (R-C4)
+        API-->>APP: 200 réponse indiscernable
+        A->>APP: saisit le code reçu
+        APP->>API: POST /auth/otp/verifier
+        API->>DB: SELECT utilisateur — compte existant, aucun doublon
+        API->>DB: INSERT session (appareil, adresse IP)
+        API-->>APP: 200 session longue
+        APP-->>A: écran d'accueil
+    end
+    opt connexion Google (A2)
+        A->>APP: « Continuer avec Google »
+        APP->>GO: demande de jeton d'identité
+        GO-->>APP: jeton d'identité
+        APP->>API: POST /auth/google {jeton}
+        API->>GO: vérification du jeton CÔTÉ SERVEUR (R-C11)
+        alt adresse non déclarée vérifiée
+            API-->>APP: 403 EMAIL_NON_VERIFIE
+        else adresse vérifiée
+            API->>DB: rattache identite_externe au compte existant (R-C12)
+            API-->>APP: 200 session longue
+        end
+    end
+```
+
 ---
 
 ## UC-03 — Récupérer un compte inaccessible ★
@@ -391,6 +441,55 @@ sequenceDiagram
 - **A3 — moins de 3 photos pour la vente hors direct** *(depuis 6)* : avertissement **non bloquant**.
 - **A4 — mesures hors bornes** *(depuis 3)* : refus avec message explicite.
 - **A5 — brouillon** *(depuis 6)* : l'article est enregistré sans être publié.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor V as V · Vendeur
+    participant APP as Studio vendeur
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant IMG as Service images
+    V->>APP: choisit 1 à 8 photos, recadre
+    APP->>IMG: envoi des photos
+    IMG-->>APP: URL dimensionnées
+    V->>APP: nom, prix, catégorie
+    Note over APP: employé VE — le champ prix est ABSENT de son interface (A2)
+    V->>APP: état du vêtement et mesures réelles (R-H4)
+    APP->>API: POST /articles/valider-mesures
+    alt mesures hors bornes (A4)
+        API-->>APP: 422 MESURE_INVALIDE + bornes attendues
+        APP-->>V: message explicite, saisie corrigée
+    else mesures cohérentes
+        API-->>APP: 200
+    end
+    V->>APP: tailles, couleurs, quantité par variante
+    APP->>API: GET /commissions/simulation {prix}
+    API-->>APP: commission simulée (R-G1)
+    APP-->>V: « Vous recevrez X Ar sur Y Ar »
+    V->>APP: « Mettre en ligne »
+    APP->>API: POST /articles
+    alt employé tentant de poser un prix (A2)
+        API-->>APP: 403 CHAMP_INTERDIT
+        Note over API: refusé par l'API, pas seulement masqué à l'écran
+    else autorisé
+        API->>DB: BEGIN
+        API->>DB: INSERT article
+        API->>DB: INSERT variante ×n
+        API->>DB: INSERT mouvement_stock (entrée) ×n
+        API->>DB: COMMIT
+        API-->>APP: 201 article en ligne, achetable 24 h/24 (R-H7)
+        APP-->>V: « En ligne »
+    end
+    opt moins de 3 photos pour la vente hors direct (A3)
+        APP-->>V: avertissement NON bloquant
+    end
+    opt brouillon (A5)
+        V->>APP: « Enregistrer sans publier »
+        APP->>API: POST /articles {statut: brouillon}
+    end
+```
 
 ---
 
@@ -550,6 +649,47 @@ sequenceDiagram
 - **A1 — une réservation a expiré** *(depuis 4)* : la ligne est **signalée avant** toute tentative de paiement, avec un bouton « Reprendre ».
 - **A2 — promotion expirée entre l'affichage et le paiement** *(depuis 6)* : SYS présente le nouveau total pour **confirmation explicite**. Jamais un prélèvement supérieur à ce qui a été vu *(US-PROMO-08 CA5)*.
 - **A3 — palier perdu entre-temps** *(depuis 6)* : la remise est retirée avec un message clair, **la commande n'échoue pas** *(R-U5)*.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor A as A · Acheteur
+    participant APP as Application
+    participant API as API JP
+    participant DB as PostgreSQL
+    A->>APP: ajoute des articles de vendeurs différents
+    APP->>API: POST /panier/lignes
+    API->>DB: INSERT reservation (durée catalogue)
+    API-->>APP: 201
+    A->>APP: ouvre le panier
+    APP->>API: GET /panier
+    API->>DB: SELECT lignes, réservations, promotions, rang client
+    API->>API: regroupe par vendeur — frais et expédition par vendeur
+    API->>API: retient UNE remise par ligne, la plus favorable (R-U7)
+    alt une réservation a expiré (A1)
+        API-->>APP: 200 avec la ligne signalée « expirée »
+        APP-->>A: bandeau « Reprendre » AVANT toute tentative de paiement
+    else toutes valides
+        API-->>APP: 200 sous-total, remise NOMMÉE, frais par vendeur, total
+        APP-->>A: « Regrouper au même point relais et économiser X Ar »
+    end
+    A->>APP: « Payer »
+    APP->>API: POST /commandes {panier, Idempotency-Key}
+    API->>DB: recalcule les remises au moment du paiement
+    alt promotion expirée depuis l'affichage (A2)
+        API-->>APP: 409 TOTAL_MODIFIE + nouveau total
+        APP-->>A: confirmation EXPLICITE exigée
+        Note over API,APP: jamais un prélèvement supérieur à ce qui a été vu (RB7)
+    else palier perdu entre-temps (A3)
+        API->>DB: retire la remise — la commande n'échoue pas (R-U5)
+        API-->>APP: 201 une commande par vendeur + message clair
+    else inchangé
+        API->>DB: INSERT commande ×n vendeurs, un seul paiement
+        API-->>APP: 201
+    end
+    APP-->>A: paiement unique (UC-30)
+```
 
 ---
 
@@ -869,6 +1009,47 @@ sequenceDiagram
 - **A3 — échec du prestataire** : le montant est **remis au solde disponible**, jamais perdu.
 - **A4 — frais** : gratuit une fois par semaine, payant au-delà *(paramétrable, `R-O1`)*.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor V as V · Vendeur ou créatrice
+    participant APP as Studio vendeur
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant PSP as Prestataire mobile money
+    V->>APP: ouvre « Mon argent »
+    APP->>API: GET /portefeuille
+    API->>DB: agrège les écritures financières
+    API-->>APP: DEUX soldes distincts — en attente, disponible (R-E6)
+    APP-->>V: « En attente 120 000 Ar · Disponible 340 000 Ar »
+    V->>APP: saisit un montant et confirme
+    APP->>API: POST /retraits {montant, Idempotency-Key}
+    API->>DB: SELECT portefeuille FOR UPDATE
+    alt retraits gelés — récupération de compte en cours (A2)
+        API-->>APP: 403 RETRAIT_GELE + motif + numéro de dossier (R-C14)
+    else destination ≠ numéro vérifié (A1)
+        API-->>APP: 403 DESTINATION_NON_VERIFIEE
+        Note over API: un détournement de compte ne devient pas un détournement d'argent
+    else solde insuffisant
+        API-->>APP: 422 SOLDE_INSUFFISANT
+    else autorisé
+        API->>DB: INSERT ecriture_financiere (disponible → engagé)
+        API->>PSP: virement vers le numéro vérifié, clé d'idempotence
+        alt échec du prestataire (A3)
+            PSP-->>API: échec
+            API->>DB: écriture INVERSE — le montant revient au disponible
+            API-->>APP: 502 RETRAIT_ECHOUE — montant jamais perdu
+        else succès
+            PSP-->>API: référence de virement
+            API->>DB: INSERT ecriture_financiere (sortie) + reçu
+            API-->>APP: 200 reçu
+            APP-->>V: « Virement envoyé · reçu disponible »
+        end
+    end
+    Note over API,DB: gratuit une fois par semaine, payant au-delà — paramétrable (R-O1, A4)
+```
+
 ---
 
 # 7. Paquetage Livraison
@@ -893,6 +1074,48 @@ sequenceDiagram
 - **A2 — délai d'acceptation dépassé** *(depuis 3)* : A est notifiée, la réservation est protégée, l'absence de réaction pèse sur le score *(R-H8)*.
 - **A3 — plusieurs colis** *(depuis 3)* : regroupement pour un enlèvement en une seule validation *(F5.6)*.
 - **A4 — employé** : VE prépare, **sans voir aucun montant** *(R-R8)*.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor V as V · Vendeur
+    participant APP as Studio vendeur
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant NOT as Notifications
+    actor A as A · Acheteur
+    V->>APP: ouvre « À préparer »
+    APP->>API: GET /commandes?statut=PAYEE
+    API->>DB: SELECT commandes triées par échéance
+    API-->>APP: file UNIQUE, marqueur d'origine direct / catalogue (R-H2)
+    Note over APP: employé VE — aucun montant dans la réponse (A4, R-R8)
+    V->>APP: ouvre le bordereau
+    APP->>API: GET /commandes/:id/bordereau
+    API-->>APP: articles, tailles, mode de livraison, destinataire, note
+    alt refus par le vendeur (A1)
+        V->>APP: « Refuser » + motif OBLIGATOIRE
+        APP->>API: POST /commandes/:id/refus {motif}
+        API->>DB: remboursement automatique et intégral
+        API->>DB: remise en stock + impact sur le score de confiance
+        API->>NOT: notifie A
+        NOT-->>A: « Commande refusée · remboursée »
+    else délai d'acceptation dépassé (A2)
+        API->>DB: la réservation est protégée (R-H8)
+        API->>NOT: notifie A
+        NOT-->>A: « Le vendeur n'a pas répondu »
+    else préparé
+        V->>APP: marque « Prêt »
+        APP->>API: POST /commandes/:id/pret
+        API->>DB: colis → PRET, statut partagé DES DEUX CÔTÉS (R-L4)
+        API->>NOT: notifie A
+        NOT-->>A: « Votre colis est prêt »
+        API-->>APP: 200
+    end
+    opt plusieurs colis du même vendeur (A3)
+        V->>APP: regroupe pour un enlèvement en une seule validation (F5.6)
+    end
+```
 
 ---
 
@@ -1195,6 +1418,49 @@ sequenceDiagram
 - **A3 — mineur** *(depuis 2)* : refus **définitif** *(R-V6, RB6)*.
 - **A4 — pendant l'instruction** : le vendeur **peut** préparer son catalogue, il ne peut ni publier, ni diffuser, ni encaisser *(R-V1)*.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor OP as OP · Opérateur JP
+    participant BO as Back-office
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant NOT as Notifications
+    actor V as V · Vendeur
+    OP->>BO: ouvre la file de vérification
+    BO->>API: GET /verifications?tri=anciennete
+    API-->>BO: dossiers + délai d'engagement affiché
+    OP->>BO: ouvre un dossier
+    BO->>API: GET /verifications/:id/documents
+    API->>DB: INSERT journal_audit — accès NOMINATIF aux documents
+    Note over API,DB: R-V5, N3.1 — l'accès aux pièces d'identité est tracé
+    API-->>BO: pièce recto/verso, selfie, titulaire du compte mobile money
+    OP->>BO: coche EXPLICITEMENT chaque point de comparaison (R-V2)
+    alt discordance de noms (A1)
+        OP->>BO: refuse
+        BO->>API: POST /verifications/:id/refus {motif précis}
+        API->>NOT: notifie V
+        NOT-->>V: refus motivé, précis sur ce qui manque (R-V3)
+    else pièce illisible (A2)
+        BO->>API: POST /verifications/:id/complement
+        API->>DB: statut intermédiaire
+        NOT-->>V: « Pièce complémentaire demandée »
+    else mineur (A3)
+        OP->>BO: refuse DÉFINITIVEMENT
+        BO->>API: POST /verifications/:id/refus-definitif
+        API->>DB: blocage de la publication vidéo (R-V6, RB6)
+        NOT-->>V: refus définitif et motivé
+    else conforme
+        OP->>BO: valide
+        BO->>API: POST /verifications/:id/validation
+        API->>DB: débloque l'encaissement, attribue le badge (F0.7)
+        API->>NOT: notifie V
+        NOT-->>V: « Vendeur vérifié »
+    end
+    Note over V,BO: pendant l'instruction, V prépare son catalogue —<br/>il ne peut ni publier, ni diffuser, ni encaisser (R-V1, A4)
+```
+
 ---
 
 # 9. Paquetage Social, fidélité et contenu
@@ -1218,6 +1484,47 @@ sequenceDiagram
 - **A1 — non connectée** *(depuis 1)* : l'inscription est déclenchée et **l'abonnement est posé après connexion**.
 - **A2 — hors ligne** *(depuis 1)* : l'état s'affiche localement, se synchronise à la reconnexion, **sans doublon** (clé primaire composite).
 - **A3 — vendeur suspendu** *(depuis 1)* : action indisponible, état expliqué.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor A as A · Acheteur
+    participant APP as Application
+    participant API as API JP
+    participant DB as PostgreSQL
+    A->>APP: appuie sur « Suivre » (vitrine, fiche, direct, clip ou story)
+    Note over APP: un seul appui, AUCUNE confirmation (R-Q1)
+    alt non connectée (A1)
+        APP-->>A: parcours d'inscription (UC-01)
+        A->>APP: compte créé
+        APP->>API: POST /abonnements — posé APRÈS la connexion
+    else hors ligne (A2)
+        APP->>APP: état affiché localement, mis en file
+        APP->>API: synchronisation à la reconnexion
+        API->>DB: INSERT abonnement — clé composite, AUCUN doublon
+    else connectée
+        APP->>API: POST /abonnements {vendeur}
+    end
+    alt vendeur suspendu (A3)
+        API-->>APP: 409 VENDEUR_SUSPENDU
+        APP-->>A: action indisponible, état expliqué
+    else
+        API->>DB: INSERT abonnement
+        API->>DB: incrémente le compteur public (R-Q2)
+        API-->>APP: 201
+        APP-->>A: « Abonnée » + compteur à jour
+    end
+    A->>APP: ouvre le fil « Abonnements »
+    APP->>API: GET /fil/abonnements
+    API->>DB: directs + NOUVEAUTÉS CATALOGUE + promotions + événements (R-Q5)
+    API-->>APP: 200 fil
+    opt couper les notifications de promotion sans se désabonner (R-Q6)
+        A->>APP: règle par vendeur
+        APP->>API: PUT /abonnements/:id/notifications {promotions: false}
+        API-->>APP: 200 — l'abonnement est conservé
+    end
+```
 
 ---
 
@@ -1312,6 +1619,46 @@ sequenceDiagram
 
 **Règle non négociable** *(R-R1)* : le rang est **par vendeur**, jamais global. Un vendeur n'a aucune raison de connaître les dépenses de sa cliente ailleurs — et **la garantie est structurelle** : aucun index, aucune vue ne permet l'agrégation inter-vendeurs.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    participant JOB as Travailleur « rang client »
+    participant DB as PostgreSQL
+    actor V as V · Vendeur
+    participant APP as Studio vendeur
+    participant API as API JP
+    Note over JOB,DB: à chaque commande confirmée, en ASYNCHRONE
+    JOB->>DB: recalcule — montant cumulé, fréquence, récence décotée, fiabilité (R-R3)
+    JOB->>DB: UPDATE rang_client (vendeur_id, utilisateur_id)
+    Note over DB: par vendeur, JAMAIS global —<br/>aucun index, aucune vue inter-vendeurs (R-R1)
+    V->>APP: ouvre « Mes clientes »
+    APP->>API: GET /vendeurs/:id/clients
+    API->>DB: SELECT rang_client ORDER BY score DESC
+    alt moins de 5 clientes (A1)
+        API-->>APP: liste SANS palmarès (R-R6)
+        APP-->>V: liste simple
+    else employé VE (A2)
+        API-->>APP: lecture seule — montants ABSENTS de la réponse (R-R8)
+    else
+        API-->>APP: liste ordonnée, filtrable par palier et par inactivité
+        APP-->>V: une liste de noms, une action par ligne (R-R7)
+    end
+    V->>APP: ouvre une fiche cliente
+    APP->>API: GET /vendeurs/:id/clients/:uid
+    API->>DB: historique, tailles, articles préférés, litiges, note privée
+    alt cliente ayant supprimé son compte (A3)
+        API-->>APP: ligne ANONYMISÉE, agrégats conservés pour la comptabilité
+    else
+        API-->>APP: 200 fiche
+    end
+    V->>APP: « Offrir une promo » (UC-71) ou « Envoyer un code » (F7.9)
+    opt palier perdu par décote (A4)
+        JOB->>DB: détecte la bascule à venir
+        JOB->>DB: notifie la cliente AVANT la bascule (R-R10)
+    end
+```
+
 ---
 
 ## UC-92 — Publier un contenu avec articles attachés
@@ -1334,6 +1681,46 @@ sequenceDiagram
 - **A2 — créatrice, vendeur refusant l'affiliation** : attachement refusé *(R-N3)*.
 - **A3 — acheteuse, article non acheté** : attachement refusé — impossible d'attacher ce qu'on n'a pas reçu.
 - **A4 — contenu sponsorisé** : l'étiquette « Partenariat rémunéré » est **automatique et non retirable** *(F18.8)*.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor U as C, V ou A selon le type
+    participant APP as Application
+    participant API as API JP
+    participant DB as PostgreSQL
+    U->>APP: choisit un média, rédige une légende
+    U->>APP: attache un ou plusieurs articles
+    APP->>API: GET /articles/attachables
+    API->>DB: catalogue autorisé SELON LE RÔLE
+    Note over API: V son catalogue · C tout catalogue affiliable ·<br/>A ses achats confirmés uniquement
+    API-->>APP: liste filtrée
+    alt créatrice, vendeur refusant l'affiliation (A2)
+        API-->>APP: 403 AFFILIATION_REFUSEE (R-N3)
+    else acheteuse, article non acheté (A3)
+        API-->>APP: 403 ARTICLE_NON_ACHETE
+    end
+    U->>APP: « Publier »
+    alt aucun article attaché (A1)
+        APP-->>U: le bouton est déjà inactif
+        APP->>API: POST /contenus {articles: []}
+        API-->>APP: 422 CONTENU_SANS_ARTICLE
+        Note over APP,API: le client n'est pas la garantie —<br/>l'API refuse, et la contrainte différée refuserait l'écriture (RB5)
+    else au moins un article
+        API->>DB: BEGIN
+        API->>DB: INSERT contenu
+        API->>DB: INSERT contenu_article ×n
+        API->>DB: COMMIT — contrainte différée vérifiée au commit
+        API-->>APP: 201 publié
+    end
+    opt contenu sponsorisé (A4)
+        API->>DB: étiquette « Partenariat rémunéré », automatique et NON retirable (F18.8)
+    end
+    opt publication d'une créatrice
+        API->>DB: identifiant de créatrice porté par le contenu — rattache la vente (F15.4)
+    end
+```
 
 ---
 
@@ -1431,6 +1818,47 @@ sequenceDiagram
 - **A2 — perte du palier entre la réservation et le paiement** : la remise est retirée avec un message clair, **la commande n'échoue pas** *(R-U5)*.
 - **A3 — code nominatif** : usage unique, refusé pour une autre personne ; **restitué si la commande est annulée** *(R-U6)*.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor V as V · Vendeur
+    participant APP as Studio vendeur
+    participant API as API JP
+    participant DB as PostgreSQL
+    actor A as A · Cliente
+    V->>APP: depuis « Mes clientes » (UC-62), sélectionne un palier
+    V->>APP: crée une promotion réservée à ce palier et aux supérieurs
+    APP->>API: POST /promotions {cible: palier, palier_min}
+    API->>DB: INSERT promotion (cible = palier)
+    API-->>APP: 201
+    A->>APP: ouvre la boutique
+    APP->>API: GET /promotions/mes-offres
+    API->>DB: SELECT rang_client de A CHEZ CE VENDEUR
+    alt cliente éligible
+        API-->>APP: offre nommée « Offre réservée aux clientes VIP de Miora »
+    else non éligible (A1)
+        API-->>APP: offre VISIBLE mais grisée + progression restante
+        Note over APP,A: un palier ne motive que si l'on sait ce qu'on y gagne
+    end
+    A->>APP: ajoute au panier et paie
+    APP->>API: POST /commandes {Idempotency-Key}
+    API->>DB: vérifie l'éligibilité CÔTÉ SERVEUR au calcul du panier (R-U5)
+    alt palier perdu entre la réservation et le paiement (A2)
+        API->>DB: retire la remise
+        API-->>APP: 201 commande + message clair
+        Note over API: la commande N'ÉCHOUE PAS (R-U5)
+    else code nominatif présenté par une autre personne (A3)
+        API-->>APP: 403 CODE_NOMINATIF
+    else éligible
+        API->>DB: applique la remise, trace promotion_id sur la ligne
+        API-->>APP: 201
+    end
+    opt commande annulée
+        API->>DB: le code nominatif est RESTITUÉ (R-U6)
+    end
+```
+
 ---
 
 ## UC-72 — Créer un événement thématique
@@ -1454,6 +1882,43 @@ sequenceDiagram
 - **A1 — dates incohérentes** *(depuis 1)* : refus avant enregistrement.
 - **A2 — événement de boutique** : créé par V **sans validation**, portée limitée à sa vitrine et à ses abonnés, **absent du calendrier général** *(R-W8)*.
 - **A3 — annulation** : possible depuis tout statut sauf `termine`.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor OP as OP · Opérateur JP
+    participant BO as Back-office
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant JOB as Ordonnanceur
+    participant NOT as Notifications
+    OP->>BO: nom, thème, dates, visuel, couleur, mot-dièse, règles de participation
+    BO->>API: POST /evenements
+    alt dates incohérentes (A1)
+        API-->>BO: 422 DATES_INVALIDES — refus AVANT enregistrement
+    else valide
+        API->>DB: génère un slug unique, INSERT evenement (brouillon)
+        API-->>BO: 201 brouillon
+    end
+    OP->>BO: « Annoncer » — action humaine, volontaire
+    BO->>API: POST /evenements/:id/annonce
+    API->>DB: statut → annonce
+    API-->>BO: 200 adresse publique partageable
+    Note over API,DB: visible au calendrier (F20.9), compte à rebours, « Me prévenir »
+    JOB->>DB: à la date de début — statut → en_cours
+    JOB->>DB: refuse AUTOMATIQUEMENT les candidatures restées en attente (R-W4)
+    JOB->>NOT: notifie les candidats refusés
+    NOT-->>OP: récapitulatif
+    JOB->>DB: à la date de fin — statut → termine
+    JOB->>DB: produit le bilan (F20.8)
+    opt mini-événement de boutique (A2)
+        Note over API,DB: créé par V SANS validation · portée limitée à sa vitrine<br/>et à ses abonnés · ABSENT du calendrier général (R-W8)
+    end
+    opt annulation (A3)
+        OP->>BO: annule — possible depuis tout statut sauf termine
+    end
+```
 
 ---
 
@@ -1551,6 +2016,40 @@ sequenceDiagram
 - **A1 — panier modifié après création du lien** : **le lien reflète le panier figé**, pas le panier courant. Sinon le donateur paierait autre chose que ce qu'il a vu.
 - **A2 — lien expiré ou révoqué** : page d'état explicite, jamais une erreur brute.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor A as A · Acheteur
+    participant APP as Application
+    participant API as API JP
+    participant DB as PostgreSQL
+    actor D as D · Donateur
+    A->>APP: compose son panier
+    A->>APP: « Demander en cadeau »
+    APP->>API: POST /cadeaux {panier}
+    API->>DB: FIGE le panier — copie des lignes, des prix et des frais
+    API->>DB: génère un jeton opaque à durée limitée, révocable
+    API-->>APP: 201 lien public
+    APP-->>A: aperçu de ce que verra le destinataire
+    Note over APP,A: rappel — l'adresse de A ne sera JAMAIS visible (RB8)
+    A->>APP: partage sur WhatsApp ou Messenger
+    A-->>D: lien
+    D->>API: GET /cadeaux/:jeton
+    alt lien expiré ou révoqué (A2)
+        API-->>D: page d'état explicite, JAMAIS une erreur brute
+    else valide
+        API->>DB: SELECT le panier FIGÉ
+        API-->>D: articles, montant total — aucune adresse, aucun nom de rue
+    end
+    opt A modifie son panier après coup (A1)
+        A->>APP: ajoute un article
+        APP->>API: PUT /panier
+        API->>DB: le cadeau reste sur la COPIE FIGÉE
+        Note over API,D: sinon le donateur paierait autre chose que ce qu'il a vu
+    end
+```
+
 ---
 
 ## UC-81 — Offrir un panier depuis l'étranger ★
@@ -1642,6 +2141,39 @@ sequenceDiagram
 - **A1 — signalement d'urgence** *(depuis 2)* — harcèlement, menace, contenu sexuel non consenti, mineur : SYS le place **en tête de file**, alerte l'équipe, annonce un délai court, **et propose immédiatement de bloquer ou de masquer** *(F19.4)*. La personne doit pouvoir se protéger **sans attendre** la décision.
 - **A2 — plusieurs signalements sur la même cible** : **regroupés** dans la file.
 
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor U as A, C ou V
+    participant APP as Application
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant NOT as Notifications
+    actor MO as MO · Modérateur
+    U->>APP: appui long sur un contenu, un commentaire, un message ou un profil
+    APP-->>U: « Signaler »
+    U->>APP: choisit un motif dans une liste courte
+    APP->>API: POST /signalements {cible, motif}
+    API->>DB: INSERT signalement — ANONYME pour la personne signalée (R-X4)
+    alt motif d'urgence (A1)
+        Note over API: harcèlement, menace, contenu sexuel non consenti, mineur
+        API->>DB: place le dossier EN TÊTE de file
+        API->>NOT: alerte l'équipe
+        NOT-->>MO: alerte immédiate
+        API-->>APP: 201 + délai court annoncé
+        APP-->>U: propose immédiatement « Bloquer » ou « Masquer » (F19.4)
+        Note over APP,U: se protéger SANS ATTENDRE la décision
+    else motif ordinaire
+        API->>DB: file normale
+        API-->>APP: 201 numéro de dossier + délai d'engagement
+    end
+    opt plusieurs signalements sur la même cible (A2)
+        API->>DB: regroupe les signalements dans la file
+    end
+    APP-->>U: « Signalement n° 4821 · réponse sous 48 h »
+```
+
 ---
 
 ## UC-91 — Traiter un signalement
@@ -1666,6 +2198,54 @@ sequenceDiagram
 - **A3 — mineur détecté** : traitement prioritaire, retrait et blocage de la publication vidéo *(RB6)*.
 - **A4 — contestation** : instruite par **une personne différente** de celle qui a sanctionné *(F19.9)*. Sinon ce n'est pas un recours, c'est une confirmation.
 - **A5 — reprise d'un crédit** : si le contenu retiré avait déclenché un crédit d'unboxing, il est repris **par écriture inverse** *(F19.6)*.
+
+**Diagramme de séquence**
+
+```mermaid
+sequenceDiagram
+    actor MO as MO · Modérateur
+    participant BO as Back-office
+    participant API as API JP
+    participant DB as PostgreSQL
+    participant NOT as Notifications
+    actor AU as Auteur du contenu
+    actor SI as Signalant
+    MO->>BO: ouvre la file, urgences en tête
+    BO->>API: GET /signalements?tri=priorite
+    API-->>BO: file priorisée
+    MO->>BO: s'attribue le dossier
+    BO->>API: POST /signalements/:id/affectation
+    API->>DB: affectation EXCLUSIVE
+    BO->>API: GET /signalements/:id
+    API->>DB: contenu + historique de l'auteur + signalements antérieurs
+    API-->>BO: les trois CÔTE À CÔTE
+    opt direct en cours (A1)
+        MO->>BO: « Couper la diffusion »
+        BO->>API: POST /directs/:id/coupure
+        API-->>BO: 200 en quelques secondes (F11.2)
+    end
+    opt suspicion de contenu volé (A2)
+        API-->>BO: comparaison des deux vidéos + score de proximité
+        Note over BO,MO: AUCUN retrait automatique — un faux positif<br/>bloquerait une créatrice légitime (R-X7)
+    end
+    MO->>BO: retire, avertit, suspend ou classe — motif OBLIGATOIRE
+    BO->>API: POST /signalements/:id/decision {action, motif}
+    API->>DB: INSERT decision + sanction graduée
+    API->>NOT: notifie LES DEUX parties (R-X6)
+    NOT-->>AU: décision écrite et motivée
+    NOT-->>SI: décision écrite et motivée
+    opt mineur détecté (A3)
+        API->>DB: retrait + blocage de la publication vidéo (RB6)
+    end
+    opt crédit d'unboxing lié au contenu retiré (A5)
+        API->>DB: écriture INVERSE — jamais de suppression (F19.6)
+    end
+    opt contestation (A4)
+        AU->>BO: conteste la décision
+        API->>DB: instruite par une personne DIFFÉRENTE (F19.9)
+        Note over API,DB: sinon ce n'est pas un recours, c'est une confirmation
+    end
+```
 
 ---
 

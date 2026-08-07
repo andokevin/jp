@@ -15,12 +15,24 @@ La promesse tient en une phrase : **l'argent de l'acheteuse est gardé par JP ju
 | 3 | [JP_EXPRESSION_DE_BESOIN.md](JP_EXPRESSION_DE_BESOIN.md) | Besoins `Bx.y` et exigences non fonctionnelles `Nx.y` |
 | 4 | **[JP_BACKLOG.md](JP_BACKLOG.md)** | **266 fonctionnalités** `Fxx.y` · 21 épiques · parcours par persona |
 | 5 | **[JP_USER_STORIES.md](JP_USER_STORIES.md)** | **45 user stories** avec critères d'acceptation, dont au moins un cas d'échec chacune |
-| 6 | **[JP_CAS_UTILISATION.md](JP_CAS_UTILISATION.md)** | **30 cas d'utilisation**, acteurs, scénarios, **12 diagrammes de séquence** |
+| 6 | **[JP_CAS_UTILISATION.md](JP_CAS_UTILISATION.md)** | **30 cas d'utilisation**, acteurs, scénarios, **30 diagrammes de séquence** — un par cas |
 | 7 | [JP_CAHIER_DES_CHARGES.md](JP_CAHIER_DES_CHARGES.md) | Volet fonctionnel · **180 règles** `R-xx` · matrice des droits · critères de recette `RBx` |
 | 8 | [JP_CDC_TECHNIQUE.md](JP_CDC_TECHNIQUE.md) | Volet technique · modèle de données · machines à états · API |
 | 9 | **[JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md)** | **113 tables** · 6 diagrammes ER · ordre des migrations · garanties structurelles |
 | 10 | **[JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md)** | Architecture · 16 modules · navigation · design system · stratégie de tests |
 | 11 | **[plan/](plan/)** | **Plan de réalisation, fonctionnalité par fonctionnalité** |
+| — | [vp/](vp/) | Le même modèle en UML, importable dans Visual Paradigm |
+
+---
+
+## Par où commencer, concrètement
+
+Deux fichiers, dans cet ordre, avant tout le reste :
+
+1. **[plan/VAGUE0-socle.md](plan/VAGUE0-socle.md)** — les dix éléments `S1`→`S10` du socle. **Rien ne démarre avant.** Trois à quatre semaines, aucune fonctionnalité visible produite, et c'est normal.
+2. **[plan/TRANCHE1.md](plan/TRANCHE1.md)** — **la première vente réelle**. 58 fonctionnalités : le plus court chemin où de l'argent circule vraiment, du compte créé jusqu'aux fonds libérés. Elle met à l'épreuve **RB1, RB2, RB4, RB7 et RB10** — les cinq critères les plus difficiles.
+
+La phase 1 du backlog fait 841 issues. Réalisée d'un bloc, c'est huit à douze mois avant le premier ariary encaissé. La tranche 1 en fait le tiers et permet de vérifier le modèle sur de vraies vendeuses. Les tranches suivantes sont listées en fin de [TRANCHE1.md](plan/TRANCHE1.md#ce-qui-vient-ensuite).
 
 ---
 
@@ -34,13 +46,11 @@ Chaque fonctionnalité a un mini-plan à six sections : **conception · structur
 
 ### Ordre de réalisation
 
-**Vague 0 — socle** *(PLAN_SOCLE §9)* — monorepo, plateforme API, Prisma, files, temps réel, design system, coquilles clientes. Rien ne démarre avant.
+**Vague 0 — socle** *([VAGUE0-socle.md](plan/VAGUE0-socle.md))* — monorepo, plateforme API, Prisma, files, temps réel, design system, coquilles clientes. Rien ne démarre avant.
 
-**Vague 1** — [EP00 identité](plan/EP00-identite.md) → [EP01 catalogue et vente hors direct](plan/EP01-catalogue.md) + [EP03 commande](plan/EP03-commande.md) → [EP07 abonnements, promotions, fidélisation](plan/EP07-communaute.md) → [EP20 événements](plan/EP20-evenements.md)
+**Tranche 1** *([TRANCHE1.md](plan/TRANCHE1.md))* — la première vente réelle, à travers les épiques 00, 01, 03, 04, 05, 06, 11 et 13.
 
-**Vague 2** — [EP02](plan/EP02-direct.md) · [EP04](plan/EP04-paiement.md) · [EP05](plan/EP05-livraison.md) · [EP06](plan/EP06-confiance.md) · [EP11](plan/EP11-backoffice.md) · [EP13](plan/EP13-socle.md) · [EP14](plan/EP14-contenu.md) · [EP15](plan/EP15-createurs.md) · [EP16](plan/EP16-cadeau.md) · [EP17](plan/EP17-habitude.md) · [EP19](plan/EP19-moderation.md)
-
-**Vague 3** — [EP08](plan/EP08-decouverte.md) · [EP09](plan/EP09-statistiques.md) · [EP10](plan/EP10-monetisation.md) · [EP12](plan/EP12-assistant.md) · [EP18](plan/EP18-premium.md)
+**Puis, par épique** — [EP00 identité](plan/EP00-identite.md) · [EP01 catalogue et vente hors direct](plan/EP01-catalogue.md) · [EP02 direct](plan/EP02-direct.md) · [EP03 commande](plan/EP03-commande.md) · [EP04 paiement](plan/EP04-paiement.md) · [EP05 livraison](plan/EP05-livraison.md) · [EP06 confiance](plan/EP06-confiance.md) · [EP07 communauté](plan/EP07-communaute.md) · [EP08](plan/EP08-decouverte.md) · [EP09](plan/EP09-statistiques.md) · [EP10](plan/EP10-monetisation.md) · [EP11 back-office](plan/EP11-backoffice.md) · [EP12](plan/EP12-assistant.md) · [EP13 socle](plan/EP13-socle.md) · [EP14 contenu](plan/EP14-contenu.md) · [EP15 créatrices](plan/EP15-createurs.md) · [EP16 cadeau](plan/EP16-cadeau.md) · [EP17](plan/EP17-habitude.md) · [EP18](plan/EP18-premium.md) · [EP19 modération](plan/EP19-moderation.md) · [EP20 événements](plan/EP20-evenements.md)
 
 ---
 
@@ -59,13 +69,16 @@ node scripts/push-issues.mjs     # crée les issues sur GitHub, reprenable
 2. Champ **Status** : renommer les colonnes en **À faire / En cours / Terminé**
 3. **Workflows** → activer *Auto-add to project* sur les issues du dépôt
 
-Avec plus de 1 000 cartes, un board plat est illisible. Trois vues à créer :
+Avec plus de 1 300 cartes, un board plat est illisible. Quatre vues à créer :
 
 | Vue | Filtre | Groupement |
 |---|---|---|
-| **Sprint** | `label:phase:P1 label:step:backend,step:frontend` | milestone |
+| **Socle** *(la première)* | `label:tranche:0` | — |
+| **Tranche 1** | `label:tranche:1` | `epic:` |
 | **Par fonctionnalité** | rechercher un ID (`F7.22`) | milestone |
 | **Décisions** | `label:decision-ouverte` | — |
+
+Deux milestones portent la progression qui compte : **Vague 0 — le socle** (45 issues) et **Tranche 1 — la première vente réelle** (302 issues). Les autres milestones sont par épique.
 
 ### Labels
 
@@ -74,7 +87,20 @@ Avec plus de 1 000 cartes, un board plat est illisible. Trois vues à créer :
 - `prio:M` · `prio:S` · `prio:C` · `prio:W` — la priorité MoSCoW
 - `phase:P1` · `phase:P2` · `phase:P3` — la phase
 - `status:todo` · `status:doing` · `status:done` — la colonne
+- `tranche:0` — le socle, bloque tout le reste · `tranche:1` — la première vente réelle
 - `decision-ouverte` — bloqué par un arbitrage produit
+
+---
+
+## Le modèle UML
+
+[vp/JP.xmi](vp/JP.xmi) — 98 classes, 16 acteurs, 30 cas d'utilisation, **30 diagrammes de séquence**, en XMI 2.1. À importer dans Visual Paradigm par *File → Import → XMI*. Mode d'emploi et limites du format : [vp/README.md](vp/README.md).
+
+```bash
+node scripts/gen-xmi.mjs     # régénère depuis les documents markdown
+```
+
+Le modèle est généré depuis [JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md) et [JP_CAS_UTILISATION.md](JP_CAS_UTILISATION.md). Ne le modifiez pas à la main.
 
 ---
 

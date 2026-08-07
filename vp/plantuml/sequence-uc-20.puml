@@ -1,0 +1,43 @@
+@startuml UC-20
+title UC-20 — Diffuser un direct et vendre
+autonumber
+
+actor "V · Vendeur" as V
+participant "Application vendeur" as APP
+participant "API JP" as API
+participant "Service vidéo" as VID
+participant "Canal temps réel" as WS
+actor "A · Acheteuses" as A
+participant "PostgreSQL" as DB
+
+V -> APP : titre + articles préparés
+APP -> API : POST /directs
+API -> DB : INSERT direct (statut = planifie)
+V -> APP : « Passer en direct »
+APP -> APP : mesure du débit montant
+APP -> API : POST /directs/:id/demarrer
+API -> VID : créer un ingest
+VID --> API : identifiants d'ingest + URL de lecture
+API -> DB : statut = en_cours
+API -> A : notification « Miora est en direct »
+APP -> VID : flux vidéo
+V -> APP : sélectionne l'article à l'écran
+APP -> API : POST /directs/:id/article-a-lecran
+API -> DB : direct_article.a_lecran_le = now()
+API -> WS : diffuse {article, prix, stock}
+WS --> A : bandeau mis à jour
+A -> API : « Je prends » (UC-21)
+API -> WS : diffuse {stock décrémenté, commande payée}
+WS --> V : panneau vendeur, CA qui monte
+API -> DB : [coupure de connexion vendeur] statut = en_pause
+API -> DB : [coupure de connexion vendeur] suspend TOUTES les réservations du direct (R-S5)
+API -> WS : [coupure de connexion vendeur] « Connexion en cours de rétablissement »
+WS --> A : [coupure de connexion vendeur] minuteurs figés, réservations conservées
+APP -> VID : [coupure de connexion vendeur / reprise sous 2 minutes] reprise du flux
+API -> DB : [coupure de connexion vendeur / reprise sous 2 minutes] statut = en_cours · expire_le repoussé
+API -> DB : [coupure de connexion vendeur / au-delà de 2 minutes] statut = termine + bilan
+V -> API : POST /directs/:id/arreter
+API -> VID : arrêter l'ingest, récupérer l'enregistrement
+API -> DB : bilan (durée, pic, ventes, CA, conversion, expirées)
+API --> V : écran de bilan
+@enduml
