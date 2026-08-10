@@ -27,7 +27,10 @@ const ETAT_ISSUES = join(RACINE, 'plan', '.issues-state.json');
 const ETAT = join(RACINE, 'plan', '.tranche1-state.json');
 
 const args = process.argv.slice(2);
-const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
+const opt = (n, d) => {
+  const i = args.indexOf(`--${n}`);
+  return i >= 0 && args[i + 1] ? args[i + 1] : d;
+};
 const DEPOT = opt('depot', 'andokevin/jp');
 const DELAI_MS = Number(opt('delai', 2000));
 const SEC = args.includes('--dry-run');
@@ -38,9 +41,7 @@ const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Les fonctionnalités de la tranche, lues dans le document ─────────────────
 const texte = readFileSync(TRANCHE, 'utf8');
-const features = [...new Set(
-  [...texte.matchAll(/^\| (F\d+\.\d+) \|/gm)].map((m) => m[1]),
-)];
+const features = [...new Set([...texte.matchAll(/^\| (F\d+\.\d+) \|/gm)].map((m) => m[1]))];
 
 if (!features.length) {
   console.error('✗ Aucun identifiant Fxx.y trouvé dans plan/TRANCHE1.md');
@@ -48,7 +49,7 @@ if (!features.length) {
 }
 
 if (!existsSync(ETAT_ISSUES)) {
-  console.error('✗ plan/.issues-state.json absent — publiez d\'abord les issues.');
+  console.error("✗ plan/.issues-state.json absent — publiez d'abord les issues.");
   process.exit(1);
 }
 const creees = JSON.parse(readFileSync(ETAT_ISSUES, 'utf8')).creees;
@@ -58,7 +59,10 @@ const cibles = [];
 const introuvables = new Set(features);
 for (const [cle, numero] of Object.entries(creees)) {
   const id = cle.split('#')[0];
-  if (features.includes(id)) { cibles.push({ cle, numero }); introuvables.delete(id); }
+  if (features.includes(id)) {
+    cibles.push({ cle, numero });
+    introuvables.delete(id);
+  }
 }
 
 console.log(`\n╭─ Tranche 1 sur ${DEPOT}`);
@@ -80,11 +84,16 @@ if (trouvee) {
   numMilestone = trouvee.number;
   console.log(`· milestone existant (#${numMilestone})`);
 } else {
-  const cree = JSON.parse(gh([
-    'api', `repos/${DEPOT}/milestones`,
-    '-f', `title=${MILESTONE}`,
-    '-f', 'description=Le plus court chemin où de l’argent réel circule. Détail : plan/TRANCHE1.md',
-  ]));
+  const cree = JSON.parse(
+    gh([
+      'api',
+      `repos/${DEPOT}/milestones`,
+      '-f',
+      `title=${MILESTONE}`,
+      '-f',
+      'description=Le plus court chemin où de l’argent réel circule. Détail : plan/TRANCHE1.md',
+    ]),
+  );
   numMilestone = cree.number;
   console.log(`+ milestone créé (#${numMilestone})`);
 }
@@ -93,16 +102,28 @@ if (trouvee) {
 const etat = existsSync(ETAT) ? JSON.parse(readFileSync(ETAT, 'utf8')) : { faites: {} };
 const restantes = cibles.filter((c) => !etat.faites[c.cle]);
 
-console.log(`\n── ${restantes.length} issues à marquer (${cibles.length - restantes.length} déjà faites) ──`);
+console.log(
+  `\n── ${restantes.length} issues à marquer (${cibles.length - restantes.length} déjà faites) ──`,
+);
 
-let ok = 0, echecs = 0;
+let ok = 0,
+  echecs = 0;
 for (const [n, { cle, numero }] of restantes.entries()) {
   try {
-    gh(['api', '--method', 'PATCH', `repos/${DEPOT}/issues/${numero}`,
-        '-F', `milestone=${numMilestone}`],
-       { stdio: ['ignore', 'pipe', 'pipe'] });
-    gh(['issue', 'edit', String(numero), '-R', DEPOT, '--add-label', 'tranche:1'],
-       { stdio: ['ignore', 'pipe', 'pipe'] });
+    gh(
+      [
+        'api',
+        '--method',
+        'PATCH',
+        `repos/${DEPOT}/issues/${numero}`,
+        '-F',
+        `milestone=${numMilestone}`,
+      ],
+      { stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+    gh(['issue', 'edit', String(numero), '-R', DEPOT, '--add-label', 'tranche:1'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
     etat.faites[cle] = numero;
     writeFileSync(ETAT, JSON.stringify(etat, null, 2));
     ok++;

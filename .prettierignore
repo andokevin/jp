@@ -1,0 +1,13 @@
+# Les documents sont des livrables rédigés, pas du code. Prettier repadde les
+# tableaux markdown et transforme chaque relecture en diff illisible.
+*.md
+
+pnpm-lock.yaml
+dist/
+build/
+coverage/
+.turbo/
+.expo/
+vp/
+prisma/migrations/
+plan/.issues.jsonl

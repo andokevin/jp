@@ -1,0 +1,15 @@
+{
+  "name": "@jp/terrain",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "React Native / Expo — livreur et point relais.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  }
+}

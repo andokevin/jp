@@ -20,7 +20,7 @@ const ETAPES = {
   conception: {
     titre: 'Conception',
     attendu: [
-      'Spécification fonctionnelle : parcours par persona, cas d\'échec, règles de gestion',
+      "Spécification fonctionnelle : parcours par persona, cas d'échec, règles de gestion",
       'Spécification technique : décisions, invariants, points de contention, hors périmètre',
       'Décisions ouvertes identifiées et tranchées, ou escaladées',
     ],
@@ -82,24 +82,25 @@ const NOMS_EPIQUES = {
   '07': 'Communauté : abonnements, promotions, fidélisation',
   '08': 'Découverte, recherche et navigation',
   '09': 'Statistiques vendeur',
-  '10': 'Monétisation et abonnement vendeur',
-  '11': 'Back-office JP',
-  '12': 'Assistant du vendeur',
-  '13': 'Socle technique et non fonctionnel',
-  '14': 'Contenu et fil social',
-  '15': 'Créatrices, affiliation et précommande',
-  '16': 'Cadeau, panier partagé et diaspora',
-  '17': 'Gamification, habitude et dressing',
-  '18': 'Premium, JP Club et marques',
-  '19': 'Modération et sécurité des personnes',
-  '20': 'Événements thématiques',
+  10: 'Monétisation et abonnement vendeur',
+  11: 'Back-office JP',
+  12: 'Assistant du vendeur',
+  13: 'Socle technique et non fonctionnel',
+  14: 'Contenu et fil social',
+  15: 'Créatrices, affiliation et précommande',
+  16: 'Cadeau, panier partagé et diaspora',
+  17: 'Gamification, habitude et dressing',
+  18: 'Premium, JP Club et marques',
+  19: 'Modération et sécurité des personnes',
+  20: 'Événements thématiques',
 };
 
 /** Ancre GitHub d'un titre de section de mini-plan. */
 function ancre(id, titre) {
-  return (`${id} — ${titre}`)
+  return `${id} — ${titre}`
     .toLowerCase()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-');
@@ -121,9 +122,13 @@ function lireBloc(texte) {
     const valeur = brut.replace(/\s*#.*$/, '').trim();
     listeCourante = null;
     if (valeur.startsWith('[')) {
-      obj[cle] = valeur.slice(1, -1).split(',').map((v) => v.trim()).filter(Boolean);
+      obj[cle] = valeur
+        .slice(1, -1)
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean);
     } else if (valeur === '') {
-      obj[cle] = [];              // liste en tirets sur les lignes suivantes
+      obj[cle] = []; // liste en tirets sur les lignes suivantes
       listeCourante = cle;
     } else {
       obj[cle] = valeur.replace(/^["']|["']$/g, '');
@@ -132,7 +137,9 @@ function lireBloc(texte) {
   return obj;
 }
 
-const fichiers = readdirSync(DOSSIER_PLAN).filter((f) => /^EP\d\d-.*\.md$/.test(f)).sort();
+const fichiers = readdirSync(DOSSIER_PLAN)
+  .filter((f) => /^EP\d\d-.*\.md$/.test(f))
+  .sort();
 const issues = [];
 const parFonctionnalite = new Map();
 
@@ -142,9 +149,10 @@ const FICHIER_SOCLE = 'VAGUE0-socle.md';
 const MILESTONE_SOCLE = 'Vague 0 — le socle';
 
 function ancreSocle(id, titre) {
-  return (`${id} — ${titre}`)
+  return `${id} — ${titre}`
     .toLowerCase()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-');
@@ -179,8 +187,12 @@ try {
       if ((b.depend ?? []).length) {
         corps.push('', '## Dépend de', ...b.depend.map((d) => `- \`${d}\``));
       }
-      corps.push('', '---', '',
-        `<sub>Vague 0. Rien ne démarre avant. Généré depuis \`plan/${FICHIER_SOCLE}\`.</sub>`);
+      corps.push(
+        '',
+        '---',
+        '',
+        `<sub>Vague 0. Rien ne démarre avant. Généré depuis \`plan/${FICHIER_SOCLE}\`.</sub>`,
+      );
 
       issues.push({
         cle: `${b.socle}#${i + 1}`,
@@ -212,8 +224,13 @@ for (const fichier of fichiers) {
     }
 
     parFonctionnalite.set(b.feature, {
-      titre: b.titre, epic: b.epic, phase: b.phase, prio: b.prio,
-      etapes, depend: b.depend ?? [], fichier,
+      titre: b.titre,
+      epic: b.epic,
+      phase: b.phase,
+      prio: b.prio,
+      etapes,
+      depend: b.depend ?? [],
+      fichier,
     });
   }
 }
@@ -224,18 +241,23 @@ const ordrePrio = { M: 0, S: 1, C: 2, W: 3 };
 const ordreEtape = Object.keys(ETAPES);
 
 const features = [...parFonctionnalite.entries()].sort((a, b) => {
-  const [ia, fa] = a; const [ib, fb] = b;
-  return (ordrePhase[fa.phase] ?? 9) - (ordrePhase[fb.phase] ?? 9)
-      || (ordrePrio[fa.prio] ?? 9) - (ordrePrio[fb.prio] ?? 9)
-      || fa.epic.localeCompare(fb.epic)
-      || ia.localeCompare(ib, 'fr', { numeric: true });
+  const [ia, fa] = a;
+  const [ib, fb] = b;
+  return (
+    (ordrePhase[fa.phase] ?? 9) - (ordrePhase[fb.phase] ?? 9) ||
+    (ordrePrio[fa.prio] ?? 9) - (ordrePrio[fb.prio] ?? 9) ||
+    fa.epic.localeCompare(fb.epic) ||
+    ia.localeCompare(ib, 'fr', { numeric: true })
+  );
 });
 
 for (const [id, f] of features) {
   const lien = `plan/${f.fichier}#${ancre(id, f.titre)}`;
   const autresEtapes = f.etapes;
 
-  for (const etape of f.etapes.slice().sort((x, y) => ordreEtape.indexOf(x) - ordreEtape.indexOf(y))) {
+  for (const etape of f.etapes
+    .slice()
+    .sort((x, y) => ordreEtape.indexOf(x) - ordreEtape.indexOf(y))) {
     const e = ETAPES[etape];
     const corps = [
       `**Fonctionnalité :** \`${id}\` — ${f.titre}`,
@@ -251,11 +273,13 @@ for (const [id, f] of features) {
       '## Définition de terminé',
       '- [ ] Le mini-plan a été relu et suivi',
       '- [ ] Les règles `R-xx` citées dans le mini-plan sont respectées',
-      '- [ ] Les tests de l\'étape passent en intégration continue',
+      "- [ ] Les tests de l'étape passent en intégration continue",
       '- [ ] Aucune régression sur les critères de recette bloquants concernés',
       '',
       '## Les autres étapes de cette fonctionnalité',
-      ...autresEtapes.map((s) => `- ${s === etape ? `**${ETAPES[s].titre}** ← cette issue` : ETAPES[s].titre}`),
+      ...autresEtapes.map(
+        (s) => `- ${s === etape ? `**${ETAPES[s].titre}** ← cette issue` : ETAPES[s].titre}`,
+      ),
     ];
 
     if (f.depend.length) {
@@ -266,9 +290,9 @@ for (const [id, f] of features) {
       '',
       '---',
       '',
-      `<sub>Généré depuis \`${f.fichier}\` par \`scripts/gen-issues.mjs\`. `
-      + `Amont : \`JP_BACKLOG.md\` · \`JP_USER_STORIES.md\` · \`JP_CAS_UTILISATION.md\` · `
-      + `\`JP_CAHIER_DES_CHARGES.md\`.</sub>`,
+      `<sub>Généré depuis \`${f.fichier}\` par \`scripts/gen-issues.mjs\`. ` +
+        `Amont : \`JP_BACKLOG.md\` · \`JP_USER_STORIES.md\` · \`JP_CAS_UTILISATION.md\` · ` +
+        `\`JP_CAHIER_DES_CHARGES.md\`.</sub>`,
     );
 
     issues.push({
@@ -276,8 +300,11 @@ for (const [id, f] of features) {
       title: `${id} · [${etape}] ${f.titre}`,
       body: corps.join('\n'),
       labels: [
-        `epic:${f.epic}`, `step:${etape}`,
-        `prio:${f.prio}`, `phase:${f.phase}`, 'status:todo',
+        `epic:${f.epic}`,
+        `step:${etape}`,
+        `prio:${f.prio}`,
+        `phase:${f.phase}`,
+        'status:todo',
       ],
       milestone: `Épique ${f.epic} — ${NOMS_EPIQUES[f.epic] ?? ''}`,
     });
@@ -306,4 +333,4 @@ console.log('\nPar phase :');
 for (const [k, v] of Object.entries(parPhase).sort()) {
   console.log(`  ${k.padEnd(12)} ${v}`);
 }
-console.log('\nOrdre de publication : P1 d\'abord, puis par priorité MoSCoW, puis par épique.');
+console.log("\nOrdre de publication : P1 d'abord, puis par priorité MoSCoW, puis par épique.");

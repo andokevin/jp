@@ -7,9 +7,16 @@ build/
 .env.*
 !.env.example
 
+# Outillage
+.turbo/
+*.tsbuildinfo
+coverage/
+.expo/
+
 # Génération d'issues (état local, non versionné)
 plan/.issues.jsonl
 plan/.issues-state.json
+plan/.tranche1-state.json
 
 # OS / éditeurs
 .DS_Store

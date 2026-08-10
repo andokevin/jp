@@ -25,9 +25,12 @@ const SORTIE = join(RACINE, 'vp');
 mkdirSync(join(SORTIE, 'plantuml'), { recursive: true });
 
 const lire = (f) => readFileSync(join(RACINE, f), 'utf8');
-const ech = (s) => String(s)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;');
+const ech = (s) =>
+  String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
 let compteur = 0;
 const id = (prefixe) => `${prefixe}_${++compteur}`;
@@ -37,14 +40,21 @@ const id = (prefixe) => `${prefixe}_${++compteur}`;
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CARD = {
-  '||': ['1', '1'], '|o': ['0', '1'], 'o|': ['0', '1'],
-  '}o': ['0', '*'], 'o{': ['0', '*'],
-  '}|': ['1', '*'], '|{': ['1', '*'],
+  '||': ['1', '1'],
+  '|o': ['0', '1'],
+  'o|': ['0', '1'],
+  '}o': ['0', '*'],
+  'o{': ['0', '*'],
+  '}|': ['1', '*'],
+  '|{': ['1', '*'],
 };
 
 function nomClasse(brut) {
-  return brut.toLowerCase().split('_')
-    .map((m) => m.charAt(0).toUpperCase() + m.slice(1)).join('');
+  return brut
+    .toLowerCase()
+    .split('_')
+    .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
+    .join('');
 }
 
 function extraireBlocs(texte, type) {
@@ -68,7 +78,7 @@ function extraireBlocs(texte, type) {
 }
 
 const bddTexte = lire('JP_CONCEPTION_BDD.md');
-const classes = new Map();       // NOM_TABLE → { nom, paquet, attributs[] }
+const classes = new Map(); // NOM_TABLE → { nom, paquet, attributs[] }
 const associations = [];
 
 for (const bloc of extraireBlocs(bddTexte, 'erDiagram')) {
@@ -80,7 +90,10 @@ for (const bloc of extraireBlocs(bddTexte, 'erDiagram')) {
     if (!l || l === 'erDiagram') continue;
 
     if (entiteCourante) {
-      if (l === '}') { entiteCourante = null; continue; }
+      if (l === '}') {
+        entiteCourante = null;
+        continue;
+      }
       // « string email UK "commentaire" »
       const mc = l.match(/^(.*?)\s*"(.*)"\s*$/);
       const sansCommentaire = (mc ? mc[1] : l).trim();
@@ -102,7 +115,9 @@ for (const bloc of extraireBlocs(bddTexte, 'erDiagram')) {
     }
 
     // « A ||--o{ B : "libellé" »
-    const ma = l.match(/^([A-Z_][A-Z0-9_]*)\s+([|}o][|{o])--([|}o][|{o])\s+([A-Z_][A-Z0-9_]*)\s*:\s*"?(.*?)"?$/);
+    const ma = l.match(
+      /^([A-Z_][A-Z0-9_]*)\s+([|}o][|{o])--([|}o][|{o])\s+([A-Z_][A-Z0-9_]*)\s*:\s*"?(.*?)"?$/,
+    );
     if (ma) {
       const [, gauche, cardG, cardD, droite, libelle] = ma;
       for (const c of [gauche, droite]) {
@@ -135,7 +150,7 @@ for (const m of bddTexte.matchAll(/^\|\s*`([a-z_]+)`(?:\s*\/\s*`([a-z_]+)`)?\s*\
 const ucTexte = lire('JP_CAS_UTILISATION.md');
 const lignesUC = ucTexte.split('\n');
 
-const acteurs = new Map();       // code → { code, nom, systeme }
+const acteurs = new Map(); // code → { code, nom, systeme }
 for (const l of lignesUC) {
   const m = l.match(/^\|\s*\*\*([A-Z]{1,4})\*\*\s*\|\s*([^|]+?)\s*\|/);
   if (!m) continue;
@@ -145,10 +160,13 @@ for (const l of lignesUC) {
 }
 
 const casUtilisation = [];
-let paquetUC = 'Cas d\'utilisation';
+let paquetUC = "Cas d'utilisation";
 for (let i = 0; i < lignesUC.length; i++) {
   const mp = lignesUC[i].match(/^#\s+\d+\.\s+Paquetage\s+(.*)$/);
-  if (mp) { paquetUC = mp[1].trim(); continue; }
+  if (mp) {
+    paquetUC = mp[1].trim();
+    continue;
+  }
 
   const m = lignesUC[i].match(/^##\s+(UC-\d+)\s+—\s+(.*?)\s*★?\s*$/);
   if (!m) continue;
@@ -160,12 +178,16 @@ for (let i = 0; i < lignesUC.length; i++) {
     const mm = fenetre.match(new RegExp(`\\|\\s*\\*\\*${etiquette}\\*\\*\\s*\\|\\s*([^|]*)\\|`));
     return mm ? mm[1] : '';
   };
-  const codesDe = (texte) => [...new Set(
-    [...texte.matchAll(/\b([A-Z]{1,4})\b/g)].map((x) => x[1]).filter((c) => acteurs.has(c)),
-  )];
+  const codesDe = (texte) => [
+    ...new Set(
+      [...texte.matchAll(/\b([A-Z]{1,4})\b/g)].map((x) => x[1]).filter((c) => acteurs.has(c)),
+    ),
+  ];
 
   casUtilisation.push({
-    code, intitule: intitule.trim(), paquet: paquetUC,
+    code,
+    intitule: intitule.trim(),
+    paquet: paquetUC,
     principaux: codesDe(lireLigne('Acteur principal')),
     secondaires: codesDe(lireLigne('Acteurs secondaires')),
     ligne: i,
@@ -182,7 +204,7 @@ for (const bloc of extraireBlocs(ucTexte, 'sequenceDiagram')) {
   const uc = [...casUtilisation].reverse().find((u) => u.ligne < bloc.ligneDebut);
   const participants = [];
   const messages = [];
-  const pile = [];        // contexte alt / opt / loop
+  const pile = []; // contexte alt / opt / loop
 
   for (const ligneBrute of bloc.lignes) {
     const l = ligneBrute.trim();
@@ -195,10 +217,17 @@ for (const bloc of extraireBlocs(ucTexte, 'sequenceDiagram')) {
     }
 
     if (/^(alt|opt|loop|par|critical)\b/.test(l)) {
-      pile.push(l.replace(/^\w+\s*/, '').trim()); continue;
+      pile.push(l.replace(/^\w+\s*/, '').trim());
+      continue;
     }
-    if (/^else\b/.test(l)) { pile[pile.length - 1] = l.replace(/^else\s*/, '').trim(); continue; }
-    if (/^end\b/.test(l)) { pile.pop(); continue; }
+    if (/^else\b/.test(l)) {
+      pile[pile.length - 1] = l.replace(/^else\s*/, '').trim();
+      continue;
+    }
+    if (/^end\b/.test(l)) {
+      pile.pop();
+      continue;
+    }
     if (/^(Note|rect|activate|deactivate|autonumber)\b/.test(l)) continue;
 
     const mm = l.match(/^(\S+?)\s*(-{1,2}>>?|-\)|--\))\s*(\S+?)\s*:\s*(.*)$/);
@@ -206,7 +235,8 @@ for (const bloc of extraireBlocs(ucTexte, 'sequenceDiagram')) {
     const [, de, fleche, vers, texte] = mm;
     const garde = pile.filter(Boolean).join(' / ');
     messages.push({
-      de, vers,
+      de,
+      vers,
       nom: garde ? `[${garde}] ${texte.trim()}` : texte.trim(),
       reponse: fleche.startsWith('--'),
     });
@@ -216,14 +246,18 @@ for (const bloc of extraireBlocs(ucTexte, 'sequenceDiagram')) {
   const declares = new Set(participants.map((p) => p.alias));
   for (const m of messages) {
     for (const a of [m.de, m.vers]) {
-      if (!declares.has(a)) { participants.push({ alias: a, nom: a, acteur: false }); declares.add(a); }
+      if (!declares.has(a)) {
+        participants.push({ alias: a, nom: a, acteur: false });
+        declares.add(a);
+      }
     }
   }
 
   interactions.push({
     code: uc ? uc.code : `SEQ-${interactions.length + 1}`,
     intitule: uc ? uc.intitule : bloc.titre,
-    participants, messages,
+    participants,
+    messages,
   });
 }
 
@@ -243,9 +277,10 @@ P(1, '<uml:Model xmi:type="uml:Model" xmi:id="modele_jp" name="JP — Je prends"
 
 // ── 4.1 Types primitifs ──────────────────────────────────────────────────────
 const typesUtilises = new Map();
-for (const c of classes.values()) for (const a of c.attributs) {
-  if (!typesUtilises.has(a.type)) typesUtilises.set(a.type, id('type'));
-}
+for (const c of classes.values())
+  for (const a of c.attributs) {
+    if (!typesUtilises.has(a.type)) typesUtilises.set(a.type, id('type'));
+  }
 P(2, '<packagedElement xmi:type="uml:Package" xmi:id="pkg_types" name="Types">');
 for (const [nom, tid] of typesUtilises) {
   P(3, `<packagedElement xmi:type="uml:PrimitiveType" xmi:id="${tid}" name="${ech(nom)}"/>`);
@@ -268,15 +303,21 @@ for (const [paquet, noms] of paquetsClasses) {
   P(3, `<packagedElement xmi:type="uml:Package" xmi:id="${pid}" name="${ech(paquet)}">`);
   for (const nom of noms) {
     const c = classes.get(nom);
-    P(4, `<packagedElement xmi:type="uml:Class" xmi:id="${idClasse.get(nom)}" name="${ech(nomClasse(nom))}">`);
+    P(
+      4,
+      `<packagedElement xmi:type="uml:Class" xmi:id="${idClasse.get(nom)}" name="${ech(nomClasse(nom))}">`,
+    );
     if (c.note) {
       P(5, `<ownedComment xmi:type="uml:Comment" xmi:id="${id('com')}" body="${ech(c.note)}"/>`);
     }
     for (const a of c.attributs) {
       const aid = id('att');
       const visibilite = a.cles.includes('PK') ? 'public' : 'private';
-      P(5, `<ownedAttribute xmi:type="uml:Property" xmi:id="${aid}" name="${ech(a.nom)}"`
-        + ` visibility="${visibilite}" type="${typesUtilises.get(a.type)}">`);
+      P(
+        5,
+        `<ownedAttribute xmi:type="uml:Property" xmi:id="${aid}" name="${ech(a.nom)}"` +
+          ` visibility="${visibilite}" type="${typesUtilises.get(a.type)}">`,
+      );
       const notes = [...a.cles, a.commentaire].filter(Boolean).join(' · ');
       if (notes) {
         P(6, `<ownedComment xmi:type="uml:Comment" xmi:id="${id('com')}" body="${ech(notes)}"/>`);
@@ -289,16 +330,25 @@ for (const [paquet, noms] of paquetsClasses) {
 }
 
 for (const a of associations) {
-  const gid = idClasse.get(a.gauche); const did = idClasse.get(a.droite);
+  const gid = idClasse.get(a.gauche);
+  const did = idClasse.get(a.droite);
   if (!gid || !did) continue;
-  const aid = id('asso'); const e1 = id('fin'); const e2 = id('fin');
+  const aid = id('asso');
+  const e1 = id('fin');
+  const e2 = id('fin');
   const [bg, hg] = CARD[a.cardG] ?? ['0', '*'];
   const [bd, hd] = CARD[a.cardD] ?? ['0', '*'];
-  P(3, `<packagedElement xmi:type="uml:Association" xmi:id="${aid}" name="${ech(a.libelle)}" memberEnd="${e1} ${e2}">`);
+  P(
+    3,
+    `<packagedElement xmi:type="uml:Association" xmi:id="${aid}" name="${ech(a.libelle)}" memberEnd="${e1} ${e2}">`,
+  );
   const fin = (fid, type, bas, haut) => {
     P(4, `<ownedEnd xmi:type="uml:Property" xmi:id="${fid}" type="${type}" association="${aid}">`);
     P(5, `<lowerValue xmi:type="uml:LiteralInteger" xmi:id="${id('bas')}" value="${bas}"/>`);
-    P(5, `<upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="${id('haut')}" value="${haut}"/>`);
+    P(
+      5,
+      `<upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="${id('haut')}" value="${haut}"/>`,
+    );
     P(4, '</ownedEnd>');
   };
   fin(e1, gid, bg, hg);
@@ -312,8 +362,12 @@ const idActeur = new Map();
 P(2, '<packagedElement xmi:type="uml:Package" xmi:id="pkg_uc" name="2 — Cas d\'utilisation">');
 P(3, '<packagedElement xmi:type="uml:Package" xmi:id="pkg_acteurs" name="Acteurs">');
 for (const [code, a] of acteurs) {
-  const aid = id('act'); idActeur.set(code, aid);
-  P(4, `<packagedElement xmi:type="uml:Actor" xmi:id="${aid}" name="${ech(code + ' · ' + a.nom)}"/>`);
+  const aid = id('act');
+  idActeur.set(code, aid);
+  P(
+    4,
+    `<packagedElement xmi:type="uml:Actor" xmi:id="${aid}" name="${ech(code + ' · ' + a.nom)}"/>`,
+  );
 }
 P(3, '</packagedElement>');
 
@@ -328,19 +382,29 @@ for (const [paquet, liste] of paquetsUC) {
   const pid = id('pkg');
   P(3, `<packagedElement xmi:type="uml:Package" xmi:id="${pid}" name="${ech(paquet)}">`);
   for (const uc of liste) {
-    const uid = id('uc'); idUC.set(uc.code, uid);
-    P(4, `<packagedElement xmi:type="uml:UseCase" xmi:id="${uid}" name="${ech(uc.code + ' — ' + uc.intitule)}"/>`);
+    const uid = id('uc');
+    idUC.set(uc.code, uid);
+    P(
+      4,
+      `<packagedElement xmi:type="uml:UseCase" xmi:id="${uid}" name="${ech(uc.code + ' — ' + uc.intitule)}"/>`,
+    );
     for (const c of uc.principaux) liens.push({ acteur: c, uc: uc.code, principal: true });
     for (const c of uc.secondaires) liens.push({ acteur: c, uc: uc.code, principal: false });
   }
   P(3, '</packagedElement>');
 }
 for (const l of liens) {
-  const aid = idActeur.get(l.acteur); const uid = idUC.get(l.uc);
+  const aid = idActeur.get(l.acteur);
+  const uid = idUC.get(l.uc);
   if (!aid || !uid) continue;
-  const asso = id('asso'); const e1 = id('fin'); const e2 = id('fin');
-  P(3, `<packagedElement xmi:type="uml:Association" xmi:id="${asso}"`
-    + ` name="${l.principal ? '' : 'secondaire'}" memberEnd="${e1} ${e2}">`);
+  const asso = id('asso');
+  const e1 = id('fin');
+  const e2 = id('fin');
+  P(
+    3,
+    `<packagedElement xmi:type="uml:Association" xmi:id="${asso}"` +
+      ` name="${l.principal ? '' : 'secondaire'}" memberEnd="${e1} ${e2}">`,
+  );
   P(4, `<ownedEnd xmi:type="uml:Property" xmi:id="${e1}" type="${aid}" association="${asso}"/>`);
   P(4, `<ownedEnd xmi:type="uml:Property" xmi:id="${e2}" type="${uid}" association="${asso}"/>`);
   P(3, '</packagedElement>');
@@ -352,43 +416,67 @@ P(2, '<packagedElement xmi:type="uml:Package" xmi:id="pkg_seq" name="3 — Diagr
 for (const inter of interactions) {
   const colId = id('col');
   const intId = id('int');
-  P(3, `<packagedElement xmi:type="uml:Collaboration" xmi:id="${colId}"`
-    + ` name="${ech(inter.code + ' — ' + inter.intitule)}">`);
+  P(
+    3,
+    `<packagedElement xmi:type="uml:Collaboration" xmi:id="${colId}"` +
+      ` name="${ech(inter.code + ' — ' + inter.intitule)}">`,
+  );
 
   // Une propriété de collaboration par participant. La ligne de vie la
   // « représente » : sans ce lien, Visual Paradigm importe des lignes de vie
   // orphelines et le diagramme est vide.
-  const propId = new Map(); const lifeId = new Map();
+  const propId = new Map();
+  const lifeId = new Map();
   for (const p of inter.participants) {
-    const pid = id('prop'); propId.set(p.alias, pid);
+    const pid = id('prop');
+    propId.set(p.alias, pid);
     P(4, `<ownedAttribute xmi:type="uml:Property" xmi:id="${pid}" name="${ech(p.alias)}"/>`);
   }
 
-  P(4, `<ownedBehavior xmi:type="uml:Interaction" xmi:id="${intId}"`
-    + ` name="${ech(inter.code + ' — ' + inter.intitule)}">`);
+  P(
+    4,
+    `<ownedBehavior xmi:type="uml:Interaction" xmi:id="${intId}"` +
+      ` name="${ech(inter.code + ' — ' + inter.intitule)}">`,
+  );
   for (const p of inter.participants) {
-    const lid = id('ll'); lifeId.set(p.alias, lid);
-    P(5, `<lifeline xmi:type="uml:Lifeline" xmi:id="${lid}" name="${ech(p.nom)}"`
-      + ` represents="${propId.get(p.alias)}"/>`);
+    const lid = id('ll');
+    lifeId.set(p.alias, lid);
+    P(
+      5,
+      `<lifeline xmi:type="uml:Lifeline" xmi:id="${lid}" name="${ech(p.nom)}"` +
+        ` represents="${propId.get(p.alias)}"/>`,
+    );
   }
 
   const occ = [];
   for (const m of inter.messages) {
-    const de = lifeId.get(m.de); const vers = lifeId.get(m.vers);
+    const de = lifeId.get(m.de);
+    const vers = lifeId.get(m.vers);
     if (!de || !vers) continue;
-    const mid = id('msg'); const envoi = id('occ'); const recep = id('occ');
+    const mid = id('msg');
+    const envoi = id('occ');
+    const recep = id('occ');
     occ.push({ mid, envoi, recep, de, vers, nom: m.nom, reponse: m.reponse });
   }
   for (const o of occ) {
-    P(5, `<fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="${o.envoi}"`
-      + ` covered="${o.de}" message="${o.mid}"/>`);
-    P(5, `<fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="${o.recep}"`
-      + ` covered="${o.vers}" message="${o.mid}"/>`);
+    P(
+      5,
+      `<fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="${o.envoi}"` +
+        ` covered="${o.de}" message="${o.mid}"/>`,
+    );
+    P(
+      5,
+      `<fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="${o.recep}"` +
+        ` covered="${o.vers}" message="${o.mid}"/>`,
+    );
   }
   for (const o of occ) {
-    P(5, `<message xmi:type="uml:Message" xmi:id="${o.mid}" name="${ech(o.nom)}"`
-      + ` messageSort="${o.reponse ? 'reply' : 'synchCall'}"`
-      + ` sendEvent="${o.envoi}" receiveEvent="${o.recep}"/>`);
+    P(
+      5,
+      `<message xmi:type="uml:Message" xmi:id="${o.mid}" name="${ech(o.nom)}"` +
+        ` messageSort="${o.reponse ? 'reply' : 'synchCall'}"` +
+        ` sendEvent="${o.envoi}" receiveEvent="${o.recep}"/>`,
+    );
   }
   P(4, '</ownedBehavior>');
   P(3, '</packagedElement>');
@@ -414,7 +502,9 @@ writeFileSync(join(SORTIE, 'JP.xmi'), out.join('\n') + '\n');
       p.push(`  class ${nomClasse(nom)} {`);
       for (const a of c.attributs) {
         const marque = a.cles.includes('PK') ? '+' : a.cles.includes('FK') ? '#' : '-';
-        p.push(`    ${marque} ${a.nom} : ${a.type}${a.cles.length ? ' «' + a.cles.join(',') + '»' : ''}`);
+        p.push(
+          `    ${marque} ${a.nom} : ${a.type}${a.cles.length ? ' «' + a.cles.join(',') + '»' : ''}`,
+        );
       }
       p.push('  }');
     }
@@ -425,8 +515,10 @@ writeFileSync(join(SORTIE, 'JP.xmi'), out.join('\n') + '\n');
     const [, hd] = CARD[a.cardD] ?? ['0', '*'];
     const [bg] = CARD[a.cardG] ?? ['0'];
     const [bd] = CARD[a.cardD] ?? ['0'];
-    p.push(`${nomClasse(a.gauche)} "${bg}..${hg}" -- "${bd}..${hd}" ${nomClasse(a.droite)}`
-      + (a.libelle ? ` : ${a.libelle}` : ''));
+    p.push(
+      `${nomClasse(a.gauche)} "${bg}..${hg}" -- "${bd}..${hd}" ${nomClasse(a.droite)}` +
+        (a.libelle ? ` : ${a.libelle}` : ''),
+    );
   }
   p.push('@enduml');
   writeFileSync(join(SORTIE, 'plantuml', 'classes.puml'), p.join('\n') + '\n');
@@ -440,7 +532,9 @@ writeFileSync(join(SORTIE, 'JP.xmi'), out.join('\n') + '\n');
   for (const [paquet, liste] of paquetsUC) {
     p.push(`rectangle "${paquet.replace(/"/g, "'")}" {`);
     for (const uc of liste) {
-      p.push(`  usecase "${uc.code}\\n${uc.intitule.replace(/"/g, "'")}" as ${uc.code.replace('-', '')}`);
+      p.push(
+        `  usecase "${uc.code}\\n${uc.intitule.replace(/"/g, "'")}" as ${uc.code.replace('-', '')}`,
+      );
     }
     p.push('}', '');
   }
@@ -454,9 +548,16 @@ writeFileSync(join(SORTIE, 'JP.xmi'), out.join('\n') + '\n');
 // 5.3 une séquence par cas d'utilisation
 for (const inter of interactions) {
   const nom = inter.code.toLowerCase();
-  const p = [`@startuml ${inter.code}`, `title ${inter.code} — ${inter.intitule}`, 'autonumber', ''];
+  const p = [
+    `@startuml ${inter.code}`,
+    `title ${inter.code} — ${inter.intitule}`,
+    'autonumber',
+    '',
+  ];
   for (const part of inter.participants) {
-    p.push(`${part.acteur ? 'actor' : 'participant'} "${part.nom.replace(/"/g, "'")}" as ${part.alias}`);
+    p.push(
+      `${part.acteur ? 'actor' : 'participant'} "${part.nom.replace(/"/g, "'")}" as ${part.alias}`,
+    );
   }
   p.push('');
   for (const m of inter.messages) {
@@ -469,7 +570,9 @@ for (const inter of interactions) {
 // ═══════════════════════════════════════════════════════════════════════════
 console.log(`\n✓ vp/JP.xmi`);
 console.log(`  classes            ${classes.size}`);
-console.log(`  attributs          ${[...classes.values()].reduce((n, c) => n + c.attributs.length, 0)}`);
+console.log(
+  `  attributs          ${[...classes.values()].reduce((n, c) => n + c.attributs.length, 0)}`,
+);
 console.log(`  associations       ${associations.length}`);
 console.log(`  acteurs            ${acteurs.size}`);
 console.log(`  cas d'utilisation  ${casUtilisation.length}`);

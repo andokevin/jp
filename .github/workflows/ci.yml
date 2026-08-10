@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  verifier:
+    name: Typage, style, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Installer
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Turborepo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ github.sha }}
+          restore-keys: turbo-
+
+      - name: Format
+        run: pnpm format:verifier
+
+      - name: Typage
+        run: pnpm typecheck
+
+      - name: Style et règles de dépendance
+        run: pnpm lint
+
+      # Une règle d'architecture qui ne déclenche rien donne l'illusion d'une
+      # garantie. Celle-ci est mise à l'épreuve, dans les deux sens.
+      - name: Les règles de dépendance mordent-elles ?
+        run: pnpm archi
+
+      - name: Tests
+        run: pnpm test
+
+      - name: Construction
+        run: pnpm build
+
+  couverture-du-plan:
+    name: Couverture backlog ↔ plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # Le plan est un livrable : une fonctionnalité ajoutée au backlog sans
+      # mini-plan, ou un mini-plan orphelin, fait échouer l'intégration.
+      - name: Vérifier la couverture
+        run: node scripts/check-coverage.mjs

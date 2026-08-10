@@ -48,17 +48,37 @@ const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Labels ───────────────────────────────────────────────────────────────────
 const LABELS = [
-  ...['00','01','02','03','04','05','06','07','08','09','10',
-      '11','12','13','14','15','16','17','18','19','20']
-    .map((n) => [`epic:${n}`, '1D76DB', `Épique ${n}`]),
+  ...[
+    '00',
+    '01',
+    '02',
+    '03',
+    '04',
+    '05',
+    '06',
+    '07',
+    '08',
+    '09',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+  ].map((n) => [`epic:${n}`, '1D76DB', `Épique ${n}`]),
   ['epic:socle', '000000', 'Vague 0 — le socle, avant toute fonctionnalité'],
-  ['step:socle',      '000000', 'Élément de socle — vague 0'],
+  ['step:socle', '000000', 'Élément de socle — vague 0'],
   ['step:conception', 'C5DEF5', 'Spécification fonctionnelle et technique'],
-  ['step:squelette',  'BFD4F2', 'Arborescence des fichiers et modules'],
-  ['step:bdd',        '5319E7', 'Schéma, migration, index, contraintes'],
-  ['step:design',     'D93F0B', 'Maquettes et prompt Stitch'],
-  ['step:backend',    '0E8A16', 'Endpoints, logique métier, tests'],
-  ['step:frontend',   'FBCA04', 'Composants, écrans, intégration API'],
+  ['step:squelette', 'BFD4F2', 'Arborescence des fichiers et modules'],
+  ['step:bdd', '5319E7', 'Schéma, migration, index, contraintes'],
+  ['step:design', 'D93F0B', 'Maquettes et prompt Stitch'],
+  ['step:backend', '0E8A16', 'Endpoints, logique métier, tests'],
+  ['step:frontend', 'FBCA04', 'Composants, écrans, intégration API'],
   ['prio:M', 'B60205', 'Must — indispensable au lancement'],
   ['prio:S', 'D93F0B', 'Should — important'],
   ['prio:C', 'FEF2C0', 'Could — confort'],
@@ -66,9 +86,9 @@ const LABELS = [
   ['phase:P1', '0052CC', 'Phase 1 — produit minimum'],
   ['phase:P2', '5319E7', 'Phase 2'],
   ['phase:P3', 'BFDADC', 'Phase 3'],
-  ['status:todo',  'EDEDED', 'À faire'],
+  ['status:todo', 'EDEDED', 'À faire'],
   ['status:doing', 'FBCA04', 'En cours'],
-  ['status:done',  '0E8A16', 'Terminé'],
+  ['status:done', '0E8A16', 'Terminé'],
   ['tranche:0', '000000', 'Vague 0 — socle, bloque tout le reste'],
   ['tranche:1', '0E8A16', 'Tranche 1 — la première vente réelle'],
   ['decision-ouverte', 'E99695', 'Bloqué par un arbitrage produit'],
@@ -77,17 +97,27 @@ const LABELS = [
 async function creerLabels() {
   console.log(`\n── Labels (${LABELS.length}) ──`);
   const existants = new Set(
-    JSON.parse(gh(['label', 'list', '-R', DEPOT, '--limit', '200', '--json', 'name']))
-      .map((l) => l.name),
+    JSON.parse(gh(['label', 'list', '-R', DEPOT, '--limit', '200', '--json', 'name'])).map(
+      (l) => l.name,
+    ),
   );
   for (const [nom, couleur, description] of LABELS) {
-    if (existants.has(nom)) { process.stdout.write('·'); continue; }
-    if (SEC) { process.stdout.write('+'); continue; }
-    try {
-      gh(['label', 'create', nom, '-R', DEPOT, '-c', couleur, '-d', description],
-         { stdio: ['ignore', 'pipe', 'pipe'] });
+    if (existants.has(nom)) {
+      process.stdout.write('·');
+      continue;
+    }
+    if (SEC) {
       process.stdout.write('+');
-    } catch { process.stdout.write('!'); }
+      continue;
+    }
+    try {
+      gh(['label', 'create', nom, '-R', DEPOT, '-c', couleur, '-d', description], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      process.stdout.write('+');
+    } catch {
+      process.stdout.write('!');
+    }
     await dormir(400);
   }
   console.log('  (· existant, + créé, ! échec)');
@@ -98,19 +128,27 @@ async function creerMilestones(issues) {
   const voulues = [...new Set(issues.map((i) => i.milestone))].sort();
   console.log(`\n── Milestones (${voulues.length}) ──`);
   const existantes = new Map(
-    JSON.parse(gh(['api', `repos/${DEPOT}/milestones?state=all&per_page=100`]))
-      .map((m) => [m.title, m.number]),
+    JSON.parse(gh(['api', `repos/${DEPOT}/milestones?state=all&per_page=100`])).map((m) => [
+      m.title,
+      m.number,
+    ]),
   );
   for (const titre of voulues) {
-    if (existantes.has(titre)) { process.stdout.write('·'); continue; }
-    if (SEC) { process.stdout.write('+'); continue; }
+    if (existantes.has(titre)) {
+      process.stdout.write('·');
+      continue;
+    }
+    if (SEC) {
+      process.stdout.write('+');
+      continue;
+    }
     try {
-      const cree = JSON.parse(
-        gh(['api', `repos/${DEPOT}/milestones`, '-f', `title=${titre}`]),
-      );
+      const cree = JSON.parse(gh(['api', `repos/${DEPOT}/milestones`, '-f', `title=${titre}`]));
       existantes.set(titre, cree.number);
       process.stdout.write('+');
-    } catch { process.stdout.write('!'); }
+    } catch {
+      process.stdout.write('!');
+    }
     await dormir(400);
   }
   console.log('');
@@ -124,7 +162,10 @@ async function publier() {
     process.exit(1);
   }
 
-  let issues = readFileSync(ENTREE, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+  let issues = readFileSync(ENTREE, 'utf8')
+    .trim()
+    .split('\n')
+    .map((l) => JSON.parse(l));
   if (PHASE) issues = issues.filter((i) => i.labels.includes(`phase:${PHASE}`));
 
   const etat = existsSync(ETAT)
@@ -139,17 +180,23 @@ async function publier() {
   console.log(`│  déjà créées  ${dejaFaites}`);
   console.log(`│  délai        ${DELAI_MS} ms  (limite GitHub ≈ 500/h)`);
   const heures = (restantes.length * DELAI_MS) / 3_600_000;
-  console.log(`│  durée        ≈ ${heures < 1 ? `${Math.ceil(heures * 60)} min` : `${heures.toFixed(1)} h`}`);
+  console.log(
+    `│  durée        ≈ ${heures < 1 ? `${Math.ceil(heures * 60)} min` : `${heures.toFixed(1)} h`}`,
+  );
   if (SEC) console.log('│  MODE SEC — rien ne sera écrit');
   console.log('╰─');
 
-  if (!restantes.length) { console.log('\n✓ Rien à faire, tout est déjà créé.'); return; }
+  if (!restantes.length) {
+    console.log('\n✓ Rien à faire, tout est déjà créé.');
+    return;
+  }
 
   await creerLabels();
   const milestones = await creerMilestones(issues);
 
   console.log(`\n── Issues ──`);
-  let ok = 0, echecs = 0;
+  let ok = 0,
+    echecs = 0;
   const debut = Date.now();
 
   for (const [n, issue] of restantes.entries()) {
@@ -162,8 +209,7 @@ async function publier() {
     const tmp = join(mkdtempSync(join(tmpdir(), 'jp-issue-')), 'body.md');
     writeFileSync(tmp, issue.body);
 
-    const params = ['issue', 'create', '-R', DEPOT,
-      '-t', issue.title, '-F', tmp];
+    const params = ['issue', 'create', '-R', DEPOT, '-t', issue.title, '-F', tmp];
     for (const l of issue.labels) params.push('-l', l);
     const numMilestone = milestones.get(issue.milestone);
     if (numMilestone) params.push('-m', issue.milestone);
@@ -171,7 +217,7 @@ async function publier() {
     try {
       const url = gh(params, { stdio: ['ignore', 'pipe', 'pipe'] });
       etat.creees[issue.cle] = url.split('/').pop();
-      writeFileSync(ETAT, JSON.stringify(etat, null, 2));   // reprise après CHAQUE issue
+      writeFileSync(ETAT, JSON.stringify(etat, null, 2)); // reprise après CHAQUE issue
       ok++;
     } catch (e) {
       echecs++;
@@ -188,8 +234,8 @@ async function publier() {
       const ecoule = (Date.now() - debut) / 1000;
       const reste = ((restantes.length - fait) * DELAI_MS) / 60_000;
       process.stdout.write(
-        `\r  ${fait}/${restantes.length}  ✓${ok} ✗${echecs}  `
-        + `· ${Math.round(ecoule / 60)} min écoulées, ≈ ${Math.round(reste)} min restantes   `,
+        `\r  ${fait}/${restantes.length}  ✓${ok} ✗${echecs}  ` +
+          `· ${Math.round(ecoule / 60)} min écoulées, ≈ ${Math.round(reste)} min restantes   `,
       );
     }
 
@@ -201,4 +247,7 @@ async function publier() {
   if (echecs) console.log('  Relancez la même commande : seules les manquantes seront créées.');
 }
 
-publier().catch((e) => { console.error('\n✗', e.message); process.exit(1); });
+publier().catch((e) => {
+  console.error('\n✗', e.message);
+  process.exit(1);
+});
