@@ -1,8 +1,9 @@
 /**
- * @jp/mobile — React Native / Expo — acheteuse, vendeuse, créatrice.
+ * @jp/mobile — acheteuse, vendeuse, créatrice
  *
- * Coquille créée par S1. Le contenu arrive avec S8.
- * Voir plan/VAGUE0-socle.md.
+ * Une seule application, trois rôles sur un même compte *(F0.4)*.
+ * Coquille remplie par `S8`.
  */
 
-export const NOM = '@jp/mobile' as const;
+export { LIENS_PROFONDS } from './navigation/index.js';
+export { CAPACITES_HORS_LIGNE } from './noyau/index.js';

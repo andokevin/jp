@@ -1,8 +1,9 @@
 /**
- * @jp/ui — Design system : jetons, primitives, les quatre états.
+ * @jp/ui — design system partagé
  *
- * Coquille créée par S1. Le contenu arrive avec S7.
- * Voir plan/VAGUE0-socle.md.
+ * Jetons et primitives, communs au mobile et au web. Les sept primitives
+ * partagées arrivent avec `S7` — voir `JP_CONCEPTION_APP.md`.
  */
 
-export const NOM = '@jp/ui' as const;
+export * from './jetons.js';
+export * from './etats.js';

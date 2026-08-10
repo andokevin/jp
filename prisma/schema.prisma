@@ -1,0 +1,23 @@
+// Schéma Prisma — JP
+//
+// PostgreSQL 16, non négociable : intégrité du stock (RB1) et argent de
+// tiers (RB2). Le modèle complet est décrit dans JP_CONCEPTION_BDD.md, avec
+// l'ordre des 32 migrations.
+//
+// Les tables arrivent fonctionnalité par fonctionnalité. S4 pose les six
+// fondatrices : énumérés, utilisateur, parametre, journal_audit,
+// ecriture_financiere.
+//
+// Deux choses que Prisma ne sait pas exprimer et qui vont en SQL brut,
+// dans la migration :
+//   · REVOKE UPDATE, DELETE sur ecriture_financiere et journal_audit
+//   · les CHECK de garantie et la contrainte différée de RB5
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

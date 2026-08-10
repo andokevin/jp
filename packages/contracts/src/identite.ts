@@ -1,0 +1,9 @@
+/**
+ * Contrat — identite
+ *
+ * Schémas Zod du domaine. **Le serveur valide avec, les clients infèrent
+ * leurs types depuis.** Un changement ici doit casser le typage des
+ * clients : c’est la preuve que le contrat est réellement partagé.
+ */
+
+export const DOMAINE = 'identite' as const;

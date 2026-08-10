@@ -1,8 +1,7 @@
 /**
- * @jp/i18n — Catalogues malgache et français, formats locaux.
+ * @jp/i18n — catalogues mg et fr
  *
- * Coquille créée par S1. Le contenu arrive avec S2.
- * Voir plan/VAGUE0-socle.md.
+ * Catalogues, pluriels, formats. Rempli par `S2`.
  */
 
-export const NOM = '@jp/i18n' as const;
+export * from './langues.js';

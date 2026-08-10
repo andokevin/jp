@@ -1,0 +1,11 @@
+/**
+ * Litige — codes d’erreur stables
+ *
+ * Code en majuscules, message traduit mg/fr, action possible indiquée.
+ * Jamais de message générique : « code invalide » sans motif est un défaut,
+ * pas une simplification.
+ */
+
+export const ERREURS = {} as const satisfies Record<string, string>;
+
+export type CodeErreur = keyof typeof ERREURS;

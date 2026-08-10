@@ -21,6 +21,7 @@ La promesse tient en une phrase : **l'argent de l'acheteuse est gardé par JP ju
 | 9 | **[JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md)** | **113 tables** · 6 diagrammes ER · ordre des migrations · garanties structurelles |
 | 10 | **[JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md)** | Architecture · 16 modules · navigation · design system · stratégie de tests |
 | 11 | **[plan/](plan/)** | **Plan de réalisation, fonctionnalité par fonctionnalité** |
+| 12 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | **L'arborescence du dépôt** · convention de module · les 4 règles de dépendance |
 | — | [vp/](vp/) | Le même modèle en UML, importable dans Visual Paradigm |
 
 ---
