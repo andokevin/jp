@@ -291,8 +291,8 @@ for (const [id, f] of features) {
       '---',
       '',
       `<sub>Généré depuis \`${f.fichier}\` par \`scripts/gen-issues.mjs\`. ` +
-        `Amont : \`JP_BACKLOG.md\` · \`JP_USER_STORIES.md\` · \`JP_CAS_UTILISATION.md\` · ` +
-        `\`JP_CAHIER_DES_CHARGES.md\`.</sub>`,
+        `Amont : \`docs/JP_BACKLOG.md\` · \`docs/JP_USER_STORIES.md\` · ` +
+        `\`docs/JP_CAS_UTILISATION.md\` · \`docs/JP_CAHIER_DES_CHARGES.md\`.</sub>`,
     );
 
     issues.push({

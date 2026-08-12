@@ -2,7 +2,7 @@
 
 > **À lire une fois, avant tout mini-plan.** Chaque mini-plan de `plan/EPxx-*.md` suppose ce document connu et ne le répète pas : pile, arborescence, conventions, stratégie de tests, design system, préambule Stitch.
 >
-> Amont : `../JP_CAHIER_DES_CHARGES.md` (règles `R-xx`, recette `RBx`) · `../JP_CDC_TECHNIQUE.md` (modèle de données, machines à états, contraintes `C1`→`C5`) · `../JP_USER_STORIES.md` (`US-*`) · `../JP_BACKLOG.md` (`Fxx.y`).
+> Amont : `../docs/JP_CAHIER_DES_CHARGES.md` (règles `R-xx`, recette `RBx`) · `../docs/JP_CDC_TECHNIQUE.md` (modèle de données, machines à états, contraintes `C1`→`C5`) · `../docs/JP_USER_STORIES.md` (`US-*`) · `../docs/JP_BACKLOG.md` (`Fxx.y`).
 
 ---
 

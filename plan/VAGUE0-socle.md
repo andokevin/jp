@@ -2,7 +2,7 @@
 
 > **Rien ne démarre avant.** Les dix éléments `S1` à `S10` de `PLAN_SOCLE §9` sont référencés par les 266 mini-plans et replanifiés nulle part. Ce fichier les découpe en tâches réalisables et leur donne leurs issues.
 >
-> Amont : `PLAN_SOCLE.md` (pile, arborescence, conventions) · `../JP_CONCEPTION_APP.md` (architecture, modules) · `../JP_CONCEPTION_BDD.md` (ordre des migrations).
+> Amont : `PLAN_SOCLE.md` (pile, arborescence, conventions) · `../docs/JP_CONCEPTION_APP.md` (architecture, modules) · `../docs/JP_CONCEPTION_BDD.md` (ordre des migrations).
 
 **Durée réaliste** : trois à quatre semaines à deux développeurs. C'est le seul moment du projet où l'on construit sans rien livrer de visible. Ne pas l'écourter — chaque raccourci pris ici se paie 266 fois.
 
@@ -156,7 +156,7 @@ Une base PostgreSQL 16 qui se recrée d'une commande, avec les migrations fondat
 ### Contenu
 
 - **PostgreSQL 16 et Redis 7 en conteneurs**, `docker-compose.yml`, une commande pour repartir de zéro.
-- **Les migrations fondatrices** — les étapes 1 à 6 de l'ordre défini dans `../JP_CONCEPTION_BDD.md` : types énumérés, `utilisateur`, `parametre`, `journal_audit`, `ecriture_financiere`. La suite viendra fonctionnalité par fonctionnalité.
+- **Les migrations fondatrices** — les étapes 1 à 6 de l'ordre défini dans `../docs/JP_CONCEPTION_BDD.md` : types énumérés, `utilisateur`, `parametre`, `journal_audit`, `ecriture_financiere`. La suite viendra fonctionnalité par fonctionnalité.
 - **Les révocations, tout de suite.** `ecriture_financiere` et `journal_audit` sont en ajout seul, imposé par la base :
   ```sql
   REVOKE UPDATE, DELETE ON ecriture_financiere FROM jp_app;
@@ -254,7 +254,7 @@ Les jetons et les primitives partagés, et surtout **les quatre états rendus im
 ### Contenu
 
 - **Jetons** : couleurs, typographie, espacements, rayons, élévations. Cibles tactiles ≥ 48 dp, contraste ≥ 4,5:1 — vérifiés par un test, pas par une relecture.
-- **Les sept primitives partagées** décrites dans `../JP_CONCEPTION_APP.md`, dont `PrixAriary`, `EtatVide`, `BoutonPrincipal` (pleine largeur, ancré en bas), `ImageProgressive` (toujours un substitut basse résolution).
+- **Les sept primitives partagées** décrites dans `../docs/JP_CONCEPTION_APP.md`, dont `PrixAriary`, `EtatVide`, `BoutonPrincipal` (pleine largeur, ancré en bas), `ImageProgressive` (toujours un substitut basse résolution).
 - **`<Etat>`** — le composant qui impose les quatre états : *chargement, vide, erreur, hors ligne*. Un écran qui n'a pas ses quatre états n'est pas fini ; le rendre structurel coûte moins cher que de le rappeler en revue 266 fois.
 - **Mode économie de données** — un drapeau lu partout : images dégradées, vidéos non préchargées.
 
@@ -370,6 +370,6 @@ depend: [S3]
 
 Elle ne livre **aucune fonctionnalité visible**. Aucun écran d'inscription, aucun article, aucun paiement. C'est normal et c'est le seul moment du projet où ce sera vrai.
 
-Elle ne crée pas non plus les tables métier au-delà des six fondatrices : chaque fonctionnalité apporte ses migrations, dans l'ordre défini par `../JP_CONCEPTION_BDD.md`.
+Elle ne crée pas non plus les tables métier au-delà des six fondatrices : chaque fonctionnalité apporte ses migrations, dans l'ordre défini par `../docs/JP_CONCEPTION_BDD.md`.
 
 **La suite** : `TRANCHE1.md`.

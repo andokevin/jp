@@ -2,7 +2,7 @@
 
 > Ce que ce document donne : **où va chaque chose, et pourquoi elle ne va pas ailleurs.**
 >
-> Les décisions sont dans [JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md) et [plan/PLAN_SOCLE.md](plan/PLAN_SOCLE.md). Ici, la carte du terrain.
+> Les décisions sont dans [JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md) et [plan/PLAN_SOCLE.md](../plan/PLAN_SOCLE.md). Ici, la carte du terrain.
 
 ---
 
@@ -85,7 +85,7 @@ apps/api/src/modules/<domaine>/
 
 ## Les quatre règles de dépendance
 
-Elles ne sont pas des conventions : elles sont dans [eslint.config.mjs](eslint.config.mjs) et font échouer l'intégration continue.
+Elles ne sont pas des conventions : elles sont dans [eslint.config.mjs](../eslint.config.mjs) et font échouer l'intégration continue.
 
 **1. Un paquet partagé ne connaît aucune application.** La dépendance va dans l'autre sens, toujours.
 
@@ -101,7 +101,7 @@ Elles ne sont pas des conventions : elles sont dans [eslint.config.mjs](eslint.c
 pnpm archi
 ```
 
-[scripts/check-architecture.mjs](scripts/check-architecture.mjs) écrit sept fichiers volontairement fautifs ou volontairement corrects, les passe à ESLint, et exige le bon verdict **dans les deux sens**.
+[scripts/check-architecture.mjs](../scripts/check-architecture.mjs) écrit sept fichiers volontairement fautifs ou volontairement corrects, les passe à ESLint, et exige le bon verdict **dans les deux sens**.
 
 | Cas | Attendu |
 |---|---|
@@ -207,7 +207,7 @@ Le détail est dans [JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md), avec les douze
 | `S2` `@jp/money` | ✅ 40 tests verts |
 | `S2` `@jp/i18n`, `@jp/contracts` | coquilles posées |
 | `S3` plateforme API | coquilles posées, à remplir |
-| `S4` → `S10` | à faire — voir [plan/VAGUE0-socle.md](plan/VAGUE0-socle.md) |
+| `S4` → `S10` | à faire — voir [plan/VAGUE0-socle.md](../plan/VAGUE0-socle.md) |
 
 ```bash
 pnpm verifier    # typage · style · tests · architecture

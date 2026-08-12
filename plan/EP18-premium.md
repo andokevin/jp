@@ -371,4 +371,4 @@ depend: []
 
 ---
 
-*Toutes les épiques sont couvertes. Voir [PLAN_INDEX](PLAN_INDEX.md) pour la carte complète, et `../JP_CAS_UTILISATION.md` pour les cas d'utilisation et les diagrammes de séquence.*
+*Toutes les épiques sont couvertes. Voir [PLAN_INDEX](PLAN_INDEX.md) pour la carte complète, et `../docs/JP_CAS_UTILISATION.md` pour les cas d'utilisation et les diagrammes de séquence.*
