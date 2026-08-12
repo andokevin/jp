@@ -1,0 +1,44 @@
+# Environnement de développement de JP.
+#
+# Ce conteneur est ISOLÉ de `postgres-container` (port 5432), qui héberge
+# tube_c4m_db et monitoring. `docker compose down -v` ne peut donc toucher
+# que les données de JP.
+name: jp
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: jp-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jp
+      # Le tri des chaînes est figé à la création du cluster et ne change
+      # plus jamais après. On le décide donc maintenant : ICU en fr-FR,
+      # pour que « Éric » se classe entre « Eric » et « Fanja », et non
+      # après « Zo » comme le ferait un tri par octets.
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale-provider=icu --icu-locale=fr-FR --locale=C.UTF-8'
+
+    # ⬇️ Corrigé : ports est aligné avec environment
+    ports:
+      - '5433:5432'
+      # 5433 sur VOTRE machine → 5432 dans le conteneur.
+      # 5432 est déjà pris par postgres-container ; deux services ne
+      # peuvent pas écouter sur le même port.
+
+
+    healthcheck:
+      # pg_isready répond dès que le serveur accepte des connexions.
+      # Sans cette sonde, `up -d --wait` rendrait la main avant que la
+      # base soit prête, et la migration suivante échouerait une fois sur
+      # trois — le pire type de panne, celle qui va et vient.
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d jp']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+#  Corrigé : Déclaration globale du volume ajoutée à la racine
+volumes:
+  jp-postgres-data:
