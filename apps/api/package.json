@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
-    "@prisma/client": "^7.9.1"
+    "@prisma/client": "^7.9.1",
+    "@jp/contracts": "workspace:*"
   },
   "devDependencies": {
     "@types/pg": "^8.21.0",

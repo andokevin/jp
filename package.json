@@ -24,7 +24,7 @@
     "db:reset": "docker compose down -v && docker compose up -d --wait && prisma migrate deploy && pnpm db:role && pnpm db:seed",
     "db:role": "node scripts/db-role.mjs",
     "db:migrer": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts",
+    "db:seed": "tsx prisma/seed.mts",
     "db:studio": "prisma studio",
     "db:psql": "docker compose exec postgres psql -U postgres -d jp"
   },
