@@ -28,7 +28,6 @@ services:
       # 5432 est déjà pris par postgres-container ; deux services ne
       # peuvent pas écouter sur le même port.
 
-
     healthcheck:
       # pg_isready répond dès que le serveur accepte des connexions.
       # Sans cette sonde, `up -d --wait` rendrait la main avant que la

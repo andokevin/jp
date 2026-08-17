@@ -1,23 +1,158 @@
-// Schéma Prisma — JP
-//
-// PostgreSQL 16, non négociable : intégrité du stock (RB1) et argent de
-// tiers (RB2). Le modèle complet est décrit dans JP_CONCEPTION_BDD.md, avec
-// l'ordre des 32 migrations.
-//
-// Les tables arrivent fonctionnalité par fonctionnalité. S4 pose les six
-// fondatrices : énumérés, utilisateur, parametre, journal_audit,
-// ecriture_financiere.
-//
-// Deux choses que Prisma ne sait pas exprimer et qui vont en SQL brut,
-// dans la migration :
-//   · REVOKE UPDATE, DELETE sur ecriture_financiere et journal_audit
-//   · les CHECK de garantie et la contrainte différée de RB5
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../apps/api/src/genere/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Énumérés
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Malgache d'abord : c'est la langue de la majorité des utilisatrices.
+enum Langue {
+  mg
+  fr
+
+  @@map("langue")
+}
+
+enum StatutUtilisateur {
+  actif
+  suspendu
+  supprime
+
+  @@map("statut_utilisateur")
+}
+
+/// Le type dit comment lire `parametre.valeur`, qui est toujours du texte.
+/// `pour_mille` existe séparément d'`entier` parce que 25 y signifie 2,5 %
+/// et qu'un affichage naïf tromperait le vendeur.
+enum TypeParametre {
+  entier
+  texte
+  booleen
+  duree_s
+  pour_mille
+
+  @@map("type_parametre")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Utilisateur — R-C1, R-C15, RB6
+// ─────────────────────────────────────────────────────────────────────────
+
+model Utilisateur {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// L'identifiant du compte (R-C1). Unique, jamais réutilisable.
+  email          String    @unique
+  emailVerifieLe DateTime? @map("email_verifie_le") @db.Timestamptz(6)
+
+  /// Le téléphone n'est PLUS un identifiant : c'est un contact de
+  /// livraison (R-C15). D'où le point d'interrogation — il peut être vide.
+  telephone          String?
+  telephoneVerifieLe DateTime? @map("telephone_verifie_le") @db.Timestamptz(6)
+
+  prenom   String?
+  photoUrl String? @map("photo_url")
+  langue   Langue  @default(mg)
+
+  /// Requis pour publier une vidéo (RB6). Vide tant qu'on ne publie pas.
+  dateNaissance DateTime? @map("date_naissance") @db.Date
+
+  statut             StatutUtilisateur @default(actif)
+  classementsPublics Boolean           @default(true) @map("classements_publics")
+
+  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  /// `@default(now())` s'ajoute à `@updatedAt` : le second est tenu par le
+  /// client Prisma, le premier par la base. Sans lui, un INSERT écrit à la main
+  /// depuis psql échoue sur une colonne NOT NULL sans valeur par défaut.
+  majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+
+  journauxAudit           JournalAudit[]
+  parametresModifies      Parametre[]
+  modificationsProposees  ParametreModification[] @relation("propose")
+  modificationsConfirmees ParametreModification[] @relation("confirme")
+
+  @@map("utilisateur")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Paramètres — R-O1
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Tous les réglages économiques : durée de réservation, taux de commission,
+/// délais, plafonds. Modifiables sans déploiement — sinon aucun essai n'a
+/// lieu pendant le pilote.
+model Parametre {
+  cle         String        @id
+  valeur      String
+  type        TypeParametre
+  description String
+
+  modifiePar   Utilisateur? @relation(fields: [modifieParId], references: [id], onDelete: SetNull)
+  modifieParId String?      @map("modifie_par_id") @db.Uuid
+  modifieLe    DateTime     @default(now()) @map("modifie_le") @db.Timestamptz(6)
+
+  modifications ParametreModification[]
+
+  @@map("parametre")
+}
+
+/// Double validation : proposé par l'un, confirmé par l'autre.
+/// Personne ne change seul un taux de commission.
+model ParametreModification {
+  id  String @id @default(uuid(7)) @db.Uuid
+  cle String
+
+  parametre      Parametre @relation(fields: [cle], references: [cle], onDelete: Cascade)
+  ancienneValeur String    @map("ancienne_valeur")
+  nouvelleValeur String    @map("nouvelle_valeur")
+  motif          String
+
+  proposePar   Utilisateur @relation("propose", fields: [proposeParId], references: [id])
+  proposeParId String      @map("propose_par_id") @db.Uuid
+  proposeLe    DateTime    @default(now()) @map("propose_le") @db.Timestamptz(6)
+
+  /// `Restrict` et non `SetNull` : on n'efface pas la trace de qui a validé un
+  /// changement de taux de commission. Un compte se ferme par
+  /// `statut = supprime`, jamais par DELETE.
+  confirmePar   Utilisateur? @relation("confirme", fields: [confirmeParId], references: [id], onDelete: Restrict)
+  confirmeParId String?      @map("confirme_par_id") @db.Uuid
+  confirmeLe    DateTime?    @map("confirme_le") @db.Timestamptz(6)
+
+  @@index([cle, proposeLe])
+  @@map("parametre_modification")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Journal d'audit — D3, R-V5, N3.4
+// ─────────────────────────────────────────────────────────────────────────
+
+/// AJOUT SEUL. La garantie n'est pas ici — elle est dans la migration,
+/// sous forme de REVOKE. Prisma ne sait pas l'exprimer.
+model JournalAudit {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// `Restrict` et non `SetNull` : voir l'explication sous ce bloc.
+  acteur   Utilisateur? @relation(fields: [acteurId], references: [id], onDelete: Restrict)
+  acteurId String?      @map("acteur_id") @db.Uuid
+
+  action    String
+  cibleType String  @map("cible_type")
+  cibleId   String? @map("cible_id")
+
+  avant Json?
+  apres Json?
+
+  adresseIp  String?  @map("adresse_ip") @db.Inet
+  horodatage DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([cibleType, cibleId, horodatage])
+  @@index([acteurId, horodatage])
+  @@map("journal_audit")
 }
