@@ -20,11 +20,18 @@ CREATE EXTENSION IF NOT EXISTS earthdistance;
 -- Bloc idempotent, parce qu'un rôle est un objet de CLUSTER et non de base :
 -- il survit à la base fantôme que Prisma crée et détruit à chaque migration.
 -- Sans la garde, la deuxième exécution échouerait sur « role already exists ».
+--
+-- AUCUN MOT DE PASSE ICI. Une migration est versionnée et identique dans tous
+-- les environnements : un secret dedans se retrouve dans l'historique Git pour
+-- toujours, et serait le même en développement et en production.
+--   · en développement : `pnpm db:role` le pose depuis .env ;
+--   · en production : l'administrateur crée le rôle avec un vrai secret, et la
+--     garde IF NOT EXISTS garantit que cette migration n'y touchera pas.
 
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'jp_app') THEN
-    CREATE ROLE jp_app LOGIN PASSWORD 'jp_app';
+    CREATE ROLE jp_app LOGIN;
   END IF;
 END
 $$;

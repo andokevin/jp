@@ -21,12 +21,15 @@ services:
       # après « Zo » comme le ferait un tri par octets.
       POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale-provider=icu --icu-locale=fr-FR --locale=C.UTF-8'
 
-    # ⬇️ Corrigé : ports est aligné avec environment
     ports:
-      - '5433:5432'
-      # 5433 sur VOTRE machine → 5432 dans le conteneur.
-      # 5432 est déjà pris par postgres-container ; deux services ne
-      # peuvent pas écouter sur le même port.
+      # 127.0.0.1 restreint l'écoute à CETTE machine. Sans ce préfixe, Docker
+      # écoute sur 0.0.0.0 — toutes les interfaces réseau — et la base devient
+      # joignable depuis n'importe quel poste du même Wi-Fi.
+      #
+      # 5433 côté machine → 5432 côté conteneur : 5432 est déjà pris par
+      # postgres-container, et deux services ne peuvent pas écouter au même
+      # endroit.
+      - '127.0.0.1:5433:5432'
 
     healthcheck:
       # pg_isready répond dès que le serveur accepte des connexions.
