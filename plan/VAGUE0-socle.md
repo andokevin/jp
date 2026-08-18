@@ -6,15 +6,17 @@
 
 **Durée réaliste** : trois à quatre semaines à deux développeurs. C'est le seul moment du projet où l'on construit sans rien livrer de visible. Ne pas l'écourter — chaque raccourci pris ici se paie 266 fois.
 
-**Ordre imposé** : `S1 → S2 → S3 → S4` en série. Ensuite `S5`, `S6`, `S7` en parallèle. Puis `S8`, `S9`. `S10` se greffe en continu.
+**Ordre imposé** : `S1 → S2 → S4 → S3` en série. Ensuite `S5`, `S6`, `S7` en parallèle. Puis `S8`, `S9`. `S10` se greffe en continu.
+
+> **Correction du 18/08/2026.** Ce document plaçait d'abord `S3 → S4`. C'était faux : l'idempotence de `S3` conserve ses clés 24 h **dans une table**, et ses tests ont besoin d'un PostgreSQL réel — c'est-à-dire de `S4`. Écrite avant, elle l'aurait été contre une interface vide, puis réécrite. La base vient donc avant la plateforme.
 
 ```mermaid
 flowchart LR
   S1[S1 monorepo] --> S2[S2 paquets]
-  S2 --> S3[S3 plateforme API]
-  S3 --> S4[S4 Prisma]
-  S4 --> S5[S5 files]
-  S4 --> S6[S6 temps réel]
+  S2 --> S4[S4 Prisma]
+  S4 --> S3[S3 plateforme API]
+  S3 --> S5[S5 files]
+  S3 --> S6[S6 temps réel]
   S2 --> S7[S7 design system]
   S7 --> S8[S8 coquille Expo]
   S7 --> S9[S9 coquilles Vite]
