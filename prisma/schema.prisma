@@ -12,9 +12,11 @@ datasource db {
 // Énumérés
 // ─────────────────────────────────────────────────────────────────────────
 
-/// Malgache d'abord : c'est la langue de la majorité des utilisatrices.
+/// Anglais et français. Le français est le défaut : c'est la langue écrite
+/// courante à Madagascar, et celle qui produit les libellés les plus longs —
+/// donc celle qui contraint les maquettes.
 enum Langue {
-  mg
+  en
   fr
 
   @@map("langue")
@@ -59,7 +61,8 @@ model Utilisateur {
 
   prenom   String?
   photoUrl String? @map("photo_url")
-  langue   Langue  @default(mg)
+  /// Français par défaut : c'est la langue écrite courante à Madagascar.
+  langue   Langue  @default(fr)
 
   /// Requis pour publier une vidéo (RB6). Vide tant qu'on ne publie pas.
   dateNaissance DateTime? @map("date_naissance") @db.Date

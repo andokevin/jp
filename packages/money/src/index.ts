@@ -21,13 +21,13 @@
  * Voir `plan/PLAN_SOCLE.md` §4 et `JP_CDC_TECHNIQUE.md` §6.2.
  */
 
+import type { Langue } from '@jp/i18n';
+
 /** Un montant en ariary. Toujours un entier, jamais un flottant. */
 export type Ariary = number & { readonly __ariary: unique symbol };
 
 /** Un taux en pour mille : `25` vaut 2,5 %. Toujours un entier. */
 export type PourMille = number & { readonly __pourMille: unique symbol };
-
-export type Langue = 'mg' | 'fr';
 
 export class MontantInvalide extends Error {
   override readonly name = 'MontantInvalide';
@@ -258,12 +258,18 @@ export function formaterNu(montant: Ariary): string {
     .replace(/\B(?=(\d{3})+(?!\d))/g, SEPARATEUR);
 }
 
-/** Le taux, tel qu'on le montre à un vendeur : `25` → « 2,5 % ». */
-export function formaterTaux(taux: PourMille, langue: Langue = 'fr'): string {
+/**
+ * Le taux, tel qu'on le montre à un vendeur : `25` → « 2,5 % ».
+ *
+ * La virgule décimale est la même en anglais britannique et en français —
+ * d'où l'absence de branchement sur la langue. Le paramètre reste dans la
+ * signature parce que l'anglais américain, s'il arrivait, utiliserait un
+ * point ; le supprimer obligerait alors à modifier tous les appelants.
+ */
+export function formaterTaux(taux: PourMille, _langue: Langue = 'fr'): string {
   const entier = Math.floor(taux / 10);
   const decimale = taux % 10;
-  const virgule = langue === 'mg' ? ',' : ',';
-  return decimale === 0 ? `${entier} %` : `${entier}${virgule}${decimale} %`;
+  return decimale === 0 ? `${entier} %` : `${entier},${decimale} %`;
 }
 
 // ── Sérialisation ───────────────────────────────────────────────────────────

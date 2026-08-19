@@ -193,7 +193,7 @@ describe('le client Prisma applicatif', () => {
     await base.prisma.utilisateur.create({ data: { email } });
     const trouve = await base.prisma.utilisateur.findUnique({ where: { email } });
     expect(trouve?.email).toBe(email);
-    expect(trouve?.langue).toBe('mg'); // malgache par défaut
+    expect(trouve?.langue).toBe('fr'); // français par défaut
   });
 });
 

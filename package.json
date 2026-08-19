@@ -11,7 +11,7 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "verifier": "turbo run typecheck lint test && pnpm archi",
+    "verifier": "turbo run typecheck lint test && pnpm archi && pnpm contrat",
     "archi": "node scripts/check-architecture.mjs",
     "couverture": "node scripts/check-coverage.mjs",
     "format": "prettier --write .",
@@ -26,7 +26,8 @@
     "db:migrer": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.mts",
     "db:studio": "prisma studio",
-    "db:psql": "docker compose exec postgres psql -U postgres -d jp"
+    "db:psql": "docker compose exec postgres psql -U postgres -d jp",
+    "contrat": "node scripts/check-contrat.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
