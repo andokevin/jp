@@ -46,9 +46,9 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 | | |
 |---|---|
-| Fichiers TypeScript écrits | 161 |
-| Tests | 81 |
-| Migrations appliquées | 2 |
+| Fichiers TypeScript écrits | 163 |
+| Tests | 107 |
+| Migrations appliquées | 3 |
 
 ## Notions pratiquées
 

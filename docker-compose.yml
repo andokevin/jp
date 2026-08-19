@@ -41,6 +41,31 @@ services:
       timeout: 3s
       retries: 30
 
-#  Corrigé : Déclaration globale du volume ajoutée à la racine
+  redis:
+    image: redis:7-alpine
+    container_name: jp-redis
+    restart: unless-stopped
+
+    ports:
+      # 127.0.0.1 seulement, comme PostgreSQL. 6379 est libre sur cette
+      # machine, mais on décale quand même : si un Redis y apparaît un jour,
+      # les deux ne se disputeront pas le port.
+      - '127.0.0.1:6380:6379'
+
+    volumes:
+      - jp-redis-data:/data
+
+    # `appendonly` conserve les données au redémarrage. Redis n'est JAMAIS
+    # l'autorité (décision D2) — mais perdre les files BullMQ à chaque
+    # redémarrage rendrait le développement pénible pour rien.
+    command: ['redis-server', '--appendonly', 'yes']
+
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
 volumes:
   jp-postgres-data:
+  jp-redis-data:
