@@ -76,6 +76,7 @@ model Utilisateur {
   /// depuis psql échoue sur une colonne NOT NULL sans valeur par défaut.
   majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
+  sessions                Session[]
   journauxAudit           JournalAudit[]
   parametresModifies      Parametre[]
   modificationsProposees  ParametreModification[] @relation("propose")
@@ -158,4 +159,67 @@ model JournalAudit {
   @@index([cibleType, cibleId, horodatage])
   @@index([acteurId, horodatage])
   @@map("journal_audit")
+}
+// ─────────────────────────────────────────────────────────────────────────
+// Plateforme — S3
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Les clés d'idempotence — **RB10**.
+///
+/// Une écriture financière interrompue ne doit produire ni double
+/// prélèvement, ni commande perdue. Le client fabrique une clé, la renvoie
+/// s'il réessaie, et le serveur reconnaît le rejeu.
+///
+/// `empreinteRequete` garde contre le pire cas : la même clé réutilisée pour
+/// une requête DIFFÉRENTE. Sans elle, un client bogué pourrait recevoir la
+/// réponse d'une commande pour une autre.
+model CleIdempotence {
+  cle String @id
+
+  utilisateurId String? @map("utilisateur_id") @db.Uuid
+  methode       String
+  chemin        String
+  /// Empreinte SHA-256 du corps de la requête.
+  empreinteRequete String @map("empreinte_requete")
+
+  /// `NULL` tant que la requête est EN COURS. C'est ce qui permet de
+  /// distinguer « rejeu d'une requête terminée » de « deux requêtes
+  /// simultanées avec la même clé ».
+  statut  Int?
+  reponse Json?
+
+  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  expireLe DateTime @map("expire_le") @db.Timestamptz(6)
+
+  @@index([expireLe])
+  @@map("cle_idempotence")
+}
+
+/// Une session ouverte, sur un appareil.
+///
+/// Le jeton n'est **jamais** stocké en clair : seule son empreinte l'est. Une
+/// fuite de la base ne donne donc pas de session utilisable.
+///
+/// `famille` porte la chaîne de rotation. Quand un jeton de rafraîchissement
+/// déjà consommé réapparaît, c'est le signe d'un vol : on révoque **toute la
+/// famille**, pas seulement le jeton présenté *(F0.2)*.
+model Session {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  utilisateurId String      @map("utilisateur_id") @db.Uuid
+
+  jetonEmpreinte String @unique @map("jeton_empreinte")
+  famille        String @db.Uuid
+
+  appareil  String?
+  adresseIp String? @map("adresse_ip") @db.Inet
+
+  creeLe     DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
+  expireLe   DateTime  @map("expire_le") @db.Timestamptz(6)
+  revoqueeLe DateTime? @map("revoquee_le") @db.Timestamptz(6)
+
+  @@index([utilisateurId, expireLe])
+  @@index([famille])
+  @@map("session")
 }

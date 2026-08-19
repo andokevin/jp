@@ -27,7 +27,8 @@
     "db:seed": "tsx prisma/seed.mts",
     "db:studio": "prisma studio",
     "db:psql": "docker compose exec postgres psql -U postgres -d jp",
-    "contrat": "node scripts/check-contrat.mjs"
+    "contrat": "node scripts/check-contrat.mjs",
+    "avancement": "node scripts/avancement.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
