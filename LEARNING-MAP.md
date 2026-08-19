@@ -24,30 +24,30 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 |---|---|---|---|---|
 | `S1` | Monorepo, TypeScript strict, intégration continue | `●●●●` | **fait** | #1280–#1283 |
 | `S2` | Paquets fondamentaux — money, i18n, contracts | `●●●●` | **fait** | #1284–#1287 |
-| `S3` | Plateforme API — le transverse écrit une fois | `○○○○○○○` | 0/7 | #1288–#1294 |
+| `S3` | Plateforme API — le transverse écrit une fois | `●●●●●●●` | **fait** | #1288–#1294 |
 | `S4` | Base de données — Prisma, migrations, Testcontainers | `●●●●●` | **fait** | #1295–#1299 |
-| `S5` | Travail asynchrone — BullMQ, files, reprise | `○○○○` | 0/4 | #1300–#1303 |
-| `S6` | Temps réel — WebSocket, canaux, resynchronisation | `○○○○` | 0/4 | #1304–#1307 |
-| `S7` | Design system — jetons, primitives, les quatre états | `○○○○○` | 0/5 | #1308–#1312 |
-| `S8` | Coquille Expo — navigation, session, hors ligne | `○○○○○` | 0/5 | #1313–#1317 |
-| `S9` | Coquilles Vite — back-office et pages publiques | `○○○` | 0/3 | #1318–#1320 |
-| `S10` | Observabilité — journaux, métriques, alertes | `○○○○` | 0/4 | #1321–#1324 |
+| `S5` | Travail asynchrone — BullMQ, files, reprise | `●●●●` | **fait** | #1300–#1303 |
+| `S6` | Temps réel — WebSocket, canaux, resynchronisation | `●●●●` | **fait** | #1304–#1307 |
+| `S7` | Design system — jetons, primitives, les quatre états | `●●●●●` | **fait** | #1308–#1312 |
+| `S8` | Coquille Expo — navigation, session, hors ligne | `●●●●○` | 4/5 | #1313–#1317 |
+| `S9` | Coquilles Vite — back-office et pages publiques | `●●●` | **fait** | #1318–#1320 |
+| `S10` | Observabilité — journaux, métriques, alertes | `●●●●` | **fait** | #1321–#1324 |
 
-**13 / 45** issues de socle fermées.
+**44 / 45** issues de socle fermées.
 
 ## La suite
 
 | | |
 |---|---|
 | Tranche 1 — première vente réelle | 0 / 302 |
-| Prochaine issue | **#1288** — S3.1 Serveur Fastify, greffons, arrêt propre, contexte de corrélation |
+| Prochaine issue | **#1317** — S8.5 Mesure du poids de l'APK et de la mémoire en intégration continue |
 
 ## Ce que le dépôt contient
 
 | | |
 |---|---|
-| Fichiers TypeScript écrits | 163 |
-| Tests | 107 |
+| Fichiers TypeScript écrits | 176 |
+| Tests | 180 |
 | Migrations appliquées | 3 |
 
 ## Notions pratiquées
