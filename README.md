@@ -22,6 +22,7 @@ La promesse tient en une phrase : **l'argent de l'acheteuse est gardé par JP ju
 | 10 | **[JP_CONCEPTION_APP.md](docs/JP_CONCEPTION_APP.md)** | Architecture · 16 modules · navigation · design system · stratégie de tests |
 | 11 | **[plan/](plan/)** | **Plan de réalisation, fonctionnalité par fonctionnalité** |
 | 12 | **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | **L'arborescence du dépôt** · convention de module · les 4 règles de dépendance |
+| 13 | **[docs/SOCLE.md](docs/SOCLE.md)** | **Le socle fichier par fichier** — quoi ouvrir, dans quel ordre, et ce qu'il faut y voir |
 | — | [vp/](vp/) | Le même modèle en UML, importable dans Visual Paradigm |
 
 ---
