@@ -13,7 +13,7 @@ jp/
 ├─ apps/
 │  ├─ api/                      Fastify · service unique modulaire
 │  │  └─ src/
-│  │     ├─ serveur.ts          l'inventaire : 16 modules, 6 files, 3 canaux
+│  │     ├─ serveur.ts          l'inventaire : 17 modules, 6 files, 3 canaux
 │  │     ├─ plateforme/         le transverse, écrit UNE fois
 │  │     │  ├─ erreurs.ts       codes stables, enveloppe, traduction mg/fr
 │  │     │  ├─ auth.ts          session, contexte, garde de route
@@ -23,7 +23,7 @@ jp/
 │  │     │  ├─ debit.ts         limitation par identité, adresse, route
 │  │     │  ├─ audit.ts         journal_audit — ajout seul
 │  │     │  └─ contexte.ts      identifiant de corrélation de bout en bout
-│  │     ├─ modules/            16 domaines, mêmes 6 fichiers chacun
+│  │     ├─ modules/            17 domaines, mêmes 6 fichiers chacun
 │  │     ├─ jobs/               BullMQ — 6 files
 │  │     └─ temps-reel/         WebSocket — 3 canaux, resynchronisation
 │  ├─ mobile/                   React Native · acheteuse, vendeuse, créatrice
@@ -60,10 +60,11 @@ apps/api/src/modules/<domaine>/
 └─ erreurs.ts      codes d'erreur stables
 ```
 
-### Les seize domaines
+### Les dix-sept domaines
 
 | Module | Rôle | Ce qui s'y joue |
 |---|---|---|
+| **`univers`** | JP Mode, JP Beauté, JP Tech… | **les règles qui varient** : commission, livraison, fiche, litige |
 | `identite` | comptes, sessions, vérification | l'adresse électronique est l'identifiant, le téléphone un contact |
 | `catalogue` | articles, variantes, vitrines | la fiche enrichie remplace le fait de toucher le vêtement |
 | **`stock`** | quantités, réservations | **RB1** — ne dépend de rien, délibérément |

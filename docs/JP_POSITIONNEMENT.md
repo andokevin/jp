@@ -319,3 +319,94 @@ En plus des quatre indicateurs de la slide 6, six tests :
 ---
 
 *Voir `JP_BACKLOG.md` pour le détail des fonctionnalités et des parcours.*
+
+---
+
+# Les univers — pourquoi la promesse en supporte plusieurs
+
+**Décision du 20/08/2026.**
+
+## La promesse était déjà horizontale
+
+Ce document dit, plus haut : *« Ce que JP vend, c'est la certitude. Le risque
+change de camp. »*
+
+Cette phrase ne parle pas de vêtements. **Le séquestre protège l'achat d'un
+téléphone exactement comme celui d'une robe** — et sur un appareil à 800 000 Ar,
+l'enjeu est bien plus fort qu'sur une robe à 50 000. La marque supporte donc
+plusieurs univers sans se contredire.
+
+Ce qui était spécifique à la mode, en revanche : la taille, la morphologie, les
+mesures, le dressing, l'essayage. **Promesse horizontale, fonctionnalités
+verticales.** C'est exactement le cas de figure où l'abstraction se paie.
+
+## Les cinq univers
+
+| Univers | Signature | Pourquoi lui |
+|---|---|---|
+| **JP Mode** | *Le direct qui habille* | le direct Facebook y est né · marché de départ |
+| **JP Beauté** | *Vrai produit, prix vrai* | deuxième marché du direct malgache · **la contrefaçon y est dangereuse, pas seulement décevante** |
+| JP Tech | *Vérifié avant de payer* | panier moyen le plus élevé · risque d'arnaque maximal |
+| JP Maison | *Livré, monté, garanti* | panier élevé, mais logistique lourde |
+| JP Enfant | *Ce qu'il faut, à son âge* | achat récurrent, exigence de confiance forte |
+
+**Deux sont ouverts au lancement** — Mode et Beauté. Trois sont déclarés et
+fermés.
+
+## Pourquoi ce mot, « univers »
+
+« Pack » dit lot ou abonnement — un client y chercherait un prix. « Division »
+est du vocabulaire d'organigramme. « Section » est juste mais froid. « Rayon »
+suggère un même magasin avec les mêmes règles, or c'est précisément le contraire.
+
+**« Univers »** est le standard du commerce français, et il dit la vérité
+technique : un monde avec ses propres codes.
+
+## Pourquoi des noms descriptifs et pas évocateurs
+
+`JP Mode` plutôt qu'un nom inventé, parce qu'**une vendeuse d'Analakely
+comprend sans qu'on lui explique**. La marque `JP` porte la confiance — le
+séquestre, l'arbitrage ; le suffixe porte la catégorie. Coût d'apprentissage :
+zéro. Extension : gratuite.
+
+Un nom évocateur construirait plus de marque, mais demanderait d'enseigner
+cinq noms — et personne ne cherche un mot inventé pour trouver une robe.
+
+**La signature compense la platitude du nom.** Le nom explique, la signature
+donne le caractère.
+
+## Pourquoi Mode et Beauté ensemble, et pas les cinq
+
+Elles partagent la même logistique — léger, point relais — et souvent la même
+vendeuse. **Un seul modèle de livraison à roder, deux marchés validés.**
+
+Ouvrir les cinq d'emblée voudrait dire cinq jeux de règles, cinq viviers de
+vendeurs à recruter, deux modèles de livraison dont un avec camion. Et si le
+pilote échouait, **on ne saurait pas lequel des cinq a échoué**.
+
+## Ce que JP Beauté change au produit, et pourquoi c'est un univers
+
+Un vêtement qui ne va pas **déçoit**. Un cosmétique périmé ou contrefait
+**blesse**.
+
+Cette différence de nature — et non de catégorie — justifie à elle seule un
+univers séparé plutôt qu'une catégorie de plus :
+
+- la **date de péremption** est obligatoire, vérifiée à la publication **et** à
+  l'achat, parce qu'un article périme en stock ;
+- l'état **scellé ou entamé** est affiché sur la vignette : c'est l'information
+  qui décide de l'achat ;
+- le litige **« réaction cutanée »** est traité comme une urgence, pas comme un
+  désaccord de vente ;
+- la **contrefaçon** est transmise au vendeur *et* à l'équipe : ce n'est pas un
+  préjudice commercial, c'est un risque pour les personnes.
+
+## L'argument qui décide de la viabilité d'un univers
+
+**Le taux de commission.**
+
+Un revendeur de téléphones gagne environ 5 % sur un appareil. Lui en prendre 8
+rendrait `JP Tech` **vide**, quel que soit le reste du produit. D'où 3 % pour
+Tech, 8 % pour Mode et Beauté, 5 % pour Maison.
+
+Un univers avec un taux global n'est pas un univers : c'est une étiquette.

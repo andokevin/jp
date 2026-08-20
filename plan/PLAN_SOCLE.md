@@ -82,9 +82,10 @@ apps/api/src/modules/<domaine>/
 
 **Les modules**, alignés sur les domaines du CDC technique :
 
-`identite` · `catalogue` · `stock` · `commande` · `paiement` · `sequestre` · `livraison` · `contenu` · `createur` · `fidelite` · `promotion` · `evenement` · `litige` · `moderation` · `notification` · `exploitation`
+`univers` · `identite` · `catalogue` · `stock` · `commande` · `paiement` · `sequestre` · `livraison` · `contenu` · `createur` · `fidelite` · `promotion` · `evenement` · `litige` · `moderation` · `notification` · `exploitation`
 
 **Règles de dépendance**
+- **`univers` ne dépend de rien et tout le monde le lit.** Il porte les règles qui varient d'un univers à l'autre : commission, livraison, champs de fiche, motifs de litige. `catalogue`, `commande` et `litige` l'interrogent ; il n'interroge personne.
 - `stock` ne dépend de rien. C'est le module le plus critique *(RB1)* et le plus isolé.
 - `promotion` lit `fidelite` (éligibilité par palier) et `evenement` (rattachement), et rien de plus.
 - `commande` orchestre : elle appelle `stock`, `promotion`, `paiement`, `sequestre`. **Elle est le seul point où l'argent et le stock se rencontrent.**

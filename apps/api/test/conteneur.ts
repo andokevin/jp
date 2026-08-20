@@ -44,6 +44,14 @@ export async function demarrerBase(): Promise<BaseDeTest> {
     stdio: 'pipe',
   });
 
+  // Le seed : les univers doivent exister pour que les tests qui les
+  // interrogent aient quelque chose à lire.
+  execFileSync('pnpm', ['db:seed'], {
+    cwd: new URL('../../..', import.meta.url).pathname,
+    env: { ...process.env, DATABASE_URL: urlProprietaire },
+    stdio: 'pipe',
+  });
+
   // La migration crée `jp_app` SANS mot de passe — un secret ne va pas dans un
   // fichier versionné. On en pose un, jetable, comme le fait `pnpm db:role`.
   const admin = new pg.Client({ connectionString: urlProprietaire });

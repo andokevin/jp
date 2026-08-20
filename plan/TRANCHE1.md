@@ -10,7 +10,7 @@
 
 La phase 1 du backlog, c'est **841 issues**. Réalisée d'un bloc, elle représente huit à douze mois avant qu'un seul ariary change de main. C'est le mode d'échec le plus courant et le plus coûteux : on découvre en une fois, très tard, que le paiement mobile money ne se comporte pas comme prévu, que les points relais ne suivent pas le protocole, et que la promesse de séquestre est plus difficile à tenir qu'à écrire.
 
-La tranche 1 est le **plus court chemin où de l'argent réel circule**. Elle fait **58 fonctionnalités**, environ **280 issues** — le tiers de la phase 1.
+La tranche 1 est le **plus court chemin où de l'argent réel circule**. Elle fait **73 fonctionnalités**, environ **350 issues** — le tiers de la phase 1.
 
 Ce qu'elle prouve, et qu'aucune maquette ne prouvera :
 
@@ -73,7 +73,7 @@ flowchart TD
 
 ---
 
-## Les 58 fonctionnalités
+## Les 73 fonctionnalités
 
 ### Identité et confiance — 7
 
@@ -162,6 +162,41 @@ Sans lui, personne ne peut vérifier un vendeur ni arbitrer un litige. Il n'est 
 | F11.7 | Tableau de bord des 4 indicateurs du pilote | M |
 | F11.8 | Recherche d'un utilisateur, d'une commande, d'un paiement | M |
 | F11.9 | Journal d'audit de toutes les actions du back-office | S |
+
+### Les univers — 8
+
+**Ajouté le 20/08/2026.** JP ouvre avec **deux univers** : `JP Mode` et
+`JP Beauté`. Ils partagent la même logistique — léger, point relais — et
+souvent la même vendeuse. Un seul modèle de livraison à roder, deux marchés
+validés.
+
+| ID | Fonctionnalité | Prio |
+|---|---|---|
+| F21.1 | **Sélecteur d'univers**, univers mémorisé | M |
+| F21.2 | **Règles par univers** — commission, livraison, fiche, litige | M |
+| F21.3 | **Fiche article adaptée à l'univers** | M |
+| F21.4 | **Motifs de litige filtrés par univers** | M |
+| F21.5 | **Commission par univers** | M |
+| F21.6 | Un lien profond impose son univers | S |
+| F21.10 | Boutique multi-univers | S |
+| F21.12 | Signature à la première visite | C |
+
+### Ce que JP Beauté ajoute — 7
+
+| ID | Fonctionnalité | Prio |
+|---|---|---|
+| F1.21 | **Fiche beauté** : péremption, contenance, scellé | M |
+| F1.22 | **Refus de publication et d'achat d'un produit périmé** | M |
+| F1.23 | Déclaration de provenance | S |
+| F6.11 | **Litige « réaction cutanée »**, traité en priorité | S |
+| F6.12 | **Pas de retour sur un cosmétique entamé**, sauf défaut | M |
+| F6.13 | Signalement de contrefaçon | S |
+| F21.11 | **Ventilation des 4 indicateurs du pilote par univers** | S |
+
+**Pourquoi ces sept sont dans la tranche 1 et pas plus tard.** Un cosmétique
+périmé ou contrefait ne déçoit pas : **il blesse**. Ouvrir `JP Beauté` sans le
+contrôle de péremption et sans le litige « réaction cutanée » serait lancer un
+univers en sachant qu'il peut faire du mal.
 
 ### Socle non fonctionnel — 7
 

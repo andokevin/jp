@@ -44,7 +44,7 @@ flowchart TB
 
     subgraph API["apps/api — service unique modulaire"]
         PLAT["plateforme<br/>auth · idempotence · erreurs<br/>pagination · débit · audit · permissions"]
-        MODS["16 modules de domaine"]
+        MODS["17 modules de domaine"]
         JOBS["jobs BullMQ<br/>expiration · notifications · rang<br/>promotions · événements · réconciliation"]
         RT["temps-réel<br/>WebSocket · canaux · diffusion"]
     end

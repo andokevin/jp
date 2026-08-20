@@ -223,3 +223,44 @@ model Session {
   @@index([famille])
   @@map("session")
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Les univers — JP Mode, JP Beauté, JP Tech, JP Maison, JP Enfant
+// ─────────────────────────────────────────────────────────────────────────
+
+/// **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.**
+///
+/// Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la
+/// fiche article, le mode de livraison, les motifs de litige recevables, le
+/// taux de commission et la vérification exigée du vendeur.
+///
+/// Les règles vivent dans `packages/contracts/src/univers.ts` — le code, pas la
+/// base. Cette table porte ce qui doit être **modifiable sans déploiement**
+/// pendant le pilote : l'ouverture et le taux de commission.
+///
+/// Trois univers y sont présents mais `ouvert = false`. C'est délibéré :
+/// l'abstraction est construite maintenant, l'ouverture est un `UPDATE`.
+model Univers {
+  /// Ne change JAMAIS : il est dans les URL et les lignes de commande.
+  cle String @id
+
+  nom       String
+  signature String
+  onglet    String
+
+  /// Un univers fermé garde ses règles et n'apparaît nulle part.
+  ouvert Boolean @default(false)
+
+  /// En pour mille. 80 = 8 %. Modifiable sans déploiement — c'est le levier
+  /// économique du pilote, et il diffère fortement d'un univers à l'autre.
+  commissionPourMille Int @map("commission_pour_mille")
+
+  /// Ordre d'affichage des onglets.
+  rang Int @default(0)
+
+  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+
+  @@index([ouvert, rang])
+  @@map("univers")
+}

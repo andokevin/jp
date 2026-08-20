@@ -6,6 +6,7 @@
  */
 
 export * from './commun.js';
+export * from './univers.js';
 export * as identite from './identite.js';
 export * as catalogue from './catalogue.js';
 export * as stock from './stock.js';

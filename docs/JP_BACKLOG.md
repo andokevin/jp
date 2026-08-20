@@ -1107,6 +1107,126 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 
 ---
 
+---
+
+# ÉPIQUE 21 — Les univers
+
+**Décision du 20/08/2026.** JP n'est plus une place de marché de mode : c'est une
+place de marché **par univers**, dont deux sont ouverts au lancement.
+
+| Univers | Signature | État |
+|---|---|---|
+| **JP Mode** | *Le direct qui habille* | **ouvert** |
+| **JP Beauté** | *Vrai produit, prix vrai* | **ouvert** |
+| JP Tech | *Vérifié avant de payer* | déclaré, fermé |
+| JP Maison | *Livré, monté, garanti* | déclaré, fermé |
+| JP Enfant | *Ce qu'il faut, à son âge* | déclaré, fermé |
+
+**Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre
+une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche
+article, le mode de livraison, les motifs de litige recevables, le taux de
+commission et la vérification exigée du vendeur.
+
+**Pourquoi trois univers déclarés mais fermés.** L'abstraction se construit
+maintenant, l'ouverture devient une ligne de configuration. La rétrofitter
+plus tard voudrait dire migrer chaque article, chaque commande et chaque
+promotion — des mois de travail sur des données réelles.
+
+**Pourquoi Mode et Beauté ensemble.** Elles partagent la même logistique
+— léger, point relais — et souvent la même vendeuse. Un seul modèle de
+livraison à roder, deux marchés validés.
+
+| ID | Fonctionnalité | Phase | Prio |
+|---|---|---|---|
+| F21.1 | **Sélecteur d'univers en tête d'écran**, univers mémorisé | P1 | M |
+| F21.2 | **Règles par univers** : commission, livraisons, champs de fiche, motifs de litige | P1 | M |
+| F21.3 | **Fiche article adaptée à l'univers** — champs obligatoires bloquants | P1 | M |
+| F21.4 | **Motifs de litige filtrés par univers** | P1 | M |
+| F21.5 | **Commission par univers** appliquée au calcul et au récapitulatif | P1 | M |
+| F21.6 | Un lien profond impose son univers | P1 | S |
+| F21.7 | Pastille d'univers hors du contexte courant | P1 | C |
+| F21.8 | Ouverture et fermeture d'un univers depuis le back-office | P1 | S |
+| F21.9 | Recherche transverse à tous les univers ouverts | P2 | S |
+| F21.10 | Boutique multi-univers — une vendeuse, plusieurs univers | P1 | S |
+| F21.11 | **Bilan par univers** dans le tableau de bord du pilote | P1 | S |
+| F21.12 | Signature d'univers affichée à la première visite seulement | P1 | C |
+
+## F21.2 — Ce que « jeu de règles » veut dire concrètement
+
+| | JP Mode | JP Beauté | JP Tech *(fermé)* | JP Maison *(fermé)* |
+|---|---|---|---|---|
+| **Commission** | 8 % | 8 % | **3 %** | 5 % |
+| **Livraison** | relais, domicile | relais, domicile | relais, domicile | **camion, retrait** |
+| **Champs exigés** | taille, état | **péremption, scellé, marque** | IMEI, état, garantie | dimensions, montage |
+| **Provenance exigée** | non | **oui** | **oui** | non |
+| **Litiges propres** | pas la bonne taille, défaut de couture | entamé, périmé, **réaction cutanée** | ne démarre pas, batterie, IMEI bloqué | pièce manquante, ne passe pas la porte |
+
+**Le taux de commission est la règle qui décide de tout.** Un revendeur de
+téléphones gagne environ 5 % sur un appareil : lui en prendre 8 rendrait
+`JP Tech` vide, quel que soit le reste du produit. D'où 3 % — et d'où la
+nécessité que le taux soit par univers, pas global.
+
+## Ce que le panier ne fait PAS
+
+**Le panier ne se scinde pas par univers.** Il se scinde par vendeur et par
+mode de livraison, ce qu'il fait déjà *(F3.1)*.
+
+À Madagascar, la même vendeuse tient souvent le vêtement et le cosmétique :
+la forcer à faire payer deux fois serait absurde. Quand `JP Maison` ouvrira,
+le camion se séparera naturellement du point relais — la règle de scission
+existe déjà, elle n'a pas besoin de l'univers pour fonctionner.
+
+## Les décisions que cette épique ouvre
+
+- **F21.8 — qui ouvre un univers ?** Un opérateur seul, ou la double
+  validation déjà en place pour les paramètres économiques ? Ouvrir un univers
+  engage un recrutement de vendeurs et une promesse publique.
+- **F21.9 — la recherche est-elle transverse par défaut ?** Chercher « crème »
+  depuis JP Mode doit-il proposer des résultats de JP Beauté, ou rester muet ?
+  Transverse aide à la découverte, mais brouille le repère d'étage.
+- **F21.10 — une boutique multi-univers a-t-elle une vitrine par univers ou une
+  seule ?** Une vitrine unique est plus simple, mais mélange des fiches aux
+  champs différents.
+
+---
+
+# Les fonctionnalités que JP Beauté ajoute
+
+Elles vivent dans leurs épiques d'origine, parce qu'elles étendent le
+catalogue et le litige plutôt que de créer un domaine.
+
+## Épique 1 — Catalogue
+
+| ID | Fonctionnalité | Phase | Prio |
+|---|---|---|---|
+| F1.21 | **Fiche beauté** : date de péremption, contenance, scellé ou entamé, type de peau | P1 | M |
+| F1.22 | **Refus de publication d'un produit périmé** — contrôle à la publication et à l'achat | P1 | M |
+| F1.23 | **Déclaration de provenance** et pièce justificative facultative | P1 | S |
+| F1.24 | Alerte au vendeur à l'approche de la péremption d'un article en stock | P2 | S |
+
+**Pourquoi la péremption est obligatoire et pas facultative.** Un cosmétique
+périmé ou contrefait ne déçoit pas : **il blesse**. C'est la différence de
+nature avec un vêtement qui ne va pas, et elle justifie à elle seule un univers
+séparé plutôt qu'une catégorie de plus.
+
+## Épique 6 — Confiance et litiges
+
+| ID | Fonctionnalité | Phase | Prio |
+|---|---|---|---|
+| F6.11 | **Litige « réaction cutanée »** — traitement prioritaire, comme une urgence | P1 | S |
+| F6.12 | **Pas de retour sur un cosmétique entamé**, sauf défaut ou contrefaçon | P1 | M |
+| F6.13 | Signalement de contrefaçon avec transmission au vendeur ET à l'équipe | P1 | S |
+
+**F6.11 est une règle de sécurité des personnes, pas de commerce.** Une réaction
+cutanée peut relever de l'urgence médicale ; le dossier passe devant, comme les
+signalements d'urgence de l'épique 19.
+
+**F6.12 protège le vendeur.** Un cosmétique entamé ne se revend pas : accepter
+son retour reviendrait à faire payer au vendeur le changement d'avis de
+l'acheteuse. L'exception — défaut ou contrefaçon — reste entière.
+
+---
+
 # Ce qui constitue le produit minimum (Phase 1)
 
 Slide 20 : *« C'est le produit minimum qui règle le problème. »*

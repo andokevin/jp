@@ -218,3 +218,50 @@ describe('le registre des paramètres', () => {
     expect(new Set(cles).size).toBe(cles.length);
   });
 });
+
+describe('les univers — R-Y1 à R-Y18', () => {
+  it('la table porte les cinq, deux ouverts', async () => {
+    const tous = await base.prisma.univers.findMany({ orderBy: { rang: 'asc' } });
+    expect(tous).toHaveLength(5);
+    expect(tous.filter((u) => u.ouvert).map((u) => u.cle)).toEqual(['mode', 'beaute']);
+  });
+
+  it('les commissions diffèrent — c’est ce qui empêche un univers vide', async () => {
+    // Un revendeur de téléphones gagne ~5 % sur un appareil : lui en prendre 8
+    // rendrait JP Tech vide, quel que soit le reste du produit.
+    const mode = await base.prisma.univers.findUnique({ where: { cle: 'mode' } });
+    const tech = await base.prisma.univers.findUnique({ where: { cle: 'tech' } });
+    expect(mode!.commissionPourMille).toBe(80);
+    expect(tech!.commissionPourMille).toBe(30);
+  });
+
+  it('la base refuse une commission hors des bornes', async () => {
+    // Les bornes sont AUSSI dans le code ; ici c'est le dernier filet.
+    await expect(
+      base.proprietaire.query(`UPDATE univers SET commission_pour_mille = 0 WHERE cle = 'mode'`),
+    ).rejects.toMatchObject({ constraint: 'commission_dans_les_bornes' });
+
+    await expect(
+      base.proprietaire.query(`UPDATE univers SET commission_pour_mille = 500 WHERE cle = 'mode'`),
+    ).rejects.toMatchObject({ constraint: 'commission_dans_les_bornes' });
+  });
+
+  it('la base refuse une clé technique avec accent ou majuscule', async () => {
+    // La clé est dans les URL et les lignes de commande : un accent casserait
+    // un lien partagé selon l'outil qui l'a encodé.
+    await expect(
+      base.proprietaire.query(
+        `INSERT INTO univers (cle, nom, signature, onglet, commission_pour_mille)
+         VALUES ('Beauté', 'X', 'Y', 'Z', 80)`,
+      ),
+    ).rejects.toMatchObject({ constraint: 'cle_technique_stable' });
+  });
+
+  it('ouvrir un univers est un UPDATE, pas un chantier', async () => {
+    // C'est tout l'intérêt d'avoir construit l'abstraction maintenant.
+    await base.proprietaire.query(`UPDATE univers SET ouvert = true WHERE cle = 'tech'`);
+    const ouverts = await base.prisma.univers.count({ where: { ouvert: true } });
+    expect(ouverts).toBe(3);
+    await base.proprietaire.query(`UPDATE univers SET ouvert = false WHERE cle = 'tech'`);
+  });
+});

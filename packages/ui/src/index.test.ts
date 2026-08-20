@@ -25,6 +25,11 @@ import {
   PRIMITIVES,
   prixAriary,
   TYPOGRAPHIE,
+  ACCENTS,
+  accent,
+  selecteurUnivers,
+  enteteUnivers,
+  pastilleUnivers,
 } from './index.js';
 
 describe('S7.1 — les jetons, vérifiés par test et non par relecture', () => {
@@ -177,5 +182,67 @@ describe('S7.3 — les quatre états', () => {
   it('sans données ni erreur, on est en chargement', () => {
     expect(etatDepuis({ enCours: true, horsLigne: false }).nom).toBe('chargement');
     expect(etatDepuis({ enCours: false, horsLigne: false }).nom).toBe('chargement');
+  });
+});
+
+describe('les univers dans l’interface — les décisions UX', () => {
+  const deuxOuverts = [
+    { cle: 'mode', onglet: 'Mode' },
+    { cle: 'beaute', onglet: 'Beauté' },
+  ];
+
+  it('chaque accent d’univers est lisible sur texte blanc', () => {
+    // Un seul design system, un seul accent qui change : assez pour savoir où
+    // l'on est, trop peu pour se sentir ailleurs.
+    const insuffisants: string[] = [];
+    for (const [cle, couleur] of Object.entries(ACCENTS)) {
+      const r = contraste(COULEURS.texteInverse, couleur);
+      if (r < CONTRASTE_MIN) insuffisants.push(`${cle} : ${Math.round(r * 100) / 100}:1`);
+    }
+    expect(insuffisants, insuffisants.join('\n')).toEqual([]);
+  });
+
+  it('un univers inconnu retombe sur l’accent de la marque', () => {
+    expect(accent('inexistant')).toBe(COULEURS.action);
+  });
+
+  it('le sélecteur ne s’affiche PAS s’il n’y a qu’un univers', () => {
+    // Un sélecteur à une entrée n'est pas une aide : c'est du bruit qui
+    // occupe 48 dp de hauteur utile.
+    expect(selecteurUnivers({ ouverts: [deuxOuverts[0]!], courant: 'mode' }).visible).toBe(false);
+    expect(selecteurUnivers({ ouverts: deuxOuverts, courant: 'mode' }).visible).toBe(true);
+  });
+
+  it('le sélecteur marque l’univers courant', () => {
+    const s = selecteurUnivers({ ouverts: deuxOuverts, courant: 'beaute' });
+    expect(s.entrees.find((e) => e.cle === 'beaute')!.actif).toBe(true);
+    expect(s.entrees.find((e) => e.cle === 'mode')!.actif).toBe(false);
+  });
+
+  it('la signature ne s’affiche qu’à la première visite', () => {
+    // La répéter à chaque ouverture la rendrait invisible.
+    const params = { nom: 'JP Beauté', signature: 'Vrai produit, prix vrai', cle: 'beaute' };
+    expect(enteteUnivers({ ...params, premiereVisite: true }).signature).toBe(
+      'Vrai produit, prix vrai',
+    );
+    expect(enteteUnivers({ ...params, premiereVisite: false }).signature).toBeNull();
+  });
+
+  it('la pastille ne s’affiche que HORS de l’univers courant', () => {
+    // Dans son propre univers, elle n'apprendrait rien et volerait la place.
+    expect(
+      pastilleUnivers({ cle: 'beaute', onglet: 'Beauté', universCourant: 'mode' }).visible,
+    ).toBe(true);
+    expect(pastilleUnivers({ cle: 'mode', onglet: 'Mode', universCourant: 'mode' }).visible).toBe(
+      false,
+    );
+  });
+
+  it('les cinq univers ont leur accent, y compris les fermés', () => {
+    // Un univers fermé garde ses règles ET son identité visuelle : l'ouvrir
+    // ne doit pas demander de travail de design.
+    for (const cle of ['mode', 'beaute', 'tech', 'maison', 'enfant']) {
+      expect(ACCENTS[cle], cle).toBeTruthy();
+    }
   });
 });

@@ -22,6 +22,7 @@
  */
 import pg from 'pg';
 import { PARAMETRES, valider } from '../packages/contracts/src/exploitation.js';
+import { UNIVERS } from '../packages/contracts/src/univers.js';
 
 try {
   process.loadEnvFile();
@@ -70,6 +71,27 @@ try {
   }
 
   console.log(`✓ paramètres : ${poses} posés, ${inchanges} déjà présents (inchangés)`);
+
+  // ── Les univers ─────────────────────────────────────────────────────────
+  // Les cinq sont semés, deux ouverts. Les règles structurelles restent dans
+  // le code ; seuls l'ouverture et le taux de commission passent en base,
+  // parce qu'eux doivent être modifiables sans déploiement pendant le pilote.
+  let uPoses = 0;
+  let uInchanges = 0;
+  for (const [rang, u] of UNIVERS.entries()) {
+    const { rowCount } = await client.query(
+      `INSERT INTO univers (cle, nom, signature, onglet, ouvert, commission_pour_mille, rang)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (cle) DO NOTHING`,
+      [u.cle, u.nom, u.signature, u.onglet, u.ouvert, u.commissionPourMille, rang],
+    );
+    if (rowCount === 1) uPoses++;
+    else uInchanges++;
+  }
+  const ouverts = UNIVERS.filter((u) => u.ouvert)
+    .map((u) => u.nom)
+    .join(', ');
+  console.log(`✓ univers : ${uPoses} posés, ${uInchanges} déjà présents — ouverts : ${ouverts}`);
 } finally {
   await client.end();
 }

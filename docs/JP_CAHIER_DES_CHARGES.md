@@ -625,6 +625,48 @@ Ce que le vendeur veut savoir : à qui faire un geste. Une liste de noms ordonn�
 
 ---
 
+## 5.16 Les univers *(F21 · F1.21 à F1.24 · F6.11 à F6.13)*
+
+**Décision du 20/08/2026.** JP est une place de marché **par univers**. Deux
+sont ouverts au lancement — `JP Mode` et `JP Beauté` — trois sont déclarés et
+fermés : `JP Tech`, `JP Maison`, `JP Enfant`.
+
+**Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Ce
+principe est la raison d'être de toute cette section.
+
+| Règle | Énoncé |
+|---|---|
+| **R-Y1** | Tout article appartient à **exactement un** univers, choisi à la création et **jamais modifiable ensuite**. Changer l'univers d'un article changerait ses règles de litige et sa commission après qu'une commande a été passée. |
+| **R-Y2** | Un univers **fermé** existe en base, garde ses règles, et n'apparaît nulle part : ni onglet, ni recherche, ni lien profond. Son ouverture est un `UPDATE`, pas un déploiement. |
+| **R-Y3** | Le **taux de commission** est propre à l'univers. Il est figé sur la commande à sa création *(comme le barème historisé, `R-G3`)* : un changement de taux ne rétroagit jamais sur une commande existante. |
+| **R-Y4** | Les **modes de livraison** proposés au paiement sont ceux de l'univers, et la vérification se fait **côté serveur**. Une requête forgée demandant un point relais pour un article de `JP Maison` est refusée. |
+| **R-Y5** | Les **champs obligatoires** de la fiche article sont ceux de l'univers. Le refus de publication **nomme les champs manquants**, jamais « fiche incomplète ». |
+| **R-Y6** | Les **motifs de litige** offerts à l'acheteuse sont ceux de l'univers, plus quatre motifs transverses : non reçu, différent de la photo, endommagé au transport, contrefaçon. Un motif hors univers est refusé côté serveur. |
+| **R-Y7** | Le **panier ne se scinde pas par univers**. Il se scinde par vendeur et par mode de livraison *(R-D2)*. La même vendeuse tient souvent le vêtement et le cosmétique. |
+| **R-Y8** | Un **lien profond impose son univers** : ouvrir un lien d'article de `JP Beauté` bascule l'application sur cet univers. Sans quoi on afficherait un article invisible dans le contexte courant. |
+| **R-Y9** | L'univers courant est **mémorisé** entre deux ouvertures de l'application. |
+| **R-Y10** | Le **sélecteur d'univers n'apparaît que s'il y a le choix**. Avec un seul univers ouvert, il n'est pas une aide : il occupe de la hauteur utile pour rien. |
+| **R-Y11** | Une boutique peut vendre dans **plusieurs univers**. Sa vérification vendeur est unique ; les exigences de **provenance**, elles, sont par univers. |
+| **R-Y12** | Ouvrir ou fermer un univers **passe au journal d'audit**, nominativement. C'est une décision qui engage un recrutement de vendeurs et une promesse publique. |
+
+### Ce que JP Beauté ajoute — et pourquoi c'est un univers, pas une catégorie
+
+| Règle | Énoncé |
+|---|---|
+| **R-Y13** | La **date de péremption** est obligatoire sur tout article de `JP Beauté`. Un article périmé ne peut être ni publié, ni acheté — le contrôle est fait **à la publication et au moment de l'achat**, parce qu'un article peut périmer en stock. |
+| **R-Y14** | L'état **scellé ou entamé** est obligatoire et affiché sur la vignette, pas seulement sur la fiche. C'est l'information qui décide de l'achat. |
+| **R-Y15** | La **provenance** est déclarée par le vendeur. Une pièce justificative est facultative mais valorisée au tri. |
+| **R-Y16** | Le motif de litige **« réaction cutanée »** est traité **en priorité**, comme un signalement d'urgence *(R-X5)*. Ce n'est pas un litige de commerce : c'est possiblement une urgence médicale. |
+| **R-Y17** | **Un cosmétique entamé ne se retourne pas**, sauf défaut ou contrefaçon. Accepter le retour reviendrait à faire payer au vendeur le changement d'avis de l'acheteuse — un produit entamé ne se revend pas. |
+| **R-Y18** | Un signalement de **contrefaçon** est transmis au vendeur **et** à l'équipe JP. Sur un cosmétique, la contrefaçon n'est pas un préjudice commercial : c'est un risque pour les personnes. |
+
+**Le raisonnement de fond.** Un vêtement qui ne va pas déçoit. Un cosmétique
+contrefait ou périmé **blesse**. Cette différence de nature — et non de
+catégorie — est ce qui justifie que `JP Beauté` ait ses propres règles de
+publication, de litige et de retour.
+
+---
+
 # 6. Exigences non fonctionnelles applicables
 
 Reprises de `JP_EXPRESSION_DE_BESOIN.md` section 7, avec les valeurs contractuelles.
