@@ -1,5 +1,5 @@
 /**
- * Module univers — JP Mode, JP Beauté, JP Tech, JP Maison, JP Enfant
+ * Module univers — JP Mode, JP Beauté, JP Tech
  *
  * Règles : R-Y1 à R-Y18 · Dépend de : **aucun module**
  *

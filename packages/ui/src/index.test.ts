@@ -238,11 +238,9 @@ describe('les univers dans l’interface — les décisions UX', () => {
     );
   });
 
-  it('les cinq univers ont leur accent, y compris les fermés', () => {
+  it('les trois univers ont leur accent, y compris Tech qui est fermé', () => {
     // Un univers fermé garde ses règles ET son identité visuelle : l'ouvrir
     // ne doit pas demander de travail de design.
-    for (const cle of ['mode', 'beaute', 'tech', 'maison', 'enfant']) {
-      expect(ACCENTS[cle], cle).toBeTruthy();
-    }
+    expect(Object.keys(ACCENTS).sort()).toEqual(['beaute', 'mode', 'tech']);
   });
 });

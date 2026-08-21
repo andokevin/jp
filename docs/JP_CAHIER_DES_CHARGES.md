@@ -627,9 +627,18 @@ Ce que le vendeur veut savoir : à qui faire un geste. Une liste de noms ordonn�
 
 ## 5.16 Les univers *(F21 · F1.21 à F1.24 · F6.11 à F6.13)*
 
-**Décision du 20/08/2026.** JP est une place de marché **par univers**. Deux
-sont ouverts au lancement — `JP Mode` et `JP Beauté` — trois sont déclarés et
-fermés : `JP Tech`, `JP Maison`, `JP Enfant`.
+**Décision du 20/08/2026.** JP est une place de marché **par univers**. Il y en
+a **trois, et pas d'autre** : `JP Mode`, `JP Beauté`, `JP Tech`. Les deux
+premiers sont ouverts au lancement ; `JP Tech` est déclaré et fermé.
+
+**Les trois partagent la même logistique** — point relais et domicile. C'est ce
+qui rend **l'application identique dans les trois univers** : ce qui varie n'est
+pas le flux, ce sont trois listes — les champs de la fiche, les motifs de litige
+recevables, le taux de commission.
+
+Un univers plus lourd — du mobilier — aurait exigé le camion et deux personnes,
+donc un second parcours de livraison et un second métier. Il a été écarté pour
+cette raison, et non par manque d'intérêt commercial.
 
 **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Ce
 principe est la raison d'être de toute cette section.
@@ -639,7 +648,7 @@ principe est la raison d'être de toute cette section.
 | **R-Y1** | Tout article appartient à **exactement un** univers, choisi à la création et **jamais modifiable ensuite**. Changer l'univers d'un article changerait ses règles de litige et sa commission après qu'une commande a été passée. |
 | **R-Y2** | Un univers **fermé** existe en base, garde ses règles, et n'apparaît nulle part : ni onglet, ni recherche, ni lien profond. Son ouverture est un `UPDATE`, pas un déploiement. |
 | **R-Y3** | Le **taux de commission** est propre à l'univers. Il est figé sur la commande à sa création *(comme le barème historisé, `R-G3`)* : un changement de taux ne rétroagit jamais sur une commande existante. |
-| **R-Y4** | Les **modes de livraison** proposés au paiement sont ceux de l'univers, et la vérification se fait **côté serveur**. Une requête forgée demandant un point relais pour un article de `JP Maison` est refusée. |
+| **R-Y4** | Les **modes de livraison** proposés au paiement sont ceux de l'univers, et la vérification se fait **côté serveur**. Les trois univers partagent aujourd'hui les mêmes modes ; la vérification existe malgré tout, pour que l'ouverture d'un univers plus lourd n'ait rien à changer. |
 | **R-Y5** | Les **champs obligatoires** de la fiche article sont ceux de l'univers. Le refus de publication **nomme les champs manquants**, jamais « fiche incomplète ». |
 | **R-Y6** | Les **motifs de litige** offerts à l'acheteuse sont ceux de l'univers, plus quatre motifs transverses : non reçu, différent de la photo, endommagé au transport, contrefaçon. Un motif hors univers est refusé côté serveur. |
 | **R-Y7** | Le **panier ne se scinde pas par univers**. Il se scinde par vendeur et par mode de livraison *(R-D2)*. La même vendeuse tient souvent le vêtement et le cosmétique. |
@@ -647,6 +656,8 @@ principe est la raison d'être de toute cette section.
 | **R-Y9** | L'univers courant est **mémorisé** entre deux ouvertures de l'application. |
 | **R-Y10** | Le **sélecteur d'univers n'apparaît que s'il y a le choix**. Avec un seul univers ouvert, il n'est pas une aide : il occupe de la hauteur utile pour rien. |
 | **R-Y11** | Une boutique peut vendre dans **plusieurs univers**. Sa vérification vendeur est unique ; les exigences de **provenance**, elles, sont par univers. |
+| **R-Y19** | Une vendeuse **choisit** les univers où elle est visible. Par défaut, elle n'est visible que dans **un seul** — celui de son premier article. |
+| **R-Y20** | Ajouter un univers à sa boutique déclenche un **avertissement explicite** : *« Être visible partout vous rend spécialiste de rien. »* La plateforme n'interdit pas — elle informe, et laisse décider. |
 | **R-Y12** | Ouvrir ou fermer un univers **passe au journal d'audit**, nominativement. C'est une décision qui engage un recrutement de vendeurs et une promesse publique. |
 
 ### Ce que JP Beauté ajoute — et pourquoi c'est un univers, pas une catégorie
@@ -664,6 +675,21 @@ principe est la raison d'être de toute cette section.
 contrefait ou périmé **blesse**. Cette différence de nature — et non de
 catégorie — est ce qui justifie que `JP Beauté` ait ses propres règles de
 publication, de litige et de retour.
+
+### Pourquoi la plateforme met en garde au lieu d'interdire *(R-Y19, R-Y20)*
+
+Une vendeuse peut être visible dans les trois univers. Rien ne l'en empêche, et
+il serait paternaliste de l'en empêcher : c'est son commerce.
+
+Mais **« la boutique qui vend de tout » est un positionnement plus faible que
+« la spécialiste du téléphone »**. Une acheteuse qui cherche un cosmétique fait
+plus confiance à une boutique qui ne vend que ça. C'est un fait de marché, pas
+une préférence esthétique.
+
+D'où le compromis : **visible dans un seul univers par défaut**, celui de son
+premier article. Ajouter un univers est possible, en un geste, avec un
+avertissement qui dit ce que ça coûte. La plateforme informe ; la vendeuse
+décide.
 
 ---
 

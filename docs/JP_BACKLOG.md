@@ -1111,16 +1111,24 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 
 # ÉPIQUE 21 — Les univers
 
-**Décision du 20/08/2026.** JP n'est plus une place de marché de mode : c'est une
-place de marché **par univers**, dont deux sont ouverts au lancement.
+**Décision du 20/08/2026, précisée le 21.** JP n'est plus une place de marché de
+mode : c'est une place de marché **par univers**. Il y en a **trois, et pas
+d'autre**.
 
-| Univers | Signature | État |
-|---|---|---|
-| **JP Mode** | *Le direct qui habille* | **ouvert** |
-| **JP Beauté** | *Vrai produit, prix vrai* | **ouvert** |
-| JP Tech | *Vérifié avant de payer* | déclaré, fermé |
-| JP Maison | *Livré, monté, garanti* | déclaré, fermé |
-| JP Enfant | *Ce qu'il faut, à son âge* | déclaré, fermé |
+| Univers | Signature | Commission | État |
+|---|---|---|---|
+| **JP Mode** | *Le direct qui habille* | 8 % | **ouvert** |
+| **JP Beauté** | *Vrai produit, prix vrai* | 8 % | **ouvert** |
+| JP Tech | *Vérifié avant de payer* | **3 %** | déclaré, fermé |
+
+**Les trois partagent la même logistique** — point relais et domicile. C'est ce
+qui rend **l'application identique dans les trois univers** : ce qui varie n'est
+pas le flux, ce sont trois listes — champs de fiche, motifs de litige, taux de
+commission.
+
+Un univers plus lourd — du mobilier — aurait exigé le camion et deux personnes,
+donc un second parcours de livraison et un second métier. Écarté pour cette
+raison, pas par manque d'intérêt commercial.
 
 **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre
 une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche
@@ -1147,24 +1155,41 @@ livraison à roder, deux marchés validés.
 | F21.7 | Pastille d'univers hors du contexte courant | P1 | C |
 | F21.8 | Ouverture et fermeture d'un univers depuis le back-office | P1 | S |
 | F21.9 | Recherche transverse à tous les univers ouverts | P2 | S |
-| F21.10 | Boutique multi-univers — une vendeuse, plusieurs univers | P1 | S |
+| F21.10 | **Boutique multi-univers** — visible dans un seul par défaut, avertissement à l'ajout | P1 | S |
 | F21.11 | **Bilan par univers** dans le tableau de bord du pilote | P1 | S |
 | F21.12 | Signature d'univers affichée à la première visite seulement | P1 | C |
 
 ## F21.2 — Ce que « jeu de règles » veut dire concrètement
 
-| | JP Mode | JP Beauté | JP Tech *(fermé)* | JP Maison *(fermé)* |
-|---|---|---|---|---|
-| **Commission** | 8 % | 8 % | **3 %** | 5 % |
-| **Livraison** | relais, domicile | relais, domicile | relais, domicile | **camion, retrait** |
-| **Champs exigés** | taille, état | **péremption, scellé, marque** | IMEI, état, garantie | dimensions, montage |
-| **Provenance exigée** | non | **oui** | **oui** | non |
-| **Litiges propres** | pas la bonne taille, défaut de couture | entamé, périmé, **réaction cutanée** | ne démarre pas, batterie, IMEI bloqué | pièce manquante, ne passe pas la porte |
+| | JP Mode | JP Beauté | JP Tech *(fermé)* |
+|---|---|---|---|
+| **Commission** | 8 % | 8 % | **3 %** |
+| **Livraison** | relais, domicile | relais, domicile | relais, domicile |
+| **Champs exigés** | taille, état | **péremption, scellé, marque** | IMEI, état, garantie |
+| **Provenance exigée** | non | **oui** | **oui** |
+| **Litiges propres** | pas la bonne taille, défaut de couture | entamé, périmé, **réaction cutanée** | ne démarre pas, batterie, IMEI bloqué |
+
+**La livraison ne varie pas** — et c'est ce qui permet à l'application de
+fonctionner à l'identique partout. Les trois lignes qui varient sont des
+**listes**, pas des parcours.
 
 **Le taux de commission est la règle qui décide de tout.** Un revendeur de
 téléphones gagne environ 5 % sur un appareil : lui en prendre 8 rendrait
 `JP Tech` vide, quel que soit le reste du produit. D'où 3 % — et d'où la
 nécessité que le taux soit par univers, pas global.
+
+## La vendeuse choisit où elle est visible
+
+**Par défaut, une vendeuse n'est visible que dans UN univers** — celui de son
+premier article *(R-Y19)*. Elle peut en ajouter, en un geste.
+
+Mais ajouter un univers déclenche un **avertissement** : *« Être visible partout
+vous rend spécialiste de rien »* *(R-Y20)*. « La boutique qui vend de tout » est
+un positionnement plus faible que « la spécialiste du téléphone » — une
+acheteuse qui cherche un cosmétique fait plus confiance à une boutique qui ne
+vend que ça.
+
+**La plateforme informe, elle n'interdit pas.** C'est son commerce.
 
 ## Ce que le panier ne fait PAS
 
@@ -1172,9 +1197,12 @@ nécessité que le taux soit par univers, pas global.
 mode de livraison, ce qu'il fait déjà *(F3.1)*.
 
 À Madagascar, la même vendeuse tient souvent le vêtement et le cosmétique :
-la forcer à faire payer deux fois serait absurde. Quand `JP Maison` ouvrira,
-le camion se séparera naturellement du point relais — la règle de scission
-existe déjà, elle n'a pas besoin de l'univers pour fonctionner.
+la forcer à faire payer deux fois serait absurde.
+
+Et comme **les trois univers partagent la même livraison**, la scission par mode
+de livraison ne se déclenche jamais aujourd'hui. Elle reste écrite parce qu'elle
+est la bonne règle : c'est la **livraison** qui contraint un panier, pas
+l'univers.
 
 ## Les décisions que cette épique ouvre
 

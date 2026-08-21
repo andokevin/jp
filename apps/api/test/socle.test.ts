@@ -220,9 +220,9 @@ describe('le registre des paramètres', () => {
 });
 
 describe('les univers — R-Y1 à R-Y18', () => {
-  it('la table porte les cinq, deux ouverts', async () => {
+  it('la table porte les trois, deux ouverts', async () => {
     const tous = await base.prisma.univers.findMany({ orderBy: { rang: 'asc' } });
-    expect(tous).toHaveLength(5);
+    expect(tous.map((u) => u.cle)).toEqual(['mode', 'beaute', 'tech']);
     expect(tous.filter((u) => u.ouvert).map((u) => u.cle)).toEqual(['mode', 'beaute']);
   });
 
@@ -262,6 +262,7 @@ describe('les univers — R-Y1 à R-Y18', () => {
     await base.proprietaire.query(`UPDATE univers SET ouvert = true WHERE cle = 'tech'`);
     const ouverts = await base.prisma.univers.count({ where: { ouvert: true } });
     expect(ouverts).toBe(3);
+    // C'est tout : pas de migration, pas de déploiement, pas de code à écrire.
     await base.proprietaire.query(`UPDATE univers SET ouvert = false WHERE cle = 'tech'`);
   });
 });

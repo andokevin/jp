@@ -36,8 +36,10 @@
  *   3. **Le panier NE se scinde PAS par univers.** Il se scinde par vendeur et
  *      par mode de livraison, ce qu'il fait déjà. À Madagascar, la même
  *      vendeuse tient souvent le vêtement et le cosmétique : la forcer à faire
- *      payer deux fois serait absurde. Quand JP Maison ouvrira, le camion se
- *      séparera naturellement du point relais — la règle existe déjà.
+ *      payer deux fois serait absurde. Et comme les trois univers partagent la
+ *      même livraison, la scission par mode ne se déclenche jamais aujourd'hui.
+ *      Elle reste écrite parce que c'est la LIVRAISON qui contraint un panier,
+ *      pas l'univers.
  */
 import { COULEURS, RAYON, TYPOGRAPHIE, CIBLE_TACTILE_MIN } from './jetons.js';
 
@@ -51,14 +53,12 @@ import { COULEURS, RAYON, TYPOGRAPHIE, CIBLE_TACTILE_MIN } from './jetons.js';
  * On garde donc **un seul design system** et on ne change qu'un accent — assez
  * pour savoir où l'on est, trop peu pour se sentir ailleurs.
  *
- * Chaque accent a été vérifié à 4,5:1 sur texte blanc, par test.
+ * Les trois accents sont vérifiés à 4,5:1 sur texte blanc, par test.
  */
 export const ACCENTS: Record<string, string> = {
   mode: COULEURS.action, // violet — l'accent de la marque
   beaute: '#A31A5B', // framboise
   tech: '#1D4E89', // bleu profond
-  maison: '#7A5C1E', // bois
-  enfant: '#0F6E5C', // vert-bleu
 };
 
 export function accent(cleUnivers: string): string {

@@ -13,10 +13,14 @@
  * champs de fiche article, les modes de livraison proposés au paiement, les
  * motifs de litige offerts à l'acheteuse, et le barème de commission.
  *
- * **Trois univers sont déclarés mais fermés.** C'est délibéré : l'abstraction
- * est construite maintenant, l'ouverture est une ligne de configuration. La
- * rétrofitter plus tard voudrait dire migrer chaque article, chaque commande
- * et chaque promotion — des mois de travail sur des données réelles.
+ * **Trois univers, une seule logistique.** Mode, Beauté et Tech partagent
+ * `point_relais` et `domicile`. C'est ce qui rend l'application identique dans
+ * les trois : ce qui varie n'est pas le flux, ce sont trois listes — les champs
+ * de la fiche, les motifs de litige, le taux de commission.
+ *
+ * Un univers plus lourd — du mobilier, par exemple — aurait exigé le camion et
+ * deux personnes, donc un second modèle de livraison, donc un autre parcours.
+ * Il a été écarté pour cette raison.
  */
 
 export const DOMAINE_UNIVERS = 'univers' as const;
@@ -26,11 +30,15 @@ export const DOMAINE_UNIVERS = 'univers' as const;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Les modes de livraison. Ils ne sont pas interchangeables : un réfrigérateur
- * ne passe pas par un point relais, et une paire de boucles d'oreilles n'a pas
- * besoin d'un camion et de deux personnes.
+ * Les modes de livraison.
+ *
+ * **Les trois univers partagent les deux mêmes** : point relais et domicile.
+ * C'est un choix de périmètre, pas une coïncidence — un univers exigeant le
+ * camion aurait imposé un second parcours de livraison et un second métier.
+ *
+ * `retrait_boutique` est déclaré pour la vendeuse qui a un local physique.
  */
-export const LIVRAISONS = ['point_relais', 'domicile', 'camion', 'retrait_boutique'] as const;
+export const LIVRAISONS = ['point_relais', 'domicile', 'retrait_boutique'] as const;
 export type ModeLivraison = (typeof LIVRAISONS)[number];
 
 /**
@@ -53,16 +61,12 @@ export const CHAMPS_FICHE = [
   'scelle',
   'type_peau',
   'provenance',
-  // Tech (déclaré, pas encore ouvert)
+  // Tech
   'imei',
   'stockage',
   'sante_batterie',
   'garantie_mois',
   'etat_appareil',
-  // Maison
-  'dimensions',
-  'poids_kg',
-  'montage_requis',
 ] as const;
 export type ChampFiche = (typeof CHAMPS_FICHE)[number];
 
@@ -91,9 +95,6 @@ export const MOTIFS_LITIGE = [
   'ne_demarre_pas',
   'batterie_hors_service',
   'imei_bloque',
-  // Maison
-  'piece_manquante',
-  'ne_passe_pas_la_porte',
 ] as const;
 export type MotifLitige = (typeof MOTIFS_LITIGE)[number];
 
@@ -125,7 +126,7 @@ export interface DefinitionUnivers {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Les cinq univers
+// Les trois univers
 // ═══════════════════════════════════════════════════════════════════════════
 
 const TRANSVERSES = [
@@ -195,36 +196,6 @@ export const UNIVERS = [
     provenanceExigee: true,
     raison:
       "Panier moyen le plus élevé, risque d'arnaque maximal. Le reconditionné est un marché énorme.",
-  },
-  {
-    cle: 'maison',
-    nom: 'JP Maison',
-    signature: 'Livré, monté, garanti',
-    onglet: 'Maison',
-    ouvert: false,
-    commissionPourMille: 50,
-    // PAS de point relais : un canapé ne se met pas derrière un comptoir.
-    livraisons: ['camion', 'retrait_boutique'],
-    champsFiche: ['dimensions', 'poids_kg', 'montage_requis', 'matiere', 'marque'],
-    champsObligatoires: ['dimensions', 'montage_requis'],
-    motifsLitige: [...TRANSVERSES, 'piece_manquante', 'ne_passe_pas_la_porte'],
-    provenanceExigee: false,
-    raison:
-      'Panier élevé, mais logistique lourde : camion et deux personnes. À ouvrir quand la livraison à domicile sera rodée.',
-  },
-  {
-    cle: 'enfant',
-    nom: 'JP Enfant',
-    signature: "Ce qu'il faut, à son âge",
-    onglet: 'Enfant',
-    ouvert: false,
-    commissionPourMille: 80,
-    livraisons: ['point_relais', 'domicile'],
-    champsFiche: ['taille', 'couleur', 'etat_vetement', 'marque'],
-    champsObligatoires: ['taille', 'etat_vetement'],
-    motifsLitige: [...TRANSVERSES, 'pas_la_bonne_taille'],
-    provenanceExigee: false,
-    raison: 'Achat récurrent, exigence de confiance forte. Proche de Mode côté logistique.',
   },
 ] as const satisfies readonly DefinitionUnivers[];
 

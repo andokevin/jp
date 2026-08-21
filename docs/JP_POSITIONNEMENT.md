@@ -340,18 +340,27 @@ Ce qui était spécifique à la mode, en revanche : la taille, la morphologie, l
 mesures, le dressing, l'essayage. **Promesse horizontale, fonctionnalités
 verticales.** C'est exactement le cas de figure où l'abstraction se paie.
 
-## Les cinq univers
+## Les trois univers
 
 | Univers | Signature | Pourquoi lui |
 |---|---|---|
 | **JP Mode** | *Le direct qui habille* | le direct Facebook y est né · marché de départ |
 | **JP Beauté** | *Vrai produit, prix vrai* | deuxième marché du direct malgache · **la contrefaçon y est dangereuse, pas seulement décevante** |
 | JP Tech | *Vérifié avant de payer* | panier moyen le plus élevé · risque d'arnaque maximal |
-| JP Maison | *Livré, monté, garanti* | panier élevé, mais logistique lourde |
-| JP Enfant | *Ce qu'il faut, à son âge* | achat récurrent, exigence de confiance forte |
 
-**Deux sont ouverts au lancement** — Mode et Beauté. Trois sont déclarés et
-fermés.
+**Trois, et pas d'autre.** Mode et Beauté ouverts au lancement, Tech déclaré et
+fermé.
+
+### Ce que ce périmètre nous donne
+
+**Les trois partagent la même logistique** — point relais et domicile. C'est ce
+qui rend **l'application identique dans les trois univers** : ce qui varie n'est
+pas le parcours, ce sont trois listes.
+
+Un quatrième univers plus lourd — du mobilier — aurait exigé le camion et deux
+personnes, donc un second parcours de livraison et un second métier. L'écarter
+n'est pas un renoncement commercial : **c'est ce qui garde une seule application
+au lieu de deux.**
 
 ## Pourquoi ce mot, « univers »
 
@@ -375,14 +384,54 @@ cinq noms — et personne ne cherche un mot inventé pour trouver une robe.
 **La signature compense la platitude du nom.** Le nom explique, la signature
 donne le caractère.
 
-## Pourquoi Mode et Beauté ensemble, et pas les cinq
+## Pourquoi Tech attend
 
-Elles partagent la même logistique — léger, point relais — et souvent la même
-vendeuse. **Un seul modèle de livraison à roder, deux marchés validés.**
+Le **téléphone volé** est un vrai problème à Madagascar. `JP Tech` exige l'IMEI
+et la provenance, donc une vérification vendeur plus lourde.
 
-Ouvrir les cinq d'emblée voudrait dire cinq jeux de règles, cinq viviers de
-vendeurs à recruter, deux modèles de livraison dont un avec camion. Et si le
-pilote échouait, **on ne saurait pas lequel des cinq a échoué**.
+On ouvre Tech quand ce contrôle sera éprouvé sur de vrais dossiers. Pas avant :
+**un univers qui laisse passer des appareils volés détruirait la promesse de la
+plateforme entière**, pas seulement la sienne. La certitude ne se vend pas à la
+découpe.
+
+Mode et Beauté, elles, partagent la même vendeuse et le même panier. Deux
+marchés validés, un seul métier à apprendre.
+
+## Une vendeuse choisit où elle est visible
+
+**Par défaut, elle n'est visible que dans un seul univers.** Elle peut en
+ajouter, en un geste — avec un avertissement :
+
+> *« Être visible partout vous rend spécialiste de rien. »*
+
+« La boutique qui vend de tout » est un positionnement plus faible que « la
+spécialiste du téléphone ». Une acheteuse qui cherche un cosmétique fait plus
+confiance à une boutique qui ne vend que ça. C'est un fait de marché.
+
+**La plateforme informe, elle n'interdit pas.** Interdire serait paternaliste :
+c'est son commerce. Mais la laisser découvrir la conséquence six mois plus tard,
+quand ses ventes stagnent, serait pire que de la prévenir.
+
+## Le client : l'application native d'abord
+
+**Décision du 21/08/2026.** La plupart des clients sont sur mobile — l'application
+**React Native** est donc le client principal, et non un site web.
+
+`apps/web` est réduit à ce qui doit être **partageable** : vitrine vendeur, fiche
+article, page cadeau, page événement, replay. Cinq pages, en rendu serveur, pour
+une seule raison — **l'aperçu de lien**. Un lien collé dans WhatsApp sans titre
+ni image perd l'essentiel de son intérêt à Madagascar, où le partage passe par
+là.
+
+**Ce que le natif nous donne** et qu'un site n'aurait pas : des notifications
+fiables, la caméra pour le direct, un hors ligne solide — et le hors ligne n'est
+pas un confort ici. Une acheteuse arrivée au point relais sans réseau et sans son
+code de retrait repart **sans son colis**, alors qu'elle a payé.
+
+**Ce que ça coûte** et qu'il faut assumer : un APK à télécharger sur des données
+chères, la friction du magasin d'applications, et une mise à jour qui dépend
+de l'utilisatrice. Le poids de l'APK devient donc un **critère de recette**, pas
+une observation de fin de projet.
 
 ## Ce que JP Beauté change au produit, et pourquoi c'est un univers
 

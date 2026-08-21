@@ -9,9 +9,9 @@
 |---|---|---|---|---|
 | **JP Mode** | *Le direct qui habille* | 8 % | relais, domicile | **ouvert** |
 | **JP Beauté** | *Vrai produit, prix vrai* | 8 % | relais, domicile | **ouvert** |
-| JP Tech | *Vérifié avant de payer* | **3 %** | relais, domicile | fermé |
-| JP Maison | *Livré, monté, garanti* | 5 % | **camion, retrait** | fermé |
-| JP Enfant | *Ce qu'il faut, à son âge* | 8 % | relais, domicile | fermé |
+| JP Tech | *Vérifié avant de payer* | **3 %** | relais, domicile | déclaré, fermé |
+
+**Trois univers, et pas d'autre.**
 
 ## Pourquoi c'est une épique et pas un champ de plus
 
@@ -21,7 +21,23 @@ Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la
 
 Le taux de commission suffit à le démontrer. Un revendeur de téléphones gagne environ 5 % sur un appareil ; lui en prendre 8 rendrait `JP Tech` **vide**, quel que soit le reste du produit. Un univers avec un taux global n'est pas un univers, c'est une étiquette.
 
-## Pourquoi trois univers déclarés mais fermés
+## Pourquoi l'application fonctionne à l'identique dans les trois
+
+**Les trois partagent la même logistique** : point relais et domicile. Ce qui
+varie n'est pas le flux, ce sont **trois listes** :
+
+| Ce qui varie | Ce que ça change à l'écran |
+|---|---|
+| les champs de la fiche | les champs du formulaire de publication |
+| les motifs de litige | la liste du sélecteur de motif |
+| le taux de commission | un nombre dans le récapitulatif |
+
+Aucun des trois ne change un **parcours**. Un univers exigeant le camion —
+du mobilier — aurait imposé un second parcours de livraison et un second
+métier. Il a été écarté pour cette raison, et c'est ce qui rend l'affirmation
+vraie : **une seule application, trois univers, le même fonctionnement.**
+
+## Pourquoi Tech est déclaré mais fermé
 
 **L'abstraction se construit maintenant, l'ouverture devient une configuration.**
 
@@ -32,17 +48,22 @@ Le taux de commission suffit à le démontrer. Un revendeur de téléphones gagn
 
 Un univers fermé existe en base, garde ses règles, son accent visuel, et n'apparaît nulle part *(R-Y2)*. L'ouvrir est un `UPDATE`.
 
-## Pourquoi Mode et Beauté ensemble, et pas les cinq
+**Pourquoi Tech attend.** Le téléphone volé est un vrai problème à Madagascar.
+Tech exige l'IMEI **et** la provenance, donc une vérification vendeur plus
+lourde. On ouvre Tech quand ce contrôle sera éprouvé sur de vrais dossiers, pas
+avant — un univers qui laisse passer des appareils volés détruirait la promesse
+de la plateforme entière, pas seulement la sienne.
 
-Elles partagent **la même logistique** — léger, point relais — et souvent **la même vendeuse**. Un seul modèle de livraison à roder, deux marchés validés.
-
-Ouvrir les cinq d'emblée voudrait dire cinq jeux de règles, cinq viviers de vendeurs, deux modèles de livraison dont un avec camion — et si le pilote échouait, on ne saurait pas lequel des cinq a échoué.
+Mode et Beauté, elles, partagent **la même vendeuse** et le même panier. Deux
+marchés validés, un seul métier à apprendre.
 
 ## Ce que le panier ne fait PAS
 
 **Le panier ne se scinde pas par univers** *(R-Y7)*. Il se scinde par vendeur et par mode de livraison, ce qu'il fait déjà *(F3.1)*.
 
-À Madagascar, la même vendeuse tient souvent le vêtement et le cosmétique : la forcer à faire payer deux fois serait absurde. Quand `JP Maison` ouvrira, le camion se séparera naturellement du point relais — la règle de scission existe déjà et n'a pas besoin de l'univers.
+À Madagascar, la même vendeuse tient souvent le vêtement et le cosmétique : la forcer à faire payer deux fois serait absurde.
+
+Et comme **les trois univers partagent la même livraison**, la scission par mode de livraison ne se déclenche jamais aujourd'hui. Elle reste écrite parce qu'elle est la bonne règle : c'est la livraison qui contraint un panier, pas l'univers.
 
 ---
 
@@ -57,7 +78,7 @@ Ouvrir les cinq d'emblée voudrait dire cinq jeux de règles, cinq viviers de ve
 | F21.7 | Pastille d'univers hors contexte | P1 | C | moyen |
 | F21.8 | Ouverture et fermeture depuis le back-office | P1 | S | moyen |
 | F21.9 | Recherche transverse aux univers ouverts | P2 | S | moyen |
-| F21.10 | Boutique multi-univers | P1 | S | moyen |
+| F21.10 ★ | Boutique multi-univers, visible dans un seul par défaut | P1 | S | complet |
 | F21.11 | Bilan par univers | P1 | S | cadre |
 | F21.12 | Signature à la première visite | P1 | C | cadre |
 
@@ -510,6 +531,8 @@ Ouvrir un univers est un `UPDATE` d'une ligne — mais **une décision qui engag
 
 **Décision ouverte** : simple validation d'un opérateur, ou **double validation** comme les paramètres économiques ? Je penche pour la double validation — c'est du même ordre qu'un changement de taux de commission.
 
+**Le cas concret qui vient** : ouvrir `JP Tech`. Il attend que le contrôle de provenance et l'IMEI soient éprouvés sur de vrais dossiers.
+
 **Fermer un univers** ne supprime rien : les articles restent, les commandes en cours se terminent, les nouvelles publications sont refusées. Une fermeture qui effacerait le catalogue serait irréversible pour un geste réversible.
 
 ```issues
@@ -544,13 +567,105 @@ depend: [F21.1]
 
 ---
 
-## F21.10 — Boutique multi-univers
+## F21.10 — Boutique multi-univers, visible dans un seul par défaut
 
-`P1 · S · moyen` — **Règles** R-Y11 · **Dépend de** F21.2, F0.6
+`P1 · S · complet` — **Règles** R-Y11, R-Y19, R-Y20 · **Dépend de** F21.2, F0.6
 
-Une vendeuse peut vendre dans plusieurs univers. Sa **vérification est unique** ; les exigences de **provenance** sont par univers — vendre un cosmétique demande de déclarer d'où il vient, vendre une robe non.
+### 1. Conception
 
-**Décision ouverte** : une vitrine par univers, ou une seule ? Une vitrine unique est plus simple, mais mélange des fiches aux champs différents. Ma préférence : **une vitrine, filtrée par univers en tête**, cohérente avec le sélecteur global.
+**Par défaut, une vendeuse n'est visible que dans UN univers** — celui de son
+premier article *(R-Y19)*. Elle peut en ajouter, en un geste, depuis son studio.
+
+**Ajouter un univers déclenche un avertissement** *(R-Y20)* :
+
+> *« Être visible partout vous rend spécialiste de rien. »*
+
+« La boutique qui vend de tout » est un positionnement plus faible que « la
+spécialiste du téléphone ». Une acheteuse qui cherche un cosmétique fait plus
+confiance à une boutique qui ne vend que ça. **C'est un fait de marché, pas une
+préférence esthétique.**
+
+**La plateforme informe, elle n'interdit pas.** Interdire serait paternaliste :
+c'est son commerce. Mais lui laisser découvrir la conséquence six mois plus tard,
+quand ses ventes stagnent, serait pire que de la prévenir.
+
+**Ce qui reste unique** : la vérification vendeur, le portefeuille, le score de
+confiance, le rang de ses clientes. Elle a **une** boutique, visible dans un ou
+plusieurs univers.
+
+**Ce qui est par univers** : les exigences de provenance — vendre un cosmétique
+demande de déclarer d'où il vient, vendre une robe non.
+
+**Cas d'échec** : elle publie un cosmétique alors qu'elle n'est visible qu'en
+Mode → on lui propose d'ajouter Beauté, avec l'avertissement. On ne l'ajoute
+**pas** en silence : ce serait décider pour elle.
+
+### 2. Structure de code
+
+```
+apps/api/src/modules/identite/service.ts       les univers de la boutique
+apps/api/src/modules/univers/service.ts        la garde de publication
+apps/mobile/src/features/identite/             l'écran d'ajout + l'avertissement
+```
+
+### 3. Base de données
+
+```sql
+CREATE TABLE profil_vendeur_univers (
+  vendeur_id  UUID NOT NULL REFERENCES profil_vendeur(id) ON DELETE CASCADE,
+  univers_cle TEXT NOT NULL REFERENCES univers(cle),
+  ajoute_le   TIMESTAMPTZ(6) NOT NULL DEFAULT now(),
+  PRIMARY KEY (vendeur_id, univers_cle)
+);
+```
+
+Une table de liaison plutôt qu'un tableau : elle porte la **date d'ajout**, qui
+servira à mesurer si l'avertissement a un effet.
+
+### 4. Design
+
+**Prompt Stitch** :
+
+```
+Screen: "Mes univers" in the seller studio.
+A short list of rows, one per universe, each 48dp tall with a toggle on
+the right: "Mode" (toggle ON, purple accent), "Beauté" (toggle OFF),
+"Tech" (greyed out entirely with a small line "Bientôt disponible").
+When the seller taps the "Beauté" toggle, a bottom sheet slides up. It
+has a bold headline "Être visible partout vous rend spécialiste de rien",
+then two short paragraphs of body text explaining that buyers trust a
+focused shop more, then two buttons: a secondary text link "Annuler" and
+a full-width primary button "Ajouter quand même".
+States needed as separate frames: one universe active, the warning sheet
+open, two universes active, and Tech shown as unavailable.
+```
+
+L'avertissement est une **feuille du bas**, pas une boîte de dialogue : elle se
+lit sans bloquer, et le bouton d'action reste en bas, à portée du pouce.
+
+### 5. Backend
+
+```
+GET   /vendeurs/moi/univers        → les univers de la boutique
+PUT   /vendeurs/moi/univers        → ajoute ou retire
+POST  /articles                    → refuse si l'univers n'est pas le sien
+```
+
+Refus `403 UNIVERS_NON_ACTIVE` avec l'action possible : *« Activez JP Beauté
+dans Mes univers. »* Jamais un refus sec.
+
+**Retirer un univers** ne supprime pas les articles : ils cessent d'être
+visibles, et redeviennent visibles si l'univers est réactivé. Supprimer serait
+irréversible pour un geste réversible.
+
+**Tests** : le premier article fixe l'univers de la boutique · publier hors de
+ses univers est refusé **avec l'action** · retirer un univers masque les articles
+sans les supprimer · réactiver les remontre.
+
+### 6. Frontend
+
+L'avertissement s'affiche **à chaque ajout**, pas seulement au premier. Une
+vendeuse qui passe de deux à trois univers mérite la même information.
 
 ```issues
 feature: F21.10

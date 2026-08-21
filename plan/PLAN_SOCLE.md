@@ -222,8 +222,8 @@ Always show these states as separate frames: default, loading, empty, error.
 | S5 | BullMQ, files, travailleur de référence, reprise sur incident | `apps/api/src/jobs/` |
 | S6 | Registre WebSocket, canaux, diffusion, resynchronisation à la reconnexion | `apps/api/src/temps-reel/` |
 | S7 | Design system `packages/ui` : jetons, primitives, les quatre états | `packages/ui/` |
-| S8 | Coquille Expo : navigation, session, client API, cache hors ligne, mode économie de données | `apps/mobile/` |
-| S9 | Coquille Vite pour `admin` et `web` | `apps/admin/`, `apps/web/` |
+| S8 | **Coquille Expo — le client PRINCIPAL** : navigation, session, client API, cache hors ligne, mode économie de données | `apps/mobile/` |
+| S9 | Coquille Vite : `admin` complet, `web` **réduit aux 5 pages partageables** | `apps/admin/`, `apps/web/` |
 | S10 | Observabilité : journaux corrélés, métriques, les événements de mesure du CDC §11 | transverse |
 
 ---

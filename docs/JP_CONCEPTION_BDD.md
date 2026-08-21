@@ -85,7 +85,7 @@ Toute dénormalisation doit être **recalculable** : un compteur qu'on ne sait p
 ### D9 — L'univers est une entité de premier rang, pas une colonne de catégorie
 
 **Décision du 20/08/2026.** JP est une place de marché **par univers** : `JP Mode`
-et `JP Beauté` ouverts, `JP Tech`, `JP Maison`, `JP Enfant` déclarés et fermés.
+et `JP Beauté` ouverts, `JP Tech` déclaré et fermé. **Trois, et pas d'autre.**
 
 **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche article, le mode de livraison, les motifs de litige recevables, le taux de commission et la vérification exigée du vendeur.
 

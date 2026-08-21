@@ -14,12 +14,26 @@ import {
   universOuverts,
 } from './univers.js';
 
-describe('les cinq univers', () => {
-  it('deux sont ouverts, trois déclarés mais fermés', () => {
+describe('les trois univers', () => {
+  it('trois univers, deux ouverts, Tech déclaré', () => {
     // L'abstraction est construite maintenant ; l'ouverture est une ligne de
     // configuration. La rétrofitter voudrait dire migrer chaque article.
-    expect(UNIVERS).toHaveLength(5);
+    expect(UNIVERS.map((u) => u.cle)).toEqual(['mode', 'beaute', 'tech']);
     expect(universOuverts().map((u) => u.cle)).toEqual(['mode', 'beaute']);
+  });
+
+  it('LES TROIS PARTAGENT LA MÊME LOGISTIQUE', () => {
+    // C'est ce qui rend l'application identique dans les trois univers : ce
+    // qui varie n'est pas le flux, ce sont trois listes — champs de fiche,
+    // motifs de litige, taux de commission.
+    //
+    // Un univers plus lourd — du mobilier — aurait exigé le camion et deux
+    // personnes, donc un second parcours de livraison. Il a été écarté pour
+    // cette raison.
+    const references = [...univers('mode')!.livraisons].sort();
+    for (const u of UNIVERS) {
+      expect([...u.livraisons].sort(), u.cle).toEqual(references);
+    }
   });
 
   it('chacun porte un nom, une signature et une raison d’être', () => {
@@ -64,10 +78,12 @@ describe('LA commission diffère — c’est ce qui empêche un univers vide', (
   });
 });
 
-describe('LA livraison diffère — un canapé ne passe pas par un point relais', () => {
-  it('Maison refuse le point relais', () => {
-    expect(livraisonPermise('maison', 'point_relais')).toBe(false);
-    expect(livraisonPermise('maison', 'camion')).toBe(true);
+describe('LA livraison est la MÊME partout — c\u2019est un choix de périmètre', () => {
+  it('les trois univers acceptent le point relais', () => {
+    for (const u of UNIVERS) {
+      expect(livraisonPermise(u.cle, 'point_relais'), u.cle).toBe(true);
+      expect(livraisonPermise(u.cle, 'domicile'), u.cle).toBe(true);
+    }
   });
 
   it('Mode et Beauté acceptent le point relais', () => {
@@ -75,10 +91,13 @@ describe('LA livraison diffère — un canapé ne passe pas par un point relais'
     expect(livraisonPermise('beaute', 'point_relais')).toBe(true);
   });
 
-  it('Mode et Beauté partagent la MÊME logistique', () => {
-    // C'est la raison pour laquelle ce sont ces deux-là qu'on ouvre ensemble :
-    // un seul modèle de livraison à roder.
-    expect(univers('mode')!.livraisons).toEqual(univers('beaute')!.livraisons);
+  it('aucun univers n\u2019exige de camion — le mobilier a été écarté', () => {
+    // Le camion aurait imposé un second parcours de livraison et un second
+    // métier. C'est la seule chose qui aurait changé le fonctionnement de
+    // l'application d'un univers à l'autre.
+    for (const u of UNIVERS) {
+      expect(u.livraisons as readonly string[], u.cle).not.toContain('camion');
+    }
   });
 
   it('un univers inconnu ne permet rien', () => {
@@ -162,5 +181,13 @@ describe('la provenance', () => {
     expect(univers('tech')!.provenanceExigee).toBe(true); // téléphone volé
     expect(univers('beaute')!.provenanceExigee).toBe(true); // contrefaçon dangereuse
     expect(univers('mode')!.provenanceExigee).toBe(false); // une friperie n'a pas de facture
+  });
+
+  it('Tech est déclaré, pas ouvert', () => {
+    // Il existe en base avec ses règles et son taux à 3 %, et n'apparaît
+    // nulle part. L'ouvrir sera un UPDATE, quand le contrôle de provenance et
+    // l'IMEI seront éprouvés sur de vrais dossiers.
+    expect(univers('tech')!.ouvert).toBe(false);
+    expect(universOuverts().map((u) => u.cle)).not.toContain('tech');
   });
 });

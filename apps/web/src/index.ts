@@ -1,12 +1,23 @@
 /**
  * @jp/web — les vitrines publiques — S9.2
  *
- * **Rendu serveur sur tout ce qui se partage.** Une vitrine collée dans une
- * conversation WhatsApp sans titre ni image perd l'essentiel de son intérêt à
- * Madagascar, où le partage passe par là.
+ * **Décision du 21/08/2026 — ce paquet ne sera JAMAIS un client complet.**
  *
- * C'est la seule raison d'être du rendu serveur ici : pas la vitesse, les
- * aperçus de lien.
+ * L'application native est le client principal : la plupart des acheteuses sont
+ * sur mobile, et le hors ligne y est vital — une acheteuse arrivée au point
+ * relais sans réseau et sans son code de retrait repart sans son colis.
+ *
+ * `apps/web` porte donc exactement **cinq pages**, et rien d'autre : celles qui
+ * doivent être partageables. Sa seule raison d'être est **l'aperçu de lien** —
+ * pas la vitesse, pas un second client.
+ *
+ * Un lien collé dans une conversation WhatsApp sans titre ni image perd
+ * l'essentiel de son intérêt à Madagascar, où le partage passe par là. C'est
+ * pour ça, et uniquement pour ça, que ce paquet existe.
+ *
+ * **Ce qu'il ne fera pas** : panier, paiement, compte, studio vendeur. Tout
+ * cela est dans l'application. Une page publique mène à l'installation, ou
+ * ouvre l'application si elle est déjà là.
  */
 import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
 
