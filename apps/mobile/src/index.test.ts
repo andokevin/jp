@@ -14,6 +14,14 @@ import {
   LIENS_PROFONDS,
   MagasinMemoire,
   ONGLETS,
+  resoudreUnivers,
+  imposerUnivers,
+  estPremiereVisite,
+  marquerVu,
+  ouvrirSession,
+  etatSession,
+  fermerSession,
+  verifierTailleSecret,
 } from './index.js';
 
 function fauxFetch(reponses: (() => Promise<Response>)[]) {
@@ -187,5 +195,113 @@ describe('S8.1 — navigation et liens profonds', () => {
   it('déclare les cinq onglets et les cinq liens', () => {
     expect(ONGLETS).toHaveLength(5);
     expect(Object.keys(LIENS_PROFONDS)).toHaveLength(5);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// S8.2 et S8.4 — le stockage sur l'appareil
+//
+// `expo-secure-store` et `AsyncStorage` n'existent pas hors d'un appareil : on
+// les remplace par des magasins en mémoire qui respectent le même contrat, y
+// compris la limite de 2 048 octets du trousseau.
+// ═══════════════════════════════════════════════════════════════════════════
+
+function magasinFactice() {
+  const contenu = new Map<string, string>();
+  return {
+    contenu,
+    lire: async (c: string) => contenu.get(c) ?? null,
+    ecrire: async (c: string, v: string) => void contenu.set(c, v),
+    effacer: async (c: string) => void contenu.delete(c),
+  };
+}
+
+describe('S8.4 — l’univers courant sur l’appareil', () => {
+  const deux = [
+    { cle: 'mode', onglet: 'Mode' },
+    { cle: 'beaute', onglet: 'Beauté' },
+  ];
+
+  it('sans rien de mémorisé, prend le premier ouvert', async () => {
+    const m = magasinFactice();
+    const r = await resoudreUnivers(deux, m);
+    expect(r).toEqual({ cle: 'mode', change: false });
+    expect(await m.lire('jp.univers.courant')).toBe('mode');
+  });
+
+  it('respecte l’univers mémorisé', async () => {
+    const m = magasinFactice();
+    await m.ecrire('jp.univers.courant', 'beaute');
+    expect(await resoudreUnivers(deux, m)).toEqual({ cle: 'beaute', change: false });
+  });
+
+  it('BASCULE ET LE SIGNALE si l’univers mémorisé a été fermé', async () => {
+    // Basculer en silence serait déroutant : la personne ouvrirait l'app sur
+    // un autre univers sans comprendre pourquoi.
+    const m = magasinFactice();
+    await m.ecrire('jp.univers.courant', 'tech'); // fermé entre-temps
+    const r = await resoudreUnivers(deux, m);
+    expect(r).toEqual({ cle: 'mode', change: true, ancien: 'tech' });
+  });
+
+  it('refuse de démarrer sans aucun univers ouvert', async () => {
+    // C'est une erreur de déploiement, pas un cas d'usage.
+    await expect(resoudreUnivers([], magasinFactice())).rejects.toThrow();
+  });
+
+  it('un lien profond impose son univers et dit s’il a changé', async () => {
+    const m = magasinFactice();
+    await m.ecrire('jp.univers.courant', 'mode');
+    expect(await imposerUnivers('beaute', m)).toBe(true); // l'écran doit recharger
+    expect(await imposerUnivers('beaute', m)).toBe(false); // déjà dessus
+  });
+
+  it('la signature ne s’affiche qu’à la première visite', async () => {
+    const m = magasinFactice();
+    expect(await estPremiereVisite('beaute', m)).toBe(true);
+    await marquerVu('beaute', m);
+    expect(await estPremiereVisite('beaute', m)).toBe(false);
+    expect(await estPremiereVisite('mode', m)).toBe(true); // l'autre reste neuf
+  });
+});
+
+describe('S8.2 — la session dans le trousseau', () => {
+  it('distingue « aucune », « périmée » et « ouverte »', async () => {
+    // Trois situations différentes, qui ne se racontent pas pareil.
+    const m = magasinFactice();
+    expect(await etatSession(m)).toEqual({ quoi: 'aucune' });
+
+    await ouvrirSession('jeton-abc', Date.now() - 1000, m);
+    expect(await etatSession(m)).toEqual({ quoi: 'perimee' });
+
+    const dans1h = Date.now() + 3_600_000;
+    await ouvrirSession('jeton-abc', dans1h, m);
+    expect(await etatSession(m)).toEqual({ quoi: 'ouverte', jeton: 'jeton-abc', expireLe: dans1h });
+  });
+
+  it('traite une échéance illisible comme périmée', async () => {
+    // On redemande un code plutôt que de partir avec un jeton dont on ne sait
+    // rien.
+    const m = magasinFactice();
+    await m.ecrire('jp.session.jeton', 'abc');
+    await m.ecrire('jp.session.expire', 'pas-un-nombre');
+    expect(await etatSession(m)).toEqual({ quoi: 'perimee' });
+  });
+
+  it('fermer efface le jeton SANS dépendre du réseau', async () => {
+    // Quelqu'un qui se déconnecte dans un cybercafé ne doit pas dépendre du
+    // réseau pour que son jeton disparaisse de l'appareil.
+    const m = magasinFactice();
+    await ouvrirSession('abc', Date.now() + 3_600_000, m);
+    await fermerSession(m);
+    expect(await m.lire('jp.session.jeton')).toBeNull();
+    expect(await etatSession(m)).toEqual({ quoi: 'aucune' });
+  });
+
+  it('refuse d’écrire un CACHE dans le trousseau', async () => {
+    // Le trousseau est limité à 2 048 octets. La contrainte impose le bon
+    // usage : ce qui ne tient pas dedans n'est pas un secret.
+    expect(() => verifierTailleSecret('x'.repeat(3000))).toThrow(/trousseau/i);
+    expect(() => verifierTailleSecret('jeton-court')).not.toThrow();
   });
 });

@@ -18,7 +18,14 @@ export class HorsLigne extends Error {
   override readonly name = 'HorsLigne';
 }
 
-export interface EtatSession {
+/**
+ * Le jeton en cours d'usage, tel que le client API en a besoin.
+ *
+ * À ne pas confondre avec `EtatSession` de `session.ts`, qui distingue
+ * « aucune », « périmée » et « ouverte » : ici, on n'a que le cas ouvert —
+ * le client n'appelle pas l'API sans jeton.
+ */
+export interface JetonEnCours {
   readonly jeton: string;
   readonly expireLe: number;
 }
@@ -27,7 +34,7 @@ export interface OptionsClient {
   readonly base: string;
   readonly langue?: Langue;
   readonly economieDonnees?: boolean;
-  readonly session?: () => EtatSession | null;
+  readonly session?: () => JetonEnCours | null;
   readonly fetch?: typeof fetch;
   /** Le générateur de clés. Injectable pour rendre les tests déterministes. */
   readonly nouvelleCle?: () => string;

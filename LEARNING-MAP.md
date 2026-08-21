@@ -4,7 +4,7 @@
 > issues GitHub. Ne le modifiez pas à la main — un tableau d'avancement tenu
 > à la main ment au bout de trois jours.
 >
-> Dernière génération : 2026-08-19
+> Dernière génération : 2026-08-21
 
 ## Projet en cours
 
@@ -46,9 +46,9 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 | | |
 |---|---|
-| Fichiers TypeScript écrits | 176 |
-| Tests | 180 |
-| Migrations appliquées | 3 |
+| Fichiers TypeScript écrits | 189 |
+| Tests | 225 |
+| Migrations appliquées | 4 |
 
 ## Notions pratiquées
 
