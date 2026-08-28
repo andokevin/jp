@@ -33,10 +33,32 @@ jobs:
       # lire un état de pull request serait du gaspillage.
       - name: Fusionner ce qui est prêt
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # JETON_FUSION s'il existe, GITHUB_TOKEN sinon — le workflow marche
+          # dans les deux cas, mais PAS DE LA MÊME FAÇON.
+          #
+          # Avec GITHUB_TOKEN, la fusion NE DÉCLENCHE AUCUN workflow sur
+          # master (protection anti-récursion). release.yml reste donc muet et
+          # les changesets s'accumulent sans que personne n'ouvre la pull
+          # request de version.
+          #
+          # Avec un jeton personnel, la fusion se comporte comme celle d'un
+          # humain : release.yml part, et la boucle se referme toute seule.
+          GH_TOKEN: ${{ secrets.JETON_FUSION || secrets.GITHUB_TOKEN }}
+          JETON_PERSONNEL: ${{ secrets.JETON_FUSION != '' }}
           DEPOT: ${{ github.repository }}
         run: |
           set -euo pipefail
+
+          # Dire lequel des deux jetons travaille. Sans cette ligne, on croit
+          # la boucle complète alors que release.yml ne part jamais — et on le
+          # découvre des semaines plus tard, devant des changesets empilés.
+          if [ "$JETON_PERSONNEL" = "true" ]; then
+            echo "Jeton : JETON_FUSION (personnel) — les fusions déclencheront release.yml."
+          else
+            echo "Jeton : GITHUB_TOKEN — ATTENTION, les fusions NE déclencheront PAS release.yml."
+            echo "        Créez le secret JETON_FUSION pour fermer la boucle."
+          fi
+          echo
 
           # Les pull requests ouvertes vers master, brouillons exclus.
           # Un brouillon est une intention, pas une demande de fusion.

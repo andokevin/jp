@@ -150,7 +150,14 @@ jobs:
     timeout-minutes: 10
     # Sur un push vers master, la question n'a pas de sens : il n'y a plus de
     # branche à comparer, et c'est release.yml qui prend le relais.
-    if: github.event_name == 'pull_request'
+    #
+    # Et la branche « Version Packages » est exclue : elle CONSOMME les
+    # changesets, elle n'en a donc aucun par construction. L'interroger
+    # reviendrait à lui reprocher d'avoir fait son travail — et la bloquerait
+    # pour toujours, puisque le robot de fusion refuse tout contrôle non vert.
+    if: >-
+      github.event_name == 'pull_request'
+      && !startsWith(github.head_ref, 'changeset-release/')
 
     steps:
       - uses: actions/checkout@v4
