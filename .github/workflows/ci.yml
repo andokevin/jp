@@ -42,6 +42,15 @@ jobs:
       # `schema: 'prisma/schema.prisma'`, résolu depuis la racine.
       - name: Générer le client Prisma
         run: pnpm exec prisma generate
+        env:
+          # prisma.config.ts évalue `env('DATABASE_URL')` AU CHARGEMENT, avant
+          # même de savoir quelle commande on lance. Sans cette variable, le
+          # fichier de configuration lève PrismaConfigEnvError et `generate`
+          # échoue — alors qu'il ne se connecte à aucune base : il ne fait que
+          # lire le schéma pour écrire des types.
+          # L'URL est donc volontairement factice. Les vraies migrations
+          # tournent ailleurs, avec la vraie URL.
+          DATABASE_URL: postgresql://generate:generate@localhost:5432/generate
 
       - name: Cache Turborepo
         uses: actions/cache@v4
@@ -88,15 +97,42 @@ jobs:
       - name: Installer
         run: pnpm install --frozen-lockfile
 
-      # --audit-level=high : n'échoue que sur les vulnérabilités hautes/critiques,
-      # pour éviter que le CI casse à chaque vulnérabilité mineure/théorique.
+      # LA PRODUCTION BLOQUE, LE DÉVELOPPEMENT INFORME.
+      #
+      # --prod : seules les dépendances réellement expédiées font échouer la
+      # construction. Une faille dans le serveur d'interface de Vitest ne
+      # touche pas le produit déployé ; la traiter comme bloquante rendrait le
+      # rouge banal, et un rouge banal ne se lit plus.
+      #
+      # --audit-level=high : on ne casse pas sur du mineur ou du théorique.
+      #
+      # Trois avis sont ignorés dans package.json (pnpm.auditConfig.ignoreGhsas),
+      # parce qu'AUCUN N'EST CORRIGEABLE ICI :
+      #   GHSA-w3rx-r6r6-pgpr et GHSA-5p2g-fcmc-qvqq — image-size, déni de
+      #     service dans les analyseurs ICNS et JXL/HEIF. `Patched versions:
+      #     <0.0.0` : il n'existe aucune version corrigée à ce jour.
+      #   GHSA-ggr8-5vv4-36mx — deepmerge-ts, épuisement de pile. Transitif via
+      #     @prisma/config@7.9.1 : il partira quand Prisma montera de version.
+      # Ces trois-là sont à réexaminer à chaque montée de version majeure.
+      #
+      # RESTE À FAIRE, hors périmètre de ce correctif : Vitest 2 → 3 lève d'un
+      # coup GHSA-5xrq-8626-4rwp (critique) et les avis `vite` associés.
       - name: pnpm audit
-        run: pnpm audit --audit-level=high
+        run: pnpm audit --prod --audit-level=high
 
   scan-secrets:
     name: Scan de secrets
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    # Le `permissions: contents: read` du workflow ne suffit pas : sur une pull
+    # request, gitleaks appelle GET /repos/…/pulls/:n/commits pour ne scanner
+    # que les commits de la branche. Sans ce droit, l'appel rend 403
+    # « Resource not accessible by integration » et le job casse — le moindre
+    # privilège mord d'abord celui qui l'applique.
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
       - uses: actions/checkout@v4
