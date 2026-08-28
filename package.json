@@ -11,7 +11,7 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "verifier": "turbo run typecheck lint test && pnpm archi && pnpm contrat",
+    "verifier": "turbo run typecheck lint test build && pnpm archi && pnpm contrat",
     "archi": "node scripts/check-architecture.mjs",
     "couverture": "node scripts/check-coverage.mjs",
     "format": "prettier --write .",
