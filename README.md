@@ -23,7 +23,7 @@ La promesse tient en une phrase : **l'argent de l'acheteuse est gardé par JP ju
 | 11 | **[plan/](plan/)** | **Plan de réalisation, fonctionnalité par fonctionnalité** |
 | 12 | **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | **L'arborescence du dépôt** · convention de module · les 4 règles de dépendance |
 | 13 | **[docs/SOCLE.md](docs/SOCLE.md)** | **Le socle fichier par fichier** — quoi ouvrir, dans quel ordre, et ce qu'il faut y voir |
-| 14 | **[JP_DICTIONNAIRE_DONNEES.md](docs/JP_DICTIONNAIRE_DONNEES.md)** | **Les tables, leurs attributs et leur rôle** · 103 tables recensées · machines à états · les 15 garanties structurelles |
+| 14 | **[JP_DICTIONNAIRE_DONNEES.md](docs/JP_DICTIONNAIRE_DONNEES.md)** | **Les tables, leurs attributs et leur rôle** · 102 tables recensées · machines à états · les 15 garanties structurelles |
 | 15 | **[JP_ACTEURS_WORKFLOWS.md](docs/JP_ACTEURS_WORKFLOWS.md)** | **Qui fait quoi** · 12 acteurs · matrice des droits · cas d'utilisation par acteur · **le déroulé des 30 parcours, avec les tables écrites à chaque étape** |
 | 16 | **[docs/marque/](docs/marque/)** | **Le dossier de marque** — StoryBrand, Cercle d'Or, Zag, lois de Ries, étude terrain et concurrence, et les 20 décisions de marque |
 | — | [vp/](vp/) | Le même modèle en UML, importable dans Visual Paradigm |

@@ -44,7 +44,7 @@
 | [1. Identité](#1--identité) | 12 | Qui est qui, et qui a le droit d'encaisser |
 | [2. Univers](#2--univers) | 1 | Les jeux de règles Mode / Beauté / Tech |
 | [3. Catalogue et stock](#3--catalogue-et-stock) | 7 | Ce qui est à vendre, et combien il en reste |
-| [4. Commande](#4--commande) | 4 | L'engagement écrit, figé |
+| [4. Commande](#4--commande) | 3 | L'engagement écrit, figé |
 | [5. Paiement et argent](#5--paiement-et-argent) | 6 | Le séquestre et le journal financier |
 | [6. Livraison](#6--livraison) | 11 | Du colis préparé au colis remis |
 | [7. Contenu](#7--contenu) | 7 | La boutique dont le catalogue est fait de vidéos |
@@ -57,16 +57,16 @@
 | [14. Confiance](#14--confiance) | 4 | Litiges, avis, score |
 | [15. Modération](#15--modération) | 5 | La protection des personnes |
 | [16. Exploitation](#16--exploitation) | 19 | Paramètres, journaux, mesures, notifications |
-| **Total recensé** | **103** | |
+| **Total recensé** | **102** | |
 
 > **Écart assumé, et il est double.** `JP_CONCEPTION_BDD.md` annonce
 > **113 tables**.
 >
-> - **103 portent un nom** et sont recensées ici.
-> - **Parmi ces 103, cinq sont nommées sans aucune définition de colonnes** —
+> - **102 portent un nom** et sont recensées ici.
+> - **Parmi ces 102, quatre sont nommées sans aucune définition de colonnes** —
 >   elles apparaissent dans l'ordre des migrations ou dans un diagramme de
 >   relations, jamais dans un schéma.
-> - **Dix ne sont nommées nulle part.** Le compte de 113 vient de la somme des
+> - **Onze ne sont nommées nulle part.** Le compte de 113 vient de la somme des
 >   compteurs par domaine de la carte ; les tables correspondantes n'existent
 >   dans aucun diagramme.
 >
@@ -325,8 +325,14 @@ PK(`variante_id`, `utilisateur_id`), `notifie_le`.
 |---|---|
 | **`commande`** | L'engagement écrit |
 | **`ligne_commande`** | L'article commandé, à son prix figé |
-| `remise_ligne` | Le détail de la remise appliquée |
 | **`facture`** | La preuve, inaltérable |
+
+> **`remise_ligne` n'est pas une table.** C'est une **colonne** de
+> `ligne_commande` — `int DEFAULT 0` *(`JP_CDC_TECHNIQUE.md` §3.3,
+> `plan/EP03-commande.md` §3)*. La migration 17 s'appelle `f7_26_remise_ligne`
+> parce qu'elle ajoute un `CHECK` **sur cette colonne**, pas parce qu'elle crée
+> une table. Aucune table de liaison n'existe pour les remises, et c'est
+> précisément ce qui fait tenir `D4`.
 
 ## `commande` ⬜
 
@@ -866,9 +872,9 @@ celle qui a sanctionné**.
 
 # 17 · La dette de conception du schéma
 
-## 17.1 — Cinq tables nommées, sans définition de colonnes
+## 17.1 — Quatre tables nommées, sans définition de colonnes
 
-Elles sont recensées dans ce dictionnaire *(elles comptent dans les 103)*, mais
+Elles sont recensées dans ce dictionnaire *(elles comptent dans les 102)*, mais
 elles n'ont **jamais reçu de schéma** — ni diagramme ER, ni liste de colonnes.
 
 | Table | Où elle est citée | Conséquence |
@@ -876,22 +882,26 @@ elles n'ont **jamais reçu de schéma** — ni diagramme ER, ni liste de colonne
 | **`panier_cadeau`** | Migration 27 | **Bloque `UC-80` et `UC-81`** — tout le canal diaspora |
 | **`demande_verification`** | Migration 5 | **Bloque `UC-52`** — donc l'encaissement de tout vendeur |
 | `hashtag`, `contenu_hashtag` | Relations du domaine Contenu | Le rassemblement thématique et les événements à mot-dièse |
-| **`remise_ligne`** | Migration 17, `R-U7` | ⚠️ **Ambiguïté réelle, à trancher** |
 
-> ### L'ambiguïté `remise_ligne`, à trancher avant la migration 17
+> ### Une fausse piste, écartée — `remise_ligne`
 >
-> La décision `D4` fait de `promotion_id` une **colonne scalaire de
-> `ligne_commande`** — c'est ce qui rend le cumul de remises *« impossible par
-> construction »*.
+> La ligne 17 de l'ordre des migrations se lit
+> `f7_26_remise_ligne | remise_ligne, promotion_id scalaire + CHECK`, ce qui
+> donne à croire qu'une **table** `remise_ligne` viendrait s'ajouter à la
+> colonne scalaire `promotion_id` — et rouvrirait le cumul que `D4` ferme.
 >
-> La migration 17 crée **en plus** une **table** `remise_ligne`.
+> **Ce n'est pas le cas.** Trois sources concordent : `remise_ligne` est une
+> **colonne** `int DEFAULT 0` de `ligne_commande`
+> *(`JP_CDC_TECHNIQUE.md` §3.3 · `plan/EP03-commande.md` §3 ·
+> `plan/EP07-communaute.md`, qui n'y ajoute qu'un `CHECK`)*. La migration porte
+> le nom de la colonne qu'elle contraint.
 >
-> **Les deux ne peuvent pas coexister sans qu'on dise laquelle fait foi.** Si
-> `remise_ligne` est une table de liaison, elle **rouvre exactement le cumul que
-> `D4` ferme**. Si c'est une table de détail en lecture seule, il faut l'écrire.
-> **En l'état, la garantie n° 5 de la §19 n'est pas démontrable.**
+> **La garantie n° 5 de la §19 tient donc sans réserve.** La mention est
+> conservée ici parce que la formulation de l'ordre des migrations induit
+> réellement en erreur : elle gagnerait à préciser
+> `colonne remise_ligne + CHECK`.
 
-## 17.2 — Dix tables annoncées, jamais nommées
+## 17.2 — Onze tables annoncées, jamais nommées
 
 Le total de 113 vient de la somme des compteurs par domaine de la carte
 *(`JP_CONCEPTION_BDD.md` §2)*. Ces compteurs dépassent le nombre de tables
@@ -905,12 +915,13 @@ réellement schématisées :
 | Cadeau | 3 | 1 | **2** |
 | Paiement et argent | 8 | 6 | **2** |
 | Direct | 5 | 4 | **1** |
+| Commande | 4 | 3 | **1** |
 | Exploitation | 16 | 19 | −3 |
 | Identité | 11 | 12 | −1 |
 | Livraison | 10 | 11 | −1 |
 | **Univers** | **absent de la carte** | 1 | **−1** |
-| Catalogue · Commande · Promotions · Événements · Confiance · Modération | 28 | 28 | 0 |
-| **Net** | **113** | **103** | **10** |
+| Catalogue · Promotions · Événements · Confiance · Modération | 24 | 24 | 0 |
+| **Net** | **113** | **102** | **11** |
 
 > La ligne **Univers** est révélatrice : la carte des domaines n'a **jamais été
 > mise à jour** après la décision du 20/08/2026 qui a fait de l'univers une
@@ -928,7 +939,6 @@ faux perd sa valeur de référence.
 | Échéance | Action |
 |---|---|
 | **Avant la migration 5** | Écrire le schéma de `demande_verification` |
-| **Avant la migration 17** | **Trancher `remise_ligne` contre `promotion_id` scalaire** |
 | **Avant la migration 23** | Écrire `hashtag` et `contenu_hashtag` |
 | **Avant la migration 27** | Écrire `panier_cadeau` |
 | **Maintenant** | Corriger les compteurs de la carte des domaines, ou retrouver les dix tables manquantes |
@@ -1015,7 +1025,7 @@ Indépendantes du code applicatif. **Un test de recette doit les vérifier en
 `langues`, `univers`)* : `utilisateur`, `session`, `parametre`,
 `parametre_modification`, `journal_audit`, `cle_idempotence`, `univers`.
 
-**96 restent à migrer**, dans l'ordre des dépendances de clés étrangères
+**95 restent à migrer**, dans l'ordre des dépendances de clés étrangères
 *(`JP_CONCEPTION_BDD.md` §12)*.
 
 > ⚠️ **Un écart à trancher.** `prisma/schema.prisma` déclare
