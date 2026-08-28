@@ -108,6 +108,39 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  verifier-changeset:
+    name: Un changeset accompagne-t-il la pull request ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Sur un push vers master, la question n'a pas de sens : il n'y a plus de
+    # branche à comparer, et c'est release.yml qui prend le relais.
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # `changeset status --since=origin/master` passe par git diff. Sans
+          # l'historique complet, la référence origin/master n'existe pas sur
+          # le runner et la comparaison n'a rien à quoi se rattacher.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Installer
+        run: pnpm install --frozen-lockfile
+
+      # Le même script que celui qu'on lance en local — une vérification de CI
+      # qu'on ne sait pas reproduire sur sa machine est une vérification qu'on
+      # ne sait pas déboguer. Échoue si la branche touche un paquet sans le
+      # décrire ; `pnpm changeset --empty` est la sortie explicite prévue.
+      - name: Un changeset est-il présent ?
+        run: pnpm changeset:etat
+
   couverture-du-plan:
     name: Couverture backlog ↔ plan
     runs-on: ubuntu-latest
