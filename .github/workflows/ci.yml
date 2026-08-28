@@ -12,6 +12,9 @@ concurrency:
 env:
   TURBO_TELEMETRY_DISABLED: 1
 
+permissions:
+  contents: read
+
 jobs:
   verifier:
     name: Typage, style, tests
@@ -30,6 +33,15 @@ jobs:
 
       - name: Installer
         run: pnpm install --frozen-lockfile
+
+      # apps/api/src/genere/ est dans .gitignore : le client Prisma est un
+      # artefact, pas une source. Le runner part d'un dépôt propre, il doit
+      # donc le générer avant tout typage — sinon `tsc` ne trouve pas ses types.
+      # `pnpm exec` à la racine, et non `--filter @jp/api` : le paquet `prisma`
+      # est une devDependency de la RACINE, et prisma.config.ts y déclare
+      # `schema: 'prisma/schema.prisma'`, résolu depuis la racine.
+      - name: Générer le client Prisma
+        run: pnpm exec prisma generate
 
       - name: Cache Turborepo
         uses: actions/cache@v4
@@ -57,6 +69,44 @@ jobs:
 
       - name: Construction
         run: pnpm build
+
+  audit-securite:
+    name: Audit de sécurité des dépendances
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Installer
+        run: pnpm install --frozen-lockfile
+
+      # --audit-level=high : n'échoue que sur les vulnérabilités hautes/critiques,
+      # pour éviter que le CI casse à chaque vulnérabilité mineure/théorique.
+      - name: pnpm audit
+        run: pnpm audit --audit-level=high
+
+  scan-secrets:
+    name: Scan de secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # gitleaks doit lire tout l'historique, pas juste le dernier commit
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   couverture-du-plan:
     name: Couverture backlog ↔ plan
