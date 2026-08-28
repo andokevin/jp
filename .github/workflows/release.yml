@@ -70,4 +70,10 @@ jobs:
           # Rien n'est publié, donc aucune release GitHub à créer.
           createGithubReleases: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Le même arbitrage que dans automerge.yml, pour la raison inverse :
+          # une pull request ouverte avec GITHUB_TOKEN ne déclenche AUCUN
+          # workflow, donc « Version Packages » n'a jamais de CI — et le robot
+          # de fusion, qui exige quatre contrôles nommés, l'ignore pour
+          # toujours. Avec JETON_FUSION, elle est contrôlée comme les autres,
+          # donc éligible.
+          GITHUB_TOKEN: ${{ secrets.JETON_FUSION || secrets.GITHUB_TOKEN }}
