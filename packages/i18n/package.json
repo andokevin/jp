@@ -1,6 +1,6 @@
 {
   "name": "@jp/i18n",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "description": "Catalogues malgache et français, formats locaux.",
