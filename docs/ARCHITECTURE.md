@@ -2,7 +2,7 @@
 
 > Ce que ce document donne : **où va chaque chose, et pourquoi elle ne va pas ailleurs.**
 >
-> Les décisions sont dans [JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md) et [plan/PLAN_SOCLE.md](plan/PLAN_SOCLE.md). Ici, la carte du terrain.
+> Les décisions sont dans [JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md) et [plan/PLAN_SOCLE.md](../plan/PLAN_SOCLE.md). Ici, la carte du terrain.
 
 ---
 
@@ -13,7 +13,7 @@ jp/
 ├─ apps/
 │  ├─ api/                      Fastify · service unique modulaire
 │  │  └─ src/
-│  │     ├─ serveur.ts          l'inventaire : 16 modules, 6 files, 3 canaux
+│  │     ├─ serveur.ts          l'inventaire : 17 modules, 6 files, 3 canaux
 │  │     ├─ plateforme/         le transverse, écrit UNE fois
 │  │     │  ├─ erreurs.ts       codes stables, enveloppe, traduction mg/fr
 │  │     │  ├─ auth.ts          session, contexte, garde de route
@@ -23,7 +23,7 @@ jp/
 │  │     │  ├─ debit.ts         limitation par identité, adresse, route
 │  │     │  ├─ audit.ts         journal_audit — ajout seul
 │  │     │  └─ contexte.ts      identifiant de corrélation de bout en bout
-│  │     ├─ modules/            16 domaines, mêmes 6 fichiers chacun
+│  │     ├─ modules/            17 domaines, mêmes 6 fichiers chacun
 │  │     ├─ jobs/               BullMQ — 6 files
 │  │     └─ temps-reel/         WebSocket — 3 canaux, resynchronisation
 │  ├─ mobile/                   React Native · acheteuse, vendeuse, créatrice
@@ -60,10 +60,11 @@ apps/api/src/modules/<domaine>/
 └─ erreurs.ts      codes d'erreur stables
 ```
 
-### Les seize domaines
+### Les dix-sept domaines
 
 | Module | Rôle | Ce qui s'y joue |
 |---|---|---|
+| **`univers`** | JP Mode, JP Beauté, JP Tech… | **les règles qui varient** : commission, livraison, fiche, litige |
 | `identite` | comptes, sessions, vérification | l'adresse électronique est l'identifiant, le téléphone un contact |
 | `catalogue` | articles, variantes, vitrines | la fiche enrichie remplace le fait de toucher le vêtement |
 | **`stock`** | quantités, réservations | **RB1** — ne dépend de rien, délibérément |
@@ -85,7 +86,7 @@ apps/api/src/modules/<domaine>/
 
 ## Les quatre règles de dépendance
 
-Elles ne sont pas des conventions : elles sont dans [eslint.config.mjs](eslint.config.mjs) et font échouer l'intégration continue.
+Elles ne sont pas des conventions : elles sont dans [eslint.config.mjs](../eslint.config.mjs) et font échouer l'intégration continue.
 
 **1. Un paquet partagé ne connaît aucune application.** La dépendance va dans l'autre sens, toujours.
 
@@ -101,7 +102,7 @@ Elles ne sont pas des conventions : elles sont dans [eslint.config.mjs](eslint.c
 pnpm archi
 ```
 
-[scripts/check-architecture.mjs](scripts/check-architecture.mjs) écrit sept fichiers volontairement fautifs ou volontairement corrects, les passe à ESLint, et exige le bon verdict **dans les deux sens**.
+[scripts/check-architecture.mjs](../scripts/check-architecture.mjs) écrit sept fichiers volontairement fautifs ou volontairement corrects, les passe à ESLint, et exige le bon verdict **dans les deux sens**.
 
 | Cas | Attendu |
 |---|---|
@@ -207,7 +208,7 @@ Le détail est dans [JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md), avec les douze
 | `S2` `@jp/money` | ✅ 40 tests verts |
 | `S2` `@jp/i18n`, `@jp/contracts` | coquilles posées |
 | `S3` plateforme API | coquilles posées, à remplir |
-| `S4` → `S10` | à faire — voir [plan/VAGUE0-socle.md](plan/VAGUE0-socle.md) |
+| `S4` → `S10` | à faire — voir [plan/VAGUE0-socle.md](../plan/VAGUE0-socle.md) |
 
 ```bash
 pnpm verifier    # typage · style · tests · architecture

@@ -11,24 +11,51 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "verifier": "turbo run typecheck lint test && pnpm archi",
+    "verifier": "turbo run typecheck lint test build && pnpm archi && pnpm contrat",
     "archi": "node scripts/check-architecture.mjs",
     "couverture": "node scripts/check-coverage.mjs",
     "format": "prettier --write .",
     "format:verifier": "prettier --check .",
     "issues:generer": "node scripts/gen-issues.mjs",
     "issues:publier": "node scripts/push-issues.mjs",
-    "uml:generer": "node scripts/gen-xmi.mjs"
+    "uml:generer": "node scripts/gen-xmi.mjs",
+    "db:demarrer": "docker compose up -d --wait",
+    "db:arreter": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d --wait && prisma migrate deploy && pnpm db:role && pnpm db:seed",
+    "db:role": "node scripts/db-role.mjs",
+    "db:migrer": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.mts",
+    "db:studio": "prisma studio",
+    "db:psql": "docker compose exec postgres psql -U postgres -d jp",
+    "contrat": "node scripts/check-contrat.mjs",
+    "avancement": "node scripts/avancement.mjs",
+    "changeset": "changeset",
+    "changeset:etat": "changeset status --since=origin/master",
+    "changeset:version": "changeset version && pnpm install --lockfile-only"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.1",
     "@eslint/js": "^9.18.0",
+    "@testcontainers/postgresql": "^12.1.0",
     "@types/node": "^22.10.7",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
+    "pg": "^8.23.0",
     "prettier": "^3.4.2",
+    "prisma": "^7.9.1",
+    "tsx": "^4.23.12",
     "turbo": "^2.3.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
     "vitest": "^2.1.8"
+  },
+  "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-w3rx-r6r6-pgpr",
+        "GHSA-5p2g-fcmc-qvqq",
+        "GHSA-ggr8-5vv4-36mx"
+      ]
+    }
   }
 }

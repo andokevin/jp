@@ -462,3 +462,109 @@ depend: [F6.1]
 ---
 
 *Épique suivante : [EP11-backoffice](EP11-backoffice.md).*
+
+---
+
+# JP Beauté — ce que l'univers cosmétique change au litige
+
+**Deux de ces trois règles ne sont pas commerciales.** Sur un cosmétique, la
+contrefaçon et la réaction cutanée touchent la santé des personnes, pas leur
+porte-monnaie. Elles se traitent donc comme des urgences, pas comme des
+désaccords de vente.
+
+---
+
+## F6.11 — Litige « réaction cutanée », traité en priorité
+
+`P1 · S · complet` — **Règles** R-Y16 · **Recette RB4** · **Dépend de** F21.4, F6.3
+
+**Conception.** Le motif `reaction_cutanee` place le dossier **en tête de
+file**, avec le même traitement que les signalements d'urgence de l'épique 19.
+
+**Ce n'est pas un litige de commerce.** Une réaction cutanée peut relever de
+l'urgence médicale. Le délai d'engagement affiché est court, et l'écran propose
+immédiatement — **avant toute décision d'arbitrage** — de retirer l'article de
+la vente. Protéger les suivantes ne doit pas attendre l'instruction du dossier.
+
+**Base.** `litige.prioritaire boolean` + index partiel
+`(prioritaire DESC, ouvert_le) WHERE statut <> 'resolu'`.
+
+**Backend.** `POST /litiges` marque `prioritaire = true` sur ce motif, et
+publie un événement que la modération écoute.
+
+**Test** : le dossier passe devant un litige ordinaire plus ancien · l'article
+est retirable immédiatement · la décision reste **motivée** *(RB4)*.
+
+```issues
+feature: F6.11
+titre: Litige « réaction cutanée » traité en priorité
+epic: "06"
+phase: P1
+prio: S
+etapes: [conception, bdd, design, backend, frontend]
+depend: [F21.4]
+```
+
+---
+
+## F6.12 — Pas de retour sur un cosmétique entamé
+
+`P1 · M · complet` — **Règles** R-Y17 · **Dépend de** F21.4
+
+**Conception.** Un cosmétique entamé **ne se retourne pas**, sauf défaut ou
+contrefaçon.
+
+**Pourquoi cette règle protège le vendeur.** Un produit entamé ne se revend
+pas : accepter son retour ferait payer au vendeur le changement d'avis de
+l'acheteuse. C'est une des rares règles du produit qui penche du côté du
+vendeur, et elle est légitime — l'hygiène n'est pas négociable.
+
+**Les exceptions restent entières** : défaut du produit, contrefaçon,
+péremption dépassée, réaction cutanée. Dans ces quatre cas, le retour et le
+remboursement s'appliquent normalement.
+
+**Frontend.** L'écran l'annonce **avant l'achat**, sur la fiche : « Produit
+entamé — non retournable sauf défaut ». Le découvrir au moment du litige serait
+un frais caché déguisé *(RB7)*.
+
+**Test** : un retour sur entamé sans défaut est refusé, avec le motif · un
+retour sur entamé **avec** contrefaçon est accepté · la mention figure sur la
+fiche avant paiement.
+
+```issues
+feature: F6.12
+titre: Pas de retour sur un cosmétique entamé, sauf défaut
+epic: "06"
+phase: P1
+prio: M
+etapes: [conception, design, backend, frontend]
+depend: [F21.4]
+```
+
+---
+
+## F6.13 — Signalement de contrefaçon
+
+`P1 · S · moyen` — **Règles** R-Y18 · **Dépend de** F21.4, F6.7
+
+Un signalement de contrefaçon est transmis **au vendeur et à l'équipe JP**.
+
+Sur un cosmétique, la contrefaçon n'est pas un préjudice commercial : c'est un
+risque pour les personnes. Le vendeur est averti — il peut être de bonne foi et
+avoir été trompé par son grossiste — et l'équipe instruit en parallèle.
+
+**Base.** Réutilise `signalement` de l'épique 19 avec `motif = contrefacon` et
+`univers_cle`.
+
+**Test** : les deux destinataires sont notifiés · un signalement de
+contrefaçon en Beauté est prioritaire, en Mode il suit la file normale.
+
+```issues
+feature: F6.13
+titre: Signalement de contrefaçon
+epic: "06"
+phase: P1
+prio: S
+etapes: [conception, bdd, backend, frontend]
+depend: [F21.4]
+```

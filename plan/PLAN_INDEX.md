@@ -356,11 +356,11 @@ Chaque fonctionnalité suit la même structure à six sections :
 
 ## Décisions bloquantes
 
-Sept décisions produit conditionnent des mini-plans de la vague 1. Elles sont listées dans `../JP_BACKLOG.md` §« Les décisions ouvertes » (points 15 à 21) et reprises en fin de `../JP_USER_STORIES.md`. **Deux sont à trancher avant d'écrire une ligne de code** :
+Sept décisions produit conditionnent des mini-plans de la vague 1. Elles sont listées dans `../docs/JP_BACKLOG.md` §« Les décisions ouvertes » (points 15 à 21) et reprises en fin de `../docs/JP_USER_STORIES.md`. **Deux sont à trancher avant d'écrire une ligne de code** :
 
 - **la règle de cumul des remises** *(R-U7)* — on ne modifie pas une règle de calcul après avoir émis des factures ;
 - **le seuil de bascule particulier → professionnel** *(R-H11)* — il conditionne l'écran de vérification, donc la structure du parcours de dépôt d'annonce.
 
 ---
 
-*Backlog : `../JP_BACKLOG.md` · User stories : `../JP_USER_STORIES.md` · Règles : `../JP_CAHIER_DES_CHARGES.md` · Modèle de données : `../JP_CDC_TECHNIQUE.md` · Socle : `PLAN_SOCLE.md`.*
+*Backlog : `../docs/JP_BACKLOG.md` · User stories : `../docs/JP_USER_STORIES.md` · Règles : `../docs/JP_CAHIER_DES_CHARGES.md` · Modèle de données : `../docs/JP_CDC_TECHNIQUE.md` · Socle : `PLAN_SOCLE.md`.*

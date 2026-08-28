@@ -82,6 +82,30 @@ Toute dénormalisation doit être **recalculable** : un compteur qu'on ne sait p
 
 ---
 
+### D9 — L'univers est une entité de premier rang, pas une colonne de catégorie
+
+**Décision du 20/08/2026.** JP est une place de marché **par univers** : `JP Mode`
+et `JP Beauté` ouverts, `JP Tech` déclaré et fermé. **Trois, et pas d'autre.**
+
+**Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche article, le mode de livraison, les motifs de litige recevables, le taux de commission et la vérification exigée du vendeur.
+
+Le taux suffit à le démontrer : un revendeur de téléphones gagne ~5 % sur un appareil ; lui en prendre 8 rendrait `JP Tech` vide.
+
+**Où vit chaque règle** — et ce partage est la décision :
+
+| Règle | Où | Pourquoi là |
+|---|---|---|
+| commission | **base** *(`univers.commission_pour_mille`)* | levier économique du pilote, doit bouger sans déploiement |
+| livraisons, champs de fiche, motifs de litige, provenance | **code** *(`packages/contracts/src/univers.ts`)* | change le produit, donc passe par une revue et un test |
+
+**`article.univers_cle` est immuable** *(R-Y1)*. Changer l'univers d'un article changerait ses règles de litige et sa commission **après** qu'une commande a été passée. Un déclencheur l'interdit — une contrainte `CHECK` ne peut pas comparer l'ancienne et la nouvelle valeur.
+
+**`commande` fige son univers et son taux** *(R-Y3)*, comme le barème historisé de `R-G3`. Un changement de taux ne rétroagit jamais.
+
+**Trois univers fermés existent en base.** L'abstraction se construit maintenant ; la rétrofitter après le lancement voudrait dire migrer chaque article, chaque commande et chaque promotion sur des données réelles.
+
+---
+
 # 2. Carte des domaines
 
 ```mermaid
@@ -1200,11 +1224,12 @@ L'ordre suit les dépendances de clés étrangères. Chaque migration est nommé
 | 3 | `f0_13_identite_externe` | `identite_externe` | — |
 | 4 | `f0_4_profils` | `profil_acheteur`, `profil_vendeur`, `profil_createur`, `membre_equipe` | catalogue |
 | 5 | `f0_6_verification` | `document_identite`, `demande_verification` | encaissement |
+| 5b | **`univers`** | `univers` — 5 lignes, 2 ouvertes ✅ **appliquée** | **articles, commande, litige** |
 | 6 | `f1_4_categories` | `categorie` | articles |
-| 7 | `f1_1_article_variante` | `article`, `variante`, `mouvement_stock` | **stock** |
+| 7 | `f1_1_article_variante` | `article` *(+ `univers_cle` immuable, `attributs jsonb`, `peremption_le` générée)*, `variante`, `mouvement_stock` | **stock** |
 | 8 | `f1_10_reservation` | `reservation` + les deux `CHECK` + index partiel | **RB1** |
 | 9 | `f3_3_livraison_zones` | `adresse`, `zone_livraison`, `tarif_livraison`, `point_relais` | frais |
-| 10 | `f3_7_commande` | `commande`, `ligne_commande` | paiement |
+| 10 | `f3_7_commande` | `commande` *(+ `univers_cle`, `taux_commission_pour_mille` figés)*, `ligne_commande` | paiement |
 | 11 | `f4_1_paiement` | `paiement` + `cle_idempotence` | **RB10** |
 | 12 | `f4_4_sequestre` | `sequestre`, `ecriture_financiere`, `portefeuille`, `retrait` | **RB2** |
 | 13 | `f4_11_facture` | `facture`, séquence de numérotation | — |
@@ -1215,7 +1240,7 @@ L'ordre suit les dépendances de clés étrangères. Chaque migration est nommé
 | 18 | `f7_22_promotion` | `promotion`, `promotion_article`, `promotion_beneficiaire` | promos |
 | 19 | `f7_23_notifications` | `notification`, `notification_compteur`, `preference_notification` | plafonds |
 | 20 | `f10_1_bareme` | `bareme_commission` historisé | commission |
-| 21 | `f6_3_litige` | `litige`, `message_litige` + `CHECK decision_motivee` | **RB4** |
+| 21 | `f6_3_litige` | `litige` *(+ `univers_cle`, `prioritaire`)*, `message_litige` + `CHECK decision_motivee` | **RB4** |
 | 22 | `f19_1_moderation` | `signalement`, `sanction`, `blocage`, `mot_bloque_personnel` | modération |
 | 23 | `f14_5_contenu` | `contenu`, `contenu_article` + **déclencheur différé** | **RB5** |
 | 24 | `f2_3_direct` | `direct`, `direct_article`, `message_direct`, `direct_bilan` | direct |
@@ -1254,6 +1279,9 @@ Les huit garanties structurelles, indépendantes du code applicatif. Ce sont ell
 | 10 | Pas de publication vidéo par un mineur | `CHECK (type NOT IN (...) OR auteur_majeur)` |
 | 11 | Pas de rang client global | **absence** d'index et de vue inter-vendeurs |
 | 12 | Pas de double usage d'un code personnel | `UNIQUE(code_personnel)` + contrôle transactionnel |
+| 13 | **Pas de changement d'univers après coup** | **déclencheur** sur `article.univers_cle` *(R-Y1)* |
+| 14 | **Pas de commission rétroactive** | `commande.taux_commission_pour_mille` **figé** à la création *(R-Y3)* |
+| 15 | **Pas de cosmétique périmé vendu** | colonne générée `peremption_le` + index partiel, vérifié à la publication **et** à l'achat *(R-Y13)* |
 
 **La ligne 11 est la seule garantie « par absence »**, et c'est la plus fragile : elle demande d'être documentée dans la migration, sinon quelqu'un ajoutera l'index « pour optimiser ».
 

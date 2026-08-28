@@ -2,7 +2,7 @@
 
 > **À lire une fois, avant tout mini-plan.** Chaque mini-plan de `plan/EPxx-*.md` suppose ce document connu et ne le répète pas : pile, arborescence, conventions, stratégie de tests, design system, préambule Stitch.
 >
-> Amont : `../JP_CAHIER_DES_CHARGES.md` (règles `R-xx`, recette `RBx`) · `../JP_CDC_TECHNIQUE.md` (modèle de données, machines à états, contraintes `C1`→`C5`) · `../JP_USER_STORIES.md` (`US-*`) · `../JP_BACKLOG.md` (`Fxx.y`).
+> Amont : `../docs/JP_CAHIER_DES_CHARGES.md` (règles `R-xx`, recette `RBx`) · `../docs/JP_CDC_TECHNIQUE.md` (modèle de données, machines à états, contraintes `C1`→`C5`) · `../docs/JP_USER_STORIES.md` (`US-*`) · `../docs/JP_BACKLOG.md` (`Fxx.y`).
 
 ---
 
@@ -82,9 +82,10 @@ apps/api/src/modules/<domaine>/
 
 **Les modules**, alignés sur les domaines du CDC technique :
 
-`identite` · `catalogue` · `stock` · `commande` · `paiement` · `sequestre` · `livraison` · `contenu` · `createur` · `fidelite` · `promotion` · `evenement` · `litige` · `moderation` · `notification` · `exploitation`
+`univers` · `identite` · `catalogue` · `stock` · `commande` · `paiement` · `sequestre` · `livraison` · `contenu` · `createur` · `fidelite` · `promotion` · `evenement` · `litige` · `moderation` · `notification` · `exploitation`
 
 **Règles de dépendance**
+- **`univers` ne dépend de rien et tout le monde le lit.** Il porte les règles qui varient d'un univers à l'autre : commission, livraison, champs de fiche, motifs de litige. `catalogue`, `commande` et `litige` l'interrogent ; il n'interroge personne.
 - `stock` ne dépend de rien. C'est le module le plus critique *(RB1)* et le plus isolé.
 - `promotion` lit `fidelite` (éligibilité par palier) et `evenement` (rattachement), et rien de plus.
 - `commande` orchestre : elle appelle `stock`, `promotion`, `paiement`, `sequestre`. **Elle est le seul point où l'argent et le stock se rencontrent.**
@@ -221,8 +222,8 @@ Always show these states as separate frames: default, loading, empty, error.
 | S5 | BullMQ, files, travailleur de référence, reprise sur incident | `apps/api/src/jobs/` |
 | S6 | Registre WebSocket, canaux, diffusion, resynchronisation à la reconnexion | `apps/api/src/temps-reel/` |
 | S7 | Design system `packages/ui` : jetons, primitives, les quatre états | `packages/ui/` |
-| S8 | Coquille Expo : navigation, session, client API, cache hors ligne, mode économie de données | `apps/mobile/` |
-| S9 | Coquille Vite pour `admin` et `web` | `apps/admin/`, `apps/web/` |
+| S8 | **Coquille Expo — le client PRINCIPAL** : navigation, session, client API, cache hors ligne, mode économie de données | `apps/mobile/` |
+| S9 | Coquille Vite : `admin` complet, `web` **réduit aux 5 pages partageables** | `apps/admin/`, `apps/web/` |
 | S10 | Observabilité : journaux corrélés, métriques, les événements de mesure du CDC §11 | transverse |
 
 ---

@@ -1,0 +1,71 @@
+# Environnement de développement de JP.
+#
+# Ce conteneur est ISOLÉ de `postgres-container` (port 5432), qui héberge
+# tube_c4m_db et monitoring. `docker compose down -v` ne peut donc toucher
+# que les données de JP.
+name: jp
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: jp-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jp
+      # Le tri des chaînes est figé à la création du cluster et ne change
+      # plus jamais après. On le décide donc maintenant : ICU en fr-FR,
+      # pour que « Éric » se classe entre « Eric » et « Fanja », et non
+      # après « Zo » comme le ferait un tri par octets.
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale-provider=icu --icu-locale=fr-FR --locale=C.UTF-8'
+
+    ports:
+      # 127.0.0.1 restreint l'écoute à CETTE machine. Sans ce préfixe, Docker
+      # écoute sur 0.0.0.0 — toutes les interfaces réseau — et la base devient
+      # joignable depuis n'importe quel poste du même Wi-Fi.
+      #
+      # 5433 côté machine → 5432 côté conteneur : 5432 est déjà pris par
+      # postgres-container, et deux services ne peuvent pas écouter au même
+      # endroit.
+      - '127.0.0.1:5433:5432'
+
+    healthcheck:
+      # pg_isready répond dès que le serveur accepte des connexions.
+      # Sans cette sonde, `up -d --wait` rendrait la main avant que la
+      # base soit prête, et la migration suivante échouerait une fois sur
+      # trois — le pire type de panne, celle qui va et vient.
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d jp']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    container_name: jp-redis
+    restart: unless-stopped
+
+    ports:
+      # 127.0.0.1 seulement, comme PostgreSQL. 6379 est libre sur cette
+      # machine, mais on décale quand même : si un Redis y apparaît un jour,
+      # les deux ne se disputeront pas le port.
+      - '127.0.0.1:6380:6379'
+
+    volumes:
+      - jp-redis-data:/data
+
+    # `appendonly` conserve les données au redémarrage. Redis n'est JAMAIS
+    # l'autorité (décision D2) — mais perdre les files BullMQ à chaque
+    # redémarrage rendrait le développement pénible pour rien.
+    command: ['redis-server', '--appendonly', 'yes']
+
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  jp-postgres-data:
+  jp-redis-data:

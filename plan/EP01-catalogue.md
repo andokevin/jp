@@ -1034,3 +1034,141 @@ depend: [F1.1]
 ---
 
 *Épique suivante : [EP03-commande](EP03-commande.md) — panier, commande et remises.*
+
+---
+
+# JP Beauté — ce que l'univers cosmétique ajoute au catalogue
+
+**Décision du 20/08/2026.** Ces quatre fonctionnalités étendent le catalogue
+plutôt que de créer un domaine : c'est la même table `article`, avec des
+attributs et des contrôles propres à l'univers *(voir `EP21-univers.md`)*.
+
+**Le raisonnement de fond.** Un vêtement qui ne va pas déçoit. Un cosmétique
+périmé ou contrefait **blesse**. Cette différence de nature justifie des
+contrôles bloquants là où la mode se contente d'avertissements.
+
+---
+
+## F1.21 — Fiche beauté : péremption, contenance, scellé, type de peau
+
+`P1 · M · complet` — **Règles** R-Y13, R-Y14, R-Y15 · **Dépend de** F21.3, F1.1
+
+**Conception.** Quatre champs propres à Beauté, dont **deux obligatoires** :
+`date_peremption` et `scelle`. Les deux autres — `contenance`, `type_peau` —
+sont facultatifs mais valorisés au tri.
+
+`scelle` prend deux valeurs seulement : **scellé** ou **entamé**. Pas de
+troisième option floue : c'est l'information qui décide de l'achat, et un
+« état moyen » n'aiderait personne.
+
+**Base.** `article.attributs jsonb` + colonne générée `peremption_le date`
+indexée. Une colonne générée plutôt qu'un champ dupliqué : elle permet
+d'exclure les périmés d'une liste sans parcourir la table.
+
+**Backend.** `champsManquants('beaute', fiche)` — déjà écrit et testé au socle.
+Refus `422 CHAMPS_MANQUANTS` **nommant les champs**.
+
+**Frontend.** Le formulaire est construit depuis les règles de l'univers, pas
+codé en dur : ouvrir `JP Tech` ne demandera pas un nouvel écran.
+
+**Test** : un article sans péremption est refusé · `scelle` n'accepte que deux
+valeurs · la vignette affiche l'état du flacon, pas seulement la fiche.
+
+```issues
+feature: F1.21
+titre: Fiche beauté — péremption, contenance, scellé, type de peau
+epic: "01"
+phase: P1
+prio: M
+etapes: [conception, squelette, bdd, design, backend, frontend]
+depend: [F21.3]
+```
+
+---
+
+## F1.22 — Refus de publication d'un produit périmé
+
+`P1 · M · complet` — **Règles** R-Y13 · **Dépend de** F1.21
+
+**Conception.** Le contrôle a lieu **deux fois** : à la publication, et **au
+moment de l'achat**. La seconde vérification est la plus importante — un
+article peut périmer en stock, et c'est le cas le plus probable, pas le plus
+rare.
+
+**Cas d'échec** : une acheteuse ajoute au panier un article qui périme pendant
+sa réservation de trente minutes. On refuse le paiement avec un message clair,
+et **la réservation est libérée** — garder le stock bloqué sur un article
+invendable serait absurde.
+
+**Base.** Un index partiel sur `peremption_le` permet à la fois d'exclure les
+périmés des listes et d'alimenter l'alerte de `F1.24`.
+
+**Backend.** `422 PRODUIT_PERIME` à la publication. Au paiement, la
+vérification est dans la même transaction que la réservation.
+
+**Test** : publication refusée sur une date passée · achat refusé sur un
+article périmé en stock · la réservation est bien libérée · un article qui
+périme **demain** reste achetable aujourd'hui.
+
+```issues
+feature: F1.22
+titre: Refus de publication et d'achat d'un produit périmé
+epic: "01"
+phase: P1
+prio: M
+etapes: [conception, bdd, backend, frontend]
+depend: [F1.21]
+```
+
+---
+
+## F1.23 — Déclaration de provenance
+
+`P1 · S · moyen` — **Règles** R-Y15 · **Dépend de** F1.21
+
+Le vendeur déclare d'où vient le produit. **Texte libre obligatoire, pièce
+justificative facultative** mais valorisée au tri.
+
+**Pourquoi pas la facture obligatoire** : une revendeuse qui achète en gros à
+Antananarivo n'a souvent aucune facture. L'exiger exclurait la majorité des
+vendeuses réelles. La déclaration engage sa responsabilité ; la pièce la
+renforce.
+
+**Base.** `attributs->>'provenance'` + `article.provenance_justifiee boolean`
+pour le tri.
+
+**Test** : la provenance est exigée en Beauté, pas en Mode · l'article avec
+pièce remonte au classement.
+
+```issues
+feature: F1.23
+titre: Déclaration de provenance en Beauté
+epic: "01"
+phase: P1
+prio: S
+etapes: [conception, bdd, design, backend, frontend]
+depend: [F1.21]
+```
+
+---
+
+## F1.24 — Alerte de péremption au vendeur
+
+`P2 · S · cadre` — **Dépend de** F1.22, S5
+
+Un travail quotidien avertit le vendeur des articles qui périment sous trente
+jours. Sans cette alerte, il découvre l'invendable au refus de paiement d'une
+cliente — le pire moment.
+
+File `notification`, clé métier `peremption:<article_id>:<mois>` pour ne pas
+avertir deux fois le même mois.
+
+```issues
+feature: F1.24
+titre: Alerte de péremption au vendeur
+epic: "01"
+phase: P2
+prio: S
+etapes: [conception, backend, frontend]
+depend: [F1.22]
+```

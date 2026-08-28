@@ -77,7 +77,7 @@ function extraireBlocs(texte, type) {
   return blocs;
 }
 
-const bddTexte = lire('JP_CONCEPTION_BDD.md');
+const bddTexte = lire('docs/JP_CONCEPTION_BDD.md');
 const classes = new Map(); // NOM_TABLE → { nom, paquet, attributs[] }
 const associations = [];
 
@@ -147,7 +147,7 @@ for (const m of bddTexte.matchAll(/^\|\s*`([a-z_]+)`(?:\s*\/\s*`([a-z_]+)`)?\s*\
 // 2. Acteurs et cas d'utilisation
 // ═══════════════════════════════════════════════════════════════════════════
 
-const ucTexte = lire('JP_CAS_UTILISATION.md');
+const ucTexte = lire('docs/JP_CAS_UTILISATION.md');
 const lignesUC = ucTexte.split('\n');
 
 const acteurs = new Map(); // code → { code, nom, systeme }

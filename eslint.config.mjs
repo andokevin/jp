@@ -18,6 +18,7 @@ export default tseslint.config(
       '**/.expo/**',
       'vp/**',
       'prisma/migrations/**',
+      '**/genere/**',
     ],
   },
 

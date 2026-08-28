@@ -12,6 +12,9 @@ concurrency:
 env:
   TURBO_TELEMETRY_DISABLED: 1
 
+permissions:
+  contents: read
+
 jobs:
   verifier:
     name: Typage, style, tests
@@ -30,6 +33,24 @@ jobs:
 
       - name: Installer
         run: pnpm install --frozen-lockfile
+
+      # apps/api/src/genere/ est dans .gitignore : le client Prisma est un
+      # artefact, pas une source. Le runner part d'un dépôt propre, il doit
+      # donc le générer avant tout typage — sinon `tsc` ne trouve pas ses types.
+      # `pnpm exec` à la racine, et non `--filter @jp/api` : le paquet `prisma`
+      # est une devDependency de la RACINE, et prisma.config.ts y déclare
+      # `schema: 'prisma/schema.prisma'`, résolu depuis la racine.
+      - name: Générer le client Prisma
+        run: pnpm exec prisma generate
+        env:
+          # prisma.config.ts évalue `env('DATABASE_URL')` AU CHARGEMENT, avant
+          # même de savoir quelle commande on lance. Sans cette variable, le
+          # fichier de configuration lève PrismaConfigEnvError et `generate`
+          # échoue — alors qu'il ne se connecte à aucune base : il ne fait que
+          # lire le schéma pour écrire des types.
+          # L'URL est donc volontairement factice. Les vraies migrations
+          # tournent ailleurs, avec la vraie URL.
+          DATABASE_URL: postgresql://generate:generate@localhost:5432/generate
 
       - name: Cache Turborepo
         uses: actions/cache@v4
@@ -57,6 +78,104 @@ jobs:
 
       - name: Construction
         run: pnpm build
+
+  audit-securite:
+    name: Audit de sécurité des dépendances
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Installer
+        run: pnpm install --frozen-lockfile
+
+      # LA PRODUCTION BLOQUE, LE DÉVELOPPEMENT INFORME.
+      #
+      # --prod : seules les dépendances réellement expédiées font échouer la
+      # construction. Une faille dans le serveur d'interface de Vitest ne
+      # touche pas le produit déployé ; la traiter comme bloquante rendrait le
+      # rouge banal, et un rouge banal ne se lit plus.
+      #
+      # --audit-level=high : on ne casse pas sur du mineur ou du théorique.
+      #
+      # Trois avis sont ignorés dans package.json (pnpm.auditConfig.ignoreGhsas),
+      # parce qu'AUCUN N'EST CORRIGEABLE ICI :
+      #   GHSA-w3rx-r6r6-pgpr et GHSA-5p2g-fcmc-qvqq — image-size, déni de
+      #     service dans les analyseurs ICNS et JXL/HEIF. `Patched versions:
+      #     <0.0.0` : il n'existe aucune version corrigée à ce jour.
+      #   GHSA-ggr8-5vv4-36mx — deepmerge-ts, épuisement de pile. Transitif via
+      #     @prisma/config@7.9.1 : il partira quand Prisma montera de version.
+      # Ces trois-là sont à réexaminer à chaque montée de version majeure.
+      #
+      # RESTE À FAIRE, hors périmètre de ce correctif : Vitest 2 → 3 lève d'un
+      # coup GHSA-5xrq-8626-4rwp (critique) et les avis `vite` associés.
+      - name: pnpm audit
+        run: pnpm audit --prod --audit-level=high
+
+  scan-secrets:
+    name: Scan de secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Le `permissions: contents: read` du workflow ne suffit pas : sur une pull
+    # request, gitleaks appelle GET /repos/…/pulls/:n/commits pour ne scanner
+    # que les commits de la branche. Sans ce droit, l'appel rend 403
+    # « Resource not accessible by integration » et le job casse — le moindre
+    # privilège mord d'abord celui qui l'applique.
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # gitleaks doit lire tout l'historique, pas juste le dernier commit
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  verifier-changeset:
+    name: Un changeset accompagne-t-il la pull request ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Sur un push vers master, la question n'a pas de sens : il n'y a plus de
+    # branche à comparer, et c'est release.yml qui prend le relais.
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # `changeset status --since=origin/master` passe par git diff. Sans
+          # l'historique complet, la référence origin/master n'existe pas sur
+          # le runner et la comparaison n'a rien à quoi se rattacher.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Installer
+        run: pnpm install --frozen-lockfile
+
+      # Le même script que celui qu'on lance en local — une vérification de CI
+      # qu'on ne sait pas reproduire sur sa machine est une vérification qu'on
+      # ne sait pas déboguer. Échoue si la branche touche un paquet sans le
+      # décrire ; `pnpm changeset --empty` est la sortie explicite prévue.
+      - name: Un changeset est-il présent ?
+        run: pnpm changeset:etat
 
   couverture-du-plan:
     name: Couverture backlog ↔ plan

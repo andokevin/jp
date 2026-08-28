@@ -194,6 +194,24 @@ async function publier() {
   await creerLabels();
   const milestones = await creerMilestones(issues);
 
+  // ── Le garde-fou d'idempotence ──────────────────────────────────────────
+  //
+  // `gh issue create` peut ÉCHOUER en ayant créé l'issue : sur un 503, GitHub
+  // enregistre puis perd la réponse. Le point de reprise ne le sait pas, et la
+  // relance crée un doublon. C'est exactement le problème que RB10 résout côté
+  // produit — et il nous est arrivé : 34 doublons lors de la publication des
+  // univers.
+  //
+  // Le remède est le même : une clé stable. Ici, le TITRE, qui contient
+  // l'identifiant de fonctionnalité et l'étape — donc unique par construction.
+  console.log('\n── Relevé des titres déjà sur GitHub ──');
+  const dejaLa = new Set(
+    JSON.parse(
+      gh(['issue', 'list', '-R', DEPOT, '--limit', '2000', '--state', 'all', '--json', 'title']),
+    ).map((i) => i.title),
+  );
+  console.log(`  ${dejaLa.size} titres relevés`);
+
   console.log(`\n── Issues ──`);
   let ok = 0,
     echecs = 0;
@@ -202,6 +220,15 @@ async function publier() {
   for (const [n, issue] of restantes.entries()) {
     if (SEC) {
       console.log(`  [sec] ${issue.title}`);
+      continue;
+    }
+
+    // Elle existe déjà sur GitHub, mais le point de reprise l'ignorait : on
+    // rattrape l'état plutôt que de créer un doublon.
+    if (dejaLa.has(issue.title)) {
+      etat.creees[issue.cle] = 'retrouvee';
+      writeFileSync(ETAT, JSON.stringify(etat, null, 2));
+      process.stdout.write('=');
       continue;
     }
 
@@ -217,15 +244,54 @@ async function publier() {
     try {
       const url = gh(params, { stdio: ['ignore', 'pipe', 'pipe'] });
       etat.creees[issue.cle] = url.split('/').pop();
+      dejaLa.add(issue.title);
       writeFileSync(ETAT, JSON.stringify(etat, null, 2)); // reprise après CHAQUE issue
       ok++;
     } catch (e) {
-      echecs++;
       const msg = String(e.stderr ?? e.message).split('\n')[0];
-      console.log(`\n  ✗ ${issue.cle} — ${msg}`);
-      if (/rate limit|secondary|abuse/i.test(msg)) {
-        console.log('    limite atteinte, pause de 60 s…');
-        await dormir(60_000);
+
+      // Un 503 peut signifier « créée, mais la réponse s'est perdue ». On
+      // vérifie AVANT de compter un échec — sinon la relance ferait un doublon.
+      let retrouvee = false;
+      if (/503|Service Unavailable|timeout/i.test(msg)) {
+        await dormir(3_000);
+        try {
+          const trouvees = JSON.parse(
+            gh([
+              'issue',
+              'list',
+              '-R',
+              DEPOT,
+              '--search',
+              `"${issue.title}" in:title`,
+              '--limit',
+              '5',
+              '--state',
+              'all',
+              '--json',
+              'title,number',
+            ]),
+          );
+          if (trouvees.some((t) => t.title === issue.title)) {
+            etat.creees[issue.cle] = 'retrouvee-apres-503';
+            writeFileSync(ETAT, JSON.stringify(etat, null, 2));
+            dejaLa.add(issue.title);
+            retrouvee = true;
+            process.stdout.write('~');
+          }
+        } catch {
+          // La vérification a échoué aussi : on compte l'échec, et le relevé
+          // de titres du prochain lancement rattrapera.
+        }
+      }
+
+      if (!retrouvee) {
+        echecs++;
+        console.log(`\n  ✗ ${issue.cle} — ${msg}`);
+        if (/rate limit|secondary|abuse|503/i.test(msg)) {
+          console.log('    pause de 60 s…');
+          await dormir(60_000);
+        }
       }
     }
 

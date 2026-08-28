@@ -1,23 +1,271 @@
-// Schéma Prisma — JP
-//
-// PostgreSQL 16, non négociable : intégrité du stock (RB1) et argent de
-// tiers (RB2). Le modèle complet est décrit dans JP_CONCEPTION_BDD.md, avec
-// l'ordre des 32 migrations.
-//
-// Les tables arrivent fonctionnalité par fonctionnalité. S4 pose les six
-// fondatrices : énumérés, utilisateur, parametre, journal_audit,
-// ecriture_financiere.
-//
-// Deux choses que Prisma ne sait pas exprimer et qui vont en SQL brut,
-// dans la migration :
-//   · REVOKE UPDATE, DELETE sur ecriture_financiere et journal_audit
-//   · les CHECK de garantie et la contrainte différée de RB5
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../apps/api/src/genere/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Énumérés
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Anglais et français. Le français est le défaut : c'est la langue écrite
+/// courante à Madagascar, et celle qui produit les libellés les plus longs —
+/// donc celle qui contraint les maquettes.
+enum Langue {
+  en
+  fr
+
+  @@map("langue")
+}
+
+enum StatutUtilisateur {
+  actif
+  suspendu
+  supprime
+
+  @@map("statut_utilisateur")
+}
+
+/// Le type dit comment lire `parametre.valeur`, qui est toujours du texte.
+/// `pour_mille` existe séparément d'`entier` parce que 25 y signifie 2,5 %
+/// et qu'un affichage naïf tromperait le vendeur.
+enum TypeParametre {
+  entier
+  texte
+  booleen
+  duree_s
+  pour_mille
+
+  @@map("type_parametre")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Utilisateur — R-C1, R-C15, RB6
+// ─────────────────────────────────────────────────────────────────────────
+
+model Utilisateur {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// L'identifiant du compte (R-C1). Unique, jamais réutilisable.
+  email          String    @unique
+  emailVerifieLe DateTime? @map("email_verifie_le") @db.Timestamptz(6)
+
+  /// Le téléphone n'est PLUS un identifiant : c'est un contact de
+  /// livraison (R-C15). D'où le point d'interrogation — il peut être vide.
+  telephone          String?
+  telephoneVerifieLe DateTime? @map("telephone_verifie_le") @db.Timestamptz(6)
+
+  prenom   String?
+  photoUrl String? @map("photo_url")
+  /// Français par défaut : c'est la langue écrite courante à Madagascar.
+  langue   Langue  @default(fr)
+
+  /// Requis pour publier une vidéo (RB6). Vide tant qu'on ne publie pas.
+  dateNaissance DateTime? @map("date_naissance") @db.Date
+
+  statut             StatutUtilisateur @default(actif)
+  classementsPublics Boolean           @default(true) @map("classements_publics")
+
+  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  /// `@default(now())` s'ajoute à `@updatedAt` : le second est tenu par le
+  /// client Prisma, le premier par la base. Sans lui, un INSERT écrit à la main
+  /// depuis psql échoue sur une colonne NOT NULL sans valeur par défaut.
+  majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+
+  sessions                Session[]
+  journauxAudit           JournalAudit[]
+  parametresModifies      Parametre[]
+  modificationsProposees  ParametreModification[] @relation("propose")
+  modificationsConfirmees ParametreModification[] @relation("confirme")
+
+  @@map("utilisateur")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Paramètres — R-O1
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Tous les réglages économiques : durée de réservation, taux de commission,
+/// délais, plafonds. Modifiables sans déploiement — sinon aucun essai n'a
+/// lieu pendant le pilote.
+model Parametre {
+  cle         String        @id
+  valeur      String
+  type        TypeParametre
+  description String
+
+  modifiePar   Utilisateur? @relation(fields: [modifieParId], references: [id], onDelete: SetNull)
+  modifieParId String?      @map("modifie_par_id") @db.Uuid
+  modifieLe    DateTime     @default(now()) @map("modifie_le") @db.Timestamptz(6)
+
+  modifications ParametreModification[]
+
+  @@map("parametre")
+}
+
+/// Double validation : proposé par l'un, confirmé par l'autre.
+/// Personne ne change seul un taux de commission.
+model ParametreModification {
+  id  String @id @default(uuid(7)) @db.Uuid
+  cle String
+
+  parametre      Parametre @relation(fields: [cle], references: [cle], onDelete: Cascade)
+  ancienneValeur String    @map("ancienne_valeur")
+  nouvelleValeur String    @map("nouvelle_valeur")
+  motif          String
+
+  proposePar   Utilisateur @relation("propose", fields: [proposeParId], references: [id])
+  proposeParId String      @map("propose_par_id") @db.Uuid
+  proposeLe    DateTime    @default(now()) @map("propose_le") @db.Timestamptz(6)
+
+  /// `Restrict` et non `SetNull` : on n'efface pas la trace de qui a validé un
+  /// changement de taux de commission. Un compte se ferme par
+  /// `statut = supprime`, jamais par DELETE.
+  confirmePar   Utilisateur? @relation("confirme", fields: [confirmeParId], references: [id], onDelete: Restrict)
+  confirmeParId String?      @map("confirme_par_id") @db.Uuid
+  confirmeLe    DateTime?    @map("confirme_le") @db.Timestamptz(6)
+
+  @@index([cle, proposeLe])
+  @@map("parametre_modification")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Journal d'audit — D3, R-V5, N3.4
+// ─────────────────────────────────────────────────────────────────────────
+
+/// AJOUT SEUL. La garantie n'est pas ici — elle est dans la migration,
+/// sous forme de REVOKE. Prisma ne sait pas l'exprimer.
+model JournalAudit {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  /// `Restrict` et non `SetNull` : voir l'explication sous ce bloc.
+  acteur   Utilisateur? @relation(fields: [acteurId], references: [id], onDelete: Restrict)
+  acteurId String?      @map("acteur_id") @db.Uuid
+
+  action    String
+  cibleType String  @map("cible_type")
+  cibleId   String? @map("cible_id")
+
+  avant Json?
+  apres Json?
+
+  adresseIp  String?  @map("adresse_ip") @db.Inet
+  horodatage DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([cibleType, cibleId, horodatage])
+  @@index([acteurId, horodatage])
+  @@map("journal_audit")
+}
+// ─────────────────────────────────────────────────────────────────────────
+// Plateforme — S3
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Les clés d'idempotence — **RB10**.
+///
+/// Une écriture financière interrompue ne doit produire ni double
+/// prélèvement, ni commande perdue. Le client fabrique une clé, la renvoie
+/// s'il réessaie, et le serveur reconnaît le rejeu.
+///
+/// `empreinteRequete` garde contre le pire cas : la même clé réutilisée pour
+/// une requête DIFFÉRENTE. Sans elle, un client bogué pourrait recevoir la
+/// réponse d'une commande pour une autre.
+model CleIdempotence {
+  cle String @id
+
+  utilisateurId String? @map("utilisateur_id") @db.Uuid
+  methode       String
+  chemin        String
+  /// Empreinte SHA-256 du corps de la requête.
+  empreinteRequete String @map("empreinte_requete")
+
+  /// `NULL` tant que la requête est EN COURS. C'est ce qui permet de
+  /// distinguer « rejeu d'une requête terminée » de « deux requêtes
+  /// simultanées avec la même clé ».
+  statut  Int?
+  reponse Json?
+
+  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  expireLe DateTime @map("expire_le") @db.Timestamptz(6)
+
+  @@index([expireLe])
+  @@map("cle_idempotence")
+}
+
+/// Une session ouverte, sur un appareil.
+///
+/// Le jeton n'est **jamais** stocké en clair : seule son empreinte l'est. Une
+/// fuite de la base ne donne donc pas de session utilisable.
+///
+/// `famille` porte la chaîne de rotation. Quand un jeton de rafraîchissement
+/// déjà consommé réapparaît, c'est le signe d'un vol : on révoque **toute la
+/// famille**, pas seulement le jeton présenté *(F0.2)*.
+model Session {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  utilisateurId String      @map("utilisateur_id") @db.Uuid
+
+  jetonEmpreinte String @unique @map("jeton_empreinte")
+  famille        String @db.Uuid
+
+  appareil  String?
+  adresseIp String? @map("adresse_ip") @db.Inet
+
+  creeLe     DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
+  expireLe   DateTime  @map("expire_le") @db.Timestamptz(6)
+  revoqueeLe DateTime? @map("revoquee_le") @db.Timestamptz(6)
+
+  @@index([utilisateurId, expireLe])
+  @@index([famille])
+  @@map("session")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Les univers — JP Mode, JP Beauté, JP Tech
+// ─────────────────────────────────────────────────────────────────────────
+
+/// **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.**
+///
+/// Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la
+/// fiche article, le mode de livraison, les motifs de litige recevables, le
+/// taux de commission et la vérification exigée du vendeur.
+///
+/// Les règles vivent dans `packages/contracts/src/univers.ts` — le code, pas la
+/// base. Cette table porte ce qui doit être **modifiable sans déploiement**
+/// pendant le pilote : l'ouverture et le taux de commission.
+///
+/// **Trois univers, et pas d'autre.** Mode et Beauté ouverts, Tech déclaré avec
+/// `ouvert = false`. C'est délibéré : l'abstraction est construite maintenant,
+/// l'ouverture est un `UPDATE`.
+///
+/// Les trois partagent la même livraison — point relais et domicile. C'est ce
+/// qui rend l'application identique dans les trois : ce qui varie n'est pas le
+/// parcours, ce sont trois listes.
+model Univers {
+  /// Ne change JAMAIS : il est dans les URL et les lignes de commande.
+  cle String @id
+
+  nom       String
+  signature String
+  onglet    String
+
+  /// Un univers fermé garde ses règles et n'apparaît nulle part.
+  ouvert Boolean @default(false)
+
+  /// En pour mille. 80 = 8 %. Modifiable sans déploiement — c'est le levier
+  /// économique du pilote, et il diffère fortement d'un univers à l'autre.
+  commissionPourMille Int @map("commission_pour_mille")
+
+  /// Ordre d'affichage des onglets.
+  rang Int @default(0)
+
+  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+
+  @@index([ouvert, rang])
+  @@map("univers")
 }

@@ -319,3 +319,143 @@ En plus des quatre indicateurs de la slide 6, six tests :
 ---
 
 *Voir `JP_BACKLOG.md` pour le détail des fonctionnalités et des parcours.*
+
+---
+
+# Les univers — pourquoi la promesse en supporte plusieurs
+
+**Décision du 20/08/2026.**
+
+## La promesse était déjà horizontale
+
+Ce document dit, plus haut : *« Ce que JP vend, c'est la certitude. Le risque
+change de camp. »*
+
+Cette phrase ne parle pas de vêtements. **Le séquestre protège l'achat d'un
+téléphone exactement comme celui d'une robe** — et sur un appareil à 800 000 Ar,
+l'enjeu est bien plus fort qu'sur une robe à 50 000. La marque supporte donc
+plusieurs univers sans se contredire.
+
+Ce qui était spécifique à la mode, en revanche : la taille, la morphologie, les
+mesures, le dressing, l'essayage. **Promesse horizontale, fonctionnalités
+verticales.** C'est exactement le cas de figure où l'abstraction se paie.
+
+## Les trois univers
+
+| Univers | Signature | Pourquoi lui |
+|---|---|---|
+| **JP Mode** | *Le direct qui habille* | le direct Facebook y est né · marché de départ |
+| **JP Beauté** | *Vrai produit, prix vrai* | deuxième marché du direct malgache · **la contrefaçon y est dangereuse, pas seulement décevante** |
+| JP Tech | *Vérifié avant de payer* | panier moyen le plus élevé · risque d'arnaque maximal |
+
+**Trois, et pas d'autre.** Mode et Beauté ouverts au lancement, Tech déclaré et
+fermé.
+
+### Ce que ce périmètre nous donne
+
+**Les trois partagent la même logistique** — point relais et domicile. C'est ce
+qui rend **l'application identique dans les trois univers** : ce qui varie n'est
+pas le parcours, ce sont trois listes.
+
+Un quatrième univers plus lourd — du mobilier — aurait exigé le camion et deux
+personnes, donc un second parcours de livraison et un second métier. L'écarter
+n'est pas un renoncement commercial : **c'est ce qui garde une seule application
+au lieu de deux.**
+
+## Pourquoi ce mot, « univers »
+
+« Pack » dit lot ou abonnement — un client y chercherait un prix. « Division »
+est du vocabulaire d'organigramme. « Section » est juste mais froid. « Rayon »
+suggère un même magasin avec les mêmes règles, or c'est précisément le contraire.
+
+**« Univers »** est le standard du commerce français, et il dit la vérité
+technique : un monde avec ses propres codes.
+
+## Pourquoi des noms descriptifs et pas évocateurs
+
+`JP Mode` plutôt qu'un nom inventé, parce qu'**une vendeuse d'Analakely
+comprend sans qu'on lui explique**. La marque `JP` porte la confiance — le
+séquestre, l'arbitrage ; le suffixe porte la catégorie. Coût d'apprentissage :
+zéro. Extension : gratuite.
+
+Un nom évocateur construirait plus de marque, mais demanderait d'enseigner
+cinq noms — et personne ne cherche un mot inventé pour trouver une robe.
+
+**La signature compense la platitude du nom.** Le nom explique, la signature
+donne le caractère.
+
+## Pourquoi Tech attend
+
+Le **téléphone volé** est un vrai problème à Madagascar. `JP Tech` exige l'IMEI
+et la provenance, donc une vérification vendeur plus lourde.
+
+On ouvre Tech quand ce contrôle sera éprouvé sur de vrais dossiers. Pas avant :
+**un univers qui laisse passer des appareils volés détruirait la promesse de la
+plateforme entière**, pas seulement la sienne. La certitude ne se vend pas à la
+découpe.
+
+Mode et Beauté, elles, partagent la même vendeuse et le même panier. Deux
+marchés validés, un seul métier à apprendre.
+
+## Une vendeuse choisit où elle est visible
+
+**Par défaut, elle n'est visible que dans un seul univers.** Elle peut en
+ajouter, en un geste — avec un avertissement :
+
+> *« Être visible partout vous rend spécialiste de rien. »*
+
+« La boutique qui vend de tout » est un positionnement plus faible que « la
+spécialiste du téléphone ». Une acheteuse qui cherche un cosmétique fait plus
+confiance à une boutique qui ne vend que ça. C'est un fait de marché.
+
+**La plateforme informe, elle n'interdit pas.** Interdire serait paternaliste :
+c'est son commerce. Mais la laisser découvrir la conséquence six mois plus tard,
+quand ses ventes stagnent, serait pire que de la prévenir.
+
+## Le client : l'application native d'abord
+
+**Décision du 21/08/2026.** La plupart des clients sont sur mobile — l'application
+**React Native** est donc le client principal, et non un site web.
+
+`apps/web` est réduit à ce qui doit être **partageable** : vitrine vendeur, fiche
+article, page cadeau, page événement, replay. Cinq pages, en rendu serveur, pour
+une seule raison — **l'aperçu de lien**. Un lien collé dans WhatsApp sans titre
+ni image perd l'essentiel de son intérêt à Madagascar, où le partage passe par
+là.
+
+**Ce que le natif nous donne** et qu'un site n'aurait pas : des notifications
+fiables, la caméra pour le direct, un hors ligne solide — et le hors ligne n'est
+pas un confort ici. Une acheteuse arrivée au point relais sans réseau et sans son
+code de retrait repart **sans son colis**, alors qu'elle a payé.
+
+**Ce que ça coûte** et qu'il faut assumer : un APK à télécharger sur des données
+chères, la friction du magasin d'applications, et une mise à jour qui dépend
+de l'utilisatrice. Le poids de l'APK devient donc un **critère de recette**, pas
+une observation de fin de projet.
+
+## Ce que JP Beauté change au produit, et pourquoi c'est un univers
+
+Un vêtement qui ne va pas **déçoit**. Un cosmétique périmé ou contrefait
+**blesse**.
+
+Cette différence de nature — et non de catégorie — justifie à elle seule un
+univers séparé plutôt qu'une catégorie de plus :
+
+- la **date de péremption** est obligatoire, vérifiée à la publication **et** à
+  l'achat, parce qu'un article périme en stock ;
+- l'état **scellé ou entamé** est affiché sur la vignette : c'est l'information
+  qui décide de l'achat ;
+- le litige **« réaction cutanée »** est traité comme une urgence, pas comme un
+  désaccord de vente ;
+- la **contrefaçon** est transmise au vendeur *et* à l'équipe : ce n'est pas un
+  préjudice commercial, c'est un risque pour les personnes.
+
+## L'argument qui décide de la viabilité d'un univers
+
+**Le taux de commission.**
+
+Un revendeur de téléphones gagne environ 5 % sur un appareil. Lui en prendre 8
+rendrait `JP Tech` **vide**, quel que soit le reste du produit. D'où 3 % pour
+Tech, 8 % pour Mode et Beauté, 5 % pour Maison.
+
+Un univers avec un taux global n'est pas un univers : c'est une étiquette.

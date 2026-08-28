@@ -20,8 +20,12 @@ import { fileURLToPath } from 'node:url';
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const lire = (...p) => readFileSync(join(RACINE, ...p), 'utf8');
 
+// Les documents produits vivent dans docs/ ; le plan et les scripts, à la racine.
+// Une constante, pour qu'un renommage du dossier n'ait qu'un seul endroit à toucher.
+const DOCS = 'docs';
+
 // ── Le backlog ───────────────────────────────────────────────────────────────
-const backlog = lire('JP_BACKLOG.md');
+const backlog = lire(DOCS, 'JP_BACKLOG.md');
 const duBacklog = [...backlog.matchAll(/^\|\s*(F\d+\.\d+)\b/gm)].map((m) => m[1]);
 const doublons = duBacklog.filter((id, i) => duBacklog.indexOf(id) !== i);
 const ensembleBacklog = new Set(duBacklog);

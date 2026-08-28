@@ -10,18 +10,22 @@ La promesse tient en une phrase : **l'argent de l'acheteuse est gardé par JP ju
 
 | # | Document | Contenu |
 |---|---|---|
-| 1 | [JP_POSITIONNEMENT.md](JP_POSITIONNEMENT.md) | Pourquoi ce produit, pour qui, contre quoi |
-| 2 | [JP_DESCRIPTION_PROJET.md](JP_DESCRIPTION_PROJET.md) | Présentation générale |
-| 3 | [JP_EXPRESSION_DE_BESOIN.md](JP_EXPRESSION_DE_BESOIN.md) | Besoins `Bx.y` et exigences non fonctionnelles `Nx.y` |
-| 4 | **[JP_BACKLOG.md](JP_BACKLOG.md)** | **266 fonctionnalités** `Fxx.y` · 21 épiques · parcours par persona |
-| 5 | **[JP_USER_STORIES.md](JP_USER_STORIES.md)** | **45 user stories** avec critères d'acceptation, dont au moins un cas d'échec chacune |
-| 6 | **[JP_CAS_UTILISATION.md](JP_CAS_UTILISATION.md)** | **30 cas d'utilisation**, acteurs, scénarios, **30 diagrammes de séquence** — un par cas |
-| 7 | [JP_CAHIER_DES_CHARGES.md](JP_CAHIER_DES_CHARGES.md) | Volet fonctionnel · **180 règles** `R-xx` · matrice des droits · critères de recette `RBx` |
-| 8 | [JP_CDC_TECHNIQUE.md](JP_CDC_TECHNIQUE.md) | Volet technique · modèle de données · machines à états · API |
-| 9 | **[JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md)** | **113 tables** · 6 diagrammes ER · ordre des migrations · garanties structurelles |
-| 10 | **[JP_CONCEPTION_APP.md](JP_CONCEPTION_APP.md)** | Architecture · 16 modules · navigation · design system · stratégie de tests |
+| 1 | [JP_POSITIONNEMENT.md](docs/JP_POSITIONNEMENT.md) | Pourquoi ce produit, pour qui, contre quoi |
+| 2 | [JP_DESCRIPTION_PROJET.md](docs/JP_DESCRIPTION_PROJET.md) | Présentation générale |
+| 3 | [JP_EXPRESSION_DE_BESOIN.md](docs/JP_EXPRESSION_DE_BESOIN.md) | Besoins `Bx.y` et exigences non fonctionnelles `Nx.y` |
+| 4 | **[JP_BACKLOG.md](docs/JP_BACKLOG.md)** | **266 fonctionnalités** `Fxx.y` · 21 épiques · parcours par persona |
+| 5 | **[JP_USER_STORIES.md](docs/JP_USER_STORIES.md)** | **45 user stories** avec critères d'acceptation, dont au moins un cas d'échec chacune |
+| 6 | **[JP_CAS_UTILISATION.md](docs/JP_CAS_UTILISATION.md)** | **30 cas d'utilisation**, acteurs, scénarios, **30 diagrammes de séquence** — un par cas |
+| 7 | [JP_CAHIER_DES_CHARGES.md](docs/JP_CAHIER_DES_CHARGES.md) | Volet fonctionnel · **180 règles** `R-xx` · matrice des droits · critères de recette `RBx` |
+| 8 | [JP_CDC_TECHNIQUE.md](docs/JP_CDC_TECHNIQUE.md) | Volet technique · modèle de données · machines à états · API |
+| 9 | **[JP_CONCEPTION_BDD.md](docs/JP_CONCEPTION_BDD.md)** | **113 tables** · 6 diagrammes ER · ordre des migrations · garanties structurelles |
+| 10 | **[JP_CONCEPTION_APP.md](docs/JP_CONCEPTION_APP.md)** | Architecture · 16 modules · navigation · design system · stratégie de tests |
 | 11 | **[plan/](plan/)** | **Plan de réalisation, fonctionnalité par fonctionnalité** |
-| 12 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | **L'arborescence du dépôt** · convention de module · les 4 règles de dépendance |
+| 12 | **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | **L'arborescence du dépôt** · convention de module · les 4 règles de dépendance |
+| 13 | **[docs/SOCLE.md](docs/SOCLE.md)** | **Le socle fichier par fichier** — quoi ouvrir, dans quel ordre, et ce qu'il faut y voir |
+| 14 | **[JP_DICTIONNAIRE_DONNEES.md](docs/JP_DICTIONNAIRE_DONNEES.md)** | **Les tables, leurs attributs et leur rôle** · 102 tables recensées · machines à états · les 15 garanties structurelles |
+| 15 | **[JP_ACTEURS_WORKFLOWS.md](docs/JP_ACTEURS_WORKFLOWS.md)** | **Qui fait quoi** · 12 acteurs · matrice des droits · cas d'utilisation par acteur · **le déroulé des 30 parcours, avec les tables écrites à chaque étape** |
+| 16 | **[docs/marque/](docs/marque/)** | **Le dossier de marque** — StoryBrand, Cercle d'Or, Zag, lois de Ries, étude terrain et concurrence, et les 20 décisions de marque |
 | — | [vp/](vp/) | Le même modèle en UML, importable dans Visual Paradigm |
 
 ---
@@ -101,7 +105,7 @@ Deux milestones portent la progression qui compte : **Vague 0 — le socle** (45
 node scripts/gen-xmi.mjs     # régénère depuis les documents markdown
 ```
 
-Le modèle est généré depuis [JP_CONCEPTION_BDD.md](JP_CONCEPTION_BDD.md) et [JP_CAS_UTILISATION.md](JP_CAS_UTILISATION.md). Ne le modifiez pas à la main.
+Le modèle est généré depuis [JP_CONCEPTION_BDD.md](docs/JP_CONCEPTION_BDD.md) et [JP_CAS_UTILISATION.md](docs/JP_CAS_UTILISATION.md). Ne le modifiez pas à la main.
 
 ---
 
@@ -126,13 +130,13 @@ Deux le sont **avant la première ligne** :
 1. **La règle de cumul des remises** *(R-U7)* — on ne modifie pas un calcul après avoir émis des factures.
 2. **Le seuil de bascule particulier → professionnel** *(R-H11)* — il conditionne l'écran de vérification.
 
-Les huit autres, et leur ordre d'importance, sont en fin de [JP_BACKLOG.md](JP_BACKLOG.md#les-décisions-ouvertes-par-ordre-dimportance).
+Les huit autres, et leur ordre d'importance, sont en fin de [JP_BACKLOG.md](docs/JP_BACKLOG.md#les-décisions-ouvertes-par-ordre-dimportance).
 
 ---
 
 ## Les critères de recette bloquants
 
-Aucune livraison n'est acceptable si l'un échoue. Le plan de recette est en fin de [JP_CAS_UTILISATION.md](JP_CAS_UTILISATION.md#14-cas-dutilisation-et-critères-de-recette-bloquants).
+Aucune livraison n'est acceptable si l'un échoue. Le plan de recette est en fin de [JP_CAS_UTILISATION.md](docs/JP_CAS_UTILISATION.md#14-cas-dutilisation-et-critères-de-recette-bloquants).
 
 | # | Critère |
 |---|---|

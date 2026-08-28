@@ -1,7 +1,13 @@
 /**
- * @jp/i18n — catalogues mg et fr
+ * @jp/i18n — anglais et français
  *
- * Catalogues, pluriels, formats. Rempli par `S2`.
+ * La SEULE définition des langues du projet. `@jp/money` y prend son type,
+ * l'API y prend la lecture de l'en-tête `Accept-Language`, les clients y
+ * prennent leurs messages.
+ *
+ * Ce paquet ne dépend de rien et ne connaît aucune application.
  */
-
 export * from './langues.js';
+export * from './pluriel.js';
+export * from './format.js';
+export * from './messages.js';

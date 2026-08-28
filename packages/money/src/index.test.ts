@@ -214,8 +214,10 @@ describe('formater', () => {
     expect(formater(ariary(-1_500))).toBe('−1 500 Ar');
   });
 
-  it('donne le même résultat en malgache et en français', () => {
-    expect(formater(ariary(50_000), 'mg')).toBe(formater(ariary(50_000), 'fr'));
+  it('donne le même résultat en anglais et en français', () => {
+    // Le séparateur de milliers et l'abréviation « Ar » ne se traduisent pas.
+    // Le paramètre de langue existe pour l'avenir, pas pour changer le rendu.
+    expect(formater(ariary(50_000), 'en')).toBe(formater(ariary(50_000), 'fr'));
   });
 
   it('formaterNu omet l’unité', () => {

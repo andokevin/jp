@@ -1,0 +1,73 @@
+name: Release
+
+# Uniquement sur master. Sur une pull request, c'est le job
+# `verifier-changeset` de ci.yml qui travaille — celui-ci écrit, l'autre lit.
+on:
+  push:
+    branches: [master]
+  # ⚠️ Indispensable tant que la fusion est automatique.
+  # Une fusion faite avec GITHUB_TOKEN NE DÉCLENCHE AUCUN workflow — c'est la
+  # protection anti-récursion de GitHub. Le `push` ci-dessus reste donc muet
+  # après un passage de `automerge.yml`, et ce workflow doit pouvoir être lancé
+  # à la main depuis l'onglet Actions.
+  # La levée définitive passe par un jeton personnel dans automerge.yml.
+  workflow_dispatch:
+
+# Deux exécutions simultanées se battraient pour la même branche
+# `changeset-release/master`. On laisse finir la première.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
+# Moindre privilège : rien par défaut au niveau du workflow, et le seul job
+# qui en a besoin demande exactement ses deux droits.
+permissions: {}
+
+jobs:
+  release:
+    name: Version Packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write # pousser la branche changeset-release/master
+      pull-requests: write # ouvrir et mettre à jour la pull request de version
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # changesets doit lire l'historique pour rédiger les journaux.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Installer
+        run: pnpm install --frozen-lockfile
+
+      # Aucune entrée `publish` : les neuf paquets sont `private: true` et rien
+      # n'est envoyé à un registre. L'action se limite donc à ouvrir — ou à
+      # mettre à jour — la pull request « Version Packages », qui consomme les
+      # changesets en attente, bumpe les versions et écrit les CHANGELOG.md.
+      #
+      # `version` appelle notre script plutôt que `changeset version` seul :
+      # après un bump, pnpm-lock.yaml doit être régénéré, sinon le
+      # `pnpm install --frozen-lockfile` de la CI échouerait sur la pull
+      # request de version elle-même.
+      - name: Ouvrir ou mettre à jour la pull request de version
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset:version
+          title: 'Version Packages'
+          commit: 'Version Packages'
+          # Rien n'est publié, donc aucune release GitHub à créer.
+          createGithubReleases: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
