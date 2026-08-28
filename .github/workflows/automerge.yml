@@ -1,0 +1,108 @@
+name: Fusion automatique
+
+# Toutes les heures. GitHub ne garantit pas la ponctualité d'un `schedule` :
+# en période de charge, le déclenchement peut glisser de plusieurs minutes.
+# C'est sans importance ici — la fusion n'est pas urgente à la seconde.
+#
+# `workflow_dispatch` permet de le lancer à la demande depuis l'onglet Actions,
+# sans attendre l'heure ronde. Indispensable pour l'éprouver.
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+# Deux passes simultanées tenteraient de fusionner la même pull request.
+concurrency:
+  group: fusion-automatique
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  fusionner:
+    name: Fusionner les pull requests vertes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write # écrire la fusion sur master
+      pull-requests: write # fermer la pull request fusionnée
+
+    steps:
+      # Aucun `checkout` : tout passe par l'API. Cloner 26 000 lignes pour
+      # lire un état de pull request serait du gaspillage.
+      - name: Fusionner ce qui est prêt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPOT: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # Les pull requests ouvertes vers master, brouillons exclus.
+          # Un brouillon est une intention, pas une demande de fusion.
+          PRS=$(gh pr list --repo "$DEPOT" --base master --state open \
+                  --json number,isDraft \
+                  --jq '.[] | select(.isDraft == false) | .number')
+
+          if [ -z "$PRS" ]; then
+            echo "Aucune pull request ouverte vers master."
+            exit 0
+          fi
+
+          FUSIONNEES=0
+
+          for N in $PRS; do
+            DONNEES=$(gh pr view "$N" --repo "$DEPOT" \
+                        --json title,mergeable,statusCheckRollup)
+            TITRE=$(echo "$DONNEES" | jq -r '.title')
+            echo "── #$N — $TITRE"
+
+            # MERGEABLE | CONFLICTING | UNKNOWN. UNKNOWN signifie que GitHub
+            # calcule encore la fusion : on repasse dans une heure plutôt que
+            # de forcer sur un état qu'on ne connaît pas.
+            FUSIONNABLE=$(echo "$DONNEES" | jq -r '.mergeable')
+            if [ "$FUSIONNABLE" != "MERGEABLE" ]; then
+              echo "   ignorée — état de fusion : $FUSIONNABLE"
+              continue
+            fi
+
+            # Zéro contrôle n'est PAS un feu vert. Une pull request dont
+            # aucun workflow n'a tourné n'a rien prouvé — et c'est exactement
+            # le cas de celles ouvertes par GITHUB_TOKEN, qui ne déclenchent
+            # aucun workflow.
+            TOTAL=$(echo "$DONNEES" | jq '[.statusCheckRollup[]?] | length')
+            if [ "$TOTAL" -eq 0 ]; then
+              echo "   ignorée — aucun contrôle n'a tourné"
+              continue
+            fi
+
+            # Un CheckRun porte `conclusion`, un StatusContext porte `state` :
+            # on lit l'un ou l'autre. Un contrôle encore en cours n'a ni l'un
+            # ni l'autre et retombe donc sur PENDING, qui n'est pas vert.
+            #
+            # NEUTRAL et SKIPPED comptent comme verts : un job non exécuté
+            # parce que sa condition `if:` était fausse n'a rien cassé.
+            NON_VERTS=$(echo "$DONNEES" | jq -r '
+              [ .statusCheckRollup[]?
+                | (.conclusion // .state // "PENDING")
+                | select(. as $e | ["SUCCESS","NEUTRAL","SKIPPED"] | index($e) | not)
+              ] | length')
+
+            if [ "$NON_VERTS" -ne 0 ]; then
+              echo "   ignorée — $NON_VERTS contrôle(s) sur $TOTAL pas au vert :"
+              echo "$DONNEES" | jq -r '
+                .statusCheckRollup[]?
+                | "     · \(.name // .context // "?") → \(.conclusion // .state // "PENDING")"'
+              continue
+            fi
+
+            # --merge et non --squash : les messages de commit de ce dépôt
+            # portent le raisonnement des décisions. Les écraser reviendrait
+            # à jeter la seule trace de POURQUOI le code est ce qu'il est.
+            echo "   $TOTAL contrôle(s) au vert — fusion"
+            gh pr merge "$N" --repo "$DEPOT" --merge
+            FUSIONNEES=$((FUSIONNEES + 1))
+          done
+
+          echo
+          echo "$FUSIONNEES pull request(s) fusionnée(s)."

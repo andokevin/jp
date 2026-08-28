@@ -5,6 +5,13 @@ name: Release
 on:
   push:
     branches: [master]
+  # ⚠️ Indispensable tant que la fusion est automatique.
+  # Une fusion faite avec GITHUB_TOKEN NE DÉCLENCHE AUCUN workflow — c'est la
+  # protection anti-récursion de GitHub. Le `push` ci-dessus reste donc muet
+  # après un passage de `automerge.yml`, et ce workflow doit pouvoir être lancé
+  # à la main depuis l'onglet Actions.
+  # La levée définitive passe par un jeton personnel dans automerge.yml.
+  workflow_dispatch:
 
 # Deux exécutions simultanées se battraient pour la même branche
 # `changeset-release/master`. On laisse finir la première.
