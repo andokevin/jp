@@ -49,6 +49,24 @@ jobs:
             exit 0
           fi
 
+          # LES CONTRÔLES QUI DOIVENT AVOIR RÉUSSI, NOMMÉMENT.
+          #
+          # « Au moins un contrôle au vert » ne suffit pas, et le cas s'est
+          # présenté dès le premier jour : la pull request de version portait
+          # UNIQUEMENT un contrôle CodeRabbit au vert, tandis que la CI, elle,
+          # avait échoué — sans apparaître dans statusCheckRollup. La règle
+          # l'aurait fusionnée.
+          #
+          # Le contrôle d'un robot de relecture n'est pas la CI. On exige donc
+          # ces jobs PAR LEUR NOM. Un job renommé bloque tout : c'est le bon
+          # sens de l'échec.
+          CONTROLES_REQUIS=(
+            "Typage, style, tests"
+            "Audit de sécurité des dépendances"
+            "Scan de secrets"
+            "Couverture backlog ↔ plan"
+          )
+
           FUSIONNEES=0
 
           for N in $PRS; do
@@ -66,13 +84,26 @@ jobs:
               continue
             fi
 
-            # Zéro contrôle n'est PAS un feu vert. Une pull request dont
-            # aucun workflow n'a tourné n'a rien prouvé — et c'est exactement
-            # le cas de celles ouvertes par GITHUB_TOKEN, qui ne déclenchent
-            # aucun workflow.
             TOTAL=$(echo "$DONNEES" | jq '[.statusCheckRollup[]?] | length')
-            if [ "$TOTAL" -eq 0 ]; then
-              echo "   ignorée — aucun contrôle n'a tourné"
+
+            # Chaque contrôle requis doit être PRÉSENT et au vert. « ABSENT »
+            # est traité comme un échec : une pull request ouverte par
+            # GITHUB_TOKEN ne déclenche aucun workflow, donc aucun de ces
+            # contrôles n'existe — et elle ne doit pas partir toute seule.
+            MANQUANTS=0
+            for C in "${CONTROLES_REQUIS[@]}"; do
+              ETAT=$(echo "$DONNEES" | jq -r --arg c "$C" '
+                [ .statusCheckRollup[]?
+                  | select((.name // .context // "") == $c)
+                  | (.conclusion // .state // "PENDING") ] | first // "ABSENT"')
+              if [ "$ETAT" != "SUCCESS" ]; then
+                echo "   requis non satisfait — $C → $ETAT"
+                MANQUANTS=$((MANQUANTS + 1))
+              fi
+            done
+
+            if [ "$MANQUANTS" -ne 0 ]; then
+              echo "   ignorée — $MANQUANTS contrôle(s) requis sur ${#CONTROLES_REQUIS[@]} non satisfait(s)"
               continue
             fi
 
