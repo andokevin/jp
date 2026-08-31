@@ -62,9 +62,15 @@ Un contrôle d'autorisation se contourne par une nouvelle requête ; **l'absence
 
 `int` partout. **Aucun flottant, ni en base, ni en transport, ni en calcul** *(CDC §6.2)*. Les taux de commission sont exprimés **en pour mille** (`25` = 2,5 %) pour la même raison. Les pourcentages de remise sont des entiers, et l'arrondi se fait une fois, à l'entier inférieur, en faveur de l'acheteur.
 
-### D7 — Le panier n'existe pas comme table
+### D7 — Le panier ne détient aucune vérité sur le stock
 
-Une ligne de panier **est** une réservation active *(F1.16)*. Une table `panier` créerait une **seconde source de vérité** sur ce qui est réservé, donc un risque de survente. Le panier est la projection des réservations de l'utilisateur, groupées par boutique.
+*(Révisé — l'énoncé précédent était « le panier n'existe pas comme table ».)*
+
+Une table `panier` **existe** pour la vente hors direct, parce qu'un achat hors direct se compose sur plusieurs jours et qu'une réservation ne peut pas tenir aussi longtemps sans bloquer le stock de tout le monde.
+
+Ce qui reste interdit, et qui était la vraie raison de `D7` : **deux sources de vérité sur ce qui est réservé**. Une ligne de panier est une **intention d'achat qui ne tient rien**. Le stock n'est bloqué qu'au passage en caisse, par une `reservation` — et c'est là, et seulement là, qu'un article peut manquer.
+
+En direct, rien ne change : on réserve immédiatement, sans panier. `variante.quantite_stock` reste **LA** vérité *(D2)*.
 
 ### D8 — Ce qui est dénormalisé, et pourquoi
 
@@ -1163,6 +1169,47 @@ stateDiagram-v2
 # 12. Ordre des migrations
 
 L'ordre suit les dépendances de clés étrangères. Chaque migration est nommée `<horodatage>_<fxx_y>_<intitule>`, réversible, jouée automatiquement au déploiement.
+
+> ### Ce qui a réellement été joué — 31/08/2026
+>
+> Le schéma est **entièrement migré**. Les 32 migrations planifiées ci-dessous
+> ont été appliquées en **14 migrations groupées par domaine**, l'ordre des
+> dépendances étant le même : regrouper ce qui se crée ensemble évite une
+> vingtaine de transactions pour un résultat identique.
+>
+> | Migration jouée | Ce qu'elle couvre du plan |
+> |---|---|
+> | `socle`, `langues`, `plateforme`, `univers` | 1, 32, 11 *(partie `cle_idempotence`)*, 5b |
+> | `genre_utilisateur`, `preferences_et_mot_de_passe` | sprint « ajout d'attributs » |
+> | `boutique_et_documents`, `catalogue`, `panier_et_extraits` | 4, 5, 7 *(partiel)* |
+> | `suppression_douce` | transverse — `REVOKE DELETE` |
+> | `f0_identite_complete` | 2, 3, 4, 5, 9 *(`adresse`)* |
+> | `f1_catalogue_et_stock` | 6, 7 |
+> | `f2_social_direct_evenements` | 16, 18, 24, 29 *(`palier_fidelite`)*, 30 |
+> | `f3_commande_paiement_livraison` | 8, 9, 10, 11, 12, 13, 14 |
+> | `f6_contenu_confiance_moderation` | 21, 22, 23 |
+> | `f7_createur_fidelite_cadeau` | 25, 26, 27, 28, 29 |
+> | `f10_monetisation_exploitation` | 19, 20, 31 |
+> | `dp05_signalement_commande_et_bareme` | correction — voir ci-dessous |
+>
+> **Deux écarts entre ce document et le dictionnaire ont été tranchés en faveur
+> du dictionnaire**, qui est postérieur à la refonte :
+>
+> - le diagramme ER de la §9 nomme encore `LITIGE` avec `decision_texte` et
+>   `decide_par_id`. La table créée est **`signalement_commande`**, sans ces
+>   colonnes : personne n'instruit, personne ne tranche *(`DP-05`)*. `RB4` s'est
+>   déplacé sur `sanction.motif_texte`, qui porte désormais le `CHECK` ;
+> - **`bareme_commission`** est rétablie *(`DP-15`)*, historisée, avec un
+>   déclencheur qui n'autorise que la clôture d'une version.
+>
+> **Quatre tables n'avaient aucun schéma** *(§17.1 du dictionnaire)* et en ont
+> reçu un : `panier_cadeau`, `demande_verification`, `hashtag`,
+> `contenu_hashtag`.
+>
+> **`article.peremption_le` n'est PAS une colonne générée**, contrairement à la
+> ligne 7 : Prisma ne sait pas les déclarer, et une colonne ajoutée à la main
+> ferait dériver le schéma à chaque migration suivante. Elle est tenue par
+> l'application.
 
 | # | Migration | Contenu | Bloque |
 |---|---|---|---|
