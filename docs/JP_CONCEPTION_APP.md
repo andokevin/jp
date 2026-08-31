@@ -29,9 +29,8 @@ Toute décision technique se justifie contre cette liste. Elle n'est pas décora
 ```mermaid
 flowchart TB
     subgraph CLIENTS["Clients"]
-        MOB["apps/mobile<br/>React Native · Expo<br/>acheteuse · vendeuse · créatrice"]
-        TER["apps/terrain<br/>React Native · Expo<br/>livreur · point relais"]
-        ADM["apps/admin<br/>React + Vite<br/>back-office JP"]
+        MOB["apps/mobile<br/>React Native · Expo<br/>acheteuse · boutique · créatrice"]
+        ADM["apps/admin<br/>React + Vite<br/>tableau de bord interne"]
         WEB["apps/web<br/>React + Vite · SSR<br/>vitrine · cadeau · événement · replay"]
     end
 
@@ -192,7 +191,7 @@ apps/api/src/plateforme/
 
 ```ts
 // 1. garde de route — refuse l'accès
-fastify.get('/vendeur/clients', { preHandler: exige('voir_commandes') }, ...)
+fastify.get('/boutique/clients', { preHandler: exige('voir_commandes') }, ...)
 
 // 2. filtre de projection — retire les champs
 const reponse = projeter(clients, permissionsDe(acteur));
@@ -205,7 +204,7 @@ Le test correspondant est une **assertion sur les clés de l'objet**, pas sur le
 
 # 4. Les quatre applications clientes
 
-## 4.1 `apps/mobile` — acheteuse, vendeuse, créatrice
+## 4.1 `apps/mobile` — acheteuse, boutique, créatrice
 
 Une seule application, **trois rôles qui se cumulent sur un même compte** *(F0.4)*, avec un sélecteur de rôle. Les portefeuilles et tableaux de bord restent visuellement séparés — sinon l'utilisatrice ne sait plus d'où vient son argent.
 
@@ -230,19 +229,31 @@ apps/mobile/src/
 
 **Le dossier partagé qui évite la divergence** : `features/achat/` porte la feuille « Je prends », **utilisée à l'identique par le direct et par le catalogue** *(F1.15, F2.6)*. Elle reçoit `{ article, variantes, origine }` et **ne connaît pas l'existence du direct**. Deux feuilles auraient divergé en trois semaines, et les frais de livraison auraient été calculés de deux façons.
 
-## 4.2 `apps/terrain` — livreur et point relais
+## ~~4.2 `apps/terrain`~~ — ❌ **supprimée** *(`DP-04`)*
 
-Une base, deux rôles. Ce sont les mêmes contraintes : un téléphone modeste, une main occupée, un réseau incertain, une preuve à produire.
+**JP n'opère plus aucune logistique.** Le livreur et le point relais ont été
+retirés du produit *(`DP-01`)* ; l'application terrain n'a plus d'objet. La
+boutique fait avancer elle-même la frise de statuts depuis son studio *(`UC-40`)*.
 
-**Hors ligne par défaut**, et ce n'est pas une option : la tournée est téléchargée au démarrage, les actions sont enregistrées localement avec une clé d'idempotence, et synchronisées au retour du réseau. Une application qui exige une connexion à chaque appui ne sera pas utilisée à moto.
+> **Le dossier `apps/terrain/` existe encore dans le dépôt.** Sa suppression est
+> une action sur le code, pas sur la documentation — elle est suivie séparément.
 
-Conception d'écran : **une seule action par écran**, boutons hauts, contraste maximal, pavé numérique large, indicateur de synchronisation **toujours visible**.
+## 4.3 `apps/admin` — tableau de bord interne
 
-## 4.3 `apps/admin` — back-office JP
+> **Ce n'est plus un back-office** *(`DP-05`)* : il n'y a ni file de travail, ni
+> dossier à instruire, ni action possible. **On le lit, on n'y agit pas.**
 
-Application web séparée *(CDC §2.2)*, pas un écran caché de l'application mobile. Les métiers sont différents : comparer une pièce d'identité et un selfie, instruire un litige, réconcilier des espèces — ce sont des tâches d'écran large et de clavier.
+Application web séparée, parce que le métier est différent : lire des séries
+temporelles sur un grand écran n'a rien à voir avec vendre depuis un téléphone.
 
-**Le principe qui gouverne toutes ses files** : chaque file affiche **l'âge de ses éléments** et fait remonter ce qui approche d'un engagement. Une file sans notion d'ancienneté produit des dossiers oubliés, et un dossier oublié est une promesse rompue.
+**Un seul écran subsiste** : les **quatre mesures fondatrices du pilote**
+*(`F11.7`, `R-O2`)*, exigées comme livrable avant le premier direct.
+
+**Cinq écrans ont disparu** : vérifications, modération, litiges, finance,
+logistique — repris par `SYS` ou sans objet *(`DP-04`, `DP-05`, `DP-07`)*.
+
+⚠️ **Les quatre mesures elles-mêmes sont à redéfinir** : certaines portaient sur
+le séquestre *(`PO-4`)*.
 
 ## 4.4 `apps/web` — pages publiques
 
@@ -250,7 +261,7 @@ Rendu **côté serveur** là où l'aperçu de lien décide de la conversion : ar
 
 **L'aperçu de lien est la moitié de la valeur d'acquisition** *(F7.11)*. Un lien partagé sur WhatsApp sans image ni titre ne se clique pas. C'est la seule raison pour laquelle ces pages existent en rendu serveur.
 
-Périmètre volontairement restreint : consultation, panier, paiement. **Pas de direct, pas de publication, pas de studio vendeur** — le direct en navigateur sur un téléphone d'entrée de gamme est une mauvaise expérience qui abîmerait l'image du produit.
+Périmètre volontairement restreint : consultation, panier, paiement. **Pas de direct, pas de publication, pas de studio boutique** — le direct en navigateur sur un téléphone d'entrée de gamme est une mauvaise expérience qui abîmerait l'image du produit.
 
 ---
 
@@ -271,18 +282,18 @@ flowchart TD
     ACC --- POUR --- ABO
     ACC --> FICHE["Fiche article"]
     ACC --> DIRECT["Direct"]
-    ACC --> VIT["Vitrine vendeur"]
+    ACC --> VIT["Vitrine boutique"]
     ACC --> EVT["Page événement"]
     CLIPS --> FICHE
     FICHE --> JEP["Feuille « Je prends »"]
     DIRECT --> JEP
     JEP --> PANIER["Panier"]
-    PANIER --> LIVR["Choix de livraison"]
+    PANIER --> LIVR["Point de remise convenu<br/>(DP-04)"]
     LIVR --> PAIE["Paiement"]
-    PAIE --> CONF["Confirmation<br/>+ phrase de séquestre"]
-    CONF --> SUIVI["Suivi de commande<br/>+ code de retrait"]
+    PAIE --> CONF["Confirmation<br/>+ « boutique vérifiée »<br/>(R-E1, DP-16)"]
+    CONF --> SUIVI["Suivi de commande<br/>+ fil de remise"]
     SUIVI --> UNB["Unboxing"]
-    SUIVI --> LITIGE["Litige"]
+    SUIVI --> LITIGE["Signalement"]
     PLUS --> UNB
     PLUS --> ANNONCE["Dépôt d'annonce (particulier)"]
     MOI --> CMDS["Mes commandes"]
@@ -295,7 +306,7 @@ flowchart TD
     EVT --> FICHE
 ```
 
-## 5.2 Studio vendeur
+## 5.2 Studio boutique
 
 ```mermaid
 flowchart TD
@@ -311,7 +322,7 @@ flowchart TD
 
     TB --> CMD
     TB --> CATA
-    CATA --> PROMO["Créer une promotion<br/>+ aperçu du net vendeur"]
+    CATA --> PROMO["Créer une promotion<br/>+ aperçu du net boutique"]
     CATA --> ART["Créer un article"]
     CMD --> BORD["Bordereau"]
     CLI --> FICHECLI["Fiche cliente"]
@@ -325,21 +336,20 @@ flowchart TD
 
 **Deux choix de navigation qui ne sont pas neutres.**
 
-**Une file de commandes unique**, avec un marqueur d'origine *(R-H2)*. Deux files — « direct » et « catalogue » — signifieraient deux logistiques à tenir, et le vendeur en oublierait une.
+**Une file de commandes unique**, avec un marqueur d'origine *(R-H2)*. Deux files — « direct » et « catalogue » — signifieraient deux logistiques à tenir, et la boutique en oublierait une.
 
 **« Mes clientes » est un onglet de premier niveau**, pas un sous-écran des statistiques. Ce n'est pas de l'analyse, c'est une liste d'action *(R-R7)*.
 
 ## 5.3 Back-office
 
 ```
-Vérifications ─── file KYC · récupérations de compte
-Modération ────── urgences EN TÊTE · contenus retirés · sanctions · recours
-Litiges ───────── file par âge · dossier assemblé · décision motivée
-Finance ───────── séquestre · retraits · commissions · espèces · réconciliation · écarts
-Logistique ────── points relais · livreurs · tournées
-Événements ────── créer · annoncer · candidatures · bilan
-Paramètres ────── économiques · double validation · historique
 Indicateurs ───── les 4 mesures fondatrices · hypothèses · ventes par origine
+                  · signalements par boutique · abonnements actifs
+
+  ⚠️ EN LECTURE SEULE — aucune file, aucune action (DP-05)
+
+  Sept écrans supprimés : vérifications, modération, litiges,
+  finance, logistique, événements JP, paramètres.
 ```
 
 ---
@@ -413,7 +423,7 @@ BullMQ sur Redis. **Tous les consommateurs sont idempotents** — c'est la règl
 `purgeRetention` | quotidien | applique **réellement** les durées annoncées |
 `agregatsQuotidiens` | quotidien | mesures fondatrices, tableau de bord instantané |
 
-**`commande.confirmee` est l'événement le plus écouté du système.** Il déclenche la libération du séquestre, le journal des ventes confirmées, le recalcul de rang, l'invitation à l'avis, l'entrée au dressing. **Aucun consommateur ne doit pouvoir bloquer la confirmation** : un bogue dans le calcul de rang ne peut pas empêcher un vendeur d'être payé.
+**`commande.confirmee` est l'événement le plus écouté du système.** Il ne déclenche **plus aucun mouvement d'argent** *(`DP-07`)* — il alimente **le score de confiance**, le rang client et le dressing. Ancienne rédaction : il déclenche la libération du séquestre, le journal des ventes confirmées, le recalcul de rang, l'invitation à l'avis, l'entrée au dressing. **Aucun consommateur ne doit pouvoir bloquer la confirmation** : un bogue dans le calcul de rang ne peut pas empêcher une boutique d'être payé.
 
 ---
 
@@ -479,7 +489,7 @@ Cinq calculs sont écrits comme des **fonctions pures** — sans accès base, sa
 Elles couvrent les critères bloquants, et une seule qui manque rend la livraison inacceptable.
 
 1. **Concurrence de stock** *(RB1)* — 50 transactions parallèles sur `stock = 1`, **et inter-canaux** : un appui en direct et un appui sur catalogue.
-2. **Chemins du séquestre** *(RB2)* — les quatre libérations, réconciliation à 100 % sur 1 000 commandes.
+2. **Éclatement du paiement** *(RB2, `DP-16`)* — 1 à 3 crédits ; mode atomique *(tout ou rien)*, mode repli *(échec du pivot → rien ne se crée ; échec d'un secondaire → commande intacte, rejeu après interrogation)*, réconciliation à 100 % sur 1 000 commandes.
 3. **Idempotence du paiement** *(RB10)* — rejeu, webhook doublé, webhook précoce, coupure à chaque étape.
 4. **Absence de cumul de remises** *(R-U7)* — table de cas complète, plus une propriété vérifiée sur 1 000 paniers générés.
 5. **Indiscernabilité de l'authentification** *(R-C9)* — corps, code **et écart de temps** sur 100 appels.
@@ -516,7 +526,7 @@ Le socle *(`plan/PLAN_SOCLE.md` §9)*. Ces éléments sont référencés partout
 |---|---|---|
 | Développement | local | prestataires simulés |
 | Recette | intégration | **bacs à sable des prestataires** — à obtenir en J0 |
-| Pilote | vendeurs pilotes, **argent réel** | production, volume limité |
+| Pilote | boutiques pilotes, **argent réel** | production, volume limité |
 | Production | ouverture publique | production |
 
 **Exigences.** Migrations versionnées, réversibles, jouées automatiquement · déploiement sans interruption, **jamais entre 18 h et 23 h** *(C5)* · sauvegardes quotidiennes avec **restauration testée**, pas seulement configurée · drapeaux de fonctionnalité pour livrer sans exposer · paramètres économiques modifiables **sans déploiement** *(R-O1)*.

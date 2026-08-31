@@ -82,7 +82,7 @@ appliquerPourMille(m: Ariary, taux: number): Ariary   // 25 = 2,5 %
 repartir(m: Ariary, parts: number[]): Ariary[]        // somme conservée
 ```
 
-`appliquerPourMille` arrondit **à l'entier inférieur, en faveur de l'acheteur**, et cet arrondi est testé. `repartir` garantit que la somme des parts égale le montant d'origine — c'est ce qui empêche un ariary de disparaître au partage commission / vendeur.
+`appliquerPourMille` arrondit **à l'entier inférieur, en faveur de l'acheteur**, et cet arrondi est testé. `repartir` garantit que la somme des parts égale le montant d'origine — c'est ce qui empêche un ariary de disparaître au partage commission / boutique.
 
 **`packages/i18n`** — catalogues `mg` et `fr`, pluriels, formats de date et de nombre. Le malgache produit des libellés environ 30 % plus longs que le français : c'est une contrainte de maquette *(PLAN_SOCLE §7)*, pas un détail de traduction.
 
@@ -125,7 +125,7 @@ Le dossier `apps/api/src/plateforme/`. Tout ce qui est transverse est écrit **u
 | `audit.ts` | écriture dans `journal_audit`, **append only** | `R-O` |
 | `contexte.ts` | identifiant de corrélation traversant API, files et WebSocket | — |
 
-**Le piège des permissions.** Une garde de route seule ne suffit pas : elle dit *qui entre*, pas *ce qu'il voit*. Une employée `VE` peut consulter une commande sans voir la marge du vendeur. Il faut donc les deux outils dès le départ, sinon la fuite s'installe dans les premiers modules et se recopie.
+**Le piège des permissions.** Une garde de route seule ne suffit pas : elle dit *qui entre*, pas *ce qu'il voit*. ⚠️ **L'exemple d'origine reposait sur l'employé, supprimé** *(`DP-01`)*. Il reste valide sous une autre forme : **une créatrice** peut consulter une commande affiliée sans voir la marge de la boutique. Il faut donc les deux outils dès le départ, sinon la fuite s'installe dans les premiers modules et se recopie.
 
 **Le piège de l'idempotence.** Si elle n'est pas là avant le premier endpoint d'écriture financière, elle sera ajoutée après coup, par domaine, avec trois comportements différents. **RB10** — « paiement interrompu : ni double prélèvement, ni commande perdue » — se joue ici, pas dans le module paiement.
 
@@ -166,7 +166,7 @@ Une base PostgreSQL 16 qui se recrée d'une commande, avec les migrations fondat
   ```
   Ajouté après coup, on découvre que du code corrigeait des écritures au lieu d'en passer d'inverses.
 - **Testcontainers** — les tests d'intégration démarrent un PostgreSQL réel. Un SQLite en mémoire ne reproduit ni `SELECT … FOR UPDATE`, ni les contraintes différées, ni les `CHECK` — c'est-à-dire précisément ce sur quoi reposent **RB1** et **RB5**.
-- **Jeu de données de démonstration** reproductible : quelques vendeurs, articles, commandes à chaque état.
+- **Jeu de données de démonstration** reproductible : quelques boutiques, articles, commandes à chaque état.
 
 ### Terminé quand
 
@@ -226,7 +226,7 @@ Le temps réel du direct, avec la seule propriété qui compte sur un réseau ma
 
 - Registre des connexions, authentification à l'ouverture, canaux (`direct:<id>`, `commande:<id>`, `utilisateur:<id>`).
 - Diffusion depuis les modules **par événement**, jamais par appel direct au registre.
-- **Resynchronisation à la reconnexion** : le client annonce le dernier numéro de séquence reçu, le serveur renvoie le delta. Sans cela, une coupure de dix secondes en plein direct fait disparaître des messages et des annonces de stock — et la vendeuse le voit à l'écran.
+- **Resynchronisation à la reconnexion** : le client annonce le dernier numéro de séquence reçu, le serveur renvoie le delta. Sans cela, une coupure de dix secondes en plein direct fait disparaître des messages et des annonces de stock — et la boutique le voit à l'écran.
 - Repli par sondage long quand le WebSocket ne s'établit pas.
 - Limitation de débit par connexion.
 
@@ -289,7 +289,7 @@ L'application mobile qui démarre, s'authentifie, appelle l'API, et **reste util
 - Navigation : onglets et piles, routes déclarées, liens profonds *(vitrine, article, événement, cadeau)*.
 - Session : jeton en stockage sécurisé, rafraîchissement, déconnexion propre, multi-appareil *(F0.2)*.
 - **Client API** généré depuis `packages/contracts` : typé de bout en bout, `Idempotency-Key` posé automatiquement sur les écritures, erreurs traduites.
-- **Cache et hors ligne** : lecture depuis le cache d'abord, file d'écritures en attente, réconciliation au retour du réseau. Les commandes et le **code de retrait** doivent rester consultables sans réseau *(F13.5)* — c'est ce qui évite qu'une acheteuse reparte du point relais sans son colis.
+- **Cache et hors ligne** : lecture depuis le cache d'abord, file d'écritures en attente, réconciliation au retour du réseau. Les commandes et **le point de remise convenu** *(`F5.11`)* doivent rester consultables sans réseau *(F13.5)* — c'est ce qui évite qu'une acheteuse arrive au rendez-vous sans l'information.
 - Mesure du **poids de l'APK** et de la mémoire au défilement, dès cette étape, en critère d'intégration continue *(C1)*.
 
 ### Terminé quand
@@ -314,21 +314,21 @@ depend: [S7]
 
 ### Objectif
 
-Le back-office et les pages publiques, avec la contrainte propre à `web` : **l'aperçu de lien doit fonctionner**.
+Le tableau de bord interne *(`DP-05`)* et les pages publiques, avec la contrainte propre à `web` : **l'aperçu de lien doit fonctionner**.
 
 ### Contenu
 
-- **`admin`** — React + Vite, authentification back-office, disposition, navigation, tableau paginé réutilisable, journal d'audit visible. C'est l'outil de l'équipe JP : sans lui, personne ne peut vérifier un vendeur ni arbitrer un litige.
-- **`web`** — rendu serveur sur les pages destinées à être partagées : vitrine vendeur, fiche article, page cadeau, page événement. Une vitrine partagée sur Facebook sans titre ni image perd l'essentiel de son intérêt à Madagascar, où le partage passe par là.
+- **`admin`** — React + Vite, **tableau de bord interne en lecture seule** *(`DP-05`)*, authentification, disposition, navigation, tableau paginé réutilisable, journal d'audit visible. C'est l'outil de l'équipe JP : sans lui, personne ne peut vérifier une boutique ni arbitrer un litige.
+- **`web`** — rendu serveur sur les pages destinées à être partagées : vitrine boutique, fiche article, page cadeau, page événement. Une vitrine partagée sur Facebook sans titre ni image perd l'essentiel de son intérêt à Madagascar, où le partage passe par là.
 - Les deux consomment `packages/ui` et `packages/contracts`.
 
 ### Terminé quand
 
-Une URL de vitrine collée dans une conversation affiche un aperçu correct. Le back-office se connecte et affiche une liste paginée réelle.
+Une URL de vitrine collée dans une conversation affiche un aperçu correct. Le tableau de bord se connecte et affiche une liste paginée réelle.
 
 ```issues
 socle: S9
-titre: Coquilles Vite — back-office admin et pages publiques web
+titre: Coquilles Vite — tableau de bord interne et pages publiques web
 taches:
   - "admin : authentification, disposition, navigation, tableau paginé réutilisable"
   - "web : rendu serveur et métadonnées d'aperçu de lien"

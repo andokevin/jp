@@ -26,7 +26,7 @@ commande, et tranche quand ça se passe mal.
 
 **Ce que ça implique pour tout le reste :** un tiers ne prend pas parti, ne
 s'excite pas, ne fait pas de promotion agressive et ne ment jamais sur un
-chiffre. **L'identité de JP est celle d'un arbitre, pas d'un commerçant.** Cette
+chiffre. **L'identité de JP est celle d'un gardien du registre, pas d'un commerçant** *(`D-21`)*. Cette
 phrase gouverne le ton *(voir `05`)*.
 
 # 2. Que faites-vous ?
@@ -55,7 +55,7 @@ documentées.
 | # | La vague | La preuve | Force |
 |---|---|---|---|
 | **1** | **Le commerce en direct est devenu un canal de vente à part entière** | Whatnot : **8 Md$ de GMV en direct en 2025**, ×2 en un an, **20 Md$ de valorisation** en août 2026. Le direct = **19,2 % de tout l'e-commerce chinois** | Mondiale |
-| **2** | **Meta a dénudé l'infrastructure** — Facebook Live Shopping fermé le **1ᵉʳ oct. 2022**, Instagram en mars 2023 | Les vendeuses malgaches font du commerce en direct **sans aucun outil transactionnel** depuis quatre ans | **Structurelle** |
+| **2** | **Meta a dénudé l'infrastructure** — Facebook Live Shopping fermé le **1ᵉʳ oct. 2022**, Instagram en mars 2023 | Les boutiques malgaches font du commerce en direct **sans aucun outil transactionnel** depuis quatre ans | **Structurelle** |
 | **3** | **Le mobile money est devenu l'infrastructure financière du pays** | **1,27 milliard de transactions en 2024**, valeur = **95,1 % du PIB**. Le paiement marchand MVola est **gratuit** | Locale, mûre |
 | **4** | **Le séquestre devient le vocabulaire des challengers africains** | Thiqaty *(Algérie)*, Sentinel/SentiBud et EscrowPay *(Nigeria, juin-juil. 2026)*, **Kaable *(Côte d'Ivoire, juil. 2026)*** | **Naissante — la fenêtre est datée** |
 
@@ -82,7 +82,7 @@ choix.** Le calendrier joue pour nous.
 | Acteur | Ce qu'il occupe | Ce qu'il laisse |
 |---|---|---|
 | **Facebook / La Grande Braderie** *(107 000 membres)* | **L'audience et l'habitude** | Aucune transaction, aucune protection, aucun recours |
-| **Live Pay Mada** *(« La plateforme des liveuses modernes », 50 000 Ar/mois)* | **L'outil de caisse de la vendeuse** | **Rien pour l'acheteuse** |
+| **Live Pay Mada** *(« La plateforme des liveuses modernes », 50 000 Ar/mois)* | **L'outil de caisse de la boutique** | **Rien pour l'acheteuse** |
 | **BonMarche, E-varotra, Taanavo, Zoma** | Le catalogue | Le mot « sécurisé » sans mécanisme |
 | **Papi, PayBriq, Monegasy, Efaina** | L'encaissement | **Aucun séquestre** |
 | **Kaable** *(Côte d'Ivoire)* | **Le même produit, ailleurs** | Un slogan qui décrit trois actions, pas une position |
@@ -101,7 +101,7 @@ Neumeier impose une phrase unique qui répond aux six questions : *quoi, comment
 qui, où, quand, pourquoi.*
 
 > ### JP est **la seule** place de marché
-> ### **où le vendeur n'est payé qu'à la confirmation de réception de l'acheteuse,**
+> ### **où vous savez à qui vous payez de l'acheteuse,**
 > ### pour les gens qui vendent et achètent en direct sur les réseaux sociaux,
 > ### à Madagascar,
 > ### maintenant que Facebook a supprimé ses outils de vente en direct et n'a rien mis à la place,
@@ -110,16 +110,26 @@ qui, où, quand, pourquoi.*
 | Question | Réponse |
 |---|---|
 | **Quoi** | Une place de marché |
-| **Comment** | Le vendeur n'est payé qu'à la confirmation de réception |
+| **Comment** | **On sait à qui l'on paie** — identité vérifiée, historique visible, trace de chaque commande *(`D-21`)* |
 | **Qui** | Ceux qui vendent et achètent en direct sur les réseaux |
 | **Où** | Madagascar |
 | **Quand** | Depuis que Meta a fermé le Live Shopping *(oct. 2022)* et que personne n'a remplacé |
 | **Pourquoi** | Le commerce ne devrait pas être réservé à ceux qui se connaissent déjà |
 
 **Test de l'énoncé** : retirer « à Madagascar » et il devient faux *(Whatnot,
-Shopee, Poshmark ont tous un séquestre)*. Retirer « en direct » et il devient
-banal. **Les deux bornes sont nécessaires, et c'est précisément ce qui fait
-qu'il tient.**
+Shopee, Poshmark vérifient tous leurs vendeurs)*. Retirer « en direct » et il
+devient banal. **Les deux bornes sont nécessaires, et c'est précisément ce qui
+fait qu'il tient.**
+
+> ### Le point de comparaison n'a jamais été Whatnot *(`D-21`)*
+>
+> **Aucune de ces plateformes n'opère à Madagascar.** Le point de comparaison
+> réel, celui que l'acheteuse a sous les yeux ce soir, c'est **le direct
+> Facebook** — où elle envoie de l'argent à **un numéro de téléphone** dont elle
+> ne sait rien : ni le titulaire, ni l'ancienneté, ni les litiges.
+>
+> **Mesurée contre cette référence, la promesse n'a pas faibli — elle a changé de
+> nature.** Elle était une garantie ; elle devient une **vérifiabilité**.
 
 ## Les trois zags
 
@@ -130,8 +140,11 @@ Tout le monde zigue : **le plaisir, la communauté, la conversion.** Whatnot dit
 Commerce »*. Kaable lui-même dit *« Achetez, Vendez, Go Live »*.
 
 **Aucune plateforme de commerce en direct au monde ne fait de la protection de
-l'acheteur sa promesse de marque.** Whatnot, Poshmark et Shopee ont un séquestre
-réel — rangé dans le centre d'aide.
+l'acheteur sa promesse de marque.** Whatnot, Poshmark et Shopee vérifient tous
+leurs vendeurs — c'est rangé dans le centre d'aide.
+
+**La lame du zag change, le geste non** *(`D-21`)* : ce qu'on met en première
+ligne n'est plus la détention des fonds, c'est **l'identité du vendeur**.
 
 > **Nous zaguons : nous mettons en première ligne ce que les autres mettent en
 > page 12.**
@@ -156,7 +169,7 @@ Ce n'est pas un jeu de mots, c'est un système complet :
 | **Le nom** | JP — Je prends | **La cliente** |
 | **Le bouton** | « Je prends » | **La cliente** |
 | **La signature** | « Je prends. Je reçois. » | **La cliente** |
-| **Le corps de texte** | « Le vendeur n'est payé qu'à votre confirmation » | JP, qui vouvoie |
+| **Le corps de texte** | « Vous savez à qui vous payez » | JP, qui vouvoie |
 
 > **Une marque dont le nom, le bouton et le slogan sont la même phrase, dans la
 > bouche du client.** C'est rare, et personne sur ce marché ne peut le copier —
@@ -169,7 +182,7 @@ réponse.)*
 ### Zag n° 3 — **Notre preuve est produite par nos clientes, pas achetée**
 
 Tout le monde zigue : on achète la confiance avec de la publicité, des logos de
-partenaires, des témoignages. La vendeuse malgache la plus visible du pays paie
+partenaires, des témoignages. La boutique malgache la plus visible du pays paie
 déjà **de la publicité Facebook quotidienne**.
 
 **Nous zaguons : notre preuve est un mur de colis qui s'ouvrent.**
@@ -202,7 +215,7 @@ protection qu'on ne tient pas.
 | # | À retirer | Pourquoi | Portée |
 |---|---|---|---|
 | **R-1** | **La régie publicitaire display** *(source de revenu n° 8)* | Contredit frontalement le zag n° 3 : nous monétisons **le commerce que le contenu déclenche, pas l'attention qu'il capte**. Et le CPM malgache ne finance rien. La reléguer en 8ᵉ position ne suffit pas — **la mentionner, c'est déjà l'annoncer** | **Retirer du discours**, garder l'option en interne |
-| **R-2** | **L'assistant du vendeur (IA)** *(EP12)* | Ne sert aucun des trois zags. Sur un dossier d'investisseur en 2026, « IA » sonne comme un remplissage. Brouille le message | Retirer du deck et du récit |
+| **R-2** | **L'assistant de la boutique (IA)** *(EP12)* | Ne sert aucun des trois zags. Sur un dossier d'investisseur en 2026, « IA » sonne comme un remplissage. Brouille le message | Retirer du deck et du récit |
 | **R-3** | **Les enchères et ventes flash** *(phase 3)* | **L'enchère crée de l'urgence par construction.** Sur un produit dont l'engagement n° 1 est *« toute rareté affichée est réelle »*, c'est une contradiction structurelle, pas un risque d'exécution | **Réexaminer avant de la maintenir au périmètre** |
 | **R-4** | **JP Tech de toute communication publique** | Annoncer un univers fermé, c'est promettre. Et Tech exige l'IMEI et la provenance : **un univers qui laisse passer un appareil volé détruirait la promesse de la plateforme entière** | La décision produit est bonne. **Retirer de la communication** |
 | **R-5** | **L'anglais du catalogue i18n** | `LANGUES = ['en', 'fr']` dans le code, alors que `N4.1` impose **malgache + français**. **0,57 % des Malgaches ne parlent que français ; l'anglais n'apparaît nulle part** | **Correction bloquante** — [langues.ts](../../packages/i18n/src/langues.ts) |
@@ -213,12 +226,12 @@ protection qu'on ne tient pas.
 
 | # | À ajouter | Pourquoi | Coût |
 |---|---|---|---|
-| **A-1** | **La « Garantie JP » visible AVANT le paiement** — un composant partagé, comme `BadgeVerifie` | Aujourd'hui la phrase de séquestre n'apparaît qu'**à l'écran de confirmation** *(R-E1)*. **C'est trop tard : la peur agit avant de payer, pas après.** C'est la correction produit la plus importante de tout ce dossier | Faible — un composant, 4 emplacements |
+| **A-1** | **La « Boutique vérifiée » visible AVANT le paiement** — un composant partagé, comme `BadgeVerifie` | Aujourd'hui la phrase de séquestre n'apparaît qu'**à l'écran de confirmation** *(R-E1)*. **C'est trop tard : la peur agit avant de payer, pas après.** C'est la correction produit la plus importante de tout ce dossier | Faible — un composant, 4 emplacements |
 | **A-2** | **Le mur des colis ouverts, sans compte, comme 6ᵉ page publique de `apps/web`** | `apps/web` a cinq pages partageables. Il en manque une : **notre appareil de preuve**. C'est l'appel transitionnel du BrandScript et le seul écran qui répond à *« comment je sais que vous livrez ? »* | Moyen |
-| **A-3** | **Le compteur de ventes perdues** — un outil d'une page pour la vendeuse | *« Combien de "je prends" hier soir ? Combien vous ont payée ? »* **On ne lui explique pas son problème, on le lui fait compter.** C'est l'appel transitionnel du BrandScript vendeur, et l'entrée de tout le recrutement terrain | Faible |
-| **A-4** | **Le reçu de séquestre partageable** | Une image que l'acheteuse envoie à sa mère ou à son amie : *« regarde, il ne sera payé que quand j'aurai reçu »*. **Transforme la garantie en objet social, donc en acquisition gratuite** | Faible |
-| **A-5** | **La protection symétrique du vendeur, nommée** | SentiBud *(Nigeria)* libère les frais de livraison au vendeur si l'acheteuse ne répond pas. **La vendeuse malgache la plus visible du pays cite le défaut de paiement comme son problème n° 1 — et personne ne lui dit qu'elle est aussi une victime** | Moyen |
-| **A-6** | **Le badge « Mpivarotra azo antoka » partageable hors de l'application** | Le badge vérifié est un **objet de fierté**, pas une case de conformité. Une image à poster sur Facebook = notre canal d'acquisition vendeur n° 1, le parrainage | Faible |
+| **A-3** | **Le compteur de ventes perdues** — un outil d'une page pour la boutique | *« Combien de "je prends" hier soir ? Combien vous ont payée ? »* **On ne lui explique pas son problème, on le lui fait compter.** C'est l'appel transitionnel du BrandScript boutique, et l'entrée de tout le recrutement terrain | Faible |
+| **A-4** | **Le reçu de commande partageable** *(`D-21`)* — boutique vérifiée, montant, date, numéro | Une image que l'acheteuse envoie à sa mère ou à son amie : *« regarde, il ne sera payé que quand j'aurai reçu »*. **Transforme la garantie en objet social, donc en acquisition gratuite** | Faible |
+| **A-5** | **La protection symétrique de la boutique, nommée** | SentiBud *(Nigeria)* libère les frais de livraison à la boutique si l'acheteuse ne répond pas. **La boutique malgache la plus visible du pays cite le défaut de paiement comme son problème n° 1 — et personne ne lui dit qu'elle est aussi une victime** | Moyen |
+| **A-6** | **Le badge « Mpivarotra azo antoka » partageable hors de l'application** | Le badge vérifié est un **objet de fierté**, pas une case de conformité. Une image à poster sur Facebook = notre canal d'acquisition boutique n° 1, le parrainage | Faible |
 | **A-7** | **Un test de lexique dans l'intégration continue** | Notre exigence `N4.4` dit *« le vocabulaire de l'interface doit reprendre les mots réellement employés »*. **Une exigence sans test est une intention.** Un test qui échoue sur « plateforme », « sécurisé », « utilisateur », « expérience » la rend opposable | Très faible |
 
 ## 7.3 À AMÉLIORER
@@ -226,8 +239,8 @@ protection qu'on ne tient pas.
 | # | Quoi | Aujourd'hui | Proposé |
 |---|---|---|---|
 | **M-1** | **L'accroche de première ouverture** | *« Achetez en confiance, partout à Madagascar »* | *« Acheter chez quelqu'un qu'on ne connaît pas. Enfin possible. »* — voir `02` |
-| **M-2** | **La phrase de séquestre** | *« Votre argent est gardé par JP. Miora sera payée quand vous confirmerez avoir reçu. »* | **La seconde moitié est parfaite. La première expose juridiquement** *(loi 2016-056)*. Voir `D-02` |
-| **M-3** | **Les deux soldes vendeur** | *« en attente de confirmation »* / *« disponible au retrait »* | *« Gardé pour la cliente »* / *« À vous, retirable »*. **« En attente » suggère un blocage arbitraire** — et le dossier note déjà que *« la distinction doit être limpide, sinon la vendeuse croit qu'on la vole »* |
+| **M-2** | **La phrase de paiement** *(`D-21`)* | *« Miora est vérifiée par JP : Elle est vérifiée par JP : identité et compte Mobile Money contrôlés. »* Ancienne rédaction, désormais fausse : *« Votre argent est gardé par JP. Miora sera payée quand vous confirmerez avoir reçu. »* | **La seconde moitié est parfaite. La première expose juridiquement** *(loi 2016-056)*. Voir `D-02` |
+| **M-3** | ~~**Les deux soldes boutique**~~ — ❌ **sans objet** *(`DP-07`)* : JP ne tient aucun solde. Ancienne rédaction : *« en attente de confirmation »* / *« disponible au retrait »* | *« Gardé pour la cliente »* / *« À vous, retirable »*. **« En attente » suggère un blocage arbitraire** — et le dossier note déjà que *« la distinction doit être limpide, sinon la boutique croit qu'on la vole »* |
 | **M-4** | **Le bouton d'achat, partout** | Variable selon l'écran | **« Je prends », sans exception.** Voir `D-01` |
 | **M-5** | **Le mode économie de données** | Une option de réglages *(F0.9)* | **Une promesse affichée.** À 1,12 USD/Go et 6,28 % du revenu par habitant, la légèreté est une position morale, pas une performance |
 
@@ -263,7 +276,7 @@ rend la marque compréhensible en une seconde.
 | Candidat | Verdict |
 |---|---|
 | **Facebook** | ❌ **Non.** Nos utilisateurs y sont, nous en vivons, et nous ne pouvons pas gagner contre un produit gratuit et déjà installé. En faire l'ennemi, c'est nous battre sur son terrain |
-| **Les arnaqueurs** | ❌ **Non.** Accuser la profession nous coupe des vendeurs, dont l'immense majorité est honnête — et dont nous avons besoin |
+| **Les arnaqueurs** | ❌ **Non.** Accuser la profession nous coupe des boutiques, dont l'immense majorité est honnête — et dont nous avons besoin |
 | **Live Pay Mada, les marketplaces locales** | ❌ **Non.** Trop petits, et désigner un concurrent local le fait exister |
 | **✅ Le paiement à l'aveugle** | **Oui.** Personnifié : **le numéro personnel dans un message privé.** |
 
@@ -275,11 +288,11 @@ C'est l'ennemi idéal selon les critères de Neumeier :
 
 - **il est visuel** — tout le monde l'a vu, tout le monde l'a tapé ;
 - **il n'est personne** — on ne se fait pas d'ennemi humain, ni Facebook, ni les
-  vendeurs ;
+  boutiques ;
 - **il est exactement ce que nous supprimons** — sur JP, ce numéro n'existe
   plus ;
 - **il vaut pour les deux côtés du marché** — l'acheteuse envoie à l'aveugle,
-  le vendeur reçoit *(ou pas)* à l'aveugle.
+  la boutique reçoit *(ou pas)* à l'aveugle.
 
 # 10. Comment vous appelle-t-on ?
 
@@ -324,18 +337,19 @@ mettant "je prends" ou "j'achète" en commentaire »* *(Mondoblog/RFI)*.
 
 *(Le one-liner détaillé est en `01_BRANDSCRIPT.md`.)*
 
-> **« À Madagascar, acheter en direct veut dire envoyer de l'argent à un inconnu
-> et espérer. Sur JP, le vendeur n'est payé qu'à votre confirmation de
-> réception. Vous pouvez enfin acheter chez quelqu'un que vous ne connaissez
-> pas. »**
+> **« À Madagascar, acheter en direct veut dire envoyer de l'argent à un numéro
+> de téléphone et espérer. Sur JP, vous savez à qui vous payez : identité
+> vérifiée, historique visible, et une trace de chaque commande. Vous pouvez
+> enfin acheter chez quelqu'un que vous ne connaissez pas. »**
 
-**Version « ascenseur », 12 mots :** *« Le vendeur n'est payé qu'à votre
-confirmation de réception. »*
+**Version « ascenseur », 12 mots :** *« Vous savez à qui vous payez, et il en
+reste une trace. »*
 
 **Version investisseur :** *« Le commerce en direct malgache tourne sur une
 infrastructure que Meta a supprimée en 2022 et n'a jamais remplacée. Nous la
-construisons, et nous la construisons autour du séquestre — parce que le
-plafond de ce marché n'est pas le pouvoir d'achat, c'est le doute. »*
+construisons, et nous la construisons autour de **l'identité vérifiée** —
+parce que le plafond de ce marché n'est pas le pouvoir d'achat, c'est le
+doute. »*
 
 # 12. Quel est votre cri de ralliement ?
 
@@ -359,7 +373,7 @@ plafond de ce marché n'est pas le pouvoir d'achat, c'est le doute. »*
 | Registre | La ligne | Où |
 |---|---|---|
 | **Signature de marque** | **« Je prends. Je reçois. »** | Sous le logo, partout, sans exception |
-| **Phrase de mécanisme** *(la plus dite au quotidien)* | **« Le vendeur n'est payé qu'à votre confirmation de réception. »** | Fiche article, panier, paiement, affiche, terrain |
+| **Phrase de mécanisme** *(la plus dite au quotidien)* | **« Vous savez à qui vous payez. »** | Fiche article, panier, paiement, affiche, terrain |
 | **Ligne institutionnelle** | **« Le direct devient une boutique. »** | Deck, presse, partenaires, investisseurs |
 
 > **La ligne actuelle n'est pas abandonnée — elle est remise à sa place.**
@@ -392,7 +406,7 @@ de marque est totalement inoccupé.**
 
 | Canal | Rôle | Pourquoi |
 |---|---|---|
-| **Le parrainage entre vendeuses** | **Canal n° 1** | À Madagascar, la confiance passe par la relation. Une vendeuse recrutée par une autre coûte presque rien et reste |
+| **Le parrainage entre boutiques** | **Canal n° 1** | À Madagascar, la confiance passe par la relation. Une boutique recrutée par une autre coûte presque rien et reste |
 | **Facebook et Messenger** | Canal de masse | **4,15 à 5,22 M d'utilisateurs, contre 261 000 sur Instagram.** Instagram est un canal de vanité ici |
 | **Le mur des colis ouverts** | **Preuve** | Contenu gratuit, produit par les clientes, partageable sur WhatsApp |
 | **Les relations publiques : publier les quatre mesures fondatrices** | **Autorité** | **Personne ne mesure ce marché.** Voir `D-14` et la loi des RP dans `04` |
@@ -410,7 +424,7 @@ Neumeier : le zag doit se vivre dès le premier contact, sans engagement.
 | Étape | Ce qu'on demande | Ce qu'on donne |
 |---|---|---|
 | **1. Le mur des colis ouverts** | **Rien.** Pas de compte, pas de téléchargement | La preuve |
-| **2. Consultation en invité** *(F0.10)* | Rien | Le catalogue, les vendeurs vérifiés, le prix total |
+| **2. Consultation en invité** *(F0.10)* | Rien | Le catalogue, les boutiques vérifiées, le prix total |
 | **3. Le compte** | Un e-mail, un code | Le bouton « Je prends » |
 | **4. « Je prends »** | Un appui | La garantie, la facture, le suivi |
 
@@ -425,10 +439,10 @@ moments où JP se gagne ou se perd :
 | Moment | Ce qui doit se produire | Statut |
 |---|---|---|
 | **Avant le paiement** | La garantie est **visible**, pas enfouie | ❌ **À corriger** — `A-1` |
-| **À la confirmation** | La phrase de séquestre, en clair | ✅ Prévu *(R-E1)* |
+| **À la confirmation** | La phrase de paiement direct, en clair | ✅ Prévu *(R-E1)* |
 | **Pendant l'attente** | *« Je n'ai rien reçu »* accessible **au moment précis où elle doute** | ✅ Prévu |
 | **À la réception** | Un appui suffit. Le film du colis est **récompensé, jamais exigé** | ✅ Prévu |
-| **Au litige** | On parle **à JP**, jamais au vendeur en face | ✅ Prévu — et c'est ce qui fera remonter les vrais chiffres |
+| **Au litige** | On parle **à JP**, jamais à la boutique en face | ✅ Prévu — et c'est ce qui fera remonter les vrais chiffres |
 
 **Et une exigence transversale que le marché impose** : à 1,12 USD/Go et
 **6,28 % du revenu par habitant** consacré aux données, une application lourde
@@ -440,8 +454,8 @@ fait partie de l'expérience de marque.**
 | Levier | Mécanisme | Pour qui |
 |---|---|---|
 | **L'historique** | Commandes, factures, avis, cagnotte | Acheteuse |
-| **Le statut** | Badge vérifié, score public, paliers — **des objets de fierté, pas de conformité** | Vendeuse, créatrice |
-| **Le graphe** | Abonnés, meilleures clientes, fidélité | Vendeuse |
+| **Le statut** | Badge vérifié, score public, paliers — **des objets de fierté, pas de conformité** | Boutique, créatrice |
+| **Le graphe** | Abonnés, meilleures clientes, fidélité | Boutique |
 | **Le dressing** | Quitter JP, c'est perdre sa garde-robe | Acheteuse *(phase 2)* |
 | **La preuve accumulée** | Un concurrent copie l'interface en 3 mois, pas 2 ans d'historique | Tous |
 
@@ -476,7 +490,7 @@ fait partie de l'expérience de marque.**
 | | |
 |---|---|
 | **L'ennemi** | Le numéro personnel. *Un numéro. Un virement. Et l'espoir.* |
-| **L'unicité** | La seule place de marché où **le vendeur n'est payé qu'à la confirmation de réception**, pour le commerce en direct, à Madagascar |
+| **L'unicité** | La seule place de marché où **vous savez à qui vous payez**, pour le commerce en direct, à Madagascar |
 | **Zag 1** | Nous mettons en première ligne ce que tout le monde range en page 12 |
 | **Zag 2** | Notre nom est ce que dit la cliente, pas ce que fait l'entreprise |
 | **Zag 3** | Notre preuve est produite par nos clientes, pas achetée |

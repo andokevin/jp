@@ -48,13 +48,13 @@ Dossier de présentation — investisseurs & partenaires
 
 # Il est déjà en direct.
 
-Chaque soir, des vendeuses et des vendeurs présentent leurs articles en direct sur les réseaux sociaux. Les acheteurs sont là. Ils regardent, ils commentent, ils achètent.
+Chaque soir, des boutiques et des boutiques présentent leurs articles en direct sur les réseaux sociaux. Les acheteurs sont là. Ils regardent, ils commentent, ils achètent.
 
 Ce qui manque n'est pas la demande.
 
 **C'est l'outil.** Un réseau social est fait pour faire parler. Pas pour encaisser, facturer, livrer.
 
-**Notes.** Point clé pour l'investisseur : nous ne créons pas un usage, nous outillons un usage existant. Le risque d'adoption est donc faible — les vendeurs n'ont pas une nouvelle habitude à prendre, ils ont une corvée à supprimer.
+**Notes.** Point clé pour l'investisseur : nous ne créons pas un usage, nous outillons un usage existant. Le risque d'adoption est donc faible — les boutiques n'ont pas une nouvelle habitude à prendre, ils ont une corvée à supprimer.
 
 ---
 
@@ -66,11 +66,11 @@ Ce qui manque n'est pas la demande.
 
 **Côté acheteur.** Un paiement envoyé par mobile money vers un numéro personnel. Puis plus de nouvelles. Aucun recours.
 
-**Côté vendeur.** Des articles réservés en commentaire, puis jamais payés. Le stock est immobilisé, invendable pendant des jours, pour une commande fantôme.
+**Côté boutique.** Des articles réservés en commentaire, puis jamais payés. Le stock est immobilisé, invendable pendant des jours, pour une commande fantôme.
 
 **Au milieu : rien.** Pas de contrat, pas de trace, pas d'arbitre. Une capture d'écran ne vaut rien.
 
-**Notes.** C'est le problème n° 1 : c'est là qu'est l'argent, et c'est là qu'est l'émotion. Bien montrer que l'arnaque va dans les deux sens — c'est ce qui justifie une plateforme tierce plutôt qu'un simple outil pour vendeurs. Une plateforme qui ne protégerait qu'un seul côté ne réglerait pas le problème de confiance.
+**Notes.** C'est le problème n° 1 : c'est là qu'est l'argent, et c'est là qu'est l'émotion. Bien montrer que l'arnaque va dans les deux sens — c'est ce qui justifie une plateforme tierce plutôt qu'un simple outil pour boutiques. Une plateforme qui ne protégerait qu'un seul côté ne réglerait pas le problème de confiance.
 
 ---
 
@@ -100,7 +100,7 @@ Alors l'acheteur fait la seule chose rationnelle : **il limite son risque.**
 
 # Le direct dure une heure. L'administration dure la soirée.
 
-Après le direct, le vendeur :
+Après le direct, la boutique :
 
 1. relit des centaines de commentaires pour retrouver qui a dit « je prends », et dans quel ordre ;
 2. ouvre un message privé par client — la taille, l'adresse, le paiement, la disponibilité ;
@@ -109,7 +109,7 @@ Après le direct, le vendeur :
 
 **L'essentiel du travail arrive après la vente.**
 
-**Notes.** C'est la plainte la plus fréquente des vendeurs — ce n'est pas leur perte la plus lourde, d'où sa place en troisième position. Le temps gagné est un excellent argument de rétention (au bout de deux semaines, il ne revient plus au cahier) mais un mauvais argument d'acquisition : chez un micro-entrepreneur, la soirée n'a pas de prix de marché. On ne vend pas des heures, on vend de l'argent récupéré.
+**Notes.** C'est la plainte la plus fréquente des boutiques — ce n'est pas leur perte la plus lourde, d'où sa place en troisième position. Le temps gagné est un excellent argument de rétention (au bout de deux semaines, il ne revient plus au cahier) mais un mauvais argument d'acquisition : chez un micro-entrepreneur, la soirée n'a pas de prix de marché. On ne vend pas des heures, on vend de l'argent récupéré.
 
 ---
 
@@ -119,7 +119,7 @@ Après le direct, le vendeur :
 
 # Elle a une audience. Elle ne vend rien.
 
-Des créatrices filment leurs tenues, cumulent une audience réelle, et font **gratuitement** la promotion de vendeurs qui ne les rémunèrent pas.
+Des créatrices filment leurs tenues, cumulent une audience réelle, et font **gratuitement** la promotion de boutiques qui ne les rémunèrent pas.
 
 Ce qui leur manque n'est ni le talent, ni les abonnés.
 
@@ -174,9 +174,9 @@ Une action. Une quantité. Un paiement. Une facture.
 
 # La confiance n'est pas une promesse. C'est un mécanisme.
 
-- **Vendeur vérifié** — identité et numéro mobile money contrôlés avant la première vente.
+- **Boutique vérifié** — identité et numéro mobile money contrôlés avant la première vente.
 - **L'argent ne circule plus de main à main** — il transite par la plateforme, jamais vers un numéro personnel inconnu.
-- **Fonds libérés à la confirmation** — le vendeur est payé quand l'acheteur confirme la réception. *Modalités à caler avec le cadre réglementaire et le partenaire de paiement.*
+- **Fonds libérés à la confirmation** — la boutique est payée quand l'acheteur confirme la réception. *Modalités à caler avec le cadre réglementaire et le partenaire de paiement.*
 - **Facture horodatée** — émise automatiquement, conservée des deux côtés.
 - **Avis vérifiés** — seul un acheteur qui a réellement payé peut noter.
 - **Litiges arbitrés** — signalés à JP, jamais en face à face. Décision motivée et tracée.
@@ -192,11 +192,11 @@ Une action. Une quantité. Un paiement. Une facture.
 
 # Du direct au paiement, sans quitter l'écran.
 
-1. **Le vendeur passe en direct.** Il présente l'article. Le prix et le stock restant s'affichent à l'écran, en direct.
+1. **La boutique passe en direct.** Il présente l'article. Le prix et le stock restant s'affichent à l'écran, en direct.
 2. **L'acheteur appuie sur « Je prends ».** Sans écrire un mot, sans quitter le direct.
 3. **Il choisit la quantité, la taille et la livraison.** L'article lui est réservé quelques minutes. À domicile ou en point de retrait, au choix.
 4. **Il paie par mobile money.** MVola, Orange Money, Airtel Money — ou carte bancaire. *Rails de paiement visés, à contractualiser.*
-5. **La facture part automatiquement.** Commande créée, vendeur notifié, suivi de livraison ouvert des deux côtés.
+5. **La facture part automatiquement.** Commande créée, boutique notifié, suivi de livraison ouvert des deux côtés.
 
 *Objectif produit : moins de 30 secondes entre le clic et le paiement confirmé.*
 
@@ -221,7 +221,7 @@ Une action. Une quantité. Un paiement. Une facture.
 | En cas de litige | Parole contre parole | Historique consultable des deux côtés |
 | Le lendemain | Le direct est mort | Le contenu vend encore |
 
-**Notes.** La slide qui convainc. Ne pas lire les huit lignes : en choisir trois selon l'interlocuteur. Pour un investisseur, « encaisser » et « le lendemain ». Pour un vendeur pilote, « prendre la commande » et « travail après le direct ».
+**Notes.** La slide qui convainc. Ne pas lire les huit lignes : en choisir trois selon l'interlocuteur. Pour un investisseur, « encaisser » et « le lendemain ». Pour une boutique pilote, « prendre la commande » et « travail après le direct ».
 
 ---
 
@@ -234,13 +234,13 @@ Une action. Une quantité. Un paiement. Une facture.
 Stories, vidéos verticales courtes, looks : un fil que l'on parcourt par balayage, personnalisé selon la taille, le budget et le style.
 
 - **Chaque vidéo est achetable.** L'article est là, avec son prix et son bouton. On achète sans quitter la vidéo, exactement comme en direct.
-- **Le catalogue reste ouvert 24 h/24.** Chaque vendeur a sa vitrine, même hors direct.
+- **Le catalogue reste ouvert 24 h/24.** Chaque boutique a sa vitrine, même hors direct.
 - **La vidéo est une meilleure preuve que la photo.** Une vraie personne, sa morphologie, le tombé du tissu : c'est le signal de taille le plus fiable qui existe.
 
 > **Règle absolue : aucun contenu sans article achetable attaché.**
 > JP n'est pas un réseau social avec une boutique. C'est une boutique dont le catalogue est fait de vidéos.
 
-**Notes.** Anticipe deux objections d'un coup. La première : « et si le vendeur ne fait pas de direct ce soir ? ». La seconde, celle d'un investisseur averti : « vous devenez un TikTok de plus, sans défendabilité ». La règle en encadré est la réponse, et elle doit être énoncée telle quelle — c'est une contrainte de conception inscrite au cahier des charges, pas une intention. Ajouter que le contenu est **le seul levier qui fasse baisser le coût d'acquisition**, qui est le poste dominant du budget.
+**Notes.** Anticipe deux objections d'un coup. La première : « et si la boutique ne fait pas de direct ce soir ? ». La seconde, celle d'un investisseur averti : « vous devenez un TikTok de plus, sans défendabilité ». La règle en encadré est la réponse, et elle doit être énoncée telle quelle — c'est une contrainte de conception inscrite au cahier des charges, pas une intention. Ajouter que le contenu est **le seul levier qui fasse baisser le coût d'acquisition**, qui est le poste dominant du budget.
 
 ---
 
@@ -256,7 +256,7 @@ L'acheteuse filme l'ouverture de son colis.
 |---|---|
 | Elle filme | Du contenu gratuit pour le fil |
 | Elle publie | La preuve publique que JP livre pour de vrai |
-| Elle valide la réception | Les fonds sont libérés vers la vendeuse |
+| Elle valide la réception | Les fonds sont libérés vers la boutique |
 | Elle dit si ça taille bien | Un avis vérifié |
 | Elle poste | Du crédit dans sa cagnotte |
 
@@ -274,7 +274,7 @@ L'acheteuse filme l'ouverture de son colis.
 
 # Elle n'a pas besoin d'acheter le stock.
 
-**L'affiliation.** Elle ne possède rien. Elle recommande les articles d'autres vendeurs, et touche une commission sur ce qui se vend grâce à elle. Zéro capital, zéro stock, zéro logistique. Elle gagne enfin de l'argent avec ce qu'elle fait déjà gratuitement.
+**L'affiliation.** Elle ne possède rien. Elle recommande les articles d'autres boutiques, et touche une commission sur ce qui se vend grâce à elle. Zéro capital, zéro stock, zéro logistique. Elle gagne enfin de l'argent avec ce qu'elle fait déjà gratuitement.
 
 **La précommande groupée.** Elle publie un article, collecte les commandes, et **ne commande chez le fournisseur qu'une fois le seuil atteint**. Elle achète avec l'argent des clientes, pas avec le sien.
 
@@ -298,7 +298,7 @@ Elle compose son panier. Elle envoie un lien. Quelqu'un d'autre paie — son fr�
 
 - Le panier d'un cadeau est **structurellement plus élevé** : on n'offre pas au prix qu'on se paie à soi-même.
 - Celui qui paie **n'a pas la contrainte de pouvoir d'achat locale**. Le plafond du doute saute.
-- La diaspora envoie aujourd'hui de l'argent **sans jamais savoir ce qui en est fait**. Ici, elle offre un objet précis, chez un vendeur vérifié, avec le suivi de livraison et la preuve de remise.
+- La diaspora envoie aujourd'hui de l'argent **sans jamais savoir ce qui en est fait**. Ici, elle offre un objet précis, chez une boutique vérifiée, avec le suivi de livraison et la preuve de remise.
 - Et le remerciement publié devient du contenu, donc de l'acquisition. La boucle se referme.
 
 **C'est le premier canal de JP qui ne dépend pas du pouvoir d'achat local.**
@@ -313,16 +313,16 @@ Elle compose son panier. Elle envoie un lien. Quelqu'un d'autre paie — son fr�
 
 # Un produit, trois métiers.
 
-**Côté vendeur — son studio.**
+**Côté boutique — son studio.**
 Passer en direct depuis son téléphone · son catalogue et son stock à jour en temps réel · ses commandes, payées, à expédier, livrées · ses ventes par direct, par article, par période · ses abonnés et ses meilleurs clients.
 
 **Côté acheteuse — sa boutique.**
-Le fil des directs et des vidéos · le bouton « Je prends » · le panier multi-vendeurs · ses commandes et le suivi de livraison · domicile ou point relais · ses factures, ses avantages fidélité.
+Le fil des directs et des vidéos · le bouton « Je prends » · le panier multi-boutiques · ses commandes et le suivi de livraison · domicile ou point relais · ses factures, ses avantages fidélité.
 
 **Côté créatrice — son studio à elle.**
-Publier · sa sélection d'articles chez plusieurs vendeurs · ses précommandes · et un tableau de bord qui va des vues jusqu'aux gains.
+Publier · sa sélection d'articles chez plusieurs boutiques · ses précommandes · et un tableau de bord qui va des vues jusqu'aux gains.
 
-**Notes.** Montrer que ce n'est pas une application « avec trois menus », mais trois produits qui ont chacun leur logique. Le vendeur vient chercher du chiffre. L'acheteuse vient chercher de la confiance. La créatrice vient chercher un revenu sans capital. Trois discours de vente différents — ne jamais les mélanger en rendez-vous.
+**Notes.** Montrer que ce n'est pas une application « avec trois menus », mais trois produits qui ont chacun leur logique. La boutique vient chercher du chiffre. L'acheteuse vient chercher de la confiance. La créatrice vient chercher un revenu sans capital. Trois discours de vente différents — ne jamais les mélanger en rendez-vous.
 
 ---
 
@@ -340,7 +340,7 @@ Publier · sa sélection d'articles chez plusieurs vendeurs · ses précommandes
 - **Il rend l'adresse facultative** : celle qui hésite à donner son domicile à un inconnu commande quand même.
 - Le point de retrait fait baisser le coût de livraison — le premier frein sur les petits paniers.
 - Il supprime l'échec de livraison quand personne n'est là.
-- Le vendeur dépose plusieurs commandes en un seul trajet.
+- La boutique dépose plusieurs commandes en un seul trajet.
 
 **Notes.** Argument souvent sous-estimé et pourtant décisif : les frais de livraison peuvent dépasser la marge sur un petit article. Le point de retrait est ce qui rend le panier à faible montant économiquement viable — et donc ce qui rend la fréquence d'achat possible. Le premier point, l'adresse facultative, est mis en tête volontairement : c'est un frein de confiance, pas un frein de coût.
 
@@ -350,15 +350,15 @@ Publier · sa sélection d'articles chez plusieurs vendeurs · ses précommandes
 
 **ACTE II · LA SOLUTION**
 
-# Le vendeur ne subit plus son audience. Il la cultive.
+# La boutique ne subit plus son audience. Elle la cultive.
 
-- **Des abonnés, pas des spectateurs.** On suit un vendeur comme on suit un créateur.
+- **Des abonnés, pas des spectateurs.** On suit une boutique comme on suit un créateur.
 - **Notification au bon moment.** Quand il passe en direct, quand il lance une promotion, quand une pièce attendue revient en stock.
 - **Il connaît ses meilleurs clients.** Nombre d'achats, montant cumulé, ancienneté, régularité — classés.
 - **Il récompense qui il veut.** Une remise réservée à un palier de fidélité, un accès en avance à une collection, un cadeau pour ses ambassadeurs.
 - **Le rendez-vous plutôt que la notification.** « Tous les vendredis à 18 h » vaut mieux qu'une alerte de plus.
 
-**Notes.** C'est le moteur de rétention, et donc l'argument de défendabilité. Un vendeur qui a construit sa base d'abonnés et son programme de fidélité sur JP ne repart pas ailleurs. Ses clients non plus. Le dernier point est important : nous refusons la surenchère de notifications, parce qu'un utilisateur qui coupe tout nous fait perdre les notifications utiles — colis arrivé, code de retrait.
+**Notes.** C'est le moteur de rétention, et donc l'argument de défendabilité. Une boutique qui a construit sa base d'abonnés et son programme de fidélité sur JP ne repart pas ailleurs. Ses clients non plus. Le dernier point est important : nous refusons la surenchère de notifications, parce qu'un utilisateur qui coupe tout nous fait perdre les notifications utiles — colis arrivé, code de retrait.
 
 ---
 
@@ -390,9 +390,9 @@ Publier · sa sélection d'articles chez plusieurs vendeurs · ses précommandes
 - **L'achat est visuel et émotionnel.** Une matière, un tombé, une teinte sur une peau : cela se montre, cela ne se décrit pas. Le direct et la vidéo sont les formats naturels de ce produit.
 - **Le panier se renouvelle.** On rachète une saison après l'autre. La fréquence est structurellement plus élevée que sur la plupart des catégories.
 - **Le vertical permet ce qu'un généraliste ne fera jamais.** Tailles par marque, matières, teintes adaptées aux carnations, looks complets, retours pour cause de taille.
-- **Les vendeurs sont déjà là.** Le vestimentaire domine déjà la vente en direct. Nous n'avons pas à déplacer un usage, seulement à l'équiper.
+- **Les boutiques sont déjà là.** Le vestimentaire domine déjà la vente en direct. Nous n'avons pas à déplacer un usage, seulement à l'équiper.
 
-**Notes.** Le vertical est une force, pas une limite. C'est ce qui permet de battre un généraliste sur l'expérience, et de recruter les vendeurs par le bouche-à-oreille dans une communauté déjà connectée entre elle.
+**Notes.** Le vertical est une force, pas une limite. C'est ce qui permet de battre un généraliste sur l'expérience, et de recruter les boutiques par le bouche-à-oreille dans une communauté déjà connectée entre elle.
 
 ---
 
@@ -400,17 +400,17 @@ Publier · sa sélection d'articles chez plusieurs vendeurs · ses précommandes
 
 **ACTE III · LE MODÈLE**
 
-# Nous gagnons quand le vendeur vend.
+# Nous gagnons quand la boutique vend.
 
 1. **Commission sur chaque vente** — le cœur du modèle. Prélevée au paiement, sans facturation à relancer.
 2. **Commission d'affiliation** — sur les ventes générées par une créatrice. Adossée à une transaction réelle.
-3. **Mise en avant** — produit, direct ou contenu sponsorisé, payé en Ariary par le vendeur.
-4. **Abonnement vendeur** — par paliers : vitrine simple, puis outils avancés, statistiques, plusieurs utilisateurs.
+3. **Mise en avant** — produit, direct ou contenu sponsorisé, payé en Ariary par la boutique.
+4. **Abonnement boutique** — par paliers : vitrine simple, puis outils avancés, statistiques, plusieurs utilisateurs.
 5. **JP Club** — abonnement acheteuse : livraison offerte au-delà d'un montant, accès anticipé. Récurrent, sans coût marginal.
 6. **Campagnes de marque** — la marque finance une campagne avec des créatrices, JP prend une part. Mesurée jusqu'à la vente.
 7. **Insights marché** — tendances de tailles, de couleurs, de prix. Agrégés et anonymisés.
 
-**Le vendeur ne paie rien tant qu'il ne vend pas.**
+**La boutique ne paie rien tant qu'elle ne vend pas.**
 
 > **Une mise au point sur la publicité.** Le CPM sur une audience malgache est dérisoire : il faudrait des dizaines de millions d'impressions pour un revenu significatif. À ce niveau d'audience, la commission rapporte déjà bien davantage. **La couche sociale se monétise par le commerce qu'elle déclenche, pas par l'attention qu'elle capte.** La régie publicitaire viendra après, si l'audience la justifie.
 
@@ -427,7 +427,7 @@ Publier · sa sélection d'articles chez plusieurs vendeurs · ses précommandes
 Trois actifs, qui s'accumulent au lieu de se copier :
 
 - **L'infrastructure de confiance.** Identités vérifiées, historique de transactions, scores construits sur des faits. Un concurrent peut copier l'interface en trois mois ; il ne peut pas copier deux ans d'historique.
-- **Le graphe des relations.** Abonnés, créatrices, meilleures clientes, paliers de fidélité. Un vendeur qui a construit sa base ici ne repart pas. Ses clientes non plus.
+- **Le graphe des relations.** Abonnés, créatrices, meilleures clientes, paliers de fidélité. Une boutique qui a construit sa base ici ne repart pas. Ses clientes non plus.
 - **La donnée verticale.** Nous serons les seuls à savoir ce qui se vend réellement dans le vestimentaire à Madagascar — taille par taille, couleur par couleur, prix par prix.
 
 Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factures, cagnotte, avis publiés, contenus.
@@ -444,7 +444,7 @@ Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factur
 
 | Levier | Hypothèse de départ | À mesurer pendant le pilote |
 |---|---|---|
-| Commission par vente | Fourchette selon la catégorie | À partir de quel taux le vendeur contourne la plateforme |
+| Commission par vente | Fourchette selon la catégorie | À partir de quel taux la boutique contourne la plateforme |
 | Prépaiement | Une part des acheteurs le refusera | Écart de conversion entre prépaiement et paiement à la réception |
 | Panier moyen | À établir sur le segment vestimentaire | Effet du paiement intégré sur le montant commandé |
 | Conversion en direct | À établir | Spectateurs → « Je prends » → paiement confirmé |
@@ -453,9 +453,9 @@ Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factur
 | Acquisition par créatrice | Moins chère que la publicité | Coût d'une cliente amenée par une créatrice |
 | Commande-cadeau | Panier plus élevé | Écart avec le panier ordinaire, part payée depuis l'étranger |
 | Mode de livraison | Point de retrait majoritaire sur les petits paniers | Répartition, et effet sur le taux d'abandon |
-| Budget de lancement | Acquisition = poste dominant | Coût réel d'un premier acheteur, d'un premier vendeur |
+| Budget de lancement | Acquisition = poste dominant | Coût réel d'un premier acheteur, d'un premier boutique |
 
-> **Aucun chiffre de ce dossier n'est présenté comme acquis.** Les fourchettes se trancheront avec les premiers vendeurs et les premières créatrices, pas dans une feuille de calcul.
+> **Aucun chiffre de ce dossier n'est présenté comme acquis.** Les fourchettes se trancheront avec les premiers boutiques et les premières créatrices, pas dans une feuille de calcul.
 
 **Notes.** Assumer cette slide plutôt que la cacher : elle montre que nous savons quelles sont les questions ouvertes, ce qu'un investisseur cherche précisément à savoir avant de financer une phase de validation. Si l'on ne doit en citer qu'une : le prépaiement. C'est la mesure qui conditionne le plus lourdement l'architecture du produit.
 
@@ -469,7 +469,7 @@ Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factur
 
 **Ce qui n'est pas bloquant.** La plateforme est un travail de développement identifié et cadré. Le seul poste techniquement incertain est la vidéo.
 
-**Ce qui est bloquant.** Le lancement. Réunir au même moment les premiers vendeurs, leurs abonnés, les premières créatrices, les partenaires paiement et livraison — et faire savoir que JP existe. Sans cet argent-là, le produit sort et ne rencontre personne.
+**Ce qui est bloquant.** Le lancement. Réunir au même moment les premiers boutiques, leurs abonnés, les premières créatrices, les partenaires paiement et livraison — et faire savoir que JP existe. Sans cet argent-là, le produit sort et ne rencontre personne.
 
 **Les postes, par ordre de poids :** acquisition et animation · **amorçage du contenu** (un fil vide est pire que pas de fil : les premières créatrices doivent être recrutées et rémunérées avant l'ouverture) · développement · **modération** (coût humain permanent, dès le premier jour) · infrastructure vidéo · frais de paiement · logistique · juridique.
 
@@ -487,16 +487,16 @@ Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factur
 
 # Trois phases. Une seule à financer aujourd'hui.
 
-**Phase 1 — Le geste et la preuve.** Direct et bouton « Je prends », paiement mobile money, fonds tenus jusqu'à réception, facture automatique, suivi de commande, vendeurs vérifiés — et le noyau de contenu : stories, clips achetables, unboxing, créatrices et affiliation, précommande, cadeau, modération. *C'est le produit minimum qui règle le problème.*
+**Phase 1 — Le geste et la preuve.** Direct et bouton « Je prends », paiement mobile money, fonds tenus jusqu'à réception, facture automatique, suivi de commande, boutiques vérifiées — et le noyau de contenu : stories, clips achetables, unboxing, créatrices et affiliation, précommande, cadeau, modération. *C'est le produit minimum qui règle le problème.*
 
 **Phase 2 — La communauté.** Replay achetable, avis vérifiés et score public, abonnés et notifications, promotions programmées, paliers de fidélité et cagnotte, guide des tailles, retours, JP Club.
 
-**Phase 3 — L'échelle.** Enchères et ventes flash, direct à deux, assistant du vendeur, espace marque, insights marché.
+**Phase 3 — L'échelle.** Enchères et ventes flash, direct à deux, assistant de la boutique, espace marque, insights marché.
 
 **Ce que nous cherchons.**
 - Un **budget de lancement** — l'essentiel en acquisition et en amorçage de contenu. Montant à caler avec le plan retenu.
 - Des **partenaires** paiement, livraison et points de retrait.
-- Des **vendeurs pilotes** déjà actifs en direct sur le vestimentaire.
+- Des **boutiques pilotes** déjà actifs en direct sur le vestimentaire.
 - Des **créatrices pilotes** prêtes à tester l'affiliation et la précommande.
 
 **JP — Je prends.** *Le direct devient une boutique.*
@@ -512,6 +512,6 @@ Contact : à compléter.
 - [ ] Coordonnées de contact (slide 25)
 - [ ] Arrêter les deux scénarios de lancement (une ville / ouverture large) et les chiffrer, pour la discussion de la slide 24
 - [ ] Confirmer le nom exact du prestataire de paiement par carte (le brief mentionnait « paoi.mg » ; l'agrégateur malgache identifié est **papi.mg** — à vérifier)
-- [ ] Trancher les fourchettes de la slide 21 après les premiers entretiens vendeurs
+- [ ] Trancher les fourchettes de la slide 21 après les premiers entretiens boutiques
 - [ ] Trancher l'arbitrage de délai de la slide 24 : allonger l'horizon, ou scinder la livraison du contenu
 - [ ] Ajouter, si disponibles, des captures d'écran ou maquettes de l'application

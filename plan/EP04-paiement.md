@@ -1,29 +1,168 @@
-# EP04 — Paiement, séquestre et argent
+# EP04 — Paiement
 
-> 13 fonctionnalités · vague 2 · modules `paiement`, `sequestre`, `portefeuille`.
+> 8 fonctionnalités · vague 1 · module `paiement`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit détaillé : [EP00-identite.md](EP00-identite.md).
+> **Amont** : [`JP_DECISIONS_PRODUIT.md`](../docs/JP_DECISIONS_PRODUIT.md) — `DP-07`, `DP-15`, `DP-16`.
 
-**C'est ici que se joue la proposition de valeur.** Le séquestre est ce qui matérialise la promesse « ton argent n'est pas perdu ».
+**On fait comme tout le commerce en ligne : le client paie, le vendeur reçoit son argent, JP ne récupère que sa commission.** Un débit, une confirmation, **deux ou trois crédits éclatés** *(`DP-16`)*.
 
-**Contrainte permanente de l'épique** *(C4)* — argent conservé pour compte de tiers : journal financier **inaltérable**, idempotence de bout en bout, réconciliation quotidienne, traçabilité complète. Aucune écriture financière ne se modifie ; **toute correction est une écriture inverse**.
+**Le séquestre est supprimé** *(`DP-07`)* et **JP ne détient aucun fonds, à aucun moment** *(`R-M9`)* : les crédits vont directement sur les comptes des bénéficiaires. Ce qui est enregistré chez JP, c'est **la transaction**, jamais l'argent — et c'est ça, la traçabilité *(`D-21`)*.
 
-**Deux critères de recette bloquants sont ici** : `RB2` (fonds correctement séquestrés et libérés dans tous les cas) et `RB10` (paiement interrompu : ni double prélèvement, ni commande perdue).
+**La boutique choisit son mode** *(`DP-15`)* : **abonnement mensuel** — pas de patte commission, un seul crédit vers elle — ou **commission** — JP est crédité directement de sa part. **C'est l'éclatement qui rend la commission gratuite à collecter** : JP ne la récupère pas, elle lui est créditée.
 
 | ID | Fonctionnalité | Phase | Prio | Détail |
 |---|---|---|---|---|
 | F4.1 | Paiement mobile money ⚠️ | P1 | M | complet |
-| F4.2 | Paiement par carte ⚠️ | P1 | S | moyen |
-| F4.3 | **Paiement à la livraison** ⚠️ | P1 | M | complet |
-| F4.4 | Séquestre | P1 | M | complet |
-| F4.5 | Libération à la confirmation | P1 | M | complet |
-| F4.6 | Libération automatique après délai | P1 | M | complet |
-| F4.7 | Remboursement total ou partiel | P1 | M | complet |
-| F4.8 | Portefeuille et retrait | P1 | M | complet |
-| F4.9 | Relevé des commissions | P1 | S | moyen |
+| F4.14 | **Éclatement du paiement** *(`DP-16`)* | P1 | M | complet |
+| F4.9 | ♻️ **Relevé des commissions** *(`DP-15`)* | P1 | S | moyen |
 | F4.10 | Reprise après échec de paiement | P1 | M | complet |
 | F4.11 | Facture PDF horodatée | P1 | M | complet |
-| F4.12 | Acompte + solde à la livraison ⚠️ | P2 | S | cadre |
+| F4.2 | Paiement par carte ⚠️ | P1 | S | moyen |
 | F4.13 | Historique des mouvements | P1 | S | moyen |
+| ~~F4.4~~ ~~F4.5~~ ~~F4.6~~ ~~F4.7~~ ~~F4.8~~ | ~~Séquestre, libérations, remboursement, portefeuille~~ ❌ *(`DP-07`)* | — | — | — |
+| ~~F4.3~~ ~~F4.12~~ | ~~Paiement à la livraison, acompte~~ ❌ *(`DP-04`)* | — | — | — |
+
+> ### L'exposition juridique reste supprimée
+>
+> `docs/marque/` désigne comme **« principal risque du projet »** le régime d'un
+> tiers non agréé conservant des fonds d'acheteurs — **loi 2016-056, art. 79-80**,
+> action `A-03`. **JP ne recevant aucun fonds, ce risque n'existe pas.**
+
+---
+
+## F4.14 — L'éclatement du paiement
+
+`P1 · M · complet` — **Règles** R-M4 à R-M7, R-M9, R-M10 · **Recette** RB2, RB10, RB11 · **Décision** `DP-16` · **Bloque** `F10.1`, `F15.5`
+
+### 1. Conception
+
+```
+paiement de l'acheteuse — UN débit, UNE confirmation
+        │  éclatement par le prestataire
+   ┌────┴──────────────┬──────────────┐
+   ▼                   ▼              ▼
+mobile money       compte JP      mobile money
+de la boutique    (commission,    de la créatrice
+   (le net)         si mode        (si affiliée)
+                  commission)
+```
+
+- **R-M9** — **JP ne détient aucun fonds, à aucun moment.** Les crédits vont directement aux bénéficiaires.
+- **R-M10** — **L'éclatement atomique est le cas nominal.** Le nombre de bénéficiaires ne change **rien** pour l'acheteuse : un débit, une confirmation.
+
+**Le nombre de crédits, par situation** :
+
+| Situation | Crédits |
+|---|---|
+| Boutique en **abonnement**, vente simple | **1** — la boutique |
+| Boutique en **commission**, vente simple | **2** — la boutique, JP |
+| Boutique en **commission**, vente affiliée | **3** — la boutique, JP, la créatrice |
+
+### 2. Le repli, si le prestataire n'éclate pas *(`PO-11`)*
+
+**On code le repli, on préfère le nominal.** L'architecture supporte les deux — c'est ce qui évite d'attendre la réponse des opérateurs pour commencer.
+
+- **R-M4** — **la requête vers la boutique est la requête pivot.** Émise en premier ; **son échec annule tout** : ni commande, ni requête suivante. Rien n'a bougé.
+- **R-M5** — **les requêtes secondaires sont rattrapables, jamais bloquantes.** Commission JP ou part créatrice : un échec **ne remet pas la commande en cause**, la somme due est enregistrée et rejouée.
+- **R-M6** — **le nombre de confirmations est annoncé avant l'écran de paiement.** Un deuxième code non annoncé est indiscernable d'une fraude.
+- **R-M7** — 🔒 **on ne rejoue jamais à l'aveugle** : on interroge d'abord l'opérateur sur le sort de sa référence, on ne rejoue que si la réponse est « non effectué ».
+
+> **Il n'existe pas de « tout ou rien » entre plusieurs transferts mobile money.**
+> `R-M4` et `R-M5` n'établissent pas l'atomicité : elles organisent l'échec
+> partiel pour qu'il tombe **toujours du côté rattrapable**. **L'ordre est une
+> règle de sécurité**, pas un détail — l'inverser produirait des commissions
+> encaissées sur des commandes inexistantes.
+
+> ### ⚠️ `PO-11` — la question la plus importante du projet
+>
+> *« Un encaissement unique peut-il être réparti automatiquement vers plusieurs
+> comptes bénéficiaires, en une seule opération, avec un seul code de
+> confirmation pour le payeur ? »*
+>
+> À poser à **MVola, Orange Money et Airtel**. Si la réponse est non **et**
+> qu'aucun bénéficiaire tiers n'est possible, l'argent devra transiter par JP —
+> **et le risque juridique reviendra avec lui**.
+
+### 3. Structure de code
+
+```
+apps/api/src/modules/paiement/
+├─ plan.ts             calcul des parts AVANT tout appel — net, commission, créatrice
+├─ eclatement.ts       mode atomique si disponible, sinon requêtes ordonnées
+├─ rejeu.ts            reprise des pattes secondaires — interroge AVANT (R-M7)
+└─ *.test.ts
+apps/mobile/src/features/paiement/composants/AnnonceConfirmations.tsx
+```
+
+### 4. Base de données
+
+`paiement` porte `rang` *(`pivot` | `secondaire`)*, `beneficiaire_type` *(**`boutique` | `jp` | `createur`**)*, `beneficiaire_id`, `msisdn_destination` **figé**, `nb_rejeux`, `prochain_rejeu_le`.
+
+`commande` porte **`taux_commission_pour_mille`** et **`mode_remuneration`**, **figés à la création** *(`R-G3`, `R-B5`)*.
+
+```sql
+CREATE INDEX paiement_par_commande ON paiement (commande_id, rang);
+CREATE INDEX paiement_a_rejouer ON paiement (prochain_rejeu_le)
+  WHERE rang = 'secondaire' AND statut = 'ECHOUE';
+```
+
+**La somme des crédits d'une commande égale le montant débité** — à vérifier par test, pas par `CHECK`.
+
+### 5. Design
+
+```
+Screen — payment plan, shown BEFORE the operator prompt.
+A compact card: "Vous allez recevoir 1 demande de confirmation" with a large
+numeral and the total "50 000 Ar". Below, a muted breakdown visible only to the
+SHOP in its own studio — never to the buyer: "Miora 47 500 Ar · JP 2 500 Ar".
+The buyer sees ONLY her total and the verified-shop line.
+Produce a second frame for the fallback mode: "2 demandes de confirmation",
+with the info line "La deuxième arrive juste après la première."
+```
+
+**L'acheteuse ne voit jamais la répartition.** Elle paie un prix ; comment il se répartit ne la regarde pas, et le lui montrer ferait apparaître une commission qu'elle ne paie pas *(`R-B1`)*.
+
+### 6. Backend
+
+`GET /commandes/:id/plan-paiement` → `{ confirmations, total }` *(sans la répartition)* · `POST /commandes/:id/paiement` · job `rejeuPattesSecondaires`.
+
+**Tests** : abonnement → **1 crédit** ; commission → **2** ; commission + affiliation → **3** ; **la somme des crédits égale le débit**, au centime ; **mode atomique** : tout ou rien ; **repli** : échec du pivot → aucune commande ; échec d'un secondaire → commande créée, patte rejouée **après interrogation** *(`R-M7`)* ; rejeu avec la même clé → pas de double crédit ; **l'acheteuse ne voit jamais la répartition**.
+
+```issues
+feature: F4.14
+titre: Éclatement du paiement, atomique ou en requêtes ordonnées
+epic: "04"
+phase: P1
+prio: M
+etapes: [conception, squelette, bdd, design, backend, frontend]
+depend: [F3.7]
+```
+
+---
+
+## F4.9 — Relevé des commissions ♻️
+
+`P1 · S · moyen` — **Règles** R-G1, R-G3 · **Décision** `DP-15`
+
+**Conception** — en mode commission, la boutique voit **avant la mise en vente et sur chaque commande** : *« Vente 50 000 Ar — commission 2 500 Ar — vous recevez 47 500 Ar »* *(`R-G1`)*. **Les 47 500 Ar arrivent directement sur son mobile money** : la commission n'est pas prélevée après, elle est **une patte de l'éclatement** *(`DP-16`)*. Le barème est **historisé** et **figé à la commande** *(`R-G3`)*.
+
+**En mode abonnement**, cet écran affiche *« vous recevez 100 % »* et renvoie à l'abonnement *(`F10.3`)*.
+
+**Base** — `bareme_commission`, `commande.taux_commission_pour_mille` et `mode_remuneration`, **figés à la création**.
+
+**Backend** — `GET /boutique/commissions?periode=`, export tableur.
+
+**Tests** : le taux affiché avant mise en vente est celui appliqué ; un changement de barème ne touche aucune commande existante ; en mode abonnement, aucune commission n'apparaît.
+
+```issues
+feature: F4.9
+titre: Relevé des commissions prélevées
+epic: "04"
+phase: P1
+prio: S
+etapes: [conception, design, backend, frontend]
+depend: [F4.14]
+```
 
 ---
 
@@ -95,8 +234,8 @@ Vertical order: an amount header card showing "À payer" and "55 000 Ar" in very
 large bold; three operator rows, each with the operator logo area, name
 ("MVola", "Orange Money", "Airtel Money"), the masked number "034 •• ••• 67"
 under the first one, and a radio on the right; MVola is pre-selected with a small
-"votre numéro" tag; a fourth row "Payer à la réception" with a truck icon and a
-muted line "En espèces au livreur"; a fifth row "Carte bancaire". Pinned bottom:
+"votre numéro" tag; a fourth row "Carte bancaire". Above the button, a muted
+line: "Boutique vérifiée — identité et Mobile Money contrôlés." Pinned bottom:
 full-width primary button "Payer 55 000 Ar".
 
 Screen 2 — waiting for operator confirmation. THIS SCREEN MUST NEVER LOOK FROZEN.
@@ -114,8 +253,8 @@ votre téléphone a du réseau", "Composez #111# pour voir vos demandes en atten
 "Réessayer le paiement" and a secondary "Choisir un autre moyen".
 
 Screen 4 — payment confirmed: a large green check, "Paiement confirmé",
-the order number "#1042", the escrow sentence card ("Votre argent est gardé par
-JP…"), and a primary button "Suivre ma commande".
+the order number "#1042", the honest payment card ("Boutique vérifiée par JP —
+identité et Mobile Money contrôlés"), and a primary button "Suivre ma commande".
 ```
 
 ### 5. Backend
@@ -124,11 +263,13 @@ JP…"), and a primary button "Suivre ma commande".
 `POST /webhooks/paiement/:prestataire` — signature vérifiée, traitement idempotent, **tolérant à l'arrivée précoce**.
 `GET /paiements/:id` — sondage côté client pendant l'attente.
 
-À la confirmation : `paiement.confirme` → consommation de la réservation *(F1.10)*, passage de la commande en `PAYEE`, création du séquestre *(F4.4)*, écritures financières, notification au vendeur avec **le montant net, commission affichée** *(F10.1)*.
+À la confirmation : `paiement.confirme` → consommation de la réservation *(F1.10)*, passage de la commande en `PAYEE`, journalisation. **Les crédits sont déjà partis** — c'est l'éclatement qui les a émis *(`F4.14`, `R-M10`)*. Ancienne rédaction : création du séquestre *(F4.4)*, écritures financières, notification à la boutique avec **le montant net, commission affichée** *(F10.1)*.
 
 **Tests — les plus exigeants du dépôt, avec ceux du stock :**
 - Rejeu de la même clé d'idempotence → **même résultat, un seul prélèvement** *(RB10)*.
 - Webhook reçu **deux fois** → un seul traitement.
+- **Échec de l'encaissement → aucune commande créée.** Rien n'a bougé.
+- **Échec d'une patte secondaire → la commande existe, l'expédition suit, la patte est rejouée après interrogation** *(`R-M5`, `R-M7`)*.
 - Webhook reçu **avant** la réponse synchrone → traitement correct.
 - Coupure provoquée **à chaque étape** du parcours → ni double prélèvement, ni commande perdue *(RB10)*.
 - Paiement expiré → réservation libérée, commande annulée, aucune écriture financière orpheline.
@@ -150,327 +291,6 @@ phase: P1
 prio: M
 etapes: [conception, squelette, bdd, design, backend, frontend]
 depend: [F3.7]
-```
-
----
-
-## F4.4 / F4.5 / F4.6 — Le séquestre
-
-`P1 · M · complet` — **Règles** R-E1 à R-E10 · **Recette RB2** · **Le mécanisme central du produit**
-
-### 1. Conception
-
-**C'est ce qui matérialise la promesse « ton argent n'est pas perdu ».**
-
-- **A (après paiement)** : voit clairement *« Votre argent est gardé par JP. Miora sera payée quand vous confirmerez avoir reçu. »* **Cette phrase doit être à l'écran de confirmation, pas enfouie dans les conditions générales** *(R-E1)*.
-- **A (réception)** : notification « Avez-vous bien reçu ? » → « Oui, tout va bien » → fonds libérés → invitation à l'avis *(F6.1)*.
-- **A (problème)** : « Il y a un problème » → litige *(F6.3)* → **les fonds restent bloqués**.
-- **V** : deux soldes distincts dans son portefeuille — **« en attente de confirmation »** et **« disponible au retrait »** *(R-E6)*. La distinction doit être limpide, sinon la vendeuse croit qu'on la vole.
-
-**F4.6 — libération automatique** *(R-E4)* : sans réponse de l'acheteuse après N jours suivant la livraison confirmée, les fonds sont libérés automatiquement. ⚠️ N à caler — hypothèse : 3 jours après remise. **Sans cette règle, les vendeuses attendent indéfiniment et quittent la plateforme.**
-
-**Quatre chemins de libération**, tous à tester *(RB2)* : confirmation manuelle, unboxing *(F14.7)*, délai automatique, décision d'arbitrage *(F6.5)*.
-
-**Le journal financier est inaltérable** *(C4)* : `ecriture_financiere` est **append only**. Aucune modification, aucune suppression ; toute correction est une écriture inverse. Les soldes de portefeuille sont **dérivés du journal**, jamais saisis.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/sequestre/
-├─ routes.ts
-├─ service.ts        creer() · liberer(motif) · rembourser() · bloquer()
-├─ journal.ts        ← écritures financières, append only, la seule porte d'entrée
-├─ machine.ts        retenu → libere | rembourse | partiel
-└─ *.test.ts
-apps/api/src/jobs/liberationAutomatique.ts
-apps/mobile/src/features/commandes/composants/CarteSequestre.tsx
-apps/mobile/src/features/argent/composants/DeuxSoldes.tsx
-```
-
-`journal.ts` est la **seule** porte d'entrée vers `ecriture_financiere`. Aucun autre fichier n'y écrit — c'est vérifié par une règle de lint sur les imports.
-
-### 3. Base de données
-
-Migration `..._f4_4_sequestre` — `sequestre`, `ecriture_financiere`, `portefeuille` (CDC §3.3).
-
-```sql
--- interdiction absolue de modifier le journal financier
-REVOKE UPDATE, DELETE ON ecriture_financiere FROM app_role;
-CREATE INDEX ecriture_titulaire ON ecriture_financiere (titulaire_id, compte, cree_le);
-CREATE INDEX sequestre_a_liberer ON sequestre (liberable_le)
-  WHERE statut = 'retenu' AND liberable_le IS NOT NULL;
-ALTER TABLE sequestre ADD CONSTRAINT montant_positif CHECK (montant_retenu > 0);
-```
-
-**Le `REVOKE` est la garantie structurelle** : même un développeur pressé ne peut pas corriger une écriture. Il doit en passer une inverse.
-
-### 4. Design
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen 1 — escrow reassurance card (appears on the confirmation screen and in
-order tracking).
-A bordered card with a shield icon, the sentence "Votre argent est gardé par JP."
-in bold on its own line, then "Miora sera payée quand vous confirmerez avoir reçu
-votre colis." in regular weight, then a three-step mini timeline with the current
-step highlighted: "Payé → Livré → Vous confirmez". A small text link "Comment ça
-marche ?".
-
-Screen 2 — reception confirmation prompt (push-triggered screen).
-A parcel illustration, title "Avez-vous bien reçu votre colis ?", the order
-summary row, then two full-width buttons: primary green "Oui, tout va bien" and
-secondary outline "Il y a un problème"; under them a muted line "Sans réponse,
-nous paierons Miora dans 3 jours."
-
-Screen 3 — seller wallet with the two balances, which MUST be unmistakable.
-Two large stacked cards. Card 1, muted with a clock icon: label "En attente de
-confirmation", amount "128 000 Ar", and a line "3 commandes livrées, en attente
-de la confirmation des clientes". Card 2, accent-colored with a check icon: label
-"Disponible au retrait", amount "347 000 Ar", and a full-width primary button
-"Retirer". Below the cards, a muted explanatory line "L'argent passe
-automatiquement en disponible 3 jours après la livraison."
-```
-
-### 5. Backend
-
-`POST /commandes/:id/confirmer` → libération *(motif `confirmation`)*.
-Travail `liberationAutomatique` → libération *(motif `automatique`)* à `liberable_le`.
-`POST /admin/litiges/:id/decision` → libération ou remboursement *(motif `arbitrage`)*.
-`GET /portefeuille` → les deux soldes, **dérivés du journal**.
-
-**Tests — RB2, jeu de scénarios complet :**
-- Les **quatre** chemins de libération produisent les bonnes écritures.
-- Litige ouvert → fonds **bloqués**, libération automatique **suspendue**.
-- Remboursement partiel → écritures cohérentes, somme des écritures = zéro par commande soldée.
-- **Réconciliation à 100 %** : sur 1 000 commandes générées avec tous les chemins, la somme des écritures par compte égale les soldes.
-- Tentative d'`UPDATE` sur `ecriture_financiere` → **rejetée par la base**.
-- Soldes recalculés depuis le journal = soldes stockés, sur un jeu de 10 000 écritures.
-- Double exécution du travail de libération → une seule libération.
-- Encaissement d'un vendeur non vérifié → refusé *(F0.6)*.
-
-### 6. Frontend
-
-Carte de séquestre à l'écran de confirmation **et** dans le suivi de commande. Les deux soldes du vendeur avec un contraste visuel fort et une explication de la bascule — c'est l'écran le plus sujet aux malentendus du produit.
-
-```issues
-feature: F4.4
-titre: Séquestre, fonds retenus par JP
-epic: "04"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F4.1]
-```
-```issues
-feature: F4.5
-titre: Libération à la confirmation de réception
-epic: "04"
-phase: P1
-prio: M
-etapes: [conception, design, backend, frontend]
-depend: [F4.4]
-```
-```issues
-feature: F4.6
-titre: Libération automatique après délai sans contestation
-epic: "04"
-phase: P1
-prio: M
-etapes: [conception, backend]
-depend: [F4.4]
-```
-
----
-
-## F4.3 — Paiement à la livraison ⚠️
-
-`P1 · M · complet` — **décision ouverte n° 1, la plus importante du lancement**
-
-### 1. Conception
-
-**Non prévu dans le deck d'origine, et probablement la fonctionnalité la plus déterminante du lancement.** Sans elle, une part importante de la demande est inaccessible ; avec elle, le séquestre perd son sens et le risque revient au vendeur.
-
-- **A** : « Payer à la réception » → commande créée sans paiement → paie en espèces au livreur ou au relais.
-- **V** : voit le mode sur le bordereau ; **elle porte le risque du refus à la livraison**, sauf mécanisme de couverture.
-- **L / PR** : encaisse, saisit le montant reçu, remet le colis. Les espèces sont reversées à JP à la réconciliation *(F11.5)*.
-
-**⚠️ À trancher avant de coder le paiement** — trois options à tester au pilote :
-(a) le réserver aux acheteuses ayant **déjà une commande honorée** ;
-(b) le limiter aux **points relais** uniquement, moins coûteux que le domicile ;
-(c) exiger un **acompte mobile money** couvrant les frais de livraison *(F4.12)*.
-
-**Recommandation de mise en œuvre** : coder les trois comme des **règles d'éligibilité paramétrables** *(R-O1)*, activables indépendamment. Le pilote tranchera par la mesure, pas par le débat — et le code ne sera pas à réécrire.
-
-**Ce que le paiement à la livraison change structurellement** : il n'y a pas de séquestre. La protection de l'acheteuse est intrinsèque (elle paie en recevant) ; celle du vendeur disparaît. Le refus à la livraison devient le risque principal, et il doit être **mesuré dès le premier jour** — c'est le chiffre qui décidera du maintien de l'option.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/paiement/
-├─ especes.ts            création sans paiement, encaissement terrain
-├─ eligibiliteEspeces.ts ← les trois règles, paramétrables
-apps/api/src/modules/livraison/encaissement.ts
-apps/terrain/src/features/encaissement/     app livreur et relais
-apps/admin/src/pages/finance/EspecesACollecter.tsx
-```
-
-### 3. Base de données
-
-Migration `..._f4_3_paiement_livraison` :
-
-```
-paiement.moyen inclut 'especes'
-colis + montant_a_encaisser int · montant_encaisse int null · encaisse_par_id null
-collecte_especes
-  id PK · porteur_id FK · porteur_type(livreur|relais)
-  montant_du · montant_reverse · statut · periode_debut · periode_fin
-```
-
-Paramètres d'éligibilité : `especes_actif`, `especes_requiert_commande_honoree`, `especes_relais_seulement`, `especes_acompte_frais_livraison`.
-
-### 4. Design
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen 1 — cash-on-delivery option in the payment choice list, three variants:
-(a) available: a row with a truck icon, "Payer à la réception", muted line
-"En espèces au livreur ou au point relais", and a radio;
-(b) restricted: the same row greyed with a padlock and the line "Disponible après
-votre première commande livrée";
-(c) relay-only: the row available but with the line "Uniquement en point relais".
-
-Screen 2 — courier app collection screen (apps/terrain).
-Vertical order: a delivery card with the buyer first name "Hanta", the address
-with its landmark "Analamahitsy — près de l'épicerie Tsara", and the phone number
-with a call icon; a large amount card "À encaisser : 55 000 Ar"; a numeric field
-"Montant reçu" pre-filled with 55 000 and a large numeric keypad; a photo capture
-row "Photo du colis remis"; a full-width primary button "Confirmer la remise".
-Produce a second frame for a refusal: a secondary red outline button "Refus à la
-livraison" opening a reason list "Cliente absente · Refuse le colis · Adresse
-introuvable · Montant contesté".
-
-Screen 3 — admin cash reconciliation table (desktop): rows per courier/relay with
-columns Porteur, Colis remis, Espèces encaissées, Déjà reversé, Solde dû, Dernier
-versement, and a highlighted total row; rows with a gap are flagged in amber.
-```
-
-### 5. Backend
-
-`POST /commandes/:id/paiement` avec `moyen: 'especes'` → commande `PAYEE` **sans** encaissement, `sequestre` non créé.
-`POST /colis/:id/encaissement` (app terrain) `{ montantEncaisse, preuve }` → écritures sur le compte `especes`.
-Réconciliation *(F11.5)* : rapprochement des espèces collectées et reversées.
-
-**Tests** : éligibilité selon les trois règles, activables indépendamment ; commande espèces → **aucun séquestre créé** ; montant encaissé différent du montant dû → écart signalé, **jamais absorbé** ; refus à la livraison → retour vendeur *(F5.7)*, commande annulée, mesure incrémentée ; solde dû par porteur exact ; taux de refus à la livraison remonté au tableau de bord *(F11.7)*.
-
-### 6. Frontend
-
-Option visible dans le choix de paiement avec son état d'éligibilité **expliqué** (jamais un simple grisé). App terrain avec pavé numérique large — le livreur saisit sous la pluie, d'une main.
-
-```issues
-feature: F4.3
-titre: Paiement à la livraison
-epic: "04"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F4.1, F5.5]
-```
-
----
-
-## F4.7 — Remboursement total ou partiel
-
-`P1 · M · complet` — **Règles** R-E7
-
-### 1. Conception
-Déclenché par : annulation acheteuse *(F3.8)*, refus vendeur *(F3.9)*, décision d'arbitrage *(F6.5)*, seuil de précommande non atteint *(F15.8, RB3)*, refus de vérification d'un particulier *(R-H10)*.
-
-Le remboursement passe par le prestataire d'origine et produit **des écritures inverses**, jamais une modification. Un remboursement partiel laisse le solde en séquestre ou le libère, selon la décision.
-
-**Idempotence** : un remboursement rejoué ne rembourse pas deux fois.
-
-### 2. Structure de code
-`modules/paiement/remboursement.ts` · `modules/sequestre/service.ts`.
-
-### 3. Base de données
-`sequestre.statut` inclut `rembourse` et `partiel`. `remboursement (id, paiement_id, montant, motif, reference_externe, cle_idempotence UQ, statut)`.
-
-### 4. Design
-Prompt Stitch : *refund status card in order tracking — a timeline with three steps "Remboursement demandé · En cours chez MVola · Reçu", the current step highlighted, an amount "55 000 Ar", a delay line "Sous 48 h en général", and a support link; plus a partial-refund variant showing "Remboursement partiel : 20 000 Ar sur 55 000 Ar" with a reason line "Article non conforme — accord trouvé".*
-
-### 5. Backend
-`POST /admin/remboursements` · déclenché automatiquement par les cinq cas ci-dessus.
-
-**Tests** : les cinq déclencheurs ; total et partiel ; rejeu idempotent → un seul remboursement ; écritures inverses cohérentes ; **somme des écritures d'une commande remboursée = 0** ; remboursement d'un paiement espèces (pas de prestataire) → procédure manuelle tracée.
-
-### 6. Frontend
-Suivi du remboursement dans la commande, avec délai annoncé — l'attente sans information est la principale source de contacts au support.
-
-```issues
-feature: F4.7
-titre: Remboursement total ou partiel
-epic: "04"
-phase: P1
-prio: M
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F4.4]
-```
-
----
-
-## F4.8 — Portefeuille vendeur et retrait
-
-`P1 · M · complet` — **Règles** R-E6, R-E8 · **⚠️ décision : rythme de retrait**
-
-### 1. Conception
-« Mon argent » → solde disponible → « Retirer » → vers son numéro mobile money **vérifié** *(F0.6)* → confirmation → reçu.
-
-**Le numéro de destination ne peut être que le numéro vérifié** au nom du titulaire de la pièce d'identité. C'est la règle qui empêche le détournement de compte de devenir un détournement d'argent.
-
-**⚠️ À trancher** — retrait à la demande ou versement automatique hebdomadaire ? Les frais mobile money par transaction plaident pour un regroupement ; la trésorerie de la vendeuse plaide pour l'instantané. **Hypothèse : retrait à la demande, gratuit une fois par semaine, payant au-delà.** À paramétrer *(R-O1)*, pas à coder en dur.
-
-Retraits **gelés** pendant une récupération de compte *(R-C14)*.
-
-### 2. Structure de code
-`modules/portefeuille/{service,retrait,routes}.ts` · `apps/mobile/src/features/argent/ecrans/{EcranMonArgent,EcranRetrait}.tsx`.
-
-### 3. Base de données
-`portefeuille`, `retrait` (CDC §3.3) avec `cle_idempotence UQ`. `portefeuille.retraits_geles bool` *(F0.3)*.
-
-### 4. Design
-**Prompt Stitch** — préambule commun, puis :
-```
-Screen — "Retirer mon argent".
-Vertical order: an available-balance header "Disponible : 347 000 Ar"; an amount
-field with a large "Ar" suffix and quick-pick chips "50 000 · 100 000 · Tout";
-a read-only destination card showing the operator logo, "MVola 034 •• ••• 67" and
-a green "Vérifié" chip, with a muted line "Les retraits ne peuvent aller que vers
-votre numéro vérifié"; a fees card showing "Frais : gratuit (1er retrait de la
-semaine)" in green, with a secondary line "Prochain retrait cette semaine :
-1 000 Ar"; a full-width primary button "Retirer 100 000 Ar".
-Produce a frozen variant: the button disabled, and an amber card reading
-"Retraits temporairement bloqués — vérification de compte en cours (dossier
-#R-204)" with a "Voir mon dossier" link.
-```
-
-### 5. Backend
-`GET /portefeuille` · `POST /portefeuille/retrait` **`Idempotency-Key` requis** · `GET /portefeuille/retraits`.
-
-**Tests** : retrait supérieur au disponible → refus ; destination différente du numéro vérifié → refus ; retraits gelés → refus avec motif ; frais appliqués selon le rythme paramétré ; rejeu idempotent → un seul retrait ; échec prestataire → **remise au solde disponible**, pas de perte ; écritures cohérentes.
-
-### 6. Frontend
-Écran « Mon argent » avec les deux soldes *(F4.4)*, historique, reçu téléchargeable.
-
-```issues
-feature: F4.8
-titre: Portefeuille vendeur et retrait vers mobile money
-epic: "04"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F4.4, F0.6]
 ```
 
 ---
@@ -518,11 +338,11 @@ depend: [F4.1]
 `P1 · M · complet` — **Règles** R-F1 à R-F4
 
 ### 1. Conception
-Facture avec numéro, date, articles, prix unitaires, **remise nommée** *(R-U8)*, frais de livraison, total, identité du vendeur vérifié, mention JP. Consultable et téléchargeable depuis la commande. Côté vendeur, la même facture **plus le détail de la commission**.
+Facture avec numéro, date, articles, prix unitaires, **remise nommée** *(R-U8)*, frais de livraison, total, identité de la boutique vérifiée, mention JP. Consultable et téléchargeable depuis la commande. Côté boutique, la même facture **plus le détail de la commission**.
 
-**La facture n'est pas un document administratif, c'est une preuve psychologique.** Elle doit être belle et partageable. C'est souvent le premier document commercial que la vendeuse aura jamais émis — et le premier objet qui prouve à l'acheteuse qu'elle n'a pas acheté à un inconnu sur Facebook.
+**La facture n'est pas un document administratif, c'est une preuve psychologique.** Elle doit être belle et partageable. C'est souvent le premier document commercial que la boutique aura jamais émis — et le premier objet qui prouve à l'acheteuse qu'elle n'a pas acheté à un inconnu sur Facebook.
 
-Horodatage **inaltérable** *(R-F1)*, numérotation continue, exportable pour la comptabilité du vendeur.
+Horodatage **inaltérable** *(R-F1)*, numérotation continue, exportable pour la comptabilité de la boutique.
 
 ### 2. Structure de code
 `modules/facture/{service,gabarit,pdf}.ts` · `apps/api/src/jobs/generationFacture.ts` · `apps/mobile/src/features/commandes/ecrans/EcranFacture.tsx`.
@@ -536,14 +356,15 @@ Horodatage **inaltérable** *(R-F1)*, numérotation continue, exportable pour la
 Screen — invoice PDF layout (A4 portrait, shown as a document preview).
 Header: the JP logo top-left, "FACTURE" top-right with the number "JP-2026-001042"
 and the date "12 août 2026".
-Two address blocks side by side: left "Vendeur — Miora Boutique" with a small
+Two address blocks side by side: left "Boutique — Miora Boutique" with a small
 "Vérifié par JP" badge and the shop identifiers; right "Cliente — Hanta R."
 with the delivery landmark only (no full personal address).
 A clean line-item table: Article, Taille, Qté, Prix unitaire, Total — two rows.
 A totals block right-aligned: "Sous-total 118 000 Ar", a green line "Promo Noël
 -20 % · -23 600 Ar", "Livraison 5 000 Ar", and "TOTAL PAYÉ 99 400 Ar" in a bold
 bordered box.
-Footer: the escrow sentence in small type, a payment line "Payé par MVola le
+Footer: the verified-shop line in small type ("Boutique vérifiée par JP"),
+a payment line "Payé par MVola le
 12 août 2026 à 19 h 42", and a light JP watermark.
 Produce a second variant, the seller's copy, identical but with an extra
 right-aligned block: "Commission JP 4 970 Ar" and "Montant net versé
@@ -551,9 +372,9 @@ right-aligned block: "Commission JP 4 970 Ar" and "Montant net versé
 ```
 
 ### 5. Backend
-Génération asynchrone à la confirmation de paiement, `GET /commandes/:id/facture`, `GET /vendeur/factures/export?periode=`.
+Génération asynchrone à la confirmation de paiement, `GET /commandes/:id/facture`, `GET /boutique/factures/export?periode=`.
 
-**Tests** : numérotation continue et unique sous concurrence ; montants **exactement** ceux de la commande ; remise nommée présente ; version vendeur avec commission ; **l'adresse personnelle complète n'y figure pas** *(RB8)* ; export multi-factures.
+**Tests** : numérotation continue et unique sous concurrence ; montants **exactement** ceux de la commande ; remise nommée présente ; version boutique avec commission ; **l'adresse personnelle complète n'y figure pas** *(RB8)* ; export multi-factures.
 
 ### 6. Frontend
 Aperçu dans l'app, téléchargement, partage. Consultable **hors ligne** une fois téléchargée *(CDC §10.3)*.
@@ -596,45 +417,17 @@ depend: [F4.1]
 
 ---
 
-## F4.9 — Relevé des commissions prélevées
-
-`P1 · S · moyen` — **Règles** R-G1, R-G2
-
-**Conception** — le vendeur voit la commission **avant** de mettre en ligne, et sur chaque commande, en clair : *« Vente 50 000 Ar — commission 2 500 Ar — vous recevez 47 500 Ar »*. **Aucune surprise, jamais** : une commission découverte après coup est la première cause de désengagement.
-
-Relevé par période, exportable, avec le détail par commande.
-
-**Base de données** — `ligne_commande.commission_jp` (déjà là), écritures sur le compte `commission_jp`.
-
-**Backend** — `GET /vendeur/commissions?periode=`, `GET /vendeur/commissions/export`.
-
-**Design** — Prompt Stitch : *commissions statement screen with a period selector "Août 2026", a summary card "Ventes 1 240 000 Ar · Commissions 62 000 Ar · Net 1 178 000 Ar", a per-order list with three columns (order, sale, commission), and an "Exporter" button; plus the inline commission preview shown before publishing an article: a small card "Si vous vendez à 50 000 Ar, vous recevrez 47 500 Ar".*
-
-**Tests** : commission affichée = commission prélevée ; aperçu avant publication cohérent avec le barème par catégorie *(F10.2)* ; export complet.
-
-```issues
-feature: F4.9
-titre: Relevé des commissions prélevées
-epic: "04"
-phase: P1
-prio: S
-etapes: [conception, design, backend, frontend]
-depend: [F10.1]
-```
-
----
-
 ## F4.13 — Historique de tous les mouvements
 
-`P1 · S · moyen`
+`P1 · S · moyen` — **Décision** `DP-07`
 
-**Conception** — journal lisible de tous les mouvements du portefeuille : ventes, commissions, remboursements, retraits, crédits d'affiliation. **Dérivé du journal financier**, jamais une table parallèle.
+**Conception** — journal lisible de **tous les encaissements reçus** : ventes, parts versées aux créatrices *(`DP-09`)*, prélèvements d'abonnement *(`DP-08`)*. **Ce n'est plus un relevé de portefeuille** — JP ne tient aucun solde *(`DP-07`)* — **c'est une trace**, et c'est précisément ce sur quoi repose la nouvelle promesse.
 
-**Backend** — `GET /portefeuille/mouvements?curseur=`, projection lisible depuis `ecriture_financiere`.
+**Backend** — `GET /boutique/mouvements?curseur=`, projection lisible depuis `ecriture_financiere`.
 
-**Design** — Prompt Stitch : *wallet movements list with dated rows, each with an icon, a label ("Vente #1042", "Commission JP", "Retrait MVola", "Remboursement #1038"), and a signed amount in green or red; grouped by day with daily subtotals; a filter chip row "Tout · Ventes · Retraits · Remboursements".*
+**Design** — Prompt Stitch : *movements list with dated rows, each with an icon, a label ("Vente #1042", "Part créatrice — Ony", "Abonnement — août"), and a signed amount. No running balance anywhere: JP holds no funds.*
 
-**Tests** : somme des mouvements affichés = solde ; pagination stable ; libellés traduits.
+**Tests** : chaque ligne correspond à une écriture réelle ; **aucun solde affiché** ; pagination stable par curseur ; libellés traduits.
 
 ```issues
 feature: F4.13
@@ -648,26 +441,3 @@ depend: [F4.8]
 
 ---
 
-## F4.12 — Acompte plus solde à la livraison ⚠️
-
-`P2 · S · cadre`
-
-**Conception** — variante de `F4.3` : un acompte mobile money couvrant au moins les frais de livraison, le solde en espèces à la remise. C'est l'option (c) de la décision sur le paiement à la livraison, et **la plus équilibrée** : elle couvre le coût logistique en cas de refus, tout en gardant la barrière d'entrée basse.
-
-**Impact base de données** — deux `paiement` rattachés à une même commande (`acompte` puis `solde`), `commande.montant_acompte`.
-
-**Point d'attention** — deux paiements sur une commande complexifie le séquestre, le remboursement et la facture. À ne pas ouvrir avant que `F4.3` ait été mesuré au pilote.
-
-```issues
-feature: F4.12
-titre: Acompte plus solde à la livraison
-epic: "04"
-phase: P2
-prio: S
-etapes: [conception, bdd, backend, frontend]
-depend: [F4.3]
-```
-
----
-
-*Épique suivante : [EP05-livraison](EP05-livraison.md).*

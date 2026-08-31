@@ -1,168 +1,182 @@
-# EP06 — Confiance, avis et litiges
+# EP06 — Confiance, avis et signalements
 
-> 10 fonctionnalités · vague 2 · module `litige`.
+> 12 fonctionnalités · **vague 1** · module `confiance`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit détaillé : [EP00-identite.md](EP00-identite.md).
+> **Amont** : [`JP_DECISIONS_PRODUIT.md`](../docs/JP_DECISIONS_PRODUIT.md) — `DP-05`, `DP-07`.
 
-**L'antidote au problème que le produit existe pour résoudre.** Le séquestre protège l'argent ; le litige est ce qui se passe quand la protection doit s'exercer.
+> ### Cette épique est devenue le cœur du produit
+>
+> Le séquestre protégeait l'acheteuse ; **il a disparu** *(`DP-07`)*. Il n'y a
+> plus non plus d'arbitre humain *(`DP-05`)*, ni de preuve de remise par un tiers
+> *(`DP-04`)*. **Ce qui protège l'acheteuse tient désormais entièrement ici** :
+> la boutique vérifiée, les avis, le score, et la suspension automatique.
+>
+> **Conséquence de périmètre, non négociable** : `F6.1` *(avis)* et `F6.2`
+> *(score)* passent de **P2 à P1**, et `F6.8` *(sanctions)* de **S à M**. Ils
+> étaient un confort de fidélisation ; ils sont devenus le **mécanisme de
+> protection lui-même**. L'épique entière passe en **vague 1**.
 
-**Un point culturel qui détermine toute la conception** : le litige se signale **à JP, jamais en face à face avec le vendeur**. Cela évite la confrontation, socialement coûteuse, qui fait que les gens abandonnent au lieu de réclamer. C'est aussi ce qui rend le produit acceptable à quelqu'un qui a déjà été arnaqué et n'a pas envie de se battre.
+**Le point culturel qui détermine toute la conception, inchangé** : le problème se signale **à JP, jamais en face à face avec la boutique**. La confrontation directe est socialement coûteuse — c'est ce qui fait que les gens abandonnent au lieu de réclamer, et c'est ce qui rend le produit acceptable à quelqu'un qui a déjà été arnaqué.
 
-**Critère de recette bloquant** : `RB4` — **100 % des litiges reçoivent une décision motivée dans le délai**.
+**Mais JP ne tranche plus, et ne détient plus l'argent. Le signalement ne rend rien : il compte.**
+
+**Critère de recette bloquant** : `RB4` — **100 % des sanctions automatiques sont écrites, motivées et notifiées aux deux parties** *(`R-T2`)*.
 
 | ID | Fonctionnalité | Phase | Prio | Détail |
 |---|---|---|---|---|
-| F6.3 | Signalement d'un litige | P1 | M | complet |
-| F6.4 | Fil de litige avec pièces jointes | P1 | M | complet |
-| F6.5 | Arbitrage par l'équipe JP | P1 | M | complet |
+| F6.3 | Signalement d'un problème sur une commande | P1 | M | complet |
+| F6.4 | Fil de discussion avec pièces jointes | P1 | M | complet |
 | F6.6 | Historique consultable des deux côtés | P1 | M | complet |
+| **F6.1** | Avis vérifiés | **P1** | M | complet |
+| **F6.2** | Score de confiance boutique | **P1** | M | complet |
+| **F6.8** | **Sanctions automatiques** | P1 | **M** | complet |
 | F6.7 | Signalement d'un contenu ou d'un utilisateur | P1 | S | moyen |
-| F6.8 | Sanctions vendeur | P1 | S | moyen |
-| F6.1 | Avis vérifiés | P2 | M | complet |
-| F6.2 | Score de confiance vendeur | P2 | M | complet |
-| F6.9 | Réponse publique du vendeur à un avis | P2 | C | cadre |
+| F6.9 | Réponse publique de la boutique à un avis | P2 | C | cadre |
 | F6.10 | Avis avec photo portée et morphologie | P2 | S | moyen |
+| F6.11 | Signalement « réaction cutanée », traité en priorité | P1 | M | complet |
+| F6.12 | Pas de retour sur un cosmétique entamé | P1 | M | moyen |
+| F6.13 | Signalement de contrefaçon | P1 | S | moyen |
+| ~~F6.5~~ | ~~Arbitrage par l'équipe JP~~ ❌ *(`DP-05`, `DP-07`)* | — | — | — |
 
 ---
 
-## F6.3 / F6.4 / F6.5 / F6.6 — Le litige, de l'ouverture à la décision
+## F6.3 / F6.4 / F6.6 — Le signalement, de l'ouverture à la résolution
 
-`P1 · M · complet` — **Règles** R-T1 à R-T6 · **Recette RB4** · **Dépend de** F4.4
+`P1 · M · complet` — **Règles** R-T1, R-T2, R-T4, R-T8, R-T9 · **Recette RB4** · **Décisions** `DP-05`, `DP-07`
 
 ### 1. Conception
 
-**A** : commande → « Il y a un problème » → motif (non reçu / abîmé / pas conforme / mauvaise taille / autre) → photos → description → envoi. **Les fonds restent bloqués** *(F4.4)*. Elle reçoit un numéro de dossier.
+**A** : commande → « Il y a un problème » → motif *(non reçu / abîmé / pas conforme / mauvaise taille / autre)* → photos → description → **le dossier est ouvert et inscrit au compteur de la boutique** *(`R-T8`)*.
 
-**V** : notifiée, voit le motif et les photos, répond **dans le même fil**, propose une solution (renvoi, remboursement partiel, geste commercial).
+**B** : notifiée, voit le motif et les photos, répond **dans le même fil**, propose une solution — renvoi, remboursement de sa propre initiative, geste commercial. **`SYS` n'exécute aucun mouvement d'argent** *(`R-T3`)*.
 
-**A / V** : si un accord est trouvé dans le fil, **le dossier se clôt sans arbitrage**. C'est le chemin le plus souhaitable : rapide, peu coûteux, et il laisse les deux parties en état de refaire affaire.
+**A / B** : accord trouvé dans le fil → **le dossier se clôt et le compteur est décrémenté**.
 
-**OP** : sans accord sous 48 h → arbitrage. Il voit **l'historique complet des deux côtés** *(F6.6)*, les statuts de livraison, la preuve de remise, les échanges → tranche → **décision écrite, motivée, notifiée aux deux** *(R-T2)* → exécute le remboursement ou la libération des fonds.
+**Sans accord** : ⚠️ **il n'y a pas d'escalade, il n'y a plus d'arbitre.** Le dossier **reste ouvert et pèse durablement sur le score**. Au-delà d'un seuil, `SYS` **suspend automatiquement la mise en vente** *(`F6.8`, seuil non arrêté — `PO-12`)*.
 
-**Toutes les décisions sont archivées** et alimentent les scores *(F6.2)*.
-
-**Ce qui rend l'arbitrage possible, ce sont les preuves déjà collectées ailleurs** : événements de livraison horodatés et attribués *(F5.2)*, preuve de remise photo ou code *(F5.5)*, journal financier *(F4.4)*, chat du direct conservé *(F2.10)*. L'épique 6 ne collecte presque rien : elle **assemble**. C'est pourquoi ces preuves doivent être fiables dès la phase 1.
-
-**Le délai est un engagement, pas une intention** *(RB4)* : la file d'arbitrage doit rendre visible l'âge de chaque dossier, et un dossier qui approche du délai doit remonter en tête.
+> ### Le déplacement de conception à retenir
+>
+> `dossier.ts` assemblait les preuves **pour un arbitre**. Il les assemble
+> désormais **pour les deux parties** *(`R-T1`)* : événements de livraison
+> horodatés et attribués, facture, historique des deux côtés. **C'est ce qui rend
+> l'accord possible sans tiers** — et c'est aussi ce que JP fournit quand le
+> recours de l'acheteuse est externe *(`DP-07`)*.
+>
+> Le travail d'assemblage ne disparaît donc pas. **Son destinataire change**, et
+> avec lui l'écran : plus une console d'instruction, **un fil lisible par deux
+> personnes qui ne se font pas confiance**.
 
 ### 2. Structure de code
 
 ```
-apps/api/src/modules/litige/
-├─ routes.ts        POST /commandes/:id/litige · POST /litiges/:id/messages
-│                   POST /admin/litiges/:id/decision
-├─ service.ts       ouvrir() · repondre() · accorder() · arbitrer()
-├─ machine.ts       ouvert → en_discussion → arbitrage → resolu | clos
-├─ dossier.ts       ← assemblage des preuves de tous les modules
-├─ execution.ts     applique la décision : remboursement ou libération
+apps/api/src/modules/confiance/
+├─ routes.ts        POST /commandes/:id/signalement · POST /signalements/:id/messages
+├─ service.ts       ouvrir() · repondre() · proposer() · resoudre()
+├─ machine.ts       ouvert → en_discussion → resolu
+├─ dossier.ts       assemblage des preuves, POUR LES DEUX PARTIES
+├─ compteur.ts      effet sur score_confiance et seuil de suspension (R-T8)
 └─ *.test.ts
-apps/api/src/jobs/escaladeLitige.ts        48 h sans accord → arbitrage
-apps/mobile/src/features/litige/
-├─ ecrans/{EcranOuvertureLitige,EcranFilLitige,EcranDecision}.tsx
+apps/api/src/jobs/evalueSeuilSignalements.ts     suspension automatique
+apps/mobile/src/features/signalement/
+├─ ecrans/{EcranOuverture,EcranFil}.tsx
 └─ composants/{SelecteurMotif,AjoutPhotos,PropositionSolution}.tsx
-apps/admin/src/pages/litiges/{File,Dossier,Decision}.tsx
 ```
 
-`dossier.ts` est le point intéressant : il lit les autres modules **en lecture seule** pour composer une vue d'instruction complète. C'est le seul endroit du dépôt où un module lit largement chez les autres, et c'est assumé.
+**Trois fichiers disparaissent** *(`DP-05`)* : `execution.ts` *(appliquait la décision : remboursement ou libération)*, `jobs/escaladeLitige.ts` *(48 h → arbitrage)*, et tout `apps/admin/src/pages/litiges/`.
 
 ### 3. Base de données
 
-Migration `..._f6_3_litige` — `litige`, `message_litige` (CDC §3.10).
+Migration `..._f6_3_signalement` — `signalement_commande`, `message_litige`.
 
 ```sql
-CREATE INDEX litige_file ON litige (statut, cree_le);
-CREATE INDEX litige_par_commande ON litige (commande_id);
-ALTER TABLE litige ADD CONSTRAINT decision_motivee
-  CHECK (statut <> 'resolu' OR (decision_texte IS NOT NULL AND decide_par_id IS NOT NULL));
+CREATE INDEX signalement_par_boutique ON signalement_commande (boutique_id, compte_dans_le_score);
+CREATE INDEX signalement_par_commande ON signalement_commande (commande_id);
+ALTER TABLE signalement_commande ADD CONSTRAINT compteur_coherent
+  CHECK (compte_dans_le_score = (statut <> 'resolu'));
 ```
 
-**La contrainte `decision_motivee` est la traduction de RB4 en base** : un litige ne peut pas être marqué résolu sans décision écrite et sans décideur identifié. La base refuse la clôture silencieuse.
+**`compteur_coherent` remplace `decision_motivee`.** L'ancienne contrainte traduisait `RB4` — *« pas de clôture silencieuse »* — en interdisant un litige résolu sans décision écrite. **Il n'y a plus de décision écrite, il n'y a plus d'arbitre.** Ce que la base garantit désormais, c'est qu'**un signalement non résolu pèse, toujours** : on ne peut pas le faire cesser de compter sans le résoudre.
+
+`RB4` se déplace sur `sanction.motif_texte` *(`F6.8`)*.
 
 ### 4. Design
 
 **Prompt Stitch** — préambule commun de [PLAN_SOCLE §8](PLAN_SOCLE.md), puis :
 
 ```
-Screen 1 — "Il y a un problème" (buyer, dispute opening).
-Vertical order: back arrow, title "Que s'est-il passé ?"; a reassurance card in
-green with a shield icon reading "Votre argent est toujours bloqué chez JP. Nous
-ne payons la vendeuse qu'une fois le problème réglé."; five radio rows with icons:
-"Je n'ai pas reçu mon colis", "L'article est abîmé", "Ce n'est pas ce que j'ai
-commandé", "La taille ne va pas", "Autre"; a photo area with two filled thumbnails
-and a dashed "+ Ajouter une photo" tile and a helper "Les photos aident beaucoup";
-a multiline description field with placeholder "Décrivez le problème en quelques
-mots"; a full-width primary button "Envoyer mon signalement"; a muted footer
-"Vous n'aurez pas à discuter directement avec la vendeuse. JP s'en occupe."
+Screen 1 — "Il y a un problème" (buyer).
+Vertical order: back arrow, title "Que s'est-il passé ?"; an HONEST information
+card in neutral grey with an info icon reading "JP ne rembourse pas. Votre
+signalement est enregistré et compte dans la note publique de la boutique." —
+never a reassurance about held money; five radio rows with icons: "Je n'ai pas
+reçu mon colis", "L'article est abîmé", "Ce n'est pas ce que j'ai commandé",
+"La taille ne va pas", "Autre"; a photo area with two filled thumbnails and a
+dashed "+ Ajouter une photo" tile and a helper "Les photos aident beaucoup";
+a multiline description field; a full-width primary button "Envoyer mon
+signalement"; a muted footer "Vous n'aurez pas à discuter en face à face."
 
-Screen 2 — dispute thread (shared by buyer and seller).
-Top: a case header card with "Dossier #L-204", a status chip "En discussion", the
-order row, and a countdown line "Arbitrage JP dans 41 h si aucun accord".
-A message thread: buyer messages left-aligned with photo attachments, seller
-messages right-aligned, and grey system rows in the middle ("Litige ouvert —
-14 août 09 h 12", "JP a été notifié").
-A seller proposal appears as a distinct bordered card inside the thread:
-"Proposition de Miora — Remboursement partiel de 20 000 Ar" with two buttons
-"J'accepte" and "Je refuse".
+Screen 2 — signal thread (shared by buyer and shop).
+Top: a case header card with "Dossier #S-204", a status chip "En discussion",
+the order row, and a line "Ce signalement compte dans la note de la boutique
+tant qu'il n'est pas résolu." — no countdown, no arbitration promise.
+A message thread: buyer messages left-aligned with photo attachments, shop
+messages right-aligned, grey system rows in the middle.
+A shop proposal appears as a distinct bordered card: "Proposition de Miora —
+Remboursement de 20 000 Ar, envoyé par MVola" with two buttons "C'est réglé"
+and "Pas encore". A small muted line under it: "Le remboursement est fait par
+la boutique, pas par JP."
 Bottom: a compose row with a camera icon.
 
-Screen 3 — JP decision (both parties).
-A formal card: a scales icon, title "Décision de JP", the outcome in bold
-"Remboursement intégral de 55 000 Ar", then a section "Motif" with the written
-reasoning in full, then "Preuves examinées" as a checklist ("Photos de
-l'acheteuse", "Preuve de remise du livreur", "Historique de livraison",
-"Échanges du dossier"), then the date and "Décision rendue par l'équipe JP".
-A primary button "Voir mon remboursement".
-
-Screen 4 — admin dispute queue (desktop): a table sorted by age with columns
-Dossier, Âge (with a red chip past 40 h), Motif, Montant, Acheteuse, Boutique,
-Statut; and a side panel showing the assembled evidence dossier: delivery timeline,
-proof-of-delivery photo, financial ledger extract, thread transcript, and the two
-parties' history — plus a decision form with a required reasoning field and two
-buttons "Rembourser l'acheteuse" and "Libérer les fonds au vendeur".
+Screen 3 — shared evidence panel, available to BOTH parties.
+An expandable section inside the thread titled "Ce que JP a enregistré": a
+delivery timeline with who advanced each step, the invoice, the payment trace,
+and both parties' history. A footer line: "Vous pouvez utiliser ces éléments
+en dehors de JP."
 ```
+
+**L'écran 3 est le remplaçant direct de la console d'arbitrage.** Les mêmes preuves, montrées aux parties au lieu d'un agent.
 
 ### 5. Backend
 
 | Route | Notes |
 |---|---|
-| `POST /commandes/:id/litige` | motif, photos, description → fonds bloqués, numéro de dossier |
-| `GET /litiges/:id` | fil, visible des deux parties |
-| `POST /litiges/:id/messages` | texte + pièces jointes |
-| `POST /litiges/:id/proposition` | vendeur propose une solution |
-| `POST /litiges/:id/accord` | acheteuse accepte → clôture **sans arbitrage** |
-| `GET /admin/litiges` | file par âge, urgents en tête |
-| `GET /admin/litiges/:id/dossier` | assemblage des preuves |
-| `POST /admin/litiges/:id/decision` | **motif obligatoire**, exécution automatique |
+| `POST /commandes/:id/signalement` | motif, photos, description → dossier ouvert, **compteur incrémenté** |
+| `GET /signalements/:id` | fil, visible des deux parties |
+| `POST /signalements/:id/messages` | texte + pièces jointes |
+| `POST /signalements/:id/proposition` | la boutique propose une solution |
+| `POST /signalements/:id/resoudre` | l'acheteuse confirme → clôture, **compteur décrémenté** |
+| `GET /signalements/:id/dossier` | assemblage des preuves, **pour les deux parties** |
 
-Travail `escaladeLitige` : 48 h sans accord → `arbitrage`, notification aux deux, entrée en file.
+Travail `evalueSeuilSignalements` : au-delà du seuil de dossiers non résolus → `boutique.vente_gelee = true`, sanction écrite et notifiée *(`R-T8`, `RB4`)*.
 
 **Tests**
-- Ouverture → **fonds bloqués**, libération automatique **suspendue** *(F4.6)*.
-- Accord dans le fil → clôture sans arbitrage, exécution de la solution convenue.
-- 48 h sans accord → escalade automatique, une seule fois.
-- Décision sans motif → **refusée par la base** *(contrainte `decision_motivee`)*.
-- Décision « rembourser » → remboursement exécuté et écritures cohérentes ; « libérer » → séquestre libéré.
-- Dossier d'instruction complet : les cinq sources de preuve présentes.
-- Historique identique des deux côtés *(F6.6)* : comparaison des deux réponses.
-- **RB4** : sur un jeu de 50 litiges simulés, 100 % ont une décision écrite dans le délai.
+- Ouverture → **compteur incrémenté**, score recalculé. **Aucun fonds bloqué : il n'y en a plus.**
+- Résolution → compteur décrémenté, score recalculé.
+- **On ne peut pas mettre `compte_dans_le_score = false` sans résoudre** *(contrainte de base)*.
+- Seuil atteint → **suspension automatique de la mise en vente**, sanction écrite et motivée.
+- **La boutique reste accessible** : catalogue visible, commandes en cours menées à terme *(`R-B4`)*.
+- Dossier de preuves : les quatre sources présentes, **et identiques pour les deux parties** *(F6.6)*.
+- **RB4** : sur 50 sanctions automatiques simulées, 100 % portent un motif écrit et une notification aux deux parties.
+- **Aucun écran ne laisse croire que JP rembourse** *(RB12)*.
 
 ### 6. Frontend
 
-Le fil de litige est **le même écran** pour l'acheteuse et le vendeur, avec des messages alignés différemment. Deux écrans distincts divergeraient et produiraient des malentendus sur ce qui a été dit.
+Le fil est **le même écran** pour l'acheteuse et la boutique, avec des messages alignés différemment.
 
-La phrase de réassurance sur les fonds bloqués est présente à l'ouverture **et** dans le fil : c'est l'information dont l'acheteuse a besoin pour ne pas paniquer.
+**La phrase de réassurance sur les fonds bloqués est supprimée partout.** Elle est remplacée par une phrase honnête : *« JP ne rembourse pas. Votre signalement compte dans la note publique de la boutique. »* Mentir ici — sur le seul sujet où le produit avait promis de ne pas mentir — coûterait plus cher que la vérité.
 
 ```issues
 feature: F6.3
-titre: Signalement d'un litige sur une commande
+titre: Signalement d'un problème sur une commande
 epic: "06"
 phase: P1
 prio: M
 etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F4.4]
+depend: [F3.7]
 ```
 ```issues
 feature: F6.4
-titre: Fil de litige avec pièces jointes
+titre: Fil de discussion avec pièces jointes
 epic: "06"
 phase: P1
 prio: M
@@ -170,22 +184,13 @@ etapes: [conception, bdd, design, backend, frontend]
 depend: [F6.3]
 ```
 ```issues
-feature: F6.5
-titre: Arbitrage par l'équipe JP, décision tracée
-epic: "06"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F6.4]
-```
-```issues
 feature: F6.6
-titre: Historique complet consultable des deux côtés
+titre: Historique et preuves consultables des deux côtés
 epic: "06"
 phase: P1
 prio: M
 etapes: [conception, backend, frontend]
-depend: [F6.5]
+depend: [F6.4]
 ```
 
 ---
@@ -223,7 +228,7 @@ apps/mobile/src/features/avis/
 Migration `..._f6_1_avis` — `avis` (CDC §3.10), unicité `(commande_id)`.
 
 ```sql
-CREATE INDEX avis_par_vendeur ON avis (vendeur_id, cree_le DESC);
+CREATE INDEX avis_par_boutique ON avis (boutique_id, cree_le DESC);
 CREATE INDEX avis_par_article ON avis (article_id, conformite_taille);
 ALTER TABLE avis ADD CONSTRAINT note_valide CHECK (note BETWEEN 1 AND 5);
 ```
@@ -259,7 +264,7 @@ an indented seller reply with the shop avatar and a "Réponse de Miora" label.
 ### 5. Backend
 
 `POST /commandes/:id/avis` — refusé si la commande n'est pas `CONFIRMEE`, refusé si un avis existe déjà.
-`GET /articles/:id/avis?morphologie=proche` · `GET /vendeurs/:id/avis`.
+`GET /articles/:id/avis?morphologie=proche` · `GET /boutiques/:id/avis`.
 Notification 2 jours après confirmation, **une seule**.
 
 **Tests** : avis impossible sans commande confirmée *(R-T7)* ; un seul avis par commande ; note hors bornes refusée ; filtre par morphologie renvoie les avis proches et **pas les autres** ; agrégat de conformité de taille exact ; avis généré par un unboxing correctement rattaché ; morphologie figée au moment de l'avis.
@@ -289,22 +294,22 @@ depend: [F6.1]
 
 ---
 
-## F6.2 — Score de confiance vendeur, public
+## F6.2 — Score de confiance boutique, public
 
 `P2 · M · complet` — **Règles** R-T9, R-T10
 
 ### 1. Conception
 
-**Calculé sur** : ventes honorées, délai d'expédition **réel** contre annoncé *(F5.9)*, taux d'annulation vendeur *(F3.9)*, taux de litige, issue des litiges *(F6.5)*.
+**Calculé sur** : ventes honorées, délai d'expédition **réel** contre annoncé *(F5.9)*, taux d'annulation boutique *(F3.9)*, taux de litige, issue des litiges *(F6.5)*.
 
 - **A** : voit le score sur la vitrine et sur chaque direct. **C'est ce qui remplace la recommandation d'une amie**, donc c'est le mécanisme central de croissance du produit.
 - **V** : voit son score, **et surtout ce qui le fait monter ou baisser**, avec des conseils concrets (« expédiez sous 24 h pour gagner 0,2 »).
 
-**Le score doit être un objectif motivant, pas une sanction opaque** *(R-T10)*. Cette phrase a une conséquence de conception directe : le vendeur doit voir la **décomposition** de son score et l'effet chiffré de chaque action. Un score global sans explication produit du ressentiment et aucune amélioration.
+**Le score doit être un objectif motivant, pas une sanction opaque** *(R-T10)*. Cette phrase a une conséquence de conception directe : la boutique doit voir la **décomposition** de son score et l'effet chiffré de chaque action. Un score global sans explication produit du ressentiment et aucune amélioration.
 
 **Deux garde-fous.**
-- **Volume minimal** avant affichage public : un vendeur à 2 ventes dont une contestée aurait un score catastrophique et statistiquement vide. En dessous du seuil, afficher « Nouveau vendeur » plutôt qu'un score.
-- **Fenêtre glissante** : un incident d'il y a un an ne doit pas peser autant qu'un incident de la semaine. Sinon le score devient une condamnation, et le vendeur cesse d'essayer de le remonter.
+- **Volume minimal** avant affichage public : une boutique à 2 ventes dont une contestée aurait un score catastrophique et statistiquement vide. En dessous du seuil, afficher « Nouveau boutique » plutôt qu'un score.
+- **Fenêtre glissante** : un incident d'il y a un an ne doit pas peser autant qu'un incident de la semaine. Sinon le score devient une condamnation, et la boutique cesse d'essayer de le remonter.
 
 ### 2. Structure de code
 
@@ -323,14 +328,14 @@ Migration `..._f6_2_score` :
 
 ```
 score_confiance
-  vendeur_id PK/FK · score numeric(3,1)
+  boutique_id PK/FK · score numeric(3,1)
   nb_ventes_honorees · delai_expedition_reel_h · taux_annulation
   taux_litige · taux_litige_perdu
   decomposition jsonb          -- contribution de chaque composante
   calcule_le
 ```
 
-`decomposition` est stockée parce que l'affichage vendeur en a besoin et que le recalculer à la volée obligerait à dupliquer la formule côté lecture.
+`decomposition` est stockée parce que l'affichage boutique en a besoin et que le recalculer à la volée obligerait à dupliquer la formule côté lecture.
 
 ### 4. Design
 
@@ -340,7 +345,7 @@ score_confiance
 Screen 1 — public trust score, shown as a compact component in three placements:
 on a shop header ("4,8" with five small stars and "126 ventes"), on a live stream
 top bar (a small "4,8 ★" pill), and on a product page seller row. Plus a
-"Nouveau vendeur" variant with a neutral chip and no number, and a tap-through
+"Nouveau boutique" variant with a neutral chip and no number, and a tap-through
 sheet explaining what the score measures in four plain lines.
 
 Screen 2 — "Mon score" (seller), the motivating version.
@@ -357,19 +362,19 @@ The tone must be coaching, never punitive.
 
 ### 5. Backend
 
-`GET /vendeurs/:id/score` (public, avec seuil de volume) · `GET /vendeur/mon-score` (avec décomposition et conseils).
+`GET /boutiques/:id/score` (public, avec seuil de volume) · `GET /boutique/mon-score` (avec décomposition et conseils).
 
 Recalcul quotidien et sur événement (`commande.confirmee`, `litige.resolu`, annulation).
 
-**Tests** : formule exacte sur des cas de référence ; fenêtre glissante appliquée ; sous le seuil de volume → « Nouveau vendeur », **pas de score** ; décomposition dont la somme égale le score ; conseils cohérents avec les composantes les plus faibles ; score public identique au score vendeur (pas deux calculs).
+**Tests** : formule exacte sur des cas de référence ; fenêtre glissante appliquée ; sous le seuil de volume → « Nouveau boutique », **pas de score** ; décomposition dont la somme égale le score ; conseils cohérents avec les composantes les plus faibles ; score public identique au score boutique (pas deux calculs).
 
 ### 6. Frontend
 
-Composant partagé pour l'affichage public. Écran vendeur avec décomposition et actions concrètes — c'est la seule version du score qui fasse changer un comportement.
+Composant partagé pour l'affichage public. Écran boutique avec décomposition et actions concrètes — c'est la seule version du score qui fasse changer un comportement.
 
 ```issues
 feature: F6.2
-titre: Score de confiance vendeur, public
+titre: Score de confiance boutique, public
 epic: "06"
 phase: P2
 prio: M
@@ -385,7 +390,7 @@ depend: [F6.1, F6.5]
 
 **Conception** — appui long → « Signaler » → motif en liste courte → envoyé. **Deux niveaux** *(R-X4)* : ordinaire (file normale) et **urgence** — harcèlement, menace, contenu sexuel non consenti, mineur — qui passe en tête de file avec un engagement de traitement court.
 
-Distinct du litige : le litige porte sur une **transaction**, le signalement sur un **contenu ou une personne**. Deux files, deux métiers, deux équipes *(MO* et *OP)*.
+Distinct du signalement de commande *(`F6.3`)* : celui-ci porte sur une **transaction**, celui-là sur un **contenu ou une personne**. Deux tables, deux métiers, deux équipes *(MO* et *OP)*.
 
 **Base de données** — `signalement` (CDC §3.10), index `(niveau, statut, cree_le)` pour l'urgence en tête.
 
@@ -407,51 +412,69 @@ depend: []
 
 ---
 
-## F6.8 — Sanctions vendeur
+## F6.8 — Sanctions boutique
 
 `P1 · S · moyen` — **Règles** R-X6
 
-**Conception** — échelle graduée : avertissement, **gel des encaissements**, suspension. Chaque sanction est écrite, motivée, horodatée, et **contestable** *(F19.9)*.
+**Conception** — échelle graduée, **appliquée par `SYS`** *(`DP-05`)* : avertissement, **gel de la mise en vente**, suspension. Chaque sanction est **écrite, motivée, horodatée et notifiée aux deux parties** *(`R-T2`, `RB4`)*.
 
-Le gel des encaissements est la sanction la plus utile et la plus délicate : elle protège les acheteuses futures sans priver le vendeur de son argent déjà gagné. À distinguer soigneusement du gel de retrait *(F0.3)*, qui relève d'un doute d'identité.
+**Le gel porte désormais sur la mise en vente, plus sur l'encaissement** *(`DP-07`)* : l'argent partant directement à la boutique au moment du paiement, il n'y a plus rien à geler côté argent. **Geler la vente protège les acheteuses futures sans toucher aux commandes en cours**, qui vont à leur terme *(`R-B4`)*.
 
-**Une sanction sans voie de recours est vécue comme arbitraire et fait partir les meilleurs profils** — y compris les vendeurs sérieux sanctionnés par erreur.
+**Le déclencheur principal est le compteur de signalements non résolus** *(`R-T8`, `F6.3`)*. ⚠️ **Le seuil n'est pas arrêté** *(`PO-12`)* — et c'est **le paramètre le plus sensible du produit** depuis `DP-07` : trop bas, une boutique honnête est coupée par deux clientes mécontentes ; trop haut, la protection est décorative.
 
-**Base de données** — `sanction` (CDC §3.10), `profil_vendeur.encaissement_gele bool`.
+> ### ⚠️ La voie de recours disparaît avec l'instructeur
+>
+> Le texte de cette fonctionnalité disait : *« une sanction sans voie de recours
+> est vécue comme arbitraire et fait partir les meilleurs profils »*. **C'est
+> toujours vrai, et il n'y a plus de parade** *(`DP-05`)* : il n'existe personne
+> à qui écrire.
+>
+> **La seule atténuation possible** : une sanction automatique ne peut être levée
+> que par **une nouvelle évaluation automatique**. Elle doit donc être
+> **recalculable**, jamais un état figé — un signalement résolu décrémente le
+> compteur, et la suspension tombe d'elle-même au prochain passage du travail
+> `evalueSeuilSignalements`. **C'est le recours : réparer, pas plaider.**
 
-**Backend** — `POST /admin/sanctions`, `POST /sanctions/:id/contestation`. Contrôle du gel dans `paiement` **et** `portefeuille`.
+**Base de données** — `sanction` *(`motif_texte` obligatoire)*, `boutique.vente_gelee bool`.
 
-**Design** — Prompt Stitch : *seller-facing sanction notice — a bordered amber card with a warning icon, title "Avertissement", the full written reason, the date, the consequence line ("Vos encaissements sont suspendus jusqu'au 20 août"), a "Ce qu'il faut corriger" checklist, and two buttons "J'ai compris" and "Contester cette décision"; plus the admin sanction form with a graduated severity selector and a required reasoning field.*
+```sql
+ALTER TABLE sanction ADD CONSTRAINT sanction_motivee
+  CHECK (motif_texte IS NOT NULL AND length(motif_texte) > 0);
+```
 
-**Tests** : les cinq niveaux ; gel effectif sur l'encaissement, **pas sur le retrait des fonds déjà disponibles** ; motif obligatoire ; contestation ouvre un dossier ; expiration automatique d'une sanction à durée.
+**C'est ici que `RB4` atterrit** après avoir quitté `litige.decision_motivee` *(`F6.3`)*.
+
+**Backend** — le travail `evalueSeuilSignalements` écrit les sanctions ; contrôle de `vente_gelee` dans la **publication d'article** et le **démarrage de direct** *(plus dans `paiement` — `DP-07`)*.
+
+**Tests** : sanction sans motif → **refusée par la base** ; gel → publication et direct refusés, **commandes en cours et catalogue intacts** ; résolution d'un signalement → compteur décrémenté → **levée automatique au passage suivant** ; notification aux deux parties.
 
 ```issues
 feature: F6.8
-titre: Sanctions vendeur, avertissement, gel, suspension
+titre: Sanctions automatiques, gel de la mise en vente, suspension
 epic: "06"
 phase: P1
-prio: S
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F6.5]
+prio: M
+etapes: [conception, bdd, backend, frontend]
+depend: [F6.3, F6.2]
 ```
 
 ---
 
-## F6.9 — Réponse publique du vendeur à un avis
+## F6.9 — Réponse publique de la boutique à un avis
 
 `P2 · C · cadre`
 
-**Conception** — le vendeur peut répondre **une seule fois** publiquement à un avis. Une seule réponse évite la dispute publique, qui abîme la vitrine plus que l'avis initial.
+**Conception** — la boutique peut répondre **une seule fois** publiquement à un avis. Une seule réponse évite la dispute publique, qui abîme la vitrine plus que l'avis initial.
 
 **Impact base de données** — `avis.reponse_texte`, `avis.reponse_le`.
 
 **Endpoint** — `POST /avis/:id/reponse` (refusé si une réponse existe).
 
-**Point d'attention** — la réponse passe par le filtrage automatique des commentaires *(R-X1)* : un vendeur en colère est un risque de contenu à modérer.
+**Point d'attention** — la réponse passe par le filtrage automatique des commentaires *(R-X1)* : une boutique en colère est un risque de contenu à modérer.
 
 ```issues
 feature: F6.9
-titre: Réponse publique du vendeur à un avis
+titre: Réponse publique de la boutique à un avis
 epic: "06"
 phase: P2
 prio: C
@@ -483,10 +506,12 @@ file**, avec le même traitement que les signalements d'urgence de l'épique 19.
 
 **Ce n'est pas un litige de commerce.** Une réaction cutanée peut relever de
 l'urgence médicale. Le délai d'engagement affiché est court, et l'écran propose
-immédiatement — **avant toute décision d'arbitrage** — de retirer l'article de
-la vente. Protéger les suivantes ne doit pas attendre l'instruction du dossier.
+immédiatement — **sans attendre quoi que ce soit** — de retirer l'article de
+la vente. Il n'y a plus d'instruction ni d'arbitrage *(`DP-05`)* : **le retrait
+est automatique dès le premier signalement de ce motif.** Protéger les suivantes
+prime sur le préjudice commercial de la boutique.
 
-**Base.** `litige.prioritaire boolean` + index partiel
+**Base.** `signalement_commande.prioritaire boolean` + index partiel
 `(prioritaire DESC, ouvert_le) WHERE statut <> 'resolu'`.
 
 **Backend.** `POST /litiges` marque `prioritaire = true` sur ce motif, et
@@ -514,10 +539,10 @@ depend: [F21.4]
 **Conception.** Un cosmétique entamé **ne se retourne pas**, sauf défaut ou
 contrefaçon.
 
-**Pourquoi cette règle protège le vendeur.** Un produit entamé ne se revend
-pas : accepter son retour ferait payer au vendeur le changement d'avis de
+**Pourquoi cette règle protège la boutique.** Un produit entamé ne se revend
+pas : accepter son retour ferait payer à la boutique le changement d'avis de
 l'acheteuse. C'est une des rares règles du produit qui penche du côté du
-vendeur, et elle est légitime — l'hygiène n'est pas négociable.
+boutique, et elle est légitime — l'hygiène n'est pas négociable.
 
 **Les exceptions restent entières** : défaut du produit, contrefaçon,
 péremption dépassée, réaction cutanée. Dans ces quatre cas, le retour et le
@@ -547,10 +572,10 @@ depend: [F21.4]
 
 `P1 · S · moyen` — **Règles** R-Y18 · **Dépend de** F21.4, F6.7
 
-Un signalement de contrefaçon est transmis **au vendeur et à l'équipe JP**.
+Un signalement de contrefaçon est transmis **à la boutique et à l'équipe JP**.
 
 Sur un cosmétique, la contrefaçon n'est pas un préjudice commercial : c'est un
-risque pour les personnes. Le vendeur est averti — il peut être de bonne foi et
+risque pour les personnes. La boutique est avertie — elle peut être de bonne foi et
 avoir été trompé par son grossiste — et l'équipe instruit en parallèle.
 
 **Base.** Réutilise `signalement` de l'épique 19 avec `motif = contrefacon` et

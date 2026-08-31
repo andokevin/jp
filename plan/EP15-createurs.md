@@ -5,7 +5,7 @@
 
 > **Ce qu'on vend à la créatrice : un revenu sans capital et sans risque de stock.** Tout le reste de l'épique découle de là.
 
-**La distinction fondatrice** : une créatrice **n'est pas** une vendeuse. Elle ne détient pas de stock, n'expédie pas, ne gère pas de litige. Elle recommande et touche une commission. Une même personne peut cumuler les deux rôles *(F0.4)*, mais **les deux tableaux de bord et les deux portefeuilles restent séparés** — sinon plus personne ne comprend d'où vient son argent.
+**La distinction fondatrice, renforcée par `DP-02`** : une créatrice **n'est pas** une boutique, **et ne peut pas le devenir**. Elle ne détient pas de stock, n'expédie pas, ne gère pas de litige. Elle recommande et touche une commission. Une même personne peut cumuler les deux rôles *(F0.4)*, mais **les deux tableaux de bord et les deux portefeuilles restent séparés** — sinon plus personne ne comprend d'où vient son argent.
 
 **Le principe qui gouverne tous les écrans de cette épique** : on ne montre pas des vues à la créatrice, **on lui montre de l'argent**. C'est la différence entre JP et les réseaux sociaux où elle publie déjà gratuitement.
 
@@ -17,7 +17,7 @@
 | F15.4 | Lien et attribution d'affiliation | P1 | M | complet |
 | F15.5 | Commission d'affiliation ⚠️ | P1 | M | complet |
 | F15.6 | Tableau de bord créatrice | P1 | M | complet |
-| F15.10 | Portefeuille et retrait créatrice | P1 | M | complet |
+| ~~F15.10~~ | ~~Portefeuille et retrait créatrice~~ ❌ *(`DP-07`)* — l'argent arrive sur son mobile money | — | — | — |
 | F15.8 | **Précommande groupée avec seuil** ⚠️ | P1 | S | complet |
 | F15.9 | Mode revendeuse | P1 | S | moyen |
 | F15.7 | Paliers de créatrice | P2 | S | moyen |
@@ -27,25 +27,57 @@
 
 ---
 
-## F15.4 / F15.5 — Affiliation : lien, attribution, commission
+## F15.4 / F15.5 — Affiliation : lien, attribution, versement
 
-`P1 · M · complet` — **Règles** R-N1, R-N2, R-N3 · **⚠️ décisions n° 9 et 12**
+`P1 · M · complet` — **Règles** R-N1 à R-N6 · **Décisions** `DP-09`, `DP-16`
 
 ### 1. Conception
 
-**Chaque article qu'une créatrice attache à un contenu ou met dans sa sélection porte son identifiant** *(F14.5)*. Un lien partageable hors application fonctionne pareil.
+**La créatrice ne vend pas, elle apporte.** Elle partage un article — sur son profil JP, ou **hors JP, sur son compte Facebook où son audience est déjà**. Le lien renvoie vers la fiche article ; l'acheteur voit le détail et achète normalement. **Il ne voit aucune complexité supplémentaire** *(R-N5)*.
 
-**Attribution** *(R-N2)* : la vente est attribuée à **la dernière créatrice cliquée** dans une fenêtre de N jours. ⚠️ N à trancher — hypothèse : **7 jours**.
+**Chaque article attaché ou mis en sélection porte l'identifiant de la créatrice** *(R-N1, F14.5)*, **y compris via un lien partagé hors application** — c'est le cas d'usage principal, pas l'exception.
 
-**⚠️ Qui paie la commission d'affiliation ?** *(décision n° 9)* Trois options : la vendeuse sur sa marge, JP sur sa commission, ou un partage. **Recommandation : prélevée sur la commission JP en V1** — cela ne coûte rien de plus à la vendeuse, elle accepte donc facilement, et JP achète de l'acquisition à un prix connu. À réévaluer une fois le volume établi.
+**Attribution** *(R-N2)* : la vente est attribuée à **la dernière créatrice cliquée** dans une fenêtre glissante. ⚠️ Durée à arrêter *(hypothèse : 7 jours)*.
 
-**Le vendeur doit pouvoir refuser l'affiliation sur ses articles** *(R-N3)* — sinon il subit une charge qu'il n'a pas choisie. Réglage `profil_vendeur.affiliation_autorisee`, respecté à l'attachement *(F14.5)*.
+**Qui paie, et combien** ✅ *(tranché — `DP-09`)* :
 
-**Ce que voit chacun** :
-- **C** : chaque vente attribuée, son montant, son gain.
-- **V** : sur chaque commande, si elle vient d'une créatrice, et le montant de la commission versée.
+| | |
+|---|---|
+| **Qui paie** | **La boutique**, sur son prix. *(L'ancienne recommandation — prélèvement sur la commission JP — est caduque : JP n'en prend plus, `DP-08`.)* |
+| **Qui fixe le taux** | La boutique — `boutique.taux_commission_createur` — **connu de la créatrice avant qu'elle attache l'article** |
+| **Quand c'est versé** | **Au moment du paiement**, comme une patte de l'éclatement *(`DP-16`, `F4.14`)* |
+| **Qui expédie et répond** | **La boutique**, toujours *(R-N14)* |
 
-**Point technique délicat** : la fenêtre d'attribution suppose de journaliser les clics d'affiliation avec une date d'expiration, puis de résoudre l'attribution **à la création de la commande** — pas à la confirmation, sinon un clic expiré entre-temps ferait perdre la commission à tort.
+**La boutique peut refuser l'affiliation sur ses articles** *(R-N3, R-K4)* — sinon elle subit une charge qu'elle n'a pas choisie.
+
+**Ce que voit chacun** : **C** — chaque vente attribuée, son montant, **son gain déjà versé** · **B** — sur chaque commande, si elle vient d'une créatrice, et **la part qu'elle lui a versée**.
+
+> ### La cohérence du risque, à assumer
+>
+> **La créatrice est payée au paiement, comme la boutique** *(R-N6, `DP-07`)*.
+> Si la boutique n'expédie jamais, **la créatrice a déjà touché**. C'était
+> impensable avec le séquestre — *« la commission n'est acquise qu'après
+> confirmation de réception »* — et c'est **parfaitement cohérent sans lui** :
+> plus personne n'attend la livraison pour être payé.
+>
+> **Le régulateur est la réputation.** Une créatrice qui recommande des boutiques
+> qui n'expédient pas **perd son audience** — c'est là, et nulle part ailleurs,
+> que la sanction se produit.
+
+> ### ⚠️ Ce que cette fonctionnalité suppose du prestataire
+>
+> « Versée automatiquement » repose sur **un versement distinct** vers le compte
+> de la créatrice, **crédité directement** par l'éclatement *(`DP-16`,
+> `F4.14`)*.
+>
+> **Elle ne coûte rien à l'acheteuse** : un seul encaissement, une seule
+> confirmation. C'est JP qui reverse ensuite.
+>
+> **Le rejeu d'un versement échoué interroge d'abord** l'opérateur sur le sort de
+> sa référence, et ne rejoue que si la réponse est « non effectué » *(`R-M7`)*.
+> La clé d'idempotence reste en seconde ligne *(`PO-11`)*.
+
+**Point technique délicat, inchangé** : la fenêtre d'attribution suppose de journaliser les clics d'affiliation avec une date d'expiration.
 
 ### 2. Structure de code
 
@@ -89,7 +121,7 @@ commission créatrice est prélevée sur la part de JP — votre net est inchang
 
 Screen 3 — seller setting: a toggle row "Autoriser les créatrices à vendre mes
 articles" (on), with a helper line "Elles font connaître vos articles et sont
-payées sur la commission JP, pas sur votre marge." and a stat line "12 créatrices
+payées par vous, sur votre prix, au taux que vous fixez (DP-09)." and a stat line "12 créatrices
 ont sélectionné vos articles · 84 ventes générées".
 ```
 
@@ -97,7 +129,7 @@ ont sélectionné vos articles · 84 ventes générées".
 
 `POST /affiliation/clic` `{ createurId, articleId }` (appelé à l'ouverture d'une fiche depuis un contenu ou un lien de créatrice) · résolution à `POST /panier/valider` · écritures de commission à `paiement.confirme`.
 
-**Tests** : dernier clic dans la fenêtre → attribué ; clic hors fenêtre → non attribué ; deux créatrices, la plus récente gagne ; article d'un vendeur refusant l'affiliation → **aucune commission**, et l'attachement était déjà refusé *(F14.5)* ; commission prélevée sur la part JP → **net vendeur inchangé** (assertion sur les écritures) ; commande annulée → commission reprise par écriture inverse ; fenêtre paramétrable *(R-O1)*.
+**Tests** : dernier clic dans la fenêtre → attribué ; clic hors fenêtre → non attribué ; deux créatrices, la plus récente gagne ; article d'une boutique refusant l'affiliation → **aucune commission**, et l'attachement était déjà refusé *(F14.5)* ; commission prélevée sur la part JP → **net boutique inchangé** (assertion sur les écritures) ; commande annulée → commission reprise par écriture inverse ; fenêtre paramétrable *(R-O1)*.
 
 ### 6. Frontend
 
@@ -126,32 +158,53 @@ depend: [F15.4, F4.4]
 
 ## F15.8 — Précommande groupée avec seuil ⚠️
 
-`P1 · S · complet` — **Recette RB3** · **décision ouverte n° 8, la plus délicate du produit**
+`P1 · S · complet` — **Recette RB3 (suspendue)** · **🔴 `PO-8` — la décision la plus délicate du produit**
 
 ### 1. Conception
 
 **La fonctionnalité qui supprime la barrière du capital. Probablement le meilleur argument de recrutement des créatrices.**
 
-- **C** : publie un article en précommande → fixe le **prix**, le **seuil** (ex. 15 commandes), la **date limite** et le **délai de livraison annoncé** → publie un clip.
-- **A** : voit **« Précommande — livraison prévue vers le [date] · 9 sur 15 commandes »** → « Je prends » → **elle paie, et l'argent est séquestré** *(F4.4)* → elle voit le compteur monter.
-- **Seuil atteint** : les commandes sont confirmées, la créatrice commande chez son fournisseur, expédie à réception.
-- **Seuil non atteint à la date limite** : **remboursement automatique et intégral de toutes les acheteuses** *(RB3)*. Aucune intervention, aucune discussion. **C'est ce qui rend la précommande acceptable.**
+> ### 🔴 Ce que `DP-07` casse ici
+>
+> `R-N8` exigeait **un remboursement automatique, intégral et sans intervention**
+> si le seuil n'est pas atteint — **critère de recette bloquant `B4.3` / `RB3`**.
+>
+> **Sans séquestre, JP ne peut rembourser un argent qu'il n'a jamais tenu.** Ce
+> n'est pas un ajustement : la fonctionnalité est cassée telle qu'elle est
+> spécifiée.
 
-**⚠️ Trois décisions ouvertes, importantes** :
-1. **Quand libérer les fonds à la créatrice ?** Tout garder jusqu'à la livraison la met en incapacité d'acheter le stock, donc la fonctionnalité ne sert à rien ; tout libérer au seuil expose l'acheteuse à exactement l'arnaque que JP prétend supprimer. **Piste : libérer une avance plafonnée** au seuil (par exemple le prix d'achat fournisseur), le solde à la réception confirmée.
-2. **Délai maximal** entre l'atteinte du seuil et l'expédition, au-delà duquel le remboursement est automatique. Sans cette limite, la précommande devient une machine à litiges.
-3. **Plafond de précommandes simultanées** par créatrice.
+**Piste retenue, non validée** *(`PO-8`)* : **n'encaisser qu'à l'atteinte du seuil.**
 
-**Recommandation de mise en œuvre** : coder l'avance comme un **paramètre** (`precommande_avance_taux`, `precommande_delai_expedition_max_j`, `precommande_plafond_simultane`), pour que le pilote tranche par la mesure. Le remboursement automatique, lui, n'est pas paramétrable : c'est un invariant *(RB3)*.
+- **C** : publie un article en précommande → fixe le **prix**, le **seuil**, la **date limite** et le **délai d'expédition annoncé**.
+- **A** : voit **« Précommande — livraison prévue vers le [date] · 9 sur 15 »** → « Je prends » → **son engagement est enregistré, sans encaissement.**
+- **Seuil atteint** : **toutes les commandes sont encaissées** *(une requête par acheteuse)*, la créatrice commande chez son fournisseur.
+- **Seuil non atteint** : **les engagements tombent.** Personne n'a été débité, **il n'y a rien à rembourser** — `R-N8` est satisfaite sans détenir de fonds.
 
-**État de commande supplémentaire** *(CDC §4.1)* : `EN_ATTENTE_SEUIL` s'insère entre `PAYEE` et `EN_PREPARATION`. Sortie vers `EN_PREPARATION` si le seuil est atteint, vers `REMBOURSEE` **automatiquement** à la date limite sinon.
+> ### Le défaut de cette piste, qui n'existait pas avec le séquestre
+>
+> **Entre l'engagement et l'encaissement, rien ne garantit que l'acheteuse aura
+> encore la somme sur son compte.** Un mobile money n'est pas une carte : **on ne
+> peut pas pré-autoriser.** Sur un seuil atteint au bout de trois semaines, une
+> part des engagements échouera au moment de débiter — **et le seuil « atteint »
+> ne le sera plus vraiment.**
+>
+> **Trois options à trancher avec `PO-8`** : viser un seuil supérieur à la cible
+> pour absorber les échecs · relancer les engagements échoués pendant N heures ·
+> ou **renoncer à la précommande en V1**.
+
+**⚠️ Décisions ouvertes restantes** :
+1. **Délai maximal** entre l'atteinte du seuil et l'expédition, au-delà duquel les acheteuses sont remboursées — **par la créatrice, pas par JP** *(`R-T3`)*. Sans cette limite, la précommande devient une machine à signalements et **reproduit exactement l'arnaque que JP combat**.
+2. **Plafond de précommandes simultanées** par créatrice.
+3. ~~Quand libérer les fonds à la créatrice ?~~ ❌ **sans objet** *(`DP-07`)* — il n'y a plus de fonds à libérer, et **plus d'avance possible** : la créatrice est payée quand les acheteuses le sont, pas avant.
+
+**État de commande** *(CDC §4.1)* : `EN_ATTENTE_SEUIL` s'insère **avant** `PAYEE`, plus entre `PAYEE` et `EN_PREPARATION`. **C'est le changement de modèle** : l'engagement précède le paiement.
 
 ### 2. Structure de code
 
 ```
 apps/api/src/modules/createur/
 ├─ precommande.ts          creer() · engager() · verifierSeuil() · echouer()
-├─ avance.ts               libération plafonnée, paramétrée
+├─ encaissementDifferé.ts  n'encaisse qu'à l'atteinte du seuil (PO-8)
 ├─ precommande.test.ts     ← RB3 : le remboursement automatique intégral
 apps/api/src/jobs/precommandesEcheances.ts     seuil, date limite, délai d'expédition
 apps/mobile/src/features/precommande/
@@ -192,7 +245,7 @@ green, the label replaced by "Objectif atteint ! 17 commandes", and a line
 "Expédition prévue avant le 20 septembre".
 
 Screen 3 — buyer's pre-order tracking: a timeline with four steps "Payé et
-séquestré", "Objectif atteint", "En cours de fabrication / commande fournisseur",
+engagé (non débité)", "Objectif atteint — vous allez être débitée", "En cours de fabrication",
 "Expédié", plus a countdown card "Expédition garantie avant le 20 septembre —
 sinon remboursement automatique".
 
@@ -206,11 +259,12 @@ seront remboursées automatiquement."
 
 ### 5. Backend
 
-`POST /precommandes` · `GET /precommandes/:id` · `POST /precommandes/:id/engagements` (paiement séquestré) · travaux d'échéance.
+`POST /precommandes` · `GET /precommandes/:id` · `POST /precommandes/:id/engagements` **(engagement enregistré, aucun débit)** · `POST /precommandes/:id/encaisser` **(déclenché par l'atteinte du seuil)**. Ancienne rédaction : (paiement séquestré) · travaux d'échéance.
 
 **Tests — RB3, critère bloquant :**
 - Seuil **non atteint** à la date limite → **remboursement automatique et intégral de toutes les engagées, sans intervention humaine**.
-- Seuil atteint → commandes confirmées, avance libérée **au taux paramétré**, solde retenu.
+- Seuil atteint → **encaissement de tous les engagements**, une requête par acheteuse, commandes confirmées.
+- **Un engagement dont le débit échoue au moment du seuil** → relancé, puis retiré du compte ; **le seuil est recalculé** *(`PO-8`)*.
 - Délai d'expédition dépassé → remboursement automatique.
 - Engagement au moment exact de la date limite → tranché par l'horodatage serveur, de façon déterministe.
 - Double exécution du travail d'échéance → **un seul remboursement**.
@@ -239,13 +293,13 @@ depend: [F4.4, F15.1]
 
 ### 1. Conception
 
-**« Devenir créatrice » → vérification d'identité identique au vendeur** *(F0.6)* : sans elle, pas de paiement possible et **aucune protection en cas d'usurpation** — argument à présenter dans cet ordre, parce que c'est le vrai bénéfice pour elle.
+**« Devenir créatrice » → vérification d'identité identique à la boutique** *(F0.6)* : sans elle, pas de paiement possible et **aucune protection en cas d'usurpation** — argument à présenter dans cet ordre, parce que c'est le vrai bénéfice pour elle.
 
-Elle renseigne ses réseaux existants, son style, ses tailles. Validée par **OP**.
+Elle renseigne ses réseaux existants, son style, ses tailles. **Vérification automatisée** *(`DP-05`, `UC-52`)*.
 
-**Profil public** : ses contenus, sa sélection, son badge *(F18.4)*, et **le nombre d'articles vendus grâce à elle** — c'est sa carte de visite auprès des vendeurs comme des acheteuses.
+**Profil public** : ses contenus, sa sélection, son badge *(F18.4)*, et **le nombre d'articles vendus grâce à elle** — c'est sa carte de visite auprès des boutiques comme des acheteuses.
 
-**Le cumul de rôles est possible** *(F0.4)* mais les tableaux de bord et portefeuilles restent séparés.
+**Le cumul de rôles est supprimé** *(`DP-02`)* : un compte a un type, et un seul, choisi à l'inscription. **Une créatrice n'est pas une boutique et ne peut pas le devenir** — si elle veut vendre son propre stock, elle crée un compte boutique.
 
 ### 2. Structure de code
 ```
@@ -281,7 +335,7 @@ a three-column media grid under Contenus.
 ### 5. Backend
 `POST /moi/roles/createur` · `GET /createurs/:idOuSlug` (public) · réutilise la file de vérification *(F11.1)*.
 
-**Tests** : vérification exigée avant tout paiement ; profil public accessible sans compte ; cumul vendeuse/créatrice → **portefeuilles distincts** (assertion sur les soldes) ; nombre de ventes générées exact.
+**Tests** : vérification exigée **avant toute mise en vente** *(`DP-07`, `R-V1`)* ; profil public accessible sans compte ; **un compte créatrice ne peut pas devenir boutique** *(`DP-02`)*. Ancienne rédaction : cumul boutique/créatrice → **portefeuilles distincts** (assertion sur les soldes) ; nombre de ventes générées exact.
 
 ### 6. Frontend
 Argumentaire orienté revenu, pas fonctionnalités. Le profil public est partageable avec aperçu de lien.
@@ -312,9 +366,9 @@ depend: [F15.1]
 `P1 · M · complet`
 
 ### 1. Conception
-**C** parcourt le catalogue de tous les vendeurs → ajoute des articles à sa sélection → les organise par thème (« mes basiques », « spécial mariage ») → sa sélection est **une vitrine publique**.
+**C** parcourt le catalogue de tous les boutiques → ajoute des articles à sa sélection → les organise par thème (« mes basiques », « spécial mariage ») → sa sélection est **une vitrine publique**.
 
-**A** achète depuis la sélection d'Ony **comme depuis n'importe quelle vitrine** — c'est le vendeur d'origine qui expédie, Ony touche sa commission. **L'acheteuse ne voit aucune complexité supplémentaire**, et c'est le point de conception : elle ne doit pas avoir à comprendre l'affiliation.
+**A** achète depuis la sélection d'Ony **comme depuis n'importe quelle vitrine** — c'est la boutique d'origine qui expédie, Ony touche sa commission. **L'acheteuse ne voit aucune complexité supplémentaire**, et c'est le point de conception : elle ne doit pas avoir à comprendre l'affiliation.
 
 **V** voit quelles créatrices ont sélectionné ses articles et combien elles lui rapportent.
 
@@ -322,7 +376,7 @@ depend: [F15.1]
 `modules/createur/selection.ts` · `apps/mobile/src/features/createur/ecrans/{EcranMaSelection,EcranSelectionPublique}.tsx`.
 
 ### 3. Base de données
-`selection`, `selection_article` (CDC §3.6). Les articles d'un vendeur refusant l'affiliation *(R-N3)* ne peuvent pas y entrer.
+`selection`, `selection_article` (CDC §3.6). Les articles d'une boutique refusant l'affiliation *(R-N3)* ne peuvent pas y entrer.
 
 ### 4. Design
 **Prompt Stitch** — préambule commun, puis :
@@ -340,16 +394,16 @@ earning chips and without remove marks, with a header "La sélection d'Ony" and 
 ```
 
 ### 5. Backend
-`GET/POST /createur/selection` · `GET /createurs/:id/selection` (public) · `GET /vendeur/createurs` (qui a sélectionné mes articles).
+`GET/POST /createur/selection` · `GET /createurs/:id/selection` (public) · `GET /boutique/createurs` (qui a sélectionné mes articles).
 
-**Tests** : ajout, retrait, thèmes ; article d'un vendeur refusant l'affiliation → refusé ; achat depuis la sélection → commande normale, vendeur d'origine expédie, commission attribuée ; vue publique **sans** information de commission.
+**Tests** : ajout, retrait, thèmes ; article d'une boutique refusant l'affiliation → refusé ; achat depuis la sélection → commande normale, boutique d'origine expédie, commission attribuée ; vue publique **sans** information de commission.
 
 ### 6. Frontend
 La vue publique doit être indistinguable d'une vitrine ordinaire côté acheteuse.
 
 ```issues
 feature: F15.3
-titre: Ma sélection, vitrine d'articles d'autres vendeurs
+titre: Ma sélection, vitrine d'articles d'autres boutiques
 epic: "15"
 phase: P1
 prio: M
@@ -359,66 +413,35 @@ depend: [F15.4]
 
 ---
 
-## F15.6 / F15.10 — Tableau de bord et portefeuille créatrice
+## F15.6 — Tableau de bord créatrice
 
-`P1 · M · complet` — **Règles** R-N5
+`P1 · M · complet` — **Décision** `DP-07`
 
-### 1. Conception
+> **`F15.10` — portefeuille et retrait — est supprimée** *(`DP-07`)*. **JP ne
+> tient aucun solde** : la part de la créatrice part directement sur son mobile
+> money au moment du paiement *(`DP-09`, `DP-16`)*. Il n'y a ni solde à afficher,
+> ni retrait à déclencher.
 
-**Entonnoir complet** : contenus publiés, vues, clics vers article, « Je prends », ventes confirmées, **gains**. Par contenu et par période. Plus : ses meilleurs contenus, ses meilleurs articles, ses heures de publication les plus efficaces.
+**Conception** — *« on ne lui montre pas des vues, on lui montre de l'argent »*. L'entonnoir **vues → clics → ventes → gains**, et **chaque gain déjà versé**, avec sa date et sa boutique d'origine.
 
-**On ne lui montre pas des vues, on lui montre de l'argent** *(R-N5)*. C'est la différence entre JP et les réseaux sociaux où elle publie déjà gratuitement — et c'est ce qui la fait rester.
+**Ce qui change dans l'écran** : il ne montre plus deux soldes *(« en attente » / « disponible »)* mais **un journal de versements**. C'est plus simple, et plus honnête — **il n'y a rien en attente, tout est parti.**
 
-**Portefeuille séparé** de celui de vendeuse *(F0.4)*, avec les mêmes règles de retrait *(F4.8)* : vers le numéro mobile money vérifié uniquement.
+**Base** — agrégats depuis `statistique_contenu` *(F14.17)* et **`versement`** *(`beneficiaire_type = createur`)*.
 
-### 2. Structure de code
-`modules/createur/tableauDeBord.ts` · `modules/portefeuille/service.ts` (type `createur`) · `apps/mobile/src/features/createur/ecrans/{EcranTableauBord,EcranMonArgent}.tsx`.
+**Backend** — `GET /createur/tableau-de-bord?periode=` · `GET /createur/versements?curseur=`.
 
-### 3. Base de données
-`portefeuille.type = 'createur'`, agrégats depuis `statistique_contenu` *(F14.17)* et les commissions.
+**Design** — Prompt Stitch : *creator dashboard: a funnel of four numbers (vues, clics, ventes, gains), then a list of dated payouts, each showing the shop name, the order, and the amount received. **No balance, no withdraw button** — the money is already on her phone.*
 
-### 4. Design
-**Prompt Stitch** — préambule commun, puis :
-```
-Screen — creator dashboard.
-Vertical order: a period selector "7 jours · 30 jours · Tout"; a hero earnings
-card in accent color with the largest number on the screen: "126 000 Ar gagnés"
-and a green delta "+18 % vs mois dernier"; then the funnel as five compact rows
-with numbers and conversion percentages: "Contenus publiés 12", "Vues 42 000",
-"Clics article 3 100 (7 %)", "Je prends 210 (7 %)", "Ventes confirmées 168 (80 %)";
-then a "Vos meilleurs contenus" list of three rows, each with a thumbnail, views
-and, in bold, the earnings; then "Vos meilleurs articles" with three product rows
-and their generated revenue; then an insight card "Vos clips publiés entre 19 h et
-21 h rapportent deux fois plus"; then a wallet summary row "Disponible : 84 000 Ar"
-with a "Retirer" button.
-Views must never be the largest figure on this screen.
-```
-
-### 5. Backend
-`GET /createur/tableau-de-bord?periode=` · `GET /createur/portefeuille` · `POST /createur/portefeuille/retrait`.
-
-**Tests** : entonnoir cohérent ; gains = somme des commissions confirmées ; portefeuille créatrice **distinct** du portefeuille vendeuse pour un compte cumulant les deux ; retrait vers numéro vérifié seulement ; insight horaire calculé sur données réelles.
-
-### 6. Frontend
-Le montant gagné est le premier et le plus gros élément. Les vues sont une ligne parmi d'autres.
+**Tests** : entonnoir cohérent ; **gains = somme des versements confirmés** ; **aucun solde affiché nulle part** ; un versement rejoué n'apparaît qu'une fois *(`R-M5`)*.
 
 ```issues
 feature: F15.6
-titre: Tableau de bord créatrice, vues vers gains
+titre: Tableau de bord créatrice, entonnoir et journal des versements
 epic: "15"
 phase: P1
 prio: M
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F15.4, F14.17]
-```
-```issues
-feature: F15.10
-titre: Portefeuille et retrait créatrice
-epic: "15"
-phase: P1
-prio: M
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F15.5, F4.8]
+etapes: [conception, design, backend, frontend]
+depend: [F15.4]
 ```
 
 ---
@@ -427,24 +450,24 @@ depend: [F15.5, F4.8]
 
 `P1 · S · moyen`
 
-**Conception** — une créatrice qui achète réellement du stock chez un fournisseur et le revend sous son nom **devient une vendeuse** au sens du produit : vérification vendeur *(F0.6)*, stock *(F1.6)*, expédition, litiges.
+**Conception** — une créatrice qui achète réellement du stock chez un fournisseur et le revend sous son nom **devient une boutique** au sens du produit : vérification boutique *(F0.6)*, stock *(F1.6)*, expédition, litiges.
 
-**Ce n'est donc pas une fonctionnalité séparée, c'est un parcours de bascule** créatrice → vendeuse, à rendre fluide et à **expliquer clairement** : les responsabilités changent, et elle doit le comprendre avant, pas au premier litige.
+**Ce n'est donc pas une fonctionnalité séparée, c'est un parcours de bascule** créatrice → boutique, à rendre fluide et à **expliquer clairement** : les responsabilités changent, et elle doit le comprendre avant, pas au premier litige.
 
-**Structure** — réutilise `F0.4` (bascule de rôle). Écran d'explication propre.
+**Structure** — ⚠️ **réutilisait `F0.4` (bascule de rôle), supprimée par `DP-02`.** Sans bascule, cette fonctionnalité se réduit à un **écran d'explication** qui oriente vers la création d'un compte boutique.
 
-**Design** — Prompt Stitch : *role transition screen "Devenir vendeuse" with two side-by-side comparison columns "Créatrice (aujourd'hui)" and "Vendeuse (après)", each listing four rows: stock (aucun / à votre charge), expédition (par la boutique / par vous), litiges (jamais / vous répondez), revenus (commission / marge complète); a primary button "Je comprends, devenir vendeuse" and a secondary "Rester créatrice".*
+**Design** — Prompt Stitch : *role transition screen "Devenir boutique" with two side-by-side comparison columns "Créatrice (aujourd'hui)" and "Boutique (après)", each listing four rows: stock (aucun / à votre charge), expédition (par la boutique / par vous), litiges (jamais / vous répondez), revenus (commission / marge complète); a primary button "Je comprends, devenir boutique" and a secondary "Rester créatrice".*
 
-**Tests** : bascule conservant contenus, abonnés et sélection ; portefeuille créatrice conservé et distinct ; écran d'explication non contournable.
+**Tests** : ⚠️ **cette fonctionnalité suppose une bascule de type de compte, supprimée par `DP-02`.** À rearbitrer : une créatrice qui veut détenir du stock **crée un compte boutique**, et ses contenus, abonnés et sélection **ne la suivent pas**. Ancienne rédaction : bascule conservant contenus, abonnés et sélection ; portefeuille créatrice conservé et distinct ; écran d'explication non contournable.
 
 ```issues
 feature: F15.9
-titre: Mode revendeuse, bascule créatrice vers vendeuse
+titre: Mode revendeuse, bascule créatrice vers boutique
 epic: "15"
 phase: P1
 prio: S
 etapes: [conception, design, backend, frontend]
-depend: [F0.4, F15.1]
+depend: [F15.1]
 ```
 
 ---
@@ -457,7 +480,7 @@ depend: [F0.4, F15.1]
 
 **Le critère est le chiffre généré, pas le nombre d'abonnés.** Une créatrice à 2 000 abonnés très engagés vaut mieux qu'une à 20 000 qui ne vend rien, et le produit doit récompenser la vente.
 
-**Base de données** — `profil_createur.palier`, `palier_createur (rang, seuil_ventes, taux_commission, avantages)` — global, défini par JP, contrairement aux paliers vendeur qui sont par boutique.
+**Base de données** — `profil_createur.palier`, `palier_createur (rang, seuil_ventes, taux_commission, avantages)` — global, défini par JP, contrairement aux paliers boutique qui sont par boutique.
 
 **Design** — Prompt Stitch : *creator tier screen with a medal for the current tier, a progress bar toward the next one labelled "Encore 42 ventes pour passer Or", a table of the four tiers showing their commission rates and perks, and a highlighted row for the current tier.*
 
@@ -475,7 +498,7 @@ depend: [F15.5]
 
 ---
 
-## F15.11 — Demande de partenariat vendeuse ↔ créatrice
+## F15.11 — Demande de partenariat boutique ↔ créatrice
 
 `P2 · S · moyen`
 
@@ -483,9 +506,9 @@ depend: [F15.5]
 
 Sans cette fonctionnalité, ces accords se font sur Messenger et **JP perd la traçabilité — et la commission**.
 
-**Base de données** — `partenariat (id, vendeur_id, createur_id, type, conditions jsonb, statut, cree_le)`.
+**Base de données** — `partenariat (id, boutique_id, createur_id, type, conditions jsonb, statut, cree_le)`.
 
-**Backend** — `GET /vendeur/createurs/recherche?audience=&style=&region=`, `POST /partenariats`, `POST /partenariats/:id/decision`.
+**Backend** — `GET /boutique/createurs/recherche?audience=&style=&region=`, `POST /partenariats`, `POST /partenariats/:id/decision`.
 
 **Design** — Prompt Stitch : *creator discovery screen for sellers with filter chips (audience size, style, size range, region), creator cards showing avatar, name, follower count, generated sales, average conversion and a "Proposer un partenariat" button; plus a proposal form with commission rate, optional free-product offer, a message field and expected deliverables.*
 
@@ -493,7 +516,7 @@ Sans cette fonctionnalité, ces accords se font sur Messenger et **JP perd la tr
 
 ```issues
 feature: F15.11
-titre: Demande de partenariat vendeuse et créatrice
+titre: Demande de partenariat boutique et créatrice
 epic: "15"
 phase: P2
 prio: S
@@ -507,11 +530,11 @@ depend: [F15.5]
 
 `P2 · C · cadre`
 
-**Conception** — le vendeur envoie un article gratuitement contre engagement de contenu. **Le suivi de l'envoi et la vérification de la publication passent par la plateforme**, sinon ces accords se font ailleurs et JP perd la traçabilité.
+**Conception** — la boutique envoie un article gratuitement contre engagement de contenu. **Le suivi de l'envoi et la vérification de la publication passent par la plateforme**, sinon ces accords se font ailleurs et JP perd la traçabilité.
 
 **Impact base de données** — `partenariat_envoi (partenariat_id, colis_id, contenu_attendu, contenu_publie_id, echeance)`.
 
-**Point d'attention** — que se passe-t-il si le contenu n'est jamais publié ? À définir : rien (le vendeur assume), ou une pénalité de palier *(F15.7)*. Ne pas laisser ce cas implicite.
+**Point d'attention** — que se passe-t-il si le contenu n'est jamais publié ? À définir : rien (la boutique assume), ou une pénalité de palier *(F15.7)*. Ne pas laisser ce cas implicite.
 
 ```issues
 feature: F15.12
@@ -531,7 +554,7 @@ depend: [F15.11]
 
 **Conception** — annuaire de fournisseurs pour les créatrices en précommande *(F15.8)* et les revendeuses *(F15.9)*.
 
-**⚠️ Pourquoi c'est délicat** : JP se placerait en intermédiaire d'une relation qu'il ne contrôle pas, avec un risque de responsabilité si un fournisseur référencé fait défaut — et un risque de désintermédiation, puisque les vendeurs pourraient contourner la plateforme en s'organisant directement. À n'ouvrir qu'avec un cadre clair, ou pas du tout.
+**⚠️ Pourquoi c'est délicat** : JP se placerait en intermédiaire d'une relation qu'il ne contrôle pas, avec un risque de responsabilité si un fournisseur référencé fait défaut — et un risque de désintermédiation, puisque les boutiques pourraient contourner la plateforme en s'organisant directement. À n'ouvrir qu'avec un cadre clair, ou pas du tout.
 
 ```issues
 feature: F15.13

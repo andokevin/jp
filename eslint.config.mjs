@@ -76,7 +76,7 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ['**/apps/**', '@jp/api', '@jp/mobile', '@jp/terrain', '@jp/admin', '@jp/web'],
+              group: ['**/apps/**', '@jp/api', '@jp/mobile', '@jp/admin', '@jp/web'],
               message:
                 'Un paquet partagé ne dépend jamais d’une application. La dépendance va dans l’autre sens.',
             },

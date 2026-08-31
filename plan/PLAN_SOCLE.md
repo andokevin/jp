@@ -43,14 +43,13 @@ jp/
 │  │  │  ├─ temps-reel/        registre WebSocket, canaux, diffusion
 │  │  │  └─ serveur.ts
 │  │  └─ test/                 intégration, Testcontainers
-│  ├─ mobile/                  React Native · acheteuse, vendeuse, créatrice
+│  ├─ mobile/                  React Native · acheteuse, boutique, créatrice
 │  │  └─ src/
 │  │     ├─ features/<domaine>/{ecrans,composants,hooks,api}/
 │  │     ├─ navigation/
 │  │     ├─ noyau/             client API, session, cache, hors ligne, i18n
 │  │     └─ design/            jetons, primitives, états vides
-│  ├─ terrain/                 React Native · livreur et point relais
-│  ├─ admin/                   React + Vite · back-office JP
+│  ├─ admin/                   React + Vite · tableau de bord interne (DP-05)
 │  └─ web/                     React + Vite · vitrines, cadeau, événement, replay
 ├─ packages/
 │  ├─ contracts/               schémas Zod + types = source unique du contrat
@@ -128,7 +127,7 @@ apps/api/src/modules/<domaine>/
 | Parcours mobile | « Je prends » → paiement → confirmation · inscription par code | Maestro |
 | Terrain | Appareil d'entrée de gamme, réseau réel en heure de pointe | Manuel, RT1→RT9 |
 
-**Les quatre familles de tests qui ne sont pas négociables**, parce qu'elles couvrent les critères bloquants : concurrence de stock *(RB1)*, chemins du séquestre *(RB2)*, absence de cumul de remises *(R-U7)*, indiscernabilité des réponses d'authentification *(R-C9)*.
+**Les quatre familles de tests qui ne sont pas négociables**, parce qu'elles couvrent les critères bloquants : concurrence de stock *(RB1)*, **chorégraphie du paiement** *(RB2, `DP-11`)*, absence de cumul de remises *(R-U7)*, indiscernabilité des réponses d'authentification *(R-C9)*.
 
 **Un test de charge de référence** rejoué avant chaque mise en production : plusieurs directs simultanés, pic de « Je prends » sur un même article, chat actif, navigation catalogue en parallèle *(C5)*.
 
@@ -151,7 +150,7 @@ evenement.annonce · evenement.ouvert · evenement.termine
 contenu.publie · moderation.contenu_retire
 ```
 
-**`commande.confirmee` est l'événement le plus écouté du système** : il déclenche la libération du séquestre, l'écriture au journal des ventes confirmées *(R-R11)*, le recalcul du rang, l'invitation à l'avis, l'entrée au dressing. Tout consommateur doit être idempotent et **ne jamais bloquer** la confirmation.
+**`commande.confirmee` est l'événement le plus écouté du système.** ⚠️ **Il ne déclenche plus aucun mouvement d'argent** *(`DP-07`)* — il alimente le score de confiance, le rang client, le dressing et l'avis. Ancienne rédaction : il déclenche la libération du séquestre, l'écriture au journal des ventes confirmées *(R-R11)*, le recalcul du rang, l'invitation à l'avis, l'entrée au dressing. Tout consommateur doit être idempotent et **ne jamais bloquer** la confirmation.
 
 ---
 

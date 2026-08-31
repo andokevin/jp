@@ -10,10 +10,10 @@
 | F0.1 ★ | Inscription et connexion par email + code OTP | P1 | M | complet |
 | F0.2 | Connexion, session longue, multi-appareil | P1 | M | complet |
 | F0.3 ★ | Récupération de compte | P1 | S | complet |
-| F0.4 ★ | Bascule de rôle acheteur ↔ vendeur ↔ particulier | P1 | S | complet |
+| ~~F0.4~~ | ~~Bascule de rôle~~ ❌ **supprimée** *(`DP-02`)* — un compte a un type, et un seul, choisi à l'inscription | — | — | — |
 | F0.5 | Profil acheteur | P1 | S | moyen |
-| F0.6 | Vérification vendeur (KYC) | P1 | M | complet |
-| F0.7 | Badge vendeur vérifié | P1 | M | complet |
+| F0.6 | Vérification boutique (KYC) | P1 | M | complet |
+| F0.7 | Badge boutique vérifiée | P1 | M | complet |
 | F0.8 | Choix de la langue mg / fr | P1 | S | moyen |
 | F0.9 | Mode économie de données | P1 | S | moyen |
 | F0.10 | Consultation en invité | P1 | S | moyen |
@@ -116,7 +116,7 @@ Trois écrans, quatre états chacun.
 
 - **Accueil** — logo, une phrase de proposition de valeur, **« Continuer avec Google » d'abord** (un appui, pas d'attente de courriel), séparateur « ou », champ email, bouton pleine largeur « Continuer ». Lien discret « J'ai perdu l'accès à mon email » *(F0.3)*.
 - **Code** — 6 cases, clavier numérique ouvert d'emblée, adresse rappelée avec un lien « Modifier », décompte puis bouton « Renvoyer le code ». Vérification automatique à la sixième saisie, **sans bouton**.
-- **Prénom** — un champ, une phrase expliquant qu'il sera visible des vendeuses.
+- **Prénom** — un champ, une phrase expliquant qu'il sera visible des boutiques.
 
 **États** : chargement (bouton en attente, non re-appuyable), erreur (message sous le champ, code conservé), hors ligne (bandeau, bouton inactif avec explication), vide (sans objet ici).
 
@@ -141,7 +141,7 @@ No submit button — verification happens on the sixth digit.
 
 Screen 3 — "Comment vous appelez-vous ?".
 Vertical order: title; a single text field labelled "Prénom" placeholder "Hanta";
-a small helper line "Les vendeuses verront ce prénom sur vos commandes";
+a small helper line "Les boutiques verront ce prénom sur vos commandes";
 full-width primary button "Continuer".
 
 Also produce: Screen 2 with a red error state under the boxes reading
@@ -212,7 +212,7 @@ apps/api/src/plateforme/debit.ts          fenêtre glissante Redis, réutilisabl
 apps/api/src/plateforme/debit.test.ts
 apps/api/src/modules/identite/service.ts  application des trois compteurs
 apps/api/src/modules/exploitation/        file « anomalies d'authentification »
-apps/admin/src/pages/anomalies/           écran back-office
+apps/admin/src/pages/anomalies/           tableau de bord interne (lecture seule, DP-05)
 ```
 
 ### 3. Base de données
@@ -255,7 +255,7 @@ Appliqué à `POST /auth/otp` dans l'ordre : IP → jour → heure → minute. L
 - 2 demandes en 30 s → la seconde refusée avec `resteS` correct.
 - 6 demandes en 1 h → refus ; après la fenêtre → autorisation.
 - 5 codes faux → invalidation ; un nouveau code fonctionne.
-- 51 demandes depuis une IP en 10 min → refus par IP, anomalie visible en back-office.
+- 51 demandes depuis une IP en 10 min → refus par IP, anomalie visible au tableau de bord *(`F11.7`)*.
 - **Écart de temps** entre adresse connue et inconnue sous le seuil, sur 100 appels *(R-C9)*.
 - Aucune adresse en clair dans les journaux *(R-C10)* : assertion sur la sortie du journaliseur.
 
@@ -355,11 +355,11 @@ depend: [F0.1]
 
 ### 1. Conception
 
-**C'est un parcours de sécurité, pas un réglage.** Le compte porte un portefeuille : quiconque change l'adresse prend le contrôle des retraits. D'où la double vérification — code à l'ancienne adresse (autorisation), puis code à la nouvelle (vérification) — l'information de l'ancienne adresse, et l'inscription au journal d'audit.
+**C'est un parcours de sécurité, pas un réglage.** ⚠️ **Le raisonnement d'origine reposait sur le portefeuille, supprimé** *(`DP-07`)* — mais **le risque augmente** : le compte porte désormais `boutique.msisdn_mobile_money`, **la destination de tous les encaissements**. Prendre le contrôle du compte, c'est détourner les ventes futures. Ancienne rédaction : le compte porte un portefeuille : quiconque change l'adresse prend le contrôle des retraits. D'où la double vérification — code à l'ancienne adresse (autorisation), puis code à la nouvelle (vérification) — l'information de l'ancienne adresse, et l'inscription au journal d'audit.
 
 **Cas d'échec dimensionnant** : l'utilisatrice **n'a plus accès** à l'ancienne adresse. C'est fréquent, et c'est précisément pourquoi elle veut changer. Le parcours doit alors basculer vers `F0.3`, la récupération assistée — jamais laisser l'utilisatrice dans une impasse.
 
-**Décision.** Le changement d'adresse d'un compte portant un solde disponible **ne gèle pas** les retraits (ce serait punir un usage légitime), mais il est notifié, journalisé, et remonte dans la file d'anomalies du back-office. Le gel, lui, est réservé à la récupération assistée *(R-C14)*, où l'identité n'est pas prouvée.
+**Décision.** ⚠️ **À reformuler** *(`DP-07`)* : il n'y a plus de solde. Ce que le changement d'adresse doit protéger est **le numéro mobile money de destination** — un changement d'adresse suivi d'un changement de `msisdn` est le scénario d'attaque à bloquer. Ancienne rédaction : le changement d'adresse d'un compte portant un solde disponible **ne gèle pas** les retraits (ce serait punir un usage légitime), mais il est notifié, journalisé, et remonte dans la file d'anomalies du back-office. Le gel, lui, est réservé à la récupération assistée *(R-C14)*, où l'identité n'est pas prouvée.
 
 ### 2. Structure de code
 
@@ -396,7 +396,7 @@ Screen — "Changer mon email", step 1 of 3.
 Vertical order: back arrow, title "Changer mon email"; a three-dot step
 indicator with step 1 active and labels "Vérifier", "Nouvelle adresse",
 "Confirmer"; an amber warning card with a shield icon reading "Votre
-portefeuille contient 128 000 Ar. Pour votre sécurité, nous vérifions les deux
+numéro Mobile Money reçoit vos ventes. Pour votre sécurité, nous vérifions les deux
 adresses."; a read-only field showing the current address "hanta@gmail.com";
 explanatory text "Nous allons envoyer un code à cette adresse"; full-width
 primary button "Envoyer le code"; a secondary text link at the very bottom
@@ -474,7 +474,7 @@ demande_recuperation
   cree_le · IDX(statut, cree_le)
 ```
 
-`portefeuille` gagne `retraits_geles bool` — le gel doit être un état lisible, pas une règle implicite éparpillée.
+⚠️ **`portefeuille.retraits_geles` est supprimé** *(`DP-07`)*. Le verrou équivalent porte sur `boutique.msisdn_mobile_money` : **aucun changement de numéro pendant une procédure de récupération**. Ancienne rédaction : le gel doit être un état lisible, pas une règle implicite éparpillée.
 
 ### 4. Design
 
@@ -505,7 +505,7 @@ argent."; full-width primary button "Envoyer ma demande".
 
 ### 6. Frontend
 
-Formulaire acheteuse + suivi du dossier par son numéro. Back-office : file, dossier, comparaison, décision. Le motif de refus est affiché intégralement à l'utilisatrice — une décision non motivée est vécue comme arbitraire.
+Formulaire acheteuse + suivi du dossier par son numéro. **Instruction automatique par `SYS`** *(`DP-05`)* : comparaison sur seuil de concordance, points comparés journalisés. ⚠️ **Aucun recours en cas de refus.** Ancienne rédaction : Back-office : file, dossier, comparaison, décision. Le motif de refus est affiché intégralement à l'utilisatrice — une décision non motivée est vécue comme arbitraire.
 
 ```issues
 feature: F0.3
@@ -542,7 +542,7 @@ apps/mobile/src/features/livraison/hooks/useVerificationTelephone.ts
 
 ### 3. Base de données
 
-Aucune table nouvelle : `utilisateur.telephone` et `telephoneVerifieLe` existent depuis `F0.1`. `colis` gagne `telephone_verifie bool`, figé à la création — le livreur doit savoir si le numéro qu'il compose a été confirmé.
+Aucune table nouvelle : `utilisateur.telephone` et `telephoneVerifieLe` existent depuis `F0.1`. `expedition` gagne `telephone_verifie bool`, figé à la création — **la boutique doit savoir si le numéro qu'elle compose a été confirmé** *(`DP-04`)*.
 
 ### 4. Design
 
@@ -583,79 +583,6 @@ phase: P1
 prio: S
 etapes: [conception, squelette, bdd, design, backend, frontend]
 depend: [F0.1, F3.3]
-```
-
----
-
-## F0.4 — Bascule de rôle acheteur ↔ vendeur ↔ particulier ★
-
-`P1 · S · complet` — **Dépend de** F0.1, F0.6 · **Règles** R-H5, R-H11 · **Voir aussi** F1.17
-
-### 1. Conception
-
-Trois rôles sur un même compte, deux bascules à rendre fluides.
-
-- **Acheteur → particulier** : « Vendre un article que je ne porte plus ». **Aucun nom de boutique, aucun KYC.** Le profil vendeur est créé en `type_vendeur = particulier`, `nom_boutique = null`. Détail du parcours en `F1.17`.
-- **Particulier → professionnel** : au premier encaissement, ou au franchissement du seuil *(R-H11)*. Écran expliquant **ce qui change** — vérification, responsabilités, politique de retour, commission — puis `F0.6`.
-- **Acheteur → professionnel** : directement `F0.6`.
-
-**Principe.** Les portefeuilles et tableaux de bord restent séparés par rôle *(CDC §3.1)*. Un même compte, plusieurs casquettes, jamais un mélange des comptes d'argent.
-
-**Décision.** La bascule au seuil est **une invitation, pas un blocage** : on n'empêche pas quelqu'un de vendre un quatrième article. Ce qui est bloqué, c'est l'encaissement sans vérification *(R-H10)* — la seule règle qui protège réellement l'acheteuse.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/identite/
-├─ routes.ts   + POST /moi/roles/particulier · POST /moi/roles/vendeur
-├─ roles.ts    création de profil, bascule, seuil
-apps/mobile/src/features/roles/ecrans/{EcranDevenirVendeur,EcranBasculePro}.tsx
-apps/mobile/src/noyau/roleActif.ts        sélecteur de rôle, portefeuilles séparés
-```
-
-### 3. Base de données
-
-Migration `..._f0_4_type_vendeur` : `profil_vendeur.type_vendeur(boutique|particulier)`, `nom_boutique` devient nullable, `fidelite_activee`, `nb_abonnes`.
-
-Paramètres : `seuil_bascule_ventes`, `seuil_bascule_montant` *(R-H11)*.
-
-### 4. Design
-
-Écran « Devenir vendeur » présentant les deux voies côte à côte, sans jargon : « Je vends mes affaires » contre « J'ai une boutique ». Écran de bascule listant en deux colonnes ce qui change.
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen — "Vendre sur JP" (role choice).
-Two large stacked choice cards, each with an illustration area, a title, three
-bullet lines and a "Commencer" button.
-Card 1 title "Je vends mes affaires", bullets "Pas de boutique à créer",
-"4 champs pour publier", "Vérification seulement quand vous êtes payée".
-Card 2 title "J'ai une boutique", bullets "Catalogue et stock",
-"Ventes en direct", "Vérification d'identité requise".
-Below both cards a muted line "Vous pourrez changer plus tard."
-```
-
-### 5. Backend
-
-`POST /moi/roles/particulier` → crée un `profil_vendeur` particulier, sans exiger de nom.
-`POST /moi/roles/vendeur` → ouvre le parcours `F0.6` ; si un profil particulier existe, il est **converti**, jamais dupliqué.
-Un travail périodique évalue le seuil et émet une invitation (notification unique, non répétée).
-
-**Tests** : acheteur → particulier sans nom ni KYC ; particulier → pro conserve articles et historique ; encaissement refusé en particulier non vérifié ; seuil franchi → invitation **une seule fois** ; portefeuilles distincts par rôle.
-
-### 6. Frontend
-
-Sélecteur de rôle dans « Moi ». Aucun mélange visuel : les montants du particulier et ceux de la boutique ne sont jamais additionnés à l'écran.
-
-```issues
-feature: F0.4
-titre: Bascule de rôle acheteur, vendeur, particulier
-epic: "00"
-phase: P1
-prio: S
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F0.1, F0.6]
 ```
 
 ---
@@ -714,14 +641,14 @@ depend: [F0.1]
 
 ---
 
-## F0.6 — Vérification vendeur (KYC)
+## F0.6 — Vérification boutique (KYC)
 
 `P1 · M · complet` — **Dépend de** F0.1, S3 · **Règles** R-V1 à R-V6 · **Recette** RB… (encaissement)
 
 ### 1. Conception
 Nom de boutique ou nom public → pièce d'identité recto/verso (CIN, permis, passeport) **ou NIF/STAT pour une entreprise** → photographie du visage → numéro mobile money **au même nom que la pièce** *(R-V2)* → adresse d'enlèvement → soumission.
 
-En statut *en cours*, le vendeur **peut** préparer son catalogue, il ne **peut** ni publier de contenu, ni diffuser, ni encaisser *(R-V1)*. Aucun encaissement sans vérification validée : c'est le mécanisme central de confiance du produit.
+En statut *en cours*, la boutique **peut** préparer son catalogue, elle ne **peut** ni publier de contenu, ni diffuser, ni encaisser *(R-V1)*. Aucun encaissement sans vérification validée : c'est le mécanisme central de confiance du produit.
 
 Refus **motivé, précis sur ce qui manque** *(R-V3)*. Moins de 18 ans : refus définitif *(R-V6, RB6)*.
 
@@ -729,7 +656,7 @@ Refus **motivé, précis sur ce qui manque** *(R-V3)*. Moins de 18 ans : refus d
 `modules/identite/verification.ts` · `modules/identite/documents.ts` (chiffrement au repos, accès journalisé) · `apps/mobile/src/features/verification/ecrans/{Etape1Boutique,Etape2Piece,Etape3Selfie,Etape4MobileMoney,Etape5Adresse,EcranStatut}.tsx` · `apps/admin/src/pages/verifications/{File,Dossier}.tsx`.
 
 ### 3. Base de données
-`profil_vendeur.statut_verification`, `profil_createur.statut_verification`, table `document_identite` (`url_chiffree`, `empreinte`), `demande_verification` (statut, motif, décideur, horodatage). Accès aux documents journalisé dans `journal_audit` *(R-V5, N3.1)*.
+`boutique.statut_verification`, `profil_createur.statut_verification`, table `document_identite` (`url_chiffree`, `empreinte`), `demande_verification` (statut, motif, décideur, horodatage). Accès aux documents journalisé dans `journal_audit` *(R-V5, N3.1)*.
 
 ### 4. Design
 Cinq pas, un par écran, progression visible et reprise possible. Cadre de capture avec repères pour la pièce. Écran de statut avec délai cible affiché *(R-V4)* et bannière permanente rappelant ce qui manque.
@@ -749,7 +676,7 @@ Also produce the same screen after capture: the photo as a thumbnail, a green
 ```
 
 ### 5. Backend
-`POST /vendeur/verification` (multipart, chiffrement immédiat) · `GET /vendeur/verification` · `POST /admin/verifications/:id/decision`. Blocage de l'encaissement contrôlé dans `paiement` **et** `portefeuille`, pas seulement à l'interface.
+`POST /boutique/verification` (multipart, chiffrement immédiat) · `GET /boutique/verification` · **décision automatique par `SYS` et le prestataire** *(`DP-05`, `UC-52`)*. **Blocage de la mise en vente** contrôlé dans la publication d'article **et** le démarrage de direct *(`DP-07`)* — plus dans le paiement : l'argent va directement à la boutique, il serait trop tard.
 
 **Tests** : encaissement refusé en `en_cours` et en `refuse` ; catalogue autorisé en `en_cours` ; publication refusée ; discordance de nom → refus ; accès à un document journalisé ; mineur → refus définitif.
 
@@ -758,7 +685,7 @@ Capture avec compression avant envoi (le réseau est lent, les photos sont lourd
 
 ```issues
 feature: F0.6
-titre: Vérification vendeur (KYC)
+titre: Vérification boutique (KYC)
 epic: "00"
 phase: P1
 prio: M
@@ -768,23 +695,23 @@ depend: [F0.1]
 
 ---
 
-## F0.7 — Badge vendeur vérifié
+## F0.7 — Badge boutique vérifiée
 
 `P1 · M · complet` — **Dépend de** F0.6 · **Règles** R-V… , badge
 
 ### 1. Conception
 Le badge apparaît sur : vignette de direct, fil, fiche produit, vitrine, profil créatrice, panier, écran de paiement, facture *(CDC §5.1.3)*. Un appui affiche une phrase : *« Identité et compte mobile money vérifiés par JP. »*
 
-**Le badge du particulier est distinct** *(R-H6)* : « Particulier vérifié » ne dit pas la même chose que « Boutique vérifiée », et l'acheteuse doit pouvoir faire la différence.
+~~**Le badge du particulier est distinct**~~ ❌ *(`DP-01`)* — il n'y a plus qu'un badge, « Boutique vérifiée ». Ancienne rédaction : *(R-H6)* : « Particulier vérifié » ne dit pas la même chose que « Boutique vérifiée », et l'acheteuse doit pouvoir faire la différence.
 
 ### 2. Structure de code
-`packages/ui/src/BadgeVerifie.tsx` — un composant, utilisé partout, jamais réimplémenté. `packages/contracts` : le résumé vendeur porte `{ verifie, typeVendeur }` dans **toutes** les réponses qui affichent un vendeur.
+`packages/ui/src/BadgeVerifie.tsx` — un composant, utilisé partout, jamais réimplémenté. `packages/contracts` : le résumé boutique porte `{ verifie, typeVendeur }` dans **toutes** les réponses qui affichent une boutique.
 
 ### 3. Base de données
-Aucune table. `profil_vendeur.statut_verification` et `type_vendeur` suffisent. Le champ est inclus dans les projections de liste pour éviter une requête par vignette.
+Aucune table. `boutique.statut_verification` et `type_boutique` suffisent. Le champ est inclus dans les projections de liste pour éviter une requête par vignette.
 
 ### 4. Design
-Pastille compacte, deux variantes (boutique, particulier), trois tailles. Feuille explicative au toucher.
+Pastille compacte, **une seule variante** *(`DP-01`)*, trois tailles. Feuille explicative au toucher.
 
 **Prompt Stitch** — préambule commun, puis :
 ```
@@ -793,20 +720,20 @@ Show a 3x3 grid of the same badge component: rows are sizes (small inline in a
 list row, medium on a product card, large on a shop header); columns are
 variants ("Boutique vérifiée" with a shield check, "Particulier vérifié" with a
 person check, "Non vérifié" greyed out).
-Then show a bottom sheet that opens on tap: a shield icon, title "Vendeur
+Then show a bottom sheet that opens on tap: a shield icon, title "Boutique
 vérifié", body "Identité et compte mobile money vérifiés par JP.", and a
 full-width button "J'ai compris".
 ```
 
 ### 5. Backend
-Le champ est ajouté aux projections de vendeur dans catalogue, direct, contenu, commande, facture. **Test transverse** : aucune réponse affichant un vendeur ne l'omet.
+Le champ est ajouté aux projections de boutique dans catalogue, direct, contenu, commande, facture. **Test transverse** : aucune réponse affichant une boutique ne l'omet.
 
 ### 6. Frontend
 Composant partagé, utilisé aux 8 emplacements. Test de rendu par emplacement.
 
 ```issues
 feature: F0.7
-titre: Badge vendeur vérifié
+titre: Badge boutique vérifiée
 epic: "00"
 phase: P1
 prio: M

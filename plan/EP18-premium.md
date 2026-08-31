@@ -33,7 +33,7 @@
 **Non négociable** : sur un produit dont l'actif est la confiance, **un sponsoring caché découvert une fois détruit la crédibilité de tout le fil** — pas seulement du contenu concerné. Le coût d'une découverte est disproportionné par rapport au gain d'une mention discrète.
 
 **Trois cas à couvrir**, et il faut les trois :
-1. un contenu produit dans le cadre d'un partenariat vendeuse ↔ créatrice *(F15.11, F15.12)* ;
+1. un contenu produit dans le cadre d'un partenariat boutique ↔ créatrice *(F15.11, F15.12)* ;
 2. un contenu produit pour une campagne de marque *(F18.6)* ;
 3. une mise en avant payée *(F10.5, F8.6)* — mention « Sponsorisé », qui est un cas distinct : c'est l'emplacement qui est payé, pas le contenu.
 
@@ -187,13 +187,13 @@ depend: [F3.15, F4.1]
 
 `P1 · S · moyen` — **Voir** F0.7
 
-**Conception** — même mécanique que le badge vendeur *(F0.7)*, libellé distinct : « Créatrice vérifiée ». Affiché sur le profil, les contenus, la sélection, et partout où la créatrice apparaît.
+**Conception** — même mécanique que le badge boutique *(F0.7)*, libellé distinct : « Créatrice vérifiée ». Affiché sur le profil, les contenus, la sélection, et partout où la créatrice apparaît.
 
 **Trois variantes du badge existent donc** : boutique vérifiée, particulier vérifié *(R-H6)*, créatrice vérifiée. Un seul composant partagé `packages/ui/src/BadgeVerifie.tsx` *(F0.7)*, trois libellés — pas trois implémentations.
 
 **Base de données** — `profil_createur.badge_verifie` *(CDC §3.1)*.
 
-**Tests** : badge présent sur toutes les surfaces où une créatrice apparaît (test paramétré) ; libellé distinct du badge vendeur ; absent si non vérifiée.
+**Tests** : badge présent sur toutes les surfaces où une créatrice apparaît (test paramétré) ; libellé distinct du badge boutique ; absent si non vérifiée.
 
 ```issues
 feature: F18.4
@@ -211,15 +211,15 @@ depend: [F0.7, F15.1]
 
 `P2 · S · moyen`
 
-**Conception** — sélection éditoriale de vendeurs et d'articles, curée par l'équipe. **La sélection est ce qui crée la valeur** — c'est le même raisonnement que la validation des candidatures d'événement *(R-W3)*.
+**Conception** — sélection éditoriale de boutiques et d'articles, curée par l'équipe. **La sélection est ce qui crée la valeur** — c'est le même raisonnement que la validation des candidatures d'événement *(R-W3)*.
 
-**Ce que JP Sélect apporte à un petit vendeur** : une visibilité qu'il ne pourrait pas acheter *(F10.5)*, et un signal de qualité qui n'est pas un score calculé *(F6.2)* mais un choix assumé.
+**Ce que JP Sélect apporte à une petite boutique** : une visibilité qu'elle ne pourrait pas acheter *(F10.5)*, et un signal de qualité qui n'est pas un score calculé *(F6.2)* mais un choix assumé.
 
 **Ce qu'il ne doit pas devenir** : un emplacement vendu. Si JP Sélect devient payant, il perd exactement ce qui le rend crédible. À garder distinct de la mise en avant sponsorisée *(F8.6)*, y compris visuellement.
 
 **Base de données** — `selection_editoriale (id, titre, description, visuel, position, actif)`, `selection_editoriale_element (selection_id, cible_type, cible_id, position)`.
 
-**Backend** — `GET /jp-select`, gestion en back-office.
+**Backend** — `GET /jp-select`, **sélection par règles automatiques** *(`DP-05`)* — il n'y a plus de back-office.
 
 **Design** — Prompt Stitch : *"JP Sélect" section on the home feed with an editorial header, a short curator note in italics ("Notre sélection de la semaine : les cotonnades légères"), and a horizontal carousel of curated product cards each with a small editorial ribbon; visually distinct from the sponsored cards (no "Sponsorisé" label, different ribbon shape) so the two are never confused.*
 
@@ -291,7 +291,7 @@ depend: [F18.6]
 
 `P2 · C · cadre`
 
-**Conception** — contenu éditorial : tendances, lookbooks, portraits de vendeuses. **Chaque article éditorial porte des produits achetables** — la règle d'or de l'épique 14 s'applique aussi à l'éditorial, sinon c'est un blog.
+**Conception** — contenu éditorial : tendances, lookbooks, portraits de boutiques. **Chaque article éditorial porte des produits achetables** — la règle d'or de l'épique 14 s'applique aussi à l'éditorial, sinon c'est un blog.
 
 **Impact base de données** — `article_editorial (id, titre, corps, visuel, publie_le)`, réutilise `evenement_element` pour les produits rattachés ou une table équivalente.
 
@@ -355,7 +355,7 @@ depend: [F16.4]
 
 **Conception** — **à ouvrir seulement quand l'audience le justifie**, avec des annonceurs locaux (télécoms, banques, grande consommation), **pas de programmatique**.
 
-**Le raisonnement, et il est définitif pour la V1** : le CPM sur une audience malgache est trop faible pour en faire un pilier. C'est **le sixième revenu du modèle, pas le premier** — après la commission, l'abonnement vendeur, les mises en avant, le JP Club et les campagnes de marque, qui rapportent tous davantage et **sans dégrader l'expérience**.
+**Le raisonnement, et il est définitif pour la V1** : le CPM sur une audience malgache est trop faible pour en faire un pilier. C'est **le sixième revenu du modèle, pas le premier** — après la commission, l'abonnement boutique, les mises en avant, le JP Club et les campagnes de marque, qui rapportent tous davantage et **sans dégrader l'expérience**.
 
 **Et le coût caché est le vrai argument** : une bannière display abîme la confiance et le budget de données *(C1, C2)* — les deux actifs du produit — pour un revenu marginal. Aucun développement en V1, et la mention ici sert à documenter le refus, pas à préparer la fonctionnalité.
 

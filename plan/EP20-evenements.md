@@ -3,9 +3,9 @@
 > 9 fonctionnalités · vague 1 (conception) / phase 2 (livraison) · module `evenement`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit détaillé : [EP00-identite.md](EP00-identite.md).
 
-**Un événement est un rendez-vous commercial daté, partagé par plusieurs vendeurs, autour d'un thème** : Noël, Pâques, la rentrée, le Nouvel An malgache, un événement Otaku, la Fête des mères.
+**Un événement est un rendez-vous commercial daté, partagé par plusieurs boutiques, autour d'un thème** : Noël, Pâques, la rentrée, le Nouvel An malgache, un événement Otaku, la Fête des mères.
 
-**Pourquoi c'est une épique et non une fonctionnalité de plus** — c'est le seul mécanisme qui donne à la plateforme une raison d'exister **au-delà de la somme de ses boutiques**. Il crée un pic de trafic que JP peut annoncer, il donne aux petits vendeurs une visibilité qu'ils n'achèteraient jamais seuls, et il fabrique un motif de retour daté, plus honnête et moins coûteux qu'une notification de plus *(F17.4)*.
+**Pourquoi c'est une épique et non une fonctionnalité de plus** — c'est le seul mécanisme qui donne à la plateforme une raison d'exister **au-delà de la somme de ses boutiques**. Il crée un pic de trafic que JP peut annoncer, il donne aux petits boutiques une visibilité qu'ils n'achèteraient jamais seuls, et il fabrique un motif de retour daté, plus honnête et moins coûteux qu'une notification de plus *(F17.4)*.
 
 **Pourquoi la livraison est en phase 2** — un événement a besoin de plusieurs boutiques actives et d'un catalogue fourni. Une page d'événement annoncée puis vide est pire que pas d'événement. Mais **une chose doit être faite en phase 1** : le rattachement d'un article à un événement, un simple champ, qui évite une migration lourde le jour où l'événement de Noël sera décidé trois semaines avant Noël.
 
@@ -31,7 +31,7 @@
 
 ### 1. Conception
 
-**OP** crée l'événement dans le back-office : nom, thème, dates, visuel, couleur d'accent, mot-dièse *(F14.12)*, texte de présentation, règles de participation, adresse publique (`slug`).
+⚠️ **L'événement de portée JP est supprimé** *(`DP-05`)* : il n'y a plus d'opérateur pour le créer. **Seuls subsistent les événements de boutique**, créés par leur organisateur depuis son studio. Ancienne rédaction : nom, thème, dates, visuel, couleur d'accent, mot-dièse *(F14.12)*, texte de présentation, règles de participation, adresse publique (`slug`).
 
 **Machine à états** *(CDC §4.6)* :
 
@@ -46,9 +46,9 @@ BROUILLON ──(annonce, action humaine)──► ANNONCE
 
 **Les dates pilotent les transitions, l'annonce reste humaine** *(R-W1)*. Un événement peut être préparé des semaines à l'avance en `brouillon` sans rien exposer ; l'annonce est une décision éditoriale, la mise en route est mécanique.
 
-**Effet de bord important à la transition `ANNONCE → EN_COURS`** *(R-W4)* : toute candidature restée `candidate` passe automatiquement en `refusee_sans_reponse`, avec notification. Un vendeur laissé sans réponse ne recandidate pas — c'est le principal risque de mortalité de la fonctionnalité côté vendeur.
+**Effet de bord important à la transition `ANNONCE → EN_COURS`** *(R-W4)* : toute candidature restée `candidate` passe automatiquement en `refusee_sans_reponse`, avec notification. Une boutique laissé sans réponse ne recandidate pas — c'est le principal risque de mortalité de la fonctionnalité côté boutique.
 
-**Décision ouverte à trancher avant le premier événement** *(R-W12)* : participation gratuite, payante, ou réservée à un palier d'abonnement vendeur — **et surtout qui valide, avec quel délai d'engagement**. Sans validation, la page perd sa valeur éditoriale ; avec une validation lente, les vendeurs ne jouent plus le jeu. Recommandation du backlog : gratuit sur les deux premiers événements pour amorcer, puis payant **uniquement** pour les emplacements en tête de page, jamais pour l'accès à l'événement lui-même — sous peine de n'avoir que de grosses boutiques et un catalogue pauvre.
+**Décision ouverte à trancher avant le premier événement** *(R-W12)* : participation gratuite, payante, ou réservée à un palier d'abonnement boutique — **et surtout qui valide, avec quel délai d'engagement**. Sans validation, la page perd sa valeur éditoriale ; avec une validation lente, les boutiques ne jouent plus le jeu. Recommandation du backlog : gratuit sur les deux premiers événements pour amorcer, puis payant **uniquement** pour les emplacements en tête de page, jamais pour l'accès à l'événement lui-même — sous peine de n'avoir que de grosses boutiques et un catalogue pauvre.
 
 ### 2. Structure de code
 
@@ -86,7 +86,7 @@ Back-office uniquement pour cette fonctionnalité.
 **Prompt Stitch** — préambule commun de [PLAN_SOCLE §8](PLAN_SOCLE.md), puis :
 
 ```
-Screen — admin web back-office, "Nouvel événement" (desktop layout, not mobile).
+Screen — seller studio, "Nouvel événement" (mobile layout — there is no back-office anymore, DP-05).
 Two-column form. Left column: field "Nom de l'événement" with value "Noël JP
 2026"; field "Thème" with a chip suggestion row "Noël · Pâques · Rentrée ·
 Otaku · Fête des mères"; a "Slug public" field showing "/evenements/noel-2026"
@@ -134,20 +134,20 @@ depend: []
 
 ---
 
-## F20.2 — Candidature et acceptation d'un vendeur ou d'une créatrice
+## F20.2 — Candidature et acceptation d'une boutique ou d'une créatrice
 
 `P2 · S · complet` — **Dépend de** F20.1, F0.6 · **Règles** R-W3, R-W4 · **Story** US-EVT-02
 
 ### 1. Conception
 
 - **V / C** : voit les événements ouverts aux candidatures dans son studio → candidate en choisissant les articles et promotions qu'il engage → attend la décision.
-- **OP** : accepte ou refuse, **avec motif écrit en cas de refus** *(R-W4)*.
+- **L'organisateur** : accepte ou refuse, **avec motif écrit en cas de refus** *(R-W4)*. Il n'y a plus d'arbitre tiers *(`DP-05`)*.
 
 **Pourquoi une validation** *(R-W3)* — sans elle, le premier événement de Noël se remplit de 400 articles hors sujet et la page ne vaut plus rien. **La sélection est ce qui fait la valeur de l'événement**, exactement comme pour « JP Sélect » *(F18.1)*. C'est un travail éditorial, pas une formalité administrative.
 
-**La règle qui protège la fonctionnalité côté vendeur** *(R-W4)* : une candidature restée sans réponse à l'ouverture est **refusée automatiquement avec notification**. Le silence est le pire des traitements — il fait perdre la confiance sans même produire un refus assumé.
+**La règle qui protège la fonctionnalité côté boutique** *(R-W4)* : une candidature restée sans réponse à l'ouverture est **refusée automatiquement avec notification**. Le silence est le pire des traitements — il fait perdre la confiance sans même produire un refus assumé.
 
-**Vendeur non vérifié** *(US-EVT-02 CA7)* : candidature refusée, **avec l'explication de la condition manquante** et un lien vers `F0.6`. Un refus sans explication de ce qu'il faut faire est un refus définitif de fait.
+**Boutique non vérifié** *(US-EVT-02 CA7)* : candidature refusée, **avec l'explication de la condition manquante** et un lien vers `F0.6`. Un refus sans explication de ce qu'il faut faire est un refus définitif de fait.
 
 **Créatrice** : engage sa sélection *(F15.3)* ou ses clips ; ses ventes restent attribuées par affiliation *(F15.4)* — l'événement ne change pas la chaîne de rémunération.
 
@@ -209,11 +209,11 @@ modal with a required reason field and three quick-pick reasons "Hors thème",
 `POST /evenements/:id/participations` — refus si non vérifié, si candidatures closes, si déjà candidat.
 `POST /admin/evenements/:id/candidatures/:cid/decision` `{ decision, motif }` — **motif obligatoire si refus**.
 
-**Tests** : candidature unique par participant ; vendeur non vérifié → refus **avec condition manquante** ; acceptation → articles visibles sur la page à l'ouverture ; refus → motif notifié ; **candidature en attente à l'ouverture → `refusee_sans_reponse` + notification** ; créatrice → attribution d'affiliation préservée sur les ventes de l'événement.
+**Tests** : candidature unique par participant ; boutique non vérifiée → refus **avec condition manquante** ; acceptation → articles visibles sur la page à l'ouverture ; refus → motif notifié ; **candidature en attente à l'ouverture → `refusee_sans_reponse` + notification** ; créatrice → attribution d'affiliation préservée sur les ventes de l'événement.
 
 ### 6. Frontend
 
-Studio vendeur : onglet « Événements » avec les états clairement distincts (ouvert, candidaté, accepté, refusé). Back-office : file avec les vignettes des articles engagés — on ne juge pas une candidature sur un nom de boutique.
+Studio boutique : onglet « Événements » avec les états clairement distincts (ouvert, candidaté, accepté, refusé). Back-office : file avec les vignettes des articles engagés — on ne juge pas une candidature sur un nom de boutique.
 
 ```issues
 feature: F20.2
@@ -413,7 +413,7 @@ depend: [F20.3, F0.10, F8.3]
 
 ### 1. Conception
 
-Le vendeur crée son propre rendez-vous, **sans validation** : « Ma braderie de fin de mois », « Nouvelle collection samedi ». Portée limitée à sa vitrine et à ses abonnés.
+La boutique crée son propre rendez-vous, **sans validation** : « Ma braderie de fin de mois », « Nouvelle collection samedi ». Portée limitée à sa vitrine et à ses abonnés.
 
 **La distinction qui protège la valeur du calendrier** *(R-W8)* : les événements JP sont curés et visibles de tous ; les événements de boutique **n'apparaissent pas** dans le calendrier général *(F20.9)*, seulement sur la vitrine et dans le fil des abonnés *(F7.17)*. Sans cette séparation, le calendrier JP se remplit de 300 braderies et perd toute valeur éditoriale — et l'événement officiel perd ce qui le rendait désirable.
 
@@ -421,10 +421,10 @@ Le vendeur crée son propre rendez-vous, **sans validation** : « Ma braderie de
 
 ### 2. Structure de code
 
-Réutilise entièrement `modules/evenement`, avec `portee = 'vendeur'` et `proprietaire_id` renseigné. Aucun code parallèle : les deux portées partagent la machine à états, la page et les éléments.
+Réutilise entièrement `modules/evenement`, avec `portee = 'boutique'` et `proprietaire_id` renseigné. Aucun code parallèle : les deux portées partagent la machine à états, la page et les éléments.
 
 ```
-apps/api/src/modules/evenement/service.ts    + branche portee=vendeur, sans validation
+apps/api/src/modules/evenement/service.ts    + branche portee=boutique, sans validation
 apps/mobile/src/features/evenements/ecrans/EcranMesEvenements.tsx
 ```
 
@@ -451,9 +451,9 @@ notification par jour."
 
 ### 5. Backend
 
-`POST /vendeur/evenements` — portée vendeur, publication immédiate, sans validation. Le reste des routes est partagé avec `F20.1`.
+`POST /boutique/evenements` — portée boutique, publication immédiate, sans validation. Le reste des routes est partagé avec `F20.1`.
 
-**Tests** : création sans validation ; **absent du calendrier général** ; présent sur la vitrine et dans le fil des abonnés ; cinquième événement de la semaine → créé mais **non notifié** ; un vendeur ne peut pas créer d'événement de portée `jp`.
+**Tests** : création sans validation ; **absent du calendrier général** ; présent sur la vitrine et dans le fil des abonnés ; cinquième événement de la semaine → créé mais **non notifié** ; une boutique ne peut pas créer d'événement de portée `jp`.
 
 ### 6. Frontend
 
@@ -522,7 +522,7 @@ cet événement."
 
 `POST /evenements/:id/rappel` → inscription. Fan-out à l'ouverture et au dernier jour, par lots, en passant par `notification.envoyer()` qui applique les plafonds.
 
-**Tests** : maximum 3 notifications par événement et par utilisateur ; celle qui n'a rien demandé et ne suit aucun participant → **rien** ; budget partagé avec les promotions vérifié sur un scénario promotion + événement le même jour ; rappel vendeur à 48 h, **une seule fois** ; double exécution du travail → pas de doublon.
+**Tests** : maximum 3 notifications par événement et par utilisateur ; celle qui n'a rien demandé et ne suit aucun participant → **rien** ; budget partagé avec les promotions vérifié sur un scénario promotion + événement le même jour ; rappel boutique à 48 h, **une seule fois** ; double exécution du travail → pas de doublon.
 
 ### 6. Frontend
 
@@ -611,9 +611,9 @@ depend: [F20.3]
 
 ### 1. Conception
 
-**Côté vendeur** — articles vendus, chiffre d'affaires, comparaison avec une période équivalente hors événement, **nouveaux abonnés gagnés**, contenus publiés et leurs conversions. C'est ce qui décide de sa participation au suivant.
+**Côté boutique** — articles vendus, chiffre d'affaires, comparaison avec une période équivalente hors événement, **nouveaux abonnés gagnés**, contenus publiés et leurs conversions. C'est ce qui décide de sa participation au suivant.
 
-**Côté OP** — participation par vendeur, trafic de la page, conversion, part des ventes de la période attribuable à l'événement, coût des mises en avant.
+**Côté tableau de bord** *(`F11.7`)* — participation par boutique, trafic de la page, conversion, part des ventes de la période attribuable à l'événement, coût des mises en avant.
 
 **La règle qui donne son sens à la fonctionnalité** *(R-W11)* : le bilan est produit **y compris lorsqu'il est mauvais**. Un événement dont le bilan n'est pas mesuré sera reconduit par habitude et non par résultat — et l'équipe passera six mois à organiser des événements qui ne vendent rien.
 
@@ -625,7 +625,7 @@ depend: [F20.3]
 
 ```
 apps/api/src/modules/evenement/
-├─ bilan.ts        agrégats vendeur et global, période de référence
+├─ bilan.ts        agrégats boutique et global, période de référence
 └─ bilan.test.ts
 apps/api/src/jobs/bilanEvenement.ts     généré à la clôture
 apps/mobile/src/features/evenements/ecrans/EcranBilanEvenement.tsx
@@ -677,7 +677,7 @@ footer row of totals; plus a small "Coût des mises en avant" card.
 
 ### 5. Backend
 
-`GET /evenements/:id/bilan` — vendeur : son bilan ; opérateur : le bilan global. Généré par le travail de clôture, relançable.
+`GET /evenements/:id/bilan` — boutique : son bilan ; opérateur : le bilan global. Généré par le travail de clôture, relançable.
 
 **Tests** : bilan produit même à zéro vente ; période de référence correcte (7 jours, même jour de semaine, hors événement) ; nouveaux abonnés comptés sur la fenêtre de l'événement ; attribution `origine = evenement` correcte ; une vente attribuée à la fois à un événement et à une créatrice apparaît dans les deux bilans **sans double comptage du chiffre d'affaires global** ; régénération idempotente.
 

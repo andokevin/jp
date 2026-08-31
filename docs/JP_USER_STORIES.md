@@ -9,7 +9,7 @@
 
 > Chaque story est **testable**. Les critères d'acceptation sont écrits en *Étant donné / Quand / Alors*, et **chaque story porte au moins un cas d'échec** — c'est là que se jouent les vraies décisions de conception, pas dans le chemin heureux.
 >
-> Les stories reprennent les personas du backlog : **A** acheteuse · **AN** visiteuse non inscrite · **V** vendeur · **VE** employé du vendeur · **C** créatrice · **P** vendeur particulier · **OP** équipe JP · **L** livreur · **PR** point relais.
+> Les stories reprennent les personas du backlog *(`DP-01`)* : **A** acheteuse · **AN** visiteuse non inscrite · **B** boutique · **C** créatrice · **D** donateur. *(Ancienne liste, obsolète : **VE**** employé du vendeur · **C** créatrice · **P** vendeur particulier · **OP** équipe JP · **L** livreur · **PR** point relais.
 
 ---
 
@@ -18,7 +18,7 @@
 | Épic | Stories | Fonctionnalités du backlog | Phase |
 |---|---|---|---|
 | **1. Auth** | US-AUTH-01 → 08 | F0.1, F0.3, F0.13, F0.14, F0.15, F0.16 | P1 |
-| **2. Vente (hors live)** | US-VENTE-01 → 09 | F1.15, F1.16, F1.17, F1.18, F1.19, F1.20, F3.14 | P1 (F1.17, F1.20 selon décisions) |
+| **2. Vente (hors live)** | US-VENTE-01 → 09 *(sauf 04)* | F1.15, F1.16, F1.18, F1.19, F1.20, F3.14 | P1 (F1.20 selon décisions) |
 | **3. Social / Followers** | US-SOCIAL-01 → 05 | F7.1, F7.15, F7.16, F7.17 | P1 · F7.16 en P2 |
 | **4. Fidélisation client** | US-FID-01 → 06 | F7.5, F7.6, F7.18, F7.19 | P2 |
 | **5. Promotions** | US-PROMO-01 → 08 | F7.8, F7.9, F7.22, F7.23, F7.24, F7.25, F7.26, F3.15 | P1 : F7.22, F7.23, F7.26, F3.15 |
@@ -119,7 +119,7 @@
 
 ### US-AUTH-06 · F0.15 · P1 / S — Changer d'adresse email en sécurité
 
-> **En tant que** vendeuse avec de l'argent sur mon portefeuille,
+> **En tant que** boutique avec de l'argent sur mon portefeuille,
 > **je veux** que changer mon email demande une double vérification,
 > **afin que** personne ne puisse détourner mon compte et mes retraits.
 
@@ -144,10 +144,10 @@
 **Critères d'acceptation**
 1. Étant donné l'écran de connexion, quand j'indique ne plus avoir accès à mon email, alors un formulaire me demande prénom, dernière commande, montant approximatif et numéro de téléphone de livraison.
 2. Étant donné ma demande envoyée, quand elle est enregistrée, alors je reçois un numéro de dossier et l'engagement d'une réponse sous 24 h.
-3. Étant donné la file « récupérations », quand **OP** ouvre ma demande, alors il voit l'historique de commandes du compte visé pour comparer, et sa décision est tracée.
-4. Étant donné une demande validée, quand OP réattribue le compte, alors la nouvelle adresse est vérifiée par code avant l'ouverture de session.
-5. **Cas d'échec** : étant donné une demande refusée, quand OP la classe, alors je reçois un motif écrit, et **le compte reste inchangé**.
-6. Étant donné un compte avec un solde vendeur disponible, quand une récupération est demandée, alors les retraits sont **gelés** jusqu'à la décision.
+3. Étant donné ma demande, quand **`SYS`** l'instruit *(`DP-05`)*, alors il compare **sur seuil de concordance** l'historique de commandes du compte visé pour comparer, et sa décision est tracée.
+4. Étant donné une concordance suffisante, quand `SYS` réattribue le compte, alors la nouvelle adresse est vérifiée par code avant l'ouverture de session.
+5. **Cas d'échec** : étant donné une demande refusée, quand `SYS` la classe, alors je reçois un motif écrit — ⚠️ **et il n'y a personne à qui faire appel** *(`DP-05`)* — et **le compte reste inchangé**.
+6. Étant donné un compte avec un solde boutique disponible, quand une récupération est demandée, alors les retraits sont **gelés** jusqu'à la décision.
 
 **Dépendances** US-AUTH-01, F0.6 · **Règles** R-C14 · **Écrans** Formulaire de récupération, Back-office → Récupérations
 
@@ -161,24 +161,24 @@
 
 **Critères d'acceptation**
 1. Étant donné mon inscription, quand elle se termine, alors **aucun numéro de téléphone ne m'a été demandé**.
-2. Étant donné ma première commande en livraison à domicile, quand je choisis l'adresse, alors le numéro du destinataire est demandé et vérifié par un code SMS.
-3. Étant donné une livraison en point relais, quand je valide ma commande, alors le numéro est demandé car le code de retrait est envoyé par SMS (`F5.4`).
+2. Étant donné ma première commande, quand je conviens du point de remise *(`F5.11`, `DP-04`)*, alors le numéro du destinataire est demandé et vérifié par un code SMS.
+3. Étant donné un point de remise convenu, quand je valide ma commande, alors **le numéro est indispensable** : c'est par lui que la boutique me joindra pour la remise. *(Il n'y a plus de code de retrait à 6 chiffres — `DP-04`.)*
 4. Étant donné mon numéro vérifié, quand je passe une commande suivante, alors il est pré-rempli et n'est plus re-vérifié.
-5. **Cas d'échec** : étant donné que le SMS de vérification n'arrive pas, quand j'attends plus de 60 s, alors je peux **poursuivre ma commande** avec un numéro non vérifié, signalé comme tel au livreur. Bloquer un paiement sur un SMS non reçu est le pire des compromis.
+5. **Cas d'échec** : étant donné que le SMS de vérification n'arrive pas, quand j'attends plus de 60 s, alors je peux **poursuivre ma commande** avec un numéro non vérifié, signalé comme tel à la boutique. Bloquer un paiement sur un SMS non reçu est le pire des compromis.
 
-**Dépendances** US-AUTH-01, F3.3, F5.4 · **Règles** R-C15, R-C16 · **Écrans** Choix de livraison, Vérification du numéro
+**Dépendances** US-AUTH-01, F3.3, F5.11 · **Règles** R-C15, R-C16, R-L1 · **Écrans** Fil de remise, Vérification du numéro
 
 ---
 
 # ÉPIC 2 — Vente hors live (mode Vinted)
 
-**Enjeu** : le vendeur vend 30 jours sur 30, plus seulement les quatre soirs où il passe en direct. Et l'application a une raison d'être ouverte à 10 h du matin.
+**Enjeu** : la boutique vend 30 jours sur 30, plus seulement les quatre soirs où elle passe en direct. Et l'application a une raison d'être ouverte à 10 h du matin.
 
 ### US-VENTE-01 · F1.15 · P1 / M — Acheter directement depuis une fiche article
 
 > **En tant qu'**acheteuse qui navigue hors direct,
 > **je veux** acheter un article immédiatement depuis sa fiche,
-> **afin de** ne pas attendre le prochain direct du vendeur.
+> **afin de** ne pas attendre le prochain direct de la boutique.
 
 **Critères d'acceptation**
 1. Étant donné une fiche article en ligne avec du stock disponible, quand j'appuie sur « Je prends », alors la même feuille que le direct s'ouvre (taille, quantité, livraison) et **le total avec frais de livraison est affiché avant le paiement**.
@@ -186,7 +186,7 @@
 3. Étant donné une commande née d'une fiche, quand elle est créée, alors son origine est enregistrée (`catalogue`) et elle suit exactement la même machine à états qu'une commande de direct.
 4. Étant donné un article `pièce unique`, quand j'appuie sur « Je prends », alors la quantité n'est pas demandée.
 5. **Cas d'échec — course au stock** : étant donné que la dernière pièce est prise pendant que je choisis ma taille, quand je valide, alors je reçois immédiatement « Désolé, le dernier vient de partir » et la proposition « Prévenez-moi si ça revient » (`F7.4`). **Aucune survente n'est possible.**
-6. Étant donné un article dont le vendeur n'est pas vérifié, quand j'ouvre la fiche, alors l'absence de badge est visible et le paiement reste possible **uniquement si l'encaissement du vendeur est autorisé** (`F0.6`).
+6. Étant donné un article dont la boutique n'est pas vérifiée, quand j'ouvre la fiche, alors l'absence de badge est visible et le paiement reste possible **uniquement si l'encaissement de la boutique est autorisé** (`F0.6`).
 7. Étant donné une fiche article, quand je l'ouvre, alors le **délai d'expédition annoncé** est affiché avant le bouton d'achat (`F5.9`).
 
 **Dépendances** F1.1, F1.10, F3.7, F4.1 · **Règles** R-H1, R-H2 · **Écrans** Fiche article, Feuille « Je prends », Paiement
@@ -201,19 +201,19 @@
 
 **Critères d'acceptation**
 1. Étant donné une fiche article, quand j'appuie sur « Ajouter au panier », alors l'article est réservé pour la **durée catalogue** paramétrée (hypothèse 30 min) et un minuteur est visible dans le panier.
-2. Étant donné plusieurs articles de vendeurs différents, quand j'ouvre mon panier, alors les lignes sont **regroupées par vendeur** avec les frais de livraison par vendeur et un total général (`F3.1`).
+2. Étant donné plusieurs articles de boutiques différentes, quand j'ouvre mon panier, alors les lignes sont **regroupées par boutique** avec les frais de livraison par boutique et un total général (`F3.1`).
 3. Étant donné une réservation catalogue, quand elle expire, alors l'article revient au stock, je reçois **une seule** notification, et un bouton « Reprendre » m'est proposé si le stock est encore disponible.
 4. Étant donné un panier contenant un article dont la réservation a expiré, quand j'ouvre le panier, alors la ligne est signalée comme expirée **avant** que je tente de payer.
 5. **Cas d'échec** : étant donné que je paie au moment exact où une réservation expire, quand le paiement part, alors soit la réservation est prolongée par le paiement en cours, soit le paiement est refusé avec un message clair — **jamais un paiement encaissé sans stock**.
-6. Étant donné la durée de réservation, quand OP la modifie dans les paramètres (`F11.6`), alors la nouvelle valeur s'applique aux réservations suivantes, pas aux réservations en cours.
+6. Étant donné la durée de réservation, quand elle est modifiée en configuration d'exploitation *(`R-O1`, `DP-05`)*, alors la nouvelle valeur s'applique aux réservations suivantes, pas aux réservations en cours.
 
-**Dépendances** US-VENTE-01, F1.10, F3.1, F11.6 · **Règles** R-H3, R-S2 · **Écrans** Fiche article, Panier
+**Dépendances** US-VENTE-01, F1.10, F3.1 · **Règles** R-H3, R-S2 · **Écrans** Fiche article, Panier
 
 ---
 
 ### US-VENTE-03 · F1.18 · P1 / M — Décrire un article vendu sans démonstration vidéo
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** décrire l'état et les mesures réelles de mon article,
 > **afin que** l'acheteuse achète sans me poser la question et ne me le retourne pas.
 
@@ -229,29 +229,29 @@
 
 ---
 
-### US-VENTE-04 · F1.17 · P1 / S — Vendre un vêtement quand je ne suis pas une boutique
+### ~~US-VENTE-04~~ · ~~F1.17~~ — ❌ **supprimée** *(`DP-01`, `DP-02`)*
 
-> **En tant que** particulière qui veut liquider son dressing,
-> **je veux** déposer une annonce en quelques champs sans créer de boutique,
-> **afin de** vendre trois robes sans monter un commerce.
+**Le vendeur particulier n'existe plus.** Qui veut vendre — même trois robes —
+**crée un compte boutique** et se fait vérifier *(`UC-52`)*. Il n'y a plus de
+dépôt d'annonce sans boutique, plus de badge « Particulier », plus de seuil de
+bascule : **un compte a un type, et un seul, il n'en change jamais** *(`DP-02`)*.
 
-**Critères d'acceptation**
-1. Étant donné mon compte acheteuse, quand j'appuie sur « Vendre un article que je ne porte plus », alors un formulaire de **4 champs** m'est proposé : photos, prix, taille, état.
-2. Étant donné le dépôt validé, quand l'annonce est publiée, alors le stock est à 1, l'article est marqué `pièce unique`, et **aucun nom de boutique ni KYC ne m'a été demandé**.
-3. Étant donné que je reçois une commande, quand je veux **encaisser**, alors la vérification d'identité (`F0.6`) est exigée à ce moment-là, expliquée par une phrase claire sur la raison.
-4. Étant donné une annonce de particulier, quand une acheteuse l'ouvre, alors elle voit un **badge « Particulier »** distinct du badge boutique, et la même protection (séquestre, litige) est annoncée.
-5. Étant donné que j'atteins le seuil de bascule (paramètre `F11.6`), quand je dépose une nouvelle annonce, alors je suis invitée à passer en vendeur professionnel, avec l'explication de ce qui change.
-6. **Cas d'échec** : étant donné que je refuse la vérification alors qu'une commande est payée, quand le délai s'écoule, alors la commande est **annulée et intégralement remboursée** à l'acheteuse, et mon compte ne peut plus recevoir de commandes tant que la vérification n'est pas faite.
-7. Étant donné mon dressing virtuel (`F17.10`), quand j'y sélectionne une pièce, alors je peux la mettre en vente sans re-photographier.
+Règles supprimées avec la story : `R-H5`, `R-H6`, `R-H10`, `R-H11`.
 
-**Dépendances** F0.4, F0.6, F1.14 · **Règles** R-H5, R-H6 · **Écrans** Dépôt d'annonce, Vérification, Fiche article
+> **Ce qu'on perd, et il faut le nommer.** Cette story portait un vrai parcours —
+> *« vendre trois robes sans monter un commerce »*, avec la vérification exigée
+> seulement au premier encaissement. **La friction d'entrée augmente** : il faut
+> désormais une pièce d'identité et un numéro mobile money vérifié **avant** de
+> publier quoi que ce soit *(`DP-07`, `R-V1`)*. C'est le prix du paiement direct :
+> l'argent partant tout de suite à la boutique, vérifier après la vente n'aurait
+> plus de sens.
 
 ---
 
 ### US-VENTE-05 · F1.19 · P1 / M — Une vitrine qui vend même quand je ne suis pas en direct
 
-> **En tant que** vendeur,
-> **je veux** que ma vitrine soit vendeuse en permanence,
+> **En tant que** boutique,
+> **je veux** que ma vitrine soit boutique en permanence,
 > **afin de** ne pas dépendre de mes soirées de direct pour faire du chiffre.
 
 **Critères d'acceptation**
@@ -261,13 +261,13 @@
 4. Étant donné mon tableau de bord, quand je consulte mes ventes, alors le chiffre d'affaires est ventilé **par origine** (direct / catalogue / clip / événement).
 5. **Cas d'échec** : étant donné une vitrine sans aucun article en ligne, quand elle est ouverte, alors un état vide utile est affiché (prochain direct, ou invitation à suivre la boutique) — jamais une page blanche.
 
-**Dépendances** F1.11, F0.10, F9.1 · **Règles** R-H7 · **Écrans** Vitrine vendeur, Tableau de bord vendeur
+**Dépendances** F1.11, F0.10, F9.1 · **Règles** R-H7 · **Écrans** Vitrine boutique, Tableau de bord boutique
 
 ---
 
 ### US-VENTE-06 · F3.14 · P1 / M — Une commande hors direct traitée comme les autres
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** retrouver mes commandes de catalogue et de direct dans une seule file,
 > **afin de** ne pas gérer deux logistiques.
 
@@ -275,11 +275,11 @@
 1. Étant donné mes commandes, quand j'ouvre « À préparer », alors les commandes des deux origines apparaissent dans la même liste, avec un marqueur d'origine.
 2. Étant donné une commande de catalogue, quand elle progresse, alors elle emprunte **la même machine à états** que celle du direct : payée → en préparation → expédiée → livrée → confirmée.
 3. Étant donné une commande de catalogue, quand un litige est ouvert, alors le parcours de litige est identique (`F6.3`).
-4. Étant donné le délai d'acceptation, quand la commande vient du catalogue, alors le délai accordé au vendeur est **plus long** qu'en direct (paramètre distinct) car il n'est pas devant son téléphone.
-5. **Cas d'échec** : étant donné que le vendeur ne réagit pas dans le délai, quand celui-ci expire, alors l'acheteuse est notifiée, sa réservation est protégée, et l'absence de réaction pèse sur le score de confiance (`F6.2`).
-6. Étant donné le tableau de bord OP, quand je consulte les indicateurs, alors le taux de conversion et le délai d'expédition sont comparables **par origine**.
+4. Étant donné le délai d'acceptation, quand la commande vient du catalogue, alors le délai accordé à la boutique est **plus long** qu'en direct (paramètre distinct) car elle n'est pas devant son téléphone.
+5. **Cas d'échec** : étant donné que la boutique ne réagit pas dans le délai, quand celui-ci expire, alors l'acheteuse est notifiée, sa réservation est protégée, et l'absence de réaction pèse sur le score de confiance (`F6.2`).
+6. Étant donné le tableau de bord interne *(`F11.7`)*, quand on consulte les indicateurs, alors le taux de conversion et le délai d'expédition sont comparables **par origine**.
 
-**Dépendances** US-VENTE-01, F3.7, F6.3, F11.7 · **Règles** R-H1, R-H8 · **Écrans** Commandes vendeur, Back-office → Indicateurs
+**Dépendances** US-VENTE-01, F3.7, F6.3, F11.7 · **Règles** R-H1, R-H8 · **Écrans** Commandes boutique, Tableau de bord → Indicateurs
 
 ---
 
@@ -290,8 +290,8 @@
 > **afin de** décider sans passer par Messenger.
 
 **Critères d'acceptation**
-1. Étant donné une fiche article, quand j'écris une question, alors elle est publiée sous la fiche et le vendeur est notifié.
-2. Étant donné une question, quand le vendeur répond, alors la réponse est **publique** et visible de toutes les acheteuses suivantes.
+1. Étant donné une fiche article, quand j'écris une question, alors elle est publiée sous la fiche et la boutique est notifié.
+2. Étant donné une question, quand la boutique répond, alors la réponse est **publique** et visible de toutes les acheteuses suivantes.
 3. Étant donné une question, quand elle contient un contenu filtré (`F19.1`), alors elle est masquée avant publication.
 4. Étant donné une fiche avec des questions, quand je l'ouvre, alors les 3 questions les plus utiles sont visibles sans dépliage.
 5. **Cas d'échec** : étant donné une question contenant un numéro de téléphone ou une invitation à sortir de la plateforme, quand elle est soumise, alors elle est bloquée avec un message expliquant pourquoi.
@@ -307,10 +307,10 @@
 > **afin de** ne pas m'engager pour rien.
 
 **Critères d'acceptation**
-1. Étant donné un lien d'article partagé, quand je l'ouvre sans compte, alors je vois photos, prix, tailles, état, mesures, badge du vendeur et frais de livraison estimés.
+1. Étant donné un lien d'article partagé, quand je l'ouvre sans compte, alors je vois photos, prix, tailles, état, mesures, badge de la boutique et frais de livraison estimés.
 2. Étant donné que j'appuie sur « Je prends », quand l'inscription se déclenche, alors **la réservation est déjà posée** et conservée pendant l'inscription (US-AUTH-01).
 3. Étant donné mon inscription terminée, quand j'y reviens, alors je reprends exactement à l'étape où je m'étais arrêtée, sans re-choisir l'article.
-4. **Cas d'échec** : étant donné que l'article part pendant mon inscription malgré la réservation (annulation vendeur, retrait), quand je reviens, alors le motif m'est expliqué et une alternative m'est proposée.
+4. **Cas d'échec** : étant donné que l'article part pendant mon inscription malgré la réservation (annulation boutique, retrait), quand je reviens, alors le motif m'est expliqué et une alternative m'est proposée.
 
 **Dépendances** US-AUTH-01, US-VENTE-01, F0.10 · **Règles** R-H2, R-C4 · **Écrans** Fiche article (invité), Inscription express
 
@@ -335,7 +335,7 @@
 
 # ÉPIC 3 — Social / Followers
 
-**Enjeu** : l'abonnement est l'actif que le vendeur construit. C'est aussi le canal qui rend les promotions et les événements possibles sans acheter de publicité.
+**Enjeu** : l'abonnement est l'actif que la boutique construit. C'est aussi le canal qui rend les promotions et les événements possibles sans acheter de publicité.
 
 ### US-SOCIAL-01 · F7.1 · P1 / M — Suivre une boutique en un appui
 
@@ -345,10 +345,10 @@
 
 **Critères d'acceptation**
 1. Étant donné une vitrine, une fiche article, un direct, un clip ou une story, quand j'appuie sur « Suivre », alors l'abonnement est enregistré **immédiatement**, sans écran de confirmation.
-2. Étant donné un abonnement, quand j'appuie de nouveau, alors je me désabonne et le compteur du vendeur décroît.
+2. Étant donné un abonnement, quand j'appuie de nouveau, alors je me désabonne et le compteur de la boutique décroît.
 3. Étant donné que je ne suis pas connectée, quand j'appuie sur « Suivre », alors l'inscription est déclenchée et l'abonnement est posé après connexion.
 4. Étant donné une action de suivi, quand le réseau est coupé, alors l'état s'affiche localement et la synchronisation se fait à la reconnexion, sans double abonnement.
-5. **Cas d'échec** : étant donné un vendeur suspendu (`F6.8`), quand j'ouvre sa vitrine, alors le bouton « Suivre » est indisponible et l'état est expliqué.
+5. **Cas d'échec** : étant donné une boutique suspendue (`F6.8`), quand j'ouvre sa vitrine, alors le bouton « Suivre » est indisponible et l'état est expliqué.
 
 **Dépendances** F0.1 · **Règles** R-Q1 · **Écrans** Vitrine, Fiche, Direct, Clip, Story
 
@@ -363,7 +363,7 @@
 **Critères d'acceptation**
 1. Étant donné « Moi → Abonnements », quand j'ouvre l'écran, alors je vois mes boutiques et créatrices suivies, triables par activité récente.
 2. Étant donné une ligne d'abonnement, quand je l'ouvre, alors je peux couper **les notifications de promotion** de cette boutique **sans me désabonner**.
-3. Étant donné une vitrine, quand je l'ouvre, alors le nombre d'abonnés du vendeur est affiché.
+3. Étant donné une vitrine, quand je l'ouvre, alors le nombre d'abonnés de la boutique est affiché.
 4. Étant donné un compteur d'abonnés, quand un abonnement est créé ou supprimé, alors le compteur affiché est cohérent à la seconde près sans recalcul complet.
 5. **Cas d'échec** : étant donné aucun abonnement, quand j'ouvre l'écran, alors un état vide propose des boutiques à découvrir plutôt qu'une liste blanche.
 
@@ -371,9 +371,9 @@
 
 ---
 
-### US-SOCIAL-03 · F7.15 · P1 / S — Voir mes abonnés côté vendeur
+### US-SOCIAL-03 · F7.15 · P1 / S — Voir mes abonnés côté boutique
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** voir mes abonnés et la progression de leur nombre,
 > **afin de** mesurer ce que je construis réellement sur la plateforme.
 
@@ -383,13 +383,13 @@
 3. Étant donné un abonné qui est aussi client, quand j'ouvre sa ligne, alors j'accède à sa fiche client (`F7.5`) si la fidélisation est activée.
 4. **Cas d'échec** : étant donné qu'un abonné a supprimé son compte, quand j'ouvre ma liste, alors la ligne a disparu et le compteur est à jour.
 
-**Dépendances** US-SOCIAL-01, F7.5 · **Règles** R-Q3, R-Q4 · **Écrans** Tableau de bord vendeur, Mes abonnés
+**Dépendances** US-SOCIAL-01, F7.5 · **Règles** R-Q3, R-Q4 · **Écrans** Tableau de bord boutique, Mes abonnés
 
 ---
 
 ### US-SOCIAL-04 · F7.16 · P2 / C — Être prévenu d'un nouvel abonné
 
-> **En tant que** vendeuse ou créatrice,
+> **En tant que** boutique ou créatrice,
 > **je veux** savoir quand quelqu'un me suit,
 > **afin de** mesurer l'effet de ce que je publie.
 
@@ -411,7 +411,7 @@
 
 **Critères d'acceptation**
 1. Étant donné le fil « Abonnements », quand je l'ouvre, alors il contient les directs, **les nouveaux articles**, les promotions en cours et les événements des comptes suivis.
-2. Étant donné plusieurs nouveaux articles du même vendeur, quand ils sont publiés le même jour, alors ils sont **regroupés en une carte** « 12 nouveautés chez Miora ».
+2. Étant donné plusieurs nouveaux articles du même boutique, quand ils sont publiés le même jour, alors ils sont **regroupés en une carte** « 12 nouveautés chez Miora ».
 3. Étant donné le fil, quand je le parcours, alors chaque carte mène directement à un article achetable — aucune carte purement informative.
 4. Étant donné le mode économie de données (`F0.9`), quand il est actif, alors les images du fil sont en basse définition et les vidéos ne se lancent pas automatiquement.
 5. **Cas d'échec** : étant donné aucune activité de mes abonnements depuis 7 jours, quand j'ouvre le fil, alors des suggestions du fil « Pour toi » comblent l'espace, clairement identifiées comme telles.
@@ -422,19 +422,19 @@
 
 # ÉPIC 4 — Fidélisation client
 
-**Enjeu** : donner au vendeur la seule chose qu'il veut savoir — à qui faire un geste. Une liste de noms ordonnée, avec une action à côté de chaque ligne.
+**Enjeu** : donner à la boutique la seule chose qu'elle veut savoir — à qui faire un geste. Une liste de noms ordonnée, avec une action à côté de chaque ligne.
 
 ### US-FID-01 · F7.18 · P2 / S — Calculer le rang d'une cliente
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** que mes clientes soient classées automatiquement,
 > **afin de** repérer mes meilleures sans tenir un cahier.
 
 **Critères d'acceptation**
-1. Étant donné une commande **confirmée**, quand elle passe à `CONFIRMEE`, alors le score du couple (vendeur, cliente) est recalculé sur quatre composantes : montant cumulé, nombre de commandes, récence, fiabilité.
+1. Étant donné une commande **confirmée**, quand elle passe à `CONFIRMEE`, alors le score du couple (boutique, cliente) est recalculé sur quatre composantes : montant cumulé, nombre de commandes, récence, fiabilité.
 2. Étant donné une commande payée puis remboursée, quand le remboursement est exécuté, alors elle **ne compte pas** dans le score.
 3. Étant donné une cliente sans commande depuis 6 mois, quand le score est recalculé, alors la composante de récence décote son score — un rang ne se garde pas indéfiniment.
-4. Étant donné le score d'une cliente chez un vendeur, quand un autre vendeur consulte ses propres clientes, alors il **ne voit rien** de l'activité chez le premier : le rang est **par vendeur**.
+4. Étant donné le score d'une cliente chez une boutique, quand une autre boutique consulte ses propres clientes, alors elle **ne voit rien** de l'activité chez le premier : le rang est **par boutique**.
 5. Étant donné des litiges perdus ou des annulations répétées, quand le score est calculé, alors la composante de fiabilité le pénalise.
 6. **Cas d'échec** : étant donné 10 000 commandes confirmées en une soirée de direct, quand les scores sont recalculés, alors le calcul est asynchrone et ne ralentit **jamais** la confirmation de commande.
 7. Étant donné un score, quand il est affiché, alors il est accompagné d'une explication en une phrase de ce qui le compose.
@@ -445,7 +445,7 @@
 
 ### US-FID-02 · F7.6 · P2 / S — Définir mes paliers
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** définir mes paliers et leurs avantages,
 > **afin d'** avoir un programme de fidélité qui me ressemble.
 
@@ -455,7 +455,7 @@
 3. Étant donné des seuils qui se chevauchent ou décroissent, quand je valide, alors l'erreur est signalée avant enregistrement.
 4. Étant donné que je désactive la fidélité, quand je le fais, alors les clientes ne voient plus de palier, **la liste de mes clientes reste utilisable**, et les données de score sont conservées.
 5. Étant donné une modification de seuil, quand je l'enregistre, alors les rangs sont recalculés et **aucune cliente ne perd un avantage déjà consommé**.
-6. **Cas d'échec** : étant donné un palier dont l'avantage promis n'existe pas dans le produit (texte libre non tenu), quand une cliente l'atteint, alors elle voit l'avantage tel qu'écrit par le vendeur, avec la mention qu'il est accordé par la boutique et non par JP.
+6. **Cas d'échec** : étant donné un palier dont l'avantage promis n'existe pas dans le produit (texte libre non tenu), quand une cliente l'atteint, alors elle voit l'avantage tel qu'écrit par la boutique, avec la mention qu'il est accordé par la boutique et non par JP.
 
 **Dépendances** US-FID-01 · **Règles** R-R4, R-R5 · **Écrans** Réglages boutique → Fidélité
 
@@ -463,7 +463,7 @@
 
 ### US-FID-03 · F7.5 · P2 / S — Consulter la liste de mes clientes
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** une liste de mes clientes classée et filtrable,
 > **afin de** savoir à qui parler.
 
@@ -480,7 +480,7 @@
 
 ### US-FID-04 · F7.5 · P2 / S — Ouvrir la fiche d'une cliente et agir
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** voir l'historique d'une cliente et lui offrir quelque chose depuis sa fiche,
 > **afin que** la liste serve à agir et pas seulement à regarder.
 
@@ -489,7 +489,7 @@
 2. Étant donné une fiche cliente, quand je choisis « Offrir une promo », alors je crée une promotion ciblée (US-PROMO-04) pré-remplie pour cette personne.
 3. Étant donné une sélection multiple dans la liste, quand je choisis « Envoyer un code », alors un code est généré pour chaque personne sélectionnée (US-PROMO-05).
 4. Étant donné une note privée, quand je l'enregistre, alors elle n'est **jamais visible** par la cliente.
-5. **Cas d'échec** : étant donné un employé (`VE`) sans permission financière, quand il ouvre « Mes clientes », alors la liste est en lecture seule et **les montants sont masqués**.
+5. ~~**Cas d'échec** : employé sans permission financière~~ — ❌ **supprimé** *(`DP-01`)*, l'acteur n'existe plus. Ancienne rédaction : alors la liste est en lecture seule et **les montants sont masqués**.
 
 **Dépendances** US-FID-03, F10.4 · **Règles** R-R7, R-R8 · **Écrans** Fiche cliente
 
@@ -505,7 +505,7 @@
 1. Étant donné une vitrine où j'ai déjà acheté, quand je l'ouvre, alors je vois mon palier (« Vous êtes cliente Or chez Miora ») et l'avantage associé.
 2. Étant donné mon palier, quand je consulte ma progression, alors elle est exprimée concrètement (« Encore 2 commandes pour devenir VIP ») et l'avantage du palier suivant est visible.
 3. Étant donné un avantage annoncé, quand je passe commande, alors il est **réellement appliqué** au panier (US-PROMO-08) — un palier sans effet est une manipulation.
-4. Étant donné mes réglages, quand je refuse d'apparaître dans les classements publics, alors mon rang reste visible du vendeur mais pas des autres acheteuses.
+4. Étant donné mes réglages, quand je refuse d'apparaître dans les classements publics, alors mon rang reste visible de la boutique mais pas des autres acheteuses.
 5. **Cas d'échec** : étant donné que je perds un palier par décote de récence, quand cela arrive, alors je suis informée **avant** la bascule, avec le moyen de le conserver.
 
 **Dépendances** US-FID-01, US-FID-02 · **Règles** R-R9, R-R10 · **Écrans** Vitrine, Moi → Mes avantages
@@ -519,10 +519,10 @@
 > **afin de** ne pas avoir à reconstituer les données quand la fidélisation sera activée.
 
 **Critères d'acceptation**
-1. Étant donné une commande confirmée en phase 1, quand elle est enregistrée, alors le couple (vendeur, acheteuse), le montant confirmé et la date sont disponibles pour un calcul ultérieur.
+1. Étant donné une commande confirmée en phase 1, quand elle est enregistrée, alors le couple (boutique, acheteuse), le montant confirmé et la date sont disponibles pour un calcul ultérieur.
 2. Étant donné l'activation de la fidélisation en phase 2, quand le moteur démarre, alors les rangs sont calculés **sur l'historique existant**, sans reprise manuelle.
 3. Étant donné le calcul de rattrapage sur plusieurs mois de commandes, quand il s'exécute, alors il est idempotent et relançable sans doubler les scores.
-4. **Cas d'échec** : étant donné des commandes antérieures à la mise en place du journal, quand le rattrapage s'exécute, alors les commandes non journalisées sont comptées à partir des données de commande, et l'écart éventuel est signalé au vendeur plutôt que silencieux.
+4. **Cas d'échec** : étant donné des commandes antérieures à la mise en place du journal, quand le rattrapage s'exécute, alors les commandes non journalisées sont comptées à partir des données de commande, et l'écart éventuel est signalé à la boutique plutôt que silencieux.
 
 **Dépendances** F3.7 · **Règles** R-R2 · **Écrans** — (technique)
 
@@ -530,11 +530,11 @@
 
 # ÉPIC 5 — Promotions
 
-**Enjeu** : donner au vendeur un levier commercial, et à l'abonnement sa raison d'être. Le risque miroir : transformer les notifications en spam et faire couper toutes les alertes, y compris celles dont la logistique dépend.
+**Enjeu** : donner à la boutique un levier commercial, et à l'abonnement sa raison d'être. Le risque miroir : transformer les notifications en spam et faire couper toutes les alertes, y compris celles dont la logistique dépend.
 
 ### US-PROMO-01 · F7.22 · P1 / S — Lancer une promotion sur ma boutique
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** créer une promotion en quelques appuis,
 > **afin de** relancer mes ventes sans attendre un direct.
 
@@ -545,7 +545,7 @@
 4. Étant donné une promotion en pourcentage supérieure à un seuil de sécurité (par exemple 70 %), quand je valide, alors une confirmation explicite est demandée.
 5. Étant donné une promotion terminée, quand la date de fin passe, alors les prix d'origine sont rétablis **automatiquement**, sans intervention.
 6. **Cas d'échec** : étant donné une valeur qui rendrait le prix nul ou négatif, quand je valide, alors la promotion est refusée avec un message clair.
-7. Étant donné un employé (`VE`), quand il ouvre le catalogue, alors il **ne peut pas** créer ni modifier une promotion.
+7. ~~Étant donné un employé~~ — ❌ **supprimé** *(`DP-01`)*. Ancienne rédaction : il **ne peut pas** créer ni modifier une promotion.
 
 **Dépendances** F1.9, F10.1, F10.4 · **Règles** R-U1, R-U2, R-U7 · **Écrans** Promotions, Création de promotion
 
@@ -553,7 +553,7 @@
 
 ### US-PROMO-02 · F7.8 · P2 / S — Programmer une promotion à l'avance
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** programmer ma promotion pour une date future,
 > **afin de** préparer mes opérations commerciales tranquillement.
 
@@ -569,7 +569,7 @@
 
 ### US-PROMO-03 · F7.23 · P1 / S — Prévenir mes abonnés, sans les noyer
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** que mes abonnés soient prévenus quand je lance une promotion,
 > **afin de** créer du trafic sans acheter de publicité.
 
@@ -588,7 +588,7 @@
 
 ### US-PROMO-04 · F7.24 · P2 / S — Réserver une offre à mes meilleures clientes
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** offrir une remise réservée à mes clientes Or et VIP,
 > **afin de** récompenser celles qui font mon chiffre d'affaires.
 
@@ -606,7 +606,7 @@
 
 ### US-PROMO-05 · F7.9 · P2 / C — Envoyer un code à une cliente précise
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** envoyer un code personnel à une cliente,
 > **afin de** m'excuser d'un retard ou faire revenir quelqu'un.
 
@@ -664,7 +664,7 @@
 
 **Critères d'acceptation**
 1. Étant donné mon panier, quand une remise s'applique, alors une ligne nommée l'indique : « Promo Noël −20 % », « Avantage cliente Or : livraison offerte », « Code MERCI10 ».
-2. Étant donné le récapitulatif, quand je le consulte, alors sous-total, remise, frais de livraison par vendeur et total sont détaillés (`F3.2`).
+2. Étant donné le récapitulatif, quand je le consulte, alors sous-total, remise, frais de livraison par boutique et total sont détaillés (`F3.2`).
 3. Étant donné un code saisi manuellement, quand il est invalide, expiré ou non applicable à mon panier, alors le motif exact est affiché — jamais un « code invalide » générique.
 4. Étant donné une remise appliquée, quand je paie, alors le montant prélevé correspond **exactement** au total affiché.
 5. **Cas d'échec** : étant donné qu'une promotion expire entre l'affichage du panier et le paiement, quand je paie, alors le nouveau total m'est présenté pour **confirmation explicite** — jamais un prélèvement supérieur à ce que j'ai vu.
@@ -697,18 +697,18 @@
 
 ### US-EVT-02 · F20.2 · P2 / S — Candidater à un événement
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** demander à participer à un événement JP,
 > **afin de** bénéficier de son trafic.
 
 **Critères d'acceptation**
 1. Étant donné mon studio, quand j'ouvre « Événements », alors je vois les événements ouverts aux candidatures avec leurs dates et leurs règles.
 2. Étant donné un événement, quand je candidate, alors je choisis les articles et promotions que j'y engage et ma candidature passe en `candidate`.
-3. Étant donné ma candidature, quand **OP** l'accepte ou la refuse, alors je suis notifié, avec un **motif écrit en cas de refus**.
+3. Étant donné ma candidature, quand **l'organisateur** l'accepte ou la refuse *(`DP-05`)*, alors je suis notifié, avec un **motif écrit en cas de refus**.
 4. Étant donné une candidature acceptée, quand l'événement s'ouvre, alors mes articles apparaissent sur la page événement.
 5. Étant donné une créatrice, quand elle candidate, alors elle engage sa sélection (`F15.3`) ou ses clips, et ses ventes restent attribuées par affiliation.
-6. **Cas d'échec** : étant donné une candidature laissée sans réponse jusqu'à l'ouverture de l'événement, quand celle-ci arrive, alors la candidature est **automatiquement refusée** avec notification — un vendeur qui attend sans réponse ne recandidate pas.
-7. Étant donné un vendeur non vérifié (`F0.6`), quand il candidate, alors la candidature est refusée avec l'explication de la condition manquante.
+6. **Cas d'échec** : étant donné une candidature laissée sans réponse jusqu'à l'ouverture de l'événement, quand celle-ci arrive, alors la candidature est **automatiquement refusée** avec notification — une boutique qui attend sans réponse ne recandidate pas.
+7. Étant donné une boutique non vérifiée (`F0.6`), quand il candidate, alors la candidature est refusée avec l'explication de la condition manquante.
 
 **Dépendances** US-EVT-01, F0.6, F15.3 · **Règles** R-W3, R-W4 · **Écrans** Studio → Événements, Back-office → Candidatures
 
@@ -716,7 +716,7 @@
 
 ### US-EVT-03 · F20.3 · P2 / S — Rattacher mes articles et mes promos à un événement
 
-> **En tant que** vendeur participant,
+> **En tant que** boutique participant,
 > **je veux** engager des articles, une promotion et un direct dans l'événement,
 > **afin d'** y être visible avec une vraie offre.
 
@@ -752,12 +752,12 @@
 
 ### US-EVT-05 · F20.5 · P2 / C — Créer un mini-événement de boutique
 
-> **En tant que** vendeur,
+> **En tant que** boutique,
 > **je veux** créer mon propre rendez-vous,
 > **afin d'** animer ma boutique sans dépendre du calendrier JP.
 
 **Critères d'acceptation**
-1. Étant donné mon studio, quand je crée un événement de boutique, alors il est publié **sans validation OP**, avec une portée limitée à ma vitrine et à mes abonnés.
+1. Étant donné mon studio, quand je crée un événement de boutique, alors il est publié **sans validation d'un tiers** *(`DP-05`)*, avec une portée limitée à ma vitrine et à mes abonnés.
 2. Étant donné un événement de boutique, quand il est publié, alors il **n'apparaît pas** dans le calendrier général des événements JP.
 3. Étant donné mes abonnés, quand l'événement démarre, alors ils sont notifiés dans la limite des plafonds de notification (US-PROMO-03).
 4. **Cas d'échec** : étant donné que je crée cinq mini-événements dans la même semaine, quand je crée le suivant, alors la création reste possible mais **aucune notification supplémentaire** n'est envoyée.
@@ -817,14 +817,14 @@
 
 ### US-EVT-09 · F20.8 · P2 / C — Mesurer un événement
 
-> **En tant que** vendeur participant et en tant qu'équipe JP,
+> **En tant que** boutique participant et en tant qu'équipe JP,
 > **je veux** un bilan chiffré de l'événement,
 > **afin de** décider s'il vaut la peine d'être reconduit.
 
 **Critères d'acceptation**
-1. Étant donné un événement terminé, quand j'ouvre son bilan côté vendeur, alors je vois articles vendus, chiffre d'affaires, comparaison avec une période équivalente hors événement, **nouveaux abonnés gagnés**, contenus publiés et leurs conversions.
-2. Étant donné le back-office, quand OP ouvre le bilan, alors il voit la participation par vendeur, le trafic de la page, la conversion, la part des ventes attribuable à l'événement et le coût des mises en avant.
-3. Étant donné les ventes d'un vendeur pendant l'événement, quand elles sont attribuées, alors la règle d'attribution (origine `evenement`) est documentée et cohérente avec l'attribution d'affiliation (`F15.4`).
+1. Étant donné un événement terminé, quand j'ouvre son bilan côté boutique, alors je vois articles vendus, chiffre d'affaires, comparaison avec une période équivalente hors événement, **nouveaux abonnés gagnés**, contenus publiés et leurs conversions.
+2. Étant donné le tableau de bord interne *(`F11.7`)*, quand on ouvre le bilan, alors on voit la participation par boutique, le trafic de la page, la conversion, la part des ventes attribuable à l'événement et le coût des mises en avant.
+3. Étant donné les ventes d'une boutique pendant l'événement, quand elles sont attribuées, alors la règle d'attribution (origine `evenement`) est documentée et cohérente avec l'attribution d'affiliation (`F15.4`).
 4. **Cas d'échec** : étant donné un événement sans aucune vente, quand le bilan est généré, alors il est produit malgré tout, avec les chiffres réels — **un bilan absent est un événement qui sera reconduit par habitude et non par résultat**.
 
 **Dépendances** US-EVT-04, F9.1, F11.7 · **Règles** R-W11 · **Écrans** Studio → Bilan d'événement, Back-office → Indicateurs
@@ -838,7 +838,7 @@ Reprises de `JP_BACKLOG.md` §« Les décisions ouvertes », points 15 à 21. El
 | # | Décision | Bloque |
 |---|---|---|
 | 15 | Durée de réservation hors direct (hyp. 30 min) | US-VENTE-02 |
-| 16 | Seuil de bascule particulier → professionnel, et commission du particulier | US-VENTE-04 |
+| ~~16~~ | ~~Seuil de bascule particulier~~ — ❌ **sans objet** *(`DP-01`, `DP-02`)* | — |
 | 17 | Règle de cumul des remises — **à figer avant de coder le panier** | US-PROMO-07, US-PROMO-08 |
 | 18 | Plafond de notifications de promotion | US-PROMO-03, US-EVT-06 |
 | 19 | Critères et poids du rang client | US-FID-01 |

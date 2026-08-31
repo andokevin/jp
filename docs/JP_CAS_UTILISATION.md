@@ -15,49 +15,60 @@
 
 # 1. Les acteurs
 
+> **Amont normatif** : [`JP_DECISIONS_PRODUIT.md`](JP_DECISIONS_PRODUIT.md).
+> Six acteurs ont été retirés du produit *(`DP-01`)*, et **les rôles ne se
+> cumulent plus** *(`DP-02`)*.
+
 ## 1.1 Acteurs humains
 
 | Code | Acteur | Nature | Ce qu'il vient chercher |
 |---|---|---|---|
 | **AN** | Visiteur non inscrit | primaire | Regarder sans s'engager, comprendre à qui il a affaire |
-| **A** | Acheteur | primaire | Ne pas perdre son argent, trouver sa taille |
-| **P** | Vendeur particulier | primaire | Vendre trois vêtements sans monter un commerce |
-| **V** | Vendeur professionnel | primaire | Ne plus perdre de ventes, être pris au sérieux |
-| **VE** | Employé du vendeur | primaire | Voir les commandes à préparer sans toucher aux finances |
+| **A** | Acheteur | primaire | Savoir à qui il paie, trouver sa taille |
+| **B** | **Boutique** | primaire | Ne plus perdre de ventes, être prise au sérieux |
 | **C** | Créatrice | primaire | Gagner de l'argent sans capital et sans stock |
-| **D** | Donateur / diaspora | primaire | Offrir un objet précis, vérifié, livré, avec une preuve |
-| **L** | Livreur | primaire | Une tournée claire, une preuve de remise |
-| **PR** | Point relais | primaire | Recevoir, stocker, remettre contre code, être payé |
-| **MO** | Modérateur JP | primaire | Protéger les créatrices, vite |
-| **OP** | Opérateur JP | primaire | Traiter vite, avec des preuves |
-| **PM** | Partenaire marque | primaire | Des campagnes mesurables |
+| **D** | Donateur / diaspora | primaire | Offrir un objet précis à quelqu'un de nommé |
+| **PM** | Partenaire marque | primaire | Des campagnes mesurables *(phase 3)* |
+
+> **Six acteurs retirés** *(`DP-01`)* : **P** vendeur particulier · **VE**
+> employé du vendeur · **L** livreur · **PR** point relais · **MO** modérateur JP
+> · **OP** opérateur JP.
 
 ## 1.2 Acteurs système
 
 | Code | Acteur | Rôle |
 |---|---|---|
-| **SYS** | Plateforme JP | Exécute les règles, les minuteurs, les échéances, les calculs |
+| **SYS** | Plateforme JP | Exécute les règles, les minuteurs, les échéances, les calculs — **et depuis `DP-05`, les vérifications, les sanctions et le traitement des signalements** |
 | **PSP** | Prestataire de paiement | MVola, Orange Money, Airtel Money, agrégateur carte |
 | **VID** | Service vidéo | Ingest, transcodage, diffusion, enregistrement |
 | **NOT** | Service de notification | Push, SMS, courriel |
 
-## 1.3 Généralisation des acteurs
+> **`SYS` a hérité de deux acteurs humains.** Ce qui était instruit par le
+> modérateur et l'opérateur est exécuté par des règles. **Aucune décision de la
+> plateforme n'est plus explicable par un humain** — d'où l'obligation, pour
+> chaque décision automatique, d'être motivée par écrit *(`R-T2`, `R-V7`)*.
+
+## 1.3 Il n'y a pas de généralisation des acteurs
 
 ```mermaid
 flowchart TD
-    AN["AN · Visiteur non inscrit"] --> A["A · Acheteur"]
-    A --> P["P · Vendeur particulier"]
-    A --> C["C · Créatrice"]
-    P --> V["V · Vendeur professionnel"]
-    C --> V
-    A --> D["D · Donateur"]
-    OPS["Personnel JP"] --> MO["MO · Modérateur"]
-    OPS --> OP["OP · Opérateur"]
-    TERRAIN["Acteurs terrain"] --> L["L · Livreur"]
-    TERRAIN --> PR["PR · Point relais"]
+    INSC["Inscription"] --> A["A · Acheteur<br/>ne vend jamais"]
+    INSC --> B["B · Boutique<br/>peut acheter (DP-02)"]
+    INSC --> C["C · Créatrice<br/>peut acheter (DP-02)"]
+    SANS["Sans compte"] --> AN["AN · Visiteur"]
+    SANS --> D["D · Donateur"]
 ```
 
-**Lecture** : un acheteur peut devenir vendeur particulier puis professionnel *(F0.4)*, ou créatrice *(F15.1)*. Les rôles se cumulent sur un même compte, mais **les portefeuilles restent séparés** *(CDC §3.1)*.
+**Lecture** : **un compte a un type, et un seul, choisi à l'inscription. Il n'en
+change jamais** *(`DP-02`)*. Il n'existe aucun écran de bascule, aucune montée en
+grade, aucune procédure de support pour changer de type.
+
+Une boutique et une créatrice **peuvent acheter** — commodité, pas cumul de
+rôles : parcours acheteur strictement identique, aucun droit supplémentaire,
+et **jamais chez soi-même**. **La réciproque est fermée** : un acheteur n'a
+aucun chemin vers la vente.
+
+**`F0.4` — la bascule de rôle — est supprimée.**
 
 ---
 
@@ -68,13 +79,9 @@ flowchart LR
     subgraph ACTEURS
         AN(("AN"))
         A(("A"))
-        V(("V"))
+        B(("B"))
         C(("C"))
         D(("D"))
-        L(("L"))
-        PR(("PR"))
-        OP(("OP"))
-        MO(("MO"))
     end
 
     subgraph AUTH["Authentification"]
@@ -85,7 +92,6 @@ flowchart LR
 
     subgraph VENTE["Catalogue et vente"]
         UC10["UC-10 Publier un article"]
-        UC11["UC-11 Déposer une annonce (particulier)"]
         UC12["UC-12 Acheter hors direct"]
         UC13["UC-13 Remplir un panier"]
     end
@@ -95,45 +101,43 @@ flowchart LR
         UC21["UC-21 Acheter en direct"]
     end
 
-    subgraph ARGENT["Paiement et argent"]
+    subgraph ARGENT["Paiement"]
         UC30["UC-30 Payer une commande"]
         UC31["UC-31 Confirmer la réception"]
-        UC32["UC-32 Retirer son argent"]
+        UC33["UC-33 Gérer son abonnement"]
     end
 
     subgraph LOGI["Livraison"]
         UC40["UC-40 Préparer et expédier"]
-        UC41["UC-41 Livrer un colis"]
-        UC42["UC-42 Remettre au point relais"]
+        UC43["UC-43 Convenir du point de remise"]
     end
 
     subgraph CONF["Confiance"]
-        UC50["UC-50 Ouvrir un litige"]
-        UC51["UC-51 Arbitrer un litige"]
-        UC52["UC-52 Vérifier un vendeur"]
+        UC50["UC-50 Signaler un problème"]
+        UC52["UC-52 Se faire vérifier"]
     end
 
     subgraph SOCIAL["Social et fidélité"]
         UC60["UC-60 Suivre une boutique"]
         UC61["UC-61 Publier un unboxing"]
         UC62["UC-62 Consulter ses clientes"]
+        UC63["UC-63 Partager un lien d'affiliation"]
     end
 
     subgraph PROMO["Promotions et événements"]
         UC70["UC-70 Lancer une promotion"]
         UC71["UC-71 Offrir une promo VIP"]
-        UC72["UC-72 Créer un événement"]
+        UC72["UC-72 Créer un événement de boutique"]
         UC73["UC-73 Participer à un événement"]
     end
 
     subgraph CADEAU["Cadeau"]
-        UC80["UC-80 Demander un panier en cadeau"]
-        UC81["UC-81 Offrir un panier"]
+        UC80["UC-80 Demander un article en cadeau"]
+        UC81["UC-81 Offrir un article"]
     end
 
     subgraph MODER["Modération"]
         UC90["UC-90 Signaler un contenu"]
-        UC91["UC-91 Traiter un signalement"]
     end
 
     AN --> UC01
@@ -145,65 +149,77 @@ flowchart LR
     A --> UC21
     A --> UC30
     A --> UC31
+    A --> UC43
     A --> UC50
     A --> UC60
     A --> UC61
     A --> UC80
     A --> UC90
-    A --> UC11
-    V --> UC10
-    V --> UC20
-    V --> UC40
-    V --> UC32
-    V --> UC62
-    V --> UC70
-    V --> UC71
-    V --> UC73
+    B --> UC10
+    B --> UC20
+    B --> UC33
+    B --> UC40
+    B --> UC43
+    B --> UC52
+    B --> UC62
+    B --> UC70
+    B --> UC71
+    B --> UC72
+    B --> UC73
+    C --> UC52
     C --> UC61
+    C --> UC63
+    C --> UC72
     C --> UC73
     D --> UC81
-    L --> UC41
-    PR --> UC42
-    OP --> UC51
-    OP --> UC52
-    OP --> UC72
-    MO --> UC91
 ```
 
-**Inventaire** : 30 cas d'utilisation, regroupés en 9 paquetages. Les 12 marqués ★ portent un diagramme de séquence détaillé.
+**Inventaire** : ~~30~~ **27 cas d'utilisation**, regroupés en 9 paquetages. Les
+marqués ★ portent un diagramme de séquence détaillé.
 
 | ID | Cas d'utilisation | Acteur principal | Séq. |
 |---|---|---|---|
 | UC-01 | Créer un compte par code envoyé par courriel | AN | ★ |
 | UC-02 | Se connecter | A | |
 | UC-03 | Récupérer un compte inaccessible | A | ★ |
-| UC-10 | Publier un article avec ses variantes | V | |
-| UC-11 | Déposer une annonce de particulier | P | ★ |
+| UC-10 | Publier un article avec ses variantes | B | |
 | UC-12 | Acheter un article hors direct | A / AN | ★ |
 | UC-13 | Remplir un panier et le payer en une fois | A | |
-| UC-20 | Diffuser un direct et vendre | V | ★ |
+| UC-20 | Diffuser un direct et vendre | B | ★ |
 | UC-21 | Acheter pendant un direct | A | ★ |
 | UC-30 | Payer une commande en mobile money | A | ★ |
-| UC-31 | Confirmer la réception et libérer les fonds | A | ★ |
-| UC-32 | Retirer son argent | V | |
-| UC-40 | Préparer et expédier une commande | V / VE | |
-| UC-41 | Livrer un colis à domicile | L | ★ |
-| UC-42 | Recevoir et remettre un colis au relais | PR | ★ |
-| UC-50 | Ouvrir un litige sur une commande | A | ★ |
-| UC-51 | Arbitrer un litige | OP | ★ |
-| UC-52 | Vérifier l'identité d'un vendeur | OP | |
+| UC-31 | Confirmer la réception | A | ★ |
+| **UC-33** | 🆕 **Gérer son abonnement** *(`DP-08`)* | B | |
+| UC-40 | Préparer et expédier une commande | B | |
+| **UC-43** | 🆕 **Convenir du point de remise** *(`DP-10`)* | A + B | |
+| UC-50 | Signaler un problème sur une commande | A | ★ |
+| UC-52 | Se faire vérifier | B / C | |
 | UC-60 | Suivre une boutique et recevoir ses nouveautés | A | |
 | UC-61 | Publier un unboxing | A | ★ |
-| UC-62 | Consulter ses clientes et leur rang | V | |
-| UC-70 | Lancer une promotion et notifier ses abonnés | V | ★ |
-| UC-71 | Offrir une promotion réservée aux clientes VIP | V | |
-| UC-72 | Créer un événement thématique | OP | |
-| UC-73 | Participer à un événement | V / C | ★ |
-| UC-80 | Demander un panier en cadeau | A | |
-| UC-81 | Offrir un panier depuis l'étranger | D | ★ |
+| UC-62 | Consulter ses clientes et leur rang | B | |
+| **UC-63** | 🆕 **Partager un lien d'affiliation** *(`DP-09`)* | C | |
+| UC-70 | Lancer une promotion et notifier ses abonnés | B | ★ |
+| UC-71 | Offrir une promotion réservée aux clientes VIP | B | |
+| UC-72 | Créer un événement de boutique | B / C | |
+| UC-73 | Participer à un événement | B / C | ★ |
+| UC-80 | Demander un article en cadeau | A | |
+| UC-81 | Offrir un article à un compte JP nommé | D | ★ |
 | UC-90 | Signaler un contenu ou une personne | A / C | |
-| UC-91 | Traiter un signalement | MO | |
-| UC-92 | Publier un contenu avec articles attachés | C / V / A | |
+| UC-92 | Publier un contenu avec articles attachés | C | |
+
+> ### Six cas d'utilisation supprimés
+>
+> | Cas | Motif |
+> |---|---|
+> | `UC-11` Déposer une annonce de particulier | `DP-01` — l'acteur `P` n'existe plus |
+> | `UC-32` Retirer son argent | `DP-07` — l'argent arrive directement |
+> | `UC-41` Livrer à domicile · `UC-42` Remettre au relais | `DP-04` — JP n'opère plus de logistique |
+> | `UC-51` Arbitrer un litige | `DP-05` + `DP-07` — plus d'arbitre, plus d'argent à trancher |
+> | `UC-91` Traiter un signalement | `DP-05` — exécuté par `SYS` |
+>
+> **Les numéros libérés ne sont pas réattribués** : ils sont cités dans
+> `JP_ACTEURS_WORKFLOWS.md`, `JP_BACKLOG.md` et `JP_USER_STORIES.md`. Un trou se
+> voit ; un décalage silencieux, non.
 
 ---
 
@@ -355,7 +371,7 @@ sequenceDiagram
 | | |
 |---|---|
 | **Acteur principal** | A |
-| **Acteurs secondaires** | OP, SYS |
+| **Acteurs secondaires** | SYS |
 | **Fonctionnalités** | F0.3, F0.15 · **Story** US-AUTH-07 · **Règles** R-C13, R-C14 |
 | **Préconditions** | L'acteur possède un compte dont il a perdu l'accès à l'adresse électronique. |
 | **Postconditions** | Le compte est réattribué à une nouvelle adresse **vérifiée**, ou la demande est refusée avec un motif écrit. |
@@ -369,12 +385,12 @@ sequenceDiagram
 2. SYS présente un formulaire : prénom, dernière commande, montant approximatif, numéro de téléphone de livraison.
 3. SYS enregistre la demande, attribue un numéro de dossier, et **gèle les retraits** si le compte porte un solde *(R-C14)*.
 4. SYS répond **202 dans tous les cas**, même si l'adresse est inconnue *(R-C9)*.
-5. OP ouvre le dossier et compare les déclarations à l'historique réel du compte visé.
-6. OP valide ; SYS envoie un code à la nouvelle adresse.
+5. **SYS** compare les déclarations à l'historique réel du compte visé et décide **sur seuil de concordance**, avec les points concordants journalisés *(`DP-05`)*.
+6. Concordance suffisante : SYS envoie un code à la nouvelle adresse.
 7. L'acteur vérifie la nouvelle adresse ; SYS réattribue le compte, dégèle les retraits, journalise.
 
 **Scénarios alternatifs**
-- **A1 — refus** *(depuis 6)* : OP refuse avec un motif écrit ; **le compte reste inchangé** et le motif est notifié.
+- **A1 — refus** *(depuis 6)* : ⚠️ **SYS** refuse avec un motif écrit. **Il n'y a personne à qui faire appel** *(`DP-05`)* — c'est le point où cette décision coûte le plus cher. **Le compte reste inchangé** et le motif est notifié.
 - **A2 — adresse accessible** *(depuis 1)* : l'acteur est réorienté vers UC-01, qui suffit.
 
 ```mermaid
@@ -383,22 +399,21 @@ sequenceDiagram
     participant APP as Application
     participant API as API JP
     participant DB as PostgreSQL
-    actor OP as OP · Opérateur
+    participant SYS as SYS · Règles automatiques
     participant BO as Back-office
 
     A->>APP: « Je n'ai plus accès à mon email »
     APP->>API: POST /auth/recuperation {formulaire}
     API->>DB: INSERT demande_recuperation
-    API->>DB: portefeuille.retraits_geles = true (R-C14)
     API-->>APP: 202 {numeroDossier, delai: 24h}
     Note over API,APP: 202 même si l'adresse est inconnue (R-C9)
 
-    OP->>BO: ouvre la file « récupérations »
+    SYS->>API: instruit sur seuil de concordance (DP-05)
     BO->>API: GET /admin/recuperations/:id
     API->>DB: dossier + historique réel du compte visé
     API-->>BO: déclarations vs historique, côte à côte
     alt déclarations cohérentes
-        OP->>BO: valide + nouvelle adresse
+        SYS->>API: concordance suffisante → nouvelle adresse
         BO->>API: POST /admin/recuperations/:id/decision {validee}
         API->>DB: journal_audit
         API->>A: code de vérification à la nouvelle adresse
@@ -406,7 +421,7 @@ sequenceDiagram
         API->>DB: réattribue le compte, dégèle les retraits
         API-->>A: session ouverte
     else déclarations insuffisantes
-        OP->>BO: refuse + motif écrit
+        SYS->>API: refuse + motif écrit — AUCUN recours (DP-05)
         BO->>API: POST /admin/recuperations/:id/decision {refusee, motif}
         API->>DB: journal_audit, compte inchangé
         API-->>A: notification du refus motivé
@@ -422,9 +437,9 @@ sequenceDiagram
 | | |
 |---|---|
 | **Acteur principal** | V |
-| **Acteurs secondaires** | VE (sans le prix), SYS |
+| **Acteurs secondaires** | SYS |
 | **Fonctionnalités** | F1.1, F1.2, F1.18, F1.7 · **Règles** R-A1 à R-A5, R-H4 |
-| **Préconditions** | Compte vendeur créé. La vérification n'est **pas** requise pour créer un catalogue *(R-V1)*. |
+| **Préconditions** | Compte boutique créé. La vérification n'est **pas** requise pour créer un catalogue *(R-V1)*. |
 | **Postconditions** | Article en ligne avec ses variantes et son stock, disponible à l'achat hors direct *(R-H7)*. |
 
 **Scénario nominal**
@@ -437,7 +452,7 @@ sequenceDiagram
 
 **Scénarios alternatifs**
 - **A1 — création express en direct** *(depuis 1)* : trois champs seulement — photo, prix, quantité *(R-A4)*. Le reste est complété après le direct.
-- **A2 — employé** *(depuis 2)* : VE peut créer et modifier, **jamais le prix** *(matrice §3.2)*. Le champ est absent de son interface **et** refusé par l'API.
+- **A2** — ~~employé~~ **supprimé** *(`DP-01`)* : l'acteur `VE` n'existe plus. Le champ est absent de son interface **et** refusé par l'API.
 - **A3 — moins de 3 photos pour la vente hors direct** *(depuis 6)* : avertissement **non bloquant**.
 - **A4 — mesures hors bornes** *(depuis 3)* : refus avec message explicite.
 - **A5 — brouillon** *(depuis 6)* : l'article est enregistré sans être publié.
@@ -446,8 +461,8 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor V as V · Vendeur
-    participant APP as Studio vendeur
+    actor V as V · Boutique
+    participant APP as Studio boutique
     participant API as API JP
     participant DB as PostgreSQL
     participant IMG as Service images
@@ -455,7 +470,6 @@ sequenceDiagram
     APP->>IMG: envoi des photos
     IMG-->>APP: URL dimensionnées
     V->>APP: nom, prix, catégorie
-    Note over APP: employé VE — le champ prix est ABSENT de son interface (A2)
     V->>APP: état du vêtement et mesures réelles (R-H4)
     APP->>API: POST /articles/valider-mesures
     alt mesures hors bornes (A4)
@@ -493,71 +507,6 @@ sequenceDiagram
 
 ---
 
-## UC-11 — Déposer une annonce de particulier ★
-
-| | |
-|---|---|
-| **Acteur principal** | P — vendeur particulier |
-| **Acteurs secondaires** | A (acheteuse), OP, SYS |
-| **Fonctionnalités** | F1.17, F0.4 · **Story** US-VENTE-04 · **Règles** R-H5, R-H6, R-H10 |
-| **Préconditions** | Compte acheteur existant. **Aucune vérification d'identité requise.** |
-| **Postconditions** | Annonce en ligne, pièce unique, stock à 1. L'encaissement reste **bloqué** jusqu'à la vérification. |
-
-**Description.** Le parcours qui ouvre JP à quelqu'un qui n'a pas de boutique. **Quatre champs : photos, prix, taille, état.** Aucun nom de boutique, aucun KYC — la vérification est exigée **au premier encaissement**, pas avant *(R-H5)*.
-
-**Scénario nominal**
-1. A choisit « Vendre un article que je ne porte plus ».
-2. SYS crée un profil vendeur de type `particulier`, sans exiger de nom de boutique.
-3. A remplit quatre champs et publie.
-4. SYS met l'article en ligne : stock 1, pièce unique.
-5. Une acheteuse commande et paie. SYS séquestre les fonds *(R-E1)*.
-6. SYS notifie P : *« Vous avez été payée — vérifiez votre identité pour recevoir 38 000 Ar. »*
-7. P effectue la vérification *(UC-52)*. OP valide.
-8. SYS débloque l'encaissement ; les fonds deviennent libérables selon le parcours normal *(UC-31)*.
-
-**Scénarios alternatifs**
-- **A1 — refus de vérification** *(depuis 7)* : au terme du délai, SYS **annule la commande et rembourse intégralement** l'acheteuse, puis ferme le compte aux nouvelles commandes *(R-H10)*.
-- **A2 — seuil de bascule franchi** *(depuis 4)* : SYS invite P à passer vendeur professionnel, **une seule fois**, sans bloquer la publication *(R-H11)*.
-- **A3 — mise en vente depuis le dressing** *(depuis 3)* : la pièce est déjà photographiée, aucune photo à reprendre *(F17.10)*.
-
-```mermaid
-sequenceDiagram
-    actor P as P · Particulier
-    participant APP as Application
-    participant API as API JP
-    participant DB as PostgreSQL
-    actor A as A · Acheteuse
-    actor OP as OP · Opérateur
-
-    P->>APP: « Vendre un article que je ne porte plus »
-    APP->>API: POST /moi/roles/particulier
-    API->>DB: profil_vendeur (type=particulier, nom_boutique=NULL)
-    Note over API,DB: R-H5 — aucune vérification exigée pour publier
-    P->>APP: 4 champs (photos, prix, taille, état)
-    APP->>API: POST /articles/annonce-particulier
-    API->>DB: article (piece_unique=true, stock=1)
-    API-->>P: annonce en ligne
-
-    A->>API: achète et paie (UC-30)
-    API->>DB: séquestre RETENU
-    API->>P: « Vous avez été payée — 38 000 Ar en attente »
-
-    alt P se vérifie
-        P->>API: POST /vendeur/verification (pièce, selfie, mobile money)
-        OP->>API: POST /admin/verifications/:id/decision {validee}
-        API->>DB: statut_verification = verifie
-        API-->>P: encaissement débloqué
-        Note over API,DB: les fonds suivent ensuite UC-31
-    else P ne se vérifie pas dans le délai
-        API->>DB: commande ANNULEE, remboursement intégral
-        API->>A: remboursée intégralement
-        API->>DB: compte fermé aux nouvelles commandes (R-H10)
-        API-->>P: « Votre compte ne peut plus recevoir de commandes »
-    end
-```
-
----
-
 ## UC-12 — Acheter un article hors direct ★
 
 | | |
@@ -569,11 +518,11 @@ sequenceDiagram
 | **Préconditions** | Un article en ligne avec du stock disponible. |
 | **Postconditions** | Commande créée avec `origine = catalogue`, suivant **la même machine à états** qu'une commande de direct *(R-H1)*. |
 
-**Description.** Le parcours qui fait de JP une boutique et non une succession d'événements. **La seule différence avec l'achat en direct est la durée de réservation** *(R-H3)* et le délai d'acceptation du vendeur *(R-H8)*.
+**Description.** Le parcours qui fait de JP une boutique et non une succession d'événements. **La seule différence avec l'achat en direct est la durée de réservation** *(R-H3)* et le délai d'acceptation de la boutique *(R-H8)*.
 
 **Scénario nominal**
 1. A ouvre une fiche article depuis le fil, la recherche, une vitrine ou un lien partagé.
-2. SYS affiche photos, prix, tailles **disponibles** (les épuisées barrées, `R-A3`), état, mesures comparées à son profil, **délai d'expédition annoncé** *(F5.9)*, badge du vendeur.
+2. SYS affiche photos, prix, tailles **disponibles** (les épuisées barrées, `R-A3`), état, mesures comparées à son profil, **délai d'expédition annoncé** *(F5.9)*, badge de la boutique.
 3. A appuie sur « Je prends ».
 4. SYS ouvre la feuille d'achat : taille présélectionnée depuis son profil, quantité, livraison au dernier choix mémorisé, **total avec frais affiché ici** *(RB7)*.
 5. A valide. SYS pose une réservation atomique *(UC interne : réservation)* pour la **durée catalogue** *(R-H3)*.
@@ -584,7 +533,7 @@ sequenceDiagram
 - **A2 — dernière pièce partie pendant le choix de la taille** *(depuis 5)* : SYS refuse avec `STOCK_INSUFFISANT`, propose la file d'attente *(F2.7)* et l'alerte de retour en stock *(F7.4)*.
 - **A3 — ajouter au panier** *(depuis 5)* : la réservation est maintenue, A continue à naviguer et paie tout en une fois *(UC-13)*.
 - **A4 — pièce unique** *(depuis 4)* : aucune quantité demandée *(F1.14)*.
-- **A5 — vendeur non autorisé à encaisser** *(depuis 3)* : l'achat est refusé avec un motif clair *(R-V1)*.
+- **A5 — boutique non autorisée à encaisser** *(depuis 3)* : l'achat est refusé avec un motif clair *(R-V1)*.
 - **A6 — réservation expirée avant paiement** *(depuis 6)* : SYS remet au stock, notifie **une seule fois**, propose « Reprendre » si le stock est là *(R-S6, F17.12)*.
 
 ```mermaid
@@ -593,7 +542,7 @@ sequenceDiagram
     participant APP as Application
     participant API as API JP
     participant DB as PostgreSQL
-    actor V as V · Vendeur
+    actor V as V · Boutique
 
     A->>APP: ouvre une fiche article
     APP->>API: GET /articles/:id
@@ -635,14 +584,14 @@ sequenceDiagram
 | **Fonctionnalités** | F1.16, F3.1, F3.2, F3.15 · **Story** US-VENTE-02 |
 | **Règles** | R-H3, R-U7, R-U8 |
 | **Préconditions** | Au moins un article réservé. |
-| **Postconditions** | Une commande par vendeur, un seul paiement, remises appliquées et nommées. |
+| **Postconditions** | Une commande par boutique, un seul paiement, remises appliquées et nommées. |
 
 **Scénario nominal**
-1. A ajoute plusieurs articles au panier, de vendeurs différents.
-2. SYS **regroupe par vendeur** : les frais de livraison et l'expédition sont par vendeur.
+1. A ajoute plusieurs articles au panier, de boutiques différentes.
+2. SYS **regroupe par boutique** : les frais de livraison et l'expédition sont par boutique.
 3. SYS calcule les remises éligibles et n'en retient **qu'une par ligne, la plus favorable** *(R-U7)*.
-4. SYS affiche le récapitulatif : sous-total, remise **nommée**, frais par vendeur, total.
-5. SYS propose « Regrouper au même point relais et économiser X Ar ».
+4. SYS affiche le récapitulatif : sous-total, remise **nommée**, frais par boutique, total.
+5. **Un seul paiement pour tout le panier** *(`R-P4`, `DP-16`)*, quel que soit le nombre de boutiques.
 6. A paie une fois *(UC-30)*.
 
 **Scénarios alternatifs**
@@ -658,21 +607,21 @@ sequenceDiagram
     participant APP as Application
     participant API as API JP
     participant DB as PostgreSQL
-    A->>APP: ajoute des articles de vendeurs différents
+    A->>APP: ajoute des articles de boutiques différentes
     APP->>API: POST /panier/lignes
     API->>DB: INSERT reservation (durée catalogue)
     API-->>APP: 201
     A->>APP: ouvre le panier
     APP->>API: GET /panier
     API->>DB: SELECT lignes, réservations, promotions, rang client
-    API->>API: regroupe par vendeur — frais et expédition par vendeur
+    API->>API: regroupe par boutique — frais et expédition par boutique
     API->>API: retient UNE remise par ligne, la plus favorable (R-U7)
     alt une réservation a expiré (A1)
         API-->>APP: 200 avec la ligne signalée « expirée »
         APP-->>A: bandeau « Reprendre » AVANT toute tentative de paiement
     else toutes valides
-        API-->>APP: 200 sous-total, remise NOMMÉE, frais par vendeur, total
-        APP-->>A: « Regrouper au même point relais et économiser X Ar »
+        API-->>APP: 200 sous-total, remise NOMMÉE, frais par boutique, total
+        APP-->>A: « 1 demande de confirmation » (R-M6, R-M10)
     end
     A->>APP: « Payer »
     APP->>API: POST /commandes {panier, Idempotency-Key}
@@ -683,9 +632,9 @@ sequenceDiagram
         Note over API,APP: jamais un prélèvement supérieur à ce qui a été vu (RB7)
     else palier perdu entre-temps (A3)
         API->>DB: retire la remise — la commande n'échoue pas (R-U5)
-        API-->>APP: 201 une commande par vendeur + message clair
+        API-->>APP: 201 une commande par boutique + message clair
     else inchangé
-        API->>DB: INSERT commande ×n vendeurs, un seul paiement
+        API->>DB: INSERT commande ×n boutiques, un seul paiement
         API-->>APP: 201
     end
     APP-->>A: paiement unique (UC-30)
@@ -700,9 +649,9 @@ sequenceDiagram
 | | |
 |---|---|
 | **Acteur principal** | V |
-| **Acteurs secondaires** | VE (modération du chat), A, VID, SYS |
+| **Acteurs secondaires** | A, VID, SYS |
 | **Fonctionnalités** | F2.3, F2.4, F2.5, F2.13, F2.14, F2.15 · **Règles** R-D1 à R-D7 |
-| **Préconditions** | Vendeur **vérifié** *(R-V1)*, articles préparés (facultatif). |
+| **Préconditions** | Boutique **vérifié** *(R-V1)*, articles préparés (facultatif). |
 | **Postconditions** | Direct enregistré, bilan produit, marqueurs de replay générés sans saisie *(F2.16)*. |
 
 **Scénario nominal**
@@ -711,19 +660,19 @@ sequenceDiagram
 3. V passe en direct ; SYS obtient des identifiants d'ingest auprès de VID et notifie les abonnés *(F2.2)*.
 4. V sélectionne l'article « à l'écran » ; SYS horodate `a_lecran_le` — c'est cette donnée qui produira les marqueurs du replay.
 5. SYS diffuse le bandeau : prix, tailles, **stock restant réel** *(R-S2, RB9)*.
-6. Les acheteuses achètent *(UC-21)* ; SYS alimente le panneau vendeur en temps réel.
+6. Les acheteuses achètent *(UC-21)* ; SYS alimente le panneau boutique en temps réel.
 7. V arrête. SYS clôt le direct, produit le bilan et récupère l'enregistrement.
 
 **Scénarios alternatifs**
 - **A1 — coupure de connexion** *(depuis 5)* : SYS met le direct **en pause**, **suspend toutes les réservations en cours** *(R-S5)*, informe les spectateurs. Reprise sous 2 minutes → même direct, mêmes spectateurs, mêmes réservations, `expire_le` repoussé de la durée écoulée. Au-delà → clôture et bilan.
 - **A2 — modification de prix en direct** *(depuis 4)* : autorisée ; **les réservations déjà posées conservent l'ancien prix** *(R-U9)*.
 - **A3 — création express d'un article** *(depuis 4)* : trois champs *(R-A4)*.
-- **A4 — signalement pendant le direct** *(depuis 5)* : MO peut **couper la diffusion** en quelques secondes *(F11.2)*.
+- **A4 — signalement pendant le direct** *(depuis 5)* : ⚠️ **`SYS` seul** peut couper la diffusion, sur filtre automatique *(`DP-05`, F19.1)*. Il n'y a plus de modérateur humain pour trancher en quelques secondes *(F11.2)*.
 
 ```mermaid
 sequenceDiagram
-    actor V as V · Vendeur
-    participant APP as Application vendeur
+    actor V as V · Boutique
+    participant APP as Application boutique
     participant API as API JP
     participant VID as Service vidéo
     participant WS as Canal temps réel
@@ -751,9 +700,9 @@ sequenceDiagram
 
     A->>API: « Je prends » (UC-21)
     API->>WS: diffuse {stock décrémenté, commande payée}
-    WS-->>V: panneau vendeur, CA qui monte
+    WS-->>V: panneau boutique, CA qui monte
 
-    alt coupure de connexion vendeur
+    alt coupure de connexion boutique
         VID--xAPI: perte d'ingest
         API->>DB: statut = en_pause
         API->>DB: suspend TOUTES les réservations du direct (R-S5)
@@ -787,7 +736,7 @@ sequenceDiagram
 
 **Description.** Le parcours le plus important du produit. **Il doit tenir sous 30 secondes**, et la vidéo continue de jouer pendant tout le parcours.
 
-**Scénario nominal** — identique à UC-12 étapes 3 à 6, avec trois différences : la vidéo reste visible au-dessus de la feuille, la durée de réservation est **courte** *(R-H3)*, et le vendeur voit la commande tomber avec le prénom de l'acheteuse.
+**Scénario nominal** — identique à UC-12 étapes 3 à 6, avec trois différences : la vidéo reste visible au-dessus de la feuille, la durée de réservation est **courte** *(R-H3)*, et la boutique voit la commande tomber avec le prénom de l'acheteuse.
 
 **Scénarios alternatifs**
 - **A1 — deux acheteuses sur la dernière pièce** : **l'horodatage serveur tranche** *(R-S7)*. La seconde est placée 2ᵉ dans la file et sera notifiée si la première ne paie pas.
@@ -801,7 +750,7 @@ sequenceDiagram
     participant API as API JP
     participant DB as PostgreSQL
     participant WS as Canal du direct
-    actor V as V · Vendeur
+    actor V as V · Boutique
 
     Note over A1,A2: dernière pièce en stock — appuis quasi simultanés
 
@@ -850,30 +799,35 @@ sequenceDiagram
 | | |
 |---|---|
 | **Acteur principal** | A |
-| **Acteurs secondaires** | PSP, V, SYS |
-| **Fonctionnalités** | F4.1, F4.4, F4.10 · **Règles** R-M1, R-M2, R-E1 · **Recette RB10** |
+| **Acteurs secondaires** | PSP, B, C, SYS |
+| **Fonctionnalités** | F4.1, F4.14, F4.10, F4.11 · **Règles** R-M1 à R-M7, R-M9, R-M10 · **Recette** RB2, RB10, RB11 · **Décisions** `DP-07`, `DP-15`, `DP-16` |
 | **Préconditions** | Une commande en `EN_ATTENTE_PAIEMENT` avec une réservation active. |
-| **Postconditions** | Paiement confirmé, fonds **séquestrés**, commission prélevée, facture émise, vendeur notifié du **montant net**. |
+| **Postconditions** | Commande `PAYEE`, facture émise, **crédits partis directement aux bénéficiaires**. **JP ne détient aucun fonds.** |
 
-**Description.** Le point critique : pendant l'attente de confirmation opérateur (jusqu'à 60 s), l'écran ne doit **jamais** paraître figé, et le minuteur de réservation est **suspendu** *(R-S5)*. C'est là que l'acheteuse croit avoir perdu son argent.
+**Description.** Le point critique n'a pas changé : pendant l'attente de
+confirmation opérateur (jusqu'à 60 s), l'écran ne doit **jamais** paraître figé.
+
+**Ce que `DP-16` établit** : **un débit, une confirmation, deux ou trois
+crédits** — la boutique, la commission JP, la créatrice. **L'acheteuse ne voit
+jamais la répartition.**
 
 **Scénario nominal**
-1. A choisit son opérateur (le sien est présélectionné).
-2. SYS crée un paiement avec une **clé d'idempotence** *(R-M2)*, suspend le minuteur, appelle PSP.
-3. PSP envoie une demande de validation sur le téléphone de A.
-4. SYS affiche un écran d'attente **animé**, avec le temps écoulé et la mention que la réservation est en pause.
-5. A saisit son code sur son téléphone.
-6. PSP confirme, par rappel asynchrone **et/ou** par réponse synchrone.
-7. SYS, en une transaction : consomme la réservation, passe la commande en `PAYEE`, crée le **séquestre**, écrit les écritures financières, prélève la commission.
-8. SYS émet la facture *(F4.11)*, notifie A et notifie V avec **le montant net, commission affichée** *(R-G1)*.
+1. `SYS` calcule les parts : net de la boutique, commission JP *(si mode commission)*, part créatrice *(si affiliée)*.
+2. `SYS` annonce **le nombre de confirmations** *(`R-M6`)* — **1** en éclatement atomique *(`R-M10`)*.
+3. `A` choisit son opérateur — **le sien est présélectionné**.
+4. `SYS` crée le paiement avec une **clé d'idempotence** *(R-M2)* et **suspend le minuteur**.
+5. `PSP` envoie une demande de validation ; `SYS` affiche un écran d'attente **animé**.
+6. `A` saisit son code. `PSP` confirme, **par rappel asynchrone et/ou réponse synchrone**.
+7. **`[T]`** `SYS` : consomme la réservation, passe la commande en `PAYEE`, journalise **chaque crédit**.
+8. `SYS` émet la facture, notifie `A` et notifie `B` **avec le net reçu**.
 
 **Scénarios alternatifs**
-- **A1 — rappel reçu deux fois** *(depuis 6)* : traité **une seule fois** *(R-M2)*.
-- **A2 — rappel reçu avant la réponse synchrone** *(depuis 6)* : traité correctement, l'ordre d'arrivée n'a pas d'importance.
-- **A3 — échec** *(depuis 6)* : SYS affiche **le motif réel** — solde insuffisant, code faux, délai dépassé, opérateur indisponible — conserve la réservation si le minuteur le permet, et propose de réessayer ou de changer de moyen *(F4.10)*.
-- **A4 — coupure réseau** *(à toute étape)* : ni double prélèvement, ni commande perdue *(RB10)*. Au retour, l'acheteuse retrouve l'état réel.
-- **A5 — paiement resté en attente** *(depuis 6)* : SYS **réinterroge activement** PSP au-delà d'un délai, jamais d'abandon silencieux.
-- **A6 — paiement à la livraison** *(depuis 1)* : commande créée **sans** encaissement ni séquestre ; les espèces sont collectées à la remise *(UC-41, F4.3)*.
+- **A1 — rappel reçu deux fois** : traité **une seule fois** *(R-M2)*.
+- **A2 — rappel avant la réponse synchrone** : l'ordre d'arrivée n'a pas d'importance.
+- **A3 — éclatement atomique refusé** : **tout ou rien**, la commande n'est pas créée.
+- **A4 — coupure réseau** : ni double prélèvement, ni commande perdue *(RB10)*.
+- **A5 — en repli, patte pivot échouée** : **aucune commande, aucune autre patte** *(`R-M4`)*.
+- **A6 — en repli, patte secondaire échouée** : **l'acheteuse ne voit rien**. La patte est **rejouée après interrogation** *(`R-M5`, `R-M7`)*.
 
 ```mermaid
 sequenceDiagram
@@ -882,69 +836,66 @@ sequenceDiagram
     participant API as API JP
     participant DB as PostgreSQL
     participant PSP as MVola
-    actor V as V · Vendeur
+    actor B as B · Boutique
 
-    A->>APP: « Payer 55 000 Ar »
+    APP->>API: GET /commandes/:id/plan-paiement
+    API->>API: calcule net · commission JP · part créatrice
+    API-->>APP: { confirmations: 1, total: 50 000 }
+    APP-->>A: « 1 demande de confirmation » (R-M6, R-M10)
+    Note over APP,A: l'acheteuse ne voit JAMAIS la répartition (R-B1)
+
+    A->>APP: « Payer 50 000 Ar »
     APP->>API: POST /commandes/:id/paiement + Idempotency-Key
-    API->>DB: INSERT paiement (INITIE, cle_idempotence)
+    API->>DB: INSERT paiement ×N (boutique, jp, créatrice)
     API->>DB: reservation.suspendu_depuis = now() (R-S5)
-    API->>PSP: demande de paiement
-    PSP-->>API: accepté, en attente de l'utilisateur
-    API->>DB: paiement = EN_ATTENTE_OPERATEUR
-    API-->>APP: 202 {paiementId}
-    APP-->>A: écran d'attente ANIMÉ + « réservation en pause »
-    Note over APP,A: jamais d'écran figé — c'est ici qu'on perd la confiance
+    API->>PSP: encaissement éclaté — 47 500 → Miora, 2 500 → JP
+    Note over API,PSP: R-M9 — JP ne détient rien, les crédits vont directement
 
-    PSP-->>A: demande de validation sur le téléphone
+    PSP-->>A: UNE demande de validation
     A->>PSP: saisit son code secret
+    PSP->>API: POST /webhooks/paiement/mvola (signé)
 
-    par rappel asynchrone
-        PSP->>API: POST /webhooks/paiement/mvola (signé)
-    and sondage
-        APP->>API: GET /paiements/:id
-    end
-
-    API->>API: vérifie la signature · traitement idempotent
     API->>DB: BEGIN
-    API->>DB: paiement = CONFIRME
-    API->>DB: reservation = CONSOMMEE
-    API->>DB: commande = PAYEE
-    API->>DB: INSERT sequestre (RETENU)
-    API->>DB: écritures financières (séquestre, commission_jp)
+    API->>DB: paiements = CONFIRME · reservation = CONSOMMEE
+    API->>DB: commande = PAYEE · ecriture_financiere ×N
     API->>DB: COMMIT
-    Note over API,DB: RB2 · C4 — journal append only, corrections par écriture inverse
 
     API->>DB: file : génération de la facture
-    API-->>APP: paiement confirmé
-    APP-->>A: « Votre argent est gardé par JP jusqu'à la livraison » (R-E1)
-    API->>V: « Commande payée — vous recevrez 47 500 Ar (commission 2 500 Ar) »
+    APP-->>A: « Boutique vérifiée — identité et Mobile Money contrôlés » (R-E1)
+    API->>B: « Commande payée — vous recevez 47 500 Ar » (R-G1)
 ```
 
 ---
 
-## UC-31 — Confirmer la réception et libérer les fonds ★
+## UC-31 — Confirmer la réception ★
 
 | | |
 |---|---|
 | **Acteur principal** | A |
-| **Acteurs secondaires** | V, SYS |
-| **Fonctionnalités** | F4.5, F4.6, F14.7 · **Règles** R-E1 à R-E6 · **Recette RB2** |
-| **Préconditions** | Colis remis *(UC-41 ou UC-42)*, séquestre en statut `retenu`. |
-| **Postconditions** | Fonds libérés au portefeuille du vendeur en **solde disponible**, ou bloqués si un litige est ouvert. |
+| **Acteurs secondaires** | B, SYS |
+| **Fonctionnalités** | F4.5, F6.1, F14.7 · **Règles** R-E3, R-E4, R-R11 · **Décisions** `DP-04`, `DP-07` |
+| **Préconditions** | Commande en statut `LIVREE`. |
+| **Postconditions** | Commande `CONFIRMEE`, **score de la boutique alimenté**. **Aucun mouvement d'argent.** |
 
-**Description.** Le mécanisme qui matérialise la promesse. **Quatre chemins de libération**, tous à tester *(RB2)* : confirmation manuelle, unboxing *(UC-61)*, délai automatique, décision d'arbitrage *(UC-51)*.
+**Description.** **La confirmation ne libère plus d'argent** — la boutique a été
+payée au moment du paiement *(`DP-07`)*. Elle **clôt la commande et alimente la
+réputation**, devenue la seule protection de l'acheteuse.
+
+**Ce que ça change dans la conception.** L'étape 5 — le journal des ventes
+confirmées — était un confort de fidélisation à activer en phase 2. **Elle est
+devenue le mécanisme de protection lui-même.**
 
 **Scénario nominal**
 1. SYS notifie A : « Avez-vous bien reçu ? »
 2. A répond « Oui, tout va bien ».
-3. SYS libère le séquestre, écrit les écritures inverses, fait passer le montant du solde « en attente » au solde « disponible » du vendeur *(R-E6)*.
+3. SYS clôt la commande et enregistre la réception. **Aucune écriture de solde : il n'y a pas de solde.**
 4. SYS invite A à laisser un avis *(F6.1)* et fait entrer l'article dans son dressing *(F17.10)*.
-5. SYS écrit au **journal des ventes confirmées** *(R-R11)*, qui alimentera le rang client.
+5. SYS écrit au **journal des ventes confirmées** *(R-R11)*, qui alimente le rang client **et le score de confiance de la boutique**.
 
 **Scénarios alternatifs**
-- **A1 — unboxing** *(depuis 2)* : la publication d'une vidéo d'ouverture vaut confirmation, **et** produit un avis, du contenu et un crédit *(UC-61)*.
-- **A2 — aucune réponse** *(depuis 2)* : au terme du délai *(R-E4, hypothèse 3 jours)*, SYS libère **automatiquement**. Sans cette règle, les vendeurs attendent indéfiniment et partent.
-- **A3 — problème** *(depuis 2)* : A ouvre un litige *(UC-50)*. **Les fonds restent bloqués** et la libération automatique est **suspendue**.
+- **A1 — unboxing** *(depuis 2)* : la publication d'une vidéo d'ouverture vaut confirmation, **et** produit un avis.
+- **A2 — aucune réponse** *(depuis 2)* : au terme du délai *(R-E4, hypothèse 3 jours)*, SYS clôt **automatiquement**. **Cela ne coûte rien à personne** — l'argent est déjà parti.
+- **A3 — problème** *(depuis 2)* : A signale *(UC-50)*. **Rien n'est bloqué** — il n'y a plus de fonds à bloquer. Le signalement **pèse sur le score** de la boutique *(R-T8)*.
 
 ```mermaid
 sequenceDiagram
@@ -952,103 +903,81 @@ sequenceDiagram
     actor A as A · Acheteuse
     participant API as API JP
     participant DB as PostgreSQL
-    actor V as V · Vendeur
+    actor B as B · Boutique
 
     SYS->>A: « Avez-vous bien reçu votre colis ? »
 
     alt A confirme
         A->>API: POST /commandes/:id/confirmer
         API->>DB: BEGIN
-        API->>DB: sequestre = LIBERE (motif = confirmation)
-        API->>DB: écritures : séquestre → portefeuille vendeur (disponible)
         API->>DB: commande = CONFIRMEE
+        API->>DB: ecriture_financiere (traçabilité)
         API->>DB: INSERT vente_confirmee_journal (R-R11)
+        API->>DB: score_confiance += vente honorée
         API->>DB: COMMIT
-        API->>V: « 47 500 Ar disponibles au retrait »
+        Note over API,DB: DP-07 — aucun mouvement d'argent, il est déjà parti
         API->>A: invitation à laisser un avis
         API->>DB: file : entrée au dressing (asynchrone, idempotent)
     else A publie un unboxing
         A->>API: POST /commandes/:id/unboxing
         Note over A,API: un geste, cinq résultats — voir UC-61
         API->>DB: confirmation + contenu + crédit (transaction)
-        API->>DB: file : avis, notification vendeur, dressing
     else A signale un problème
-        A->>API: POST /commandes/:id/litige
-        API->>DB: litige OUVERT · sequestre reste RETENU
-        API->>DB: libération automatique SUSPENDUE
-        API->>V: « Un litige a été ouvert »
-        Note over API,DB: les fonds restent bloqués jusqu'à la résolution (UC-50, UC-51)
+        A->>API: POST /commandes/:id/signalement
+        API->>DB: signalement_commande OUVERT
+        API->>DB: compte_dans_le_score = true (R-T8)
+        API->>B: « Un problème a été signalé »
+        Note over API,DB: rien n'est bloqué — le signalement COMPTE, il ne rend rien
     else aucune réponse au terme du délai
-        SYS->>API: tâche de libération automatique
-        API->>DB: sequestre = LIBERE (motif = automatique)
-        API->>V: « 47 500 Ar disponibles »
-        Note over SYS,API: R-E4 — sans cette règle, les vendeurs partent
+        SYS->>API: tâche de clôture automatique
+        API->>DB: commande = CONFIRMEE (motif = automatique)
+        Note over SYS,API: R-E4 — une commande jamais confirmée ne coûte rien
     end
 ```
+
+> ### Ce que la confirmation ne fait plus
+>
+> **`RB2` change de sens.** Il vérifiait que « les fonds sont correctement
+> séquestrés et libérés dans tous les cas ». Il vérifie désormais que **le
+> paiement atteint le bon compte, sans double prélèvement** — y compris sur une
+> crédit atteint le bon compte, sans double versement, et qu'aucun ne reste en
+> souffrance *(`R-M4`, `R-M5`, `R-M7`)*.
 
 ---
 
-## UC-32 — Retirer son argent
+## UC-33 — Gérer son abonnement 🆕
 
 | | |
 |---|---|
-| **Acteur principal** | V, ou C pour son portefeuille de créatrice |
-| **Fonctionnalités** | F4.8, F15.10 · **Règles** R-E6, R-E8 |
-| **Préconditions** | Solde **disponible** non nul, numéro mobile money **vérifié**, retraits non gelés. |
-| **Postconditions** | Virement exécuté vers le numéro vérifié, reçu émis, écritures cohérentes. |
+| **Acteur principal** | B |
+| **Acteurs secondaires** | PSP, SYS |
+| **Fonctionnalités** | F10.3 · **Règles** R-B1 à R-B4 · **Décision** `DP-08` |
+| **Préconditions** | Compte boutique vérifié. |
+| **Postconditions** | Palier actif, quotas connus, échéance affichée. |
+
+**Description.** **JP ne prélève rien sur les ventes** *(`DP-08`)*. La boutique
+fixe son prix, encaisse 100 %, et paie **un abonnement mensuel**. C'est le seul
+flux d'argent entre une boutique et JP.
 
 **Scénario nominal**
-1. V ouvre « Mon argent » et voit **deux soldes distincts** : en attente de confirmation, et disponible au retrait *(R-E6)*.
-2. V saisit un montant et confirme.
-3. SYS vérifie le solde, la destination et l'absence de gel, puis exécute le virement avec une clé d'idempotence.
-4. SYS écrit les écritures et émet un reçu.
+1. B ouvre « Mon abonnement » : palier en cours, **ventes du mois / quota**, **directs du mois / quota**, échéance.
+2. B choisit un palier. Le **palier gratuit** est actif par défaut *(R-B3)*.
+3. B règle par mobile money. SYS enregistre l'échéance.
 
 **Scénarios alternatifs**
-- **A1 — destination différente du numéro vérifié** : refus. C'est la règle qui empêche un détournement de compte de devenir un détournement d'argent.
-- **A2 — retraits gelés** *(récupération de compte en cours, `R-C14`)* : refus, avec le motif et le numéro de dossier.
-- **A3 — échec du prestataire** : le montant est **remis au solde disponible**, jamais perdu.
-- **A4 — frais** : gratuit une fois par semaine, payant au-delà *(paramétrable, `R-O1`)*.
+- **A1 — quota atteint** : **la mise en vente et le lancement d'un direct sont bloqués** jusqu'au cycle suivant ou au changement de palier. **Le compte n'est jamais suspendu** : le catalogue reste visible, les commandes en cours vont à leur terme *(R-B4)*.
+- **A2 — abonnement impayé** : même traitement qu'`A1`. Jamais de coupure d'accès aux commandes ni à l'historique.
+- **A3 — première inscription** : palier gratuit, sans carte, sans engagement. ⚠️ Sans lui, la boutique paie avant d'avoir gagné, et l'acquisition se ferme *(R-B3)*.
 
-**Diagramme de séquence**
-
-```mermaid
-sequenceDiagram
-    actor V as V · Vendeur ou créatrice
-    participant APP as Studio vendeur
-    participant API as API JP
-    participant DB as PostgreSQL
-    participant PSP as Prestataire mobile money
-    V->>APP: ouvre « Mon argent »
-    APP->>API: GET /portefeuille
-    API->>DB: agrège les écritures financières
-    API-->>APP: DEUX soldes distincts — en attente, disponible (R-E6)
-    APP-->>V: « En attente 120 000 Ar · Disponible 340 000 Ar »
-    V->>APP: saisit un montant et confirme
-    APP->>API: POST /retraits {montant, Idempotency-Key}
-    API->>DB: SELECT portefeuille FOR UPDATE
-    alt retraits gelés — récupération de compte en cours (A2)
-        API-->>APP: 403 RETRAIT_GELE + motif + numéro de dossier (R-C14)
-    else destination ≠ numéro vérifié (A1)
-        API-->>APP: 403 DESTINATION_NON_VERIFIEE
-        Note over API: un détournement de compte ne devient pas un détournement d'argent
-    else solde insuffisant
-        API-->>APP: 422 SOLDE_INSUFFISANT
-    else autorisé
-        API->>DB: INSERT ecriture_financiere (disponible → engagé)
-        API->>PSP: virement vers le numéro vérifié, clé d'idempotence
-        alt échec du prestataire (A3)
-            PSP-->>API: échec
-            API->>DB: écriture INVERSE — le montant revient au disponible
-            API-->>APP: 502 RETRAIT_ECHOUE — montant jamais perdu
-        else succès
-            PSP-->>API: référence de virement
-            API->>DB: INSERT ecriture_financiere (sortie) + reçu
-            API-->>APP: 200 reçu
-            APP-->>V: « Virement envoyé · reçu disponible »
-        end
-    end
-    Note over API,DB: gratuit une fois par semaine, payant au-delà — paramétrable (R-O1, A4)
-```
+> ### L'effet de bord qui vaut la décision
+>
+> Le risque n° 1 du modèle était : *« à partir de quel taux la boutique
+> cherche-t-elle à contourner la plateforme ? »* **Sans commission par vente,
+> elle n'a plus aucun intérêt à conclure ailleurs.** Le contournement cesse
+> d'être un risque.
+>
+> ⚠️ **Montants et quotas non arrêtés** *(`PO-6`)*. Ils bloquent l'ouverture des
+> inscriptions boutique **et** la migration 20.
 
 ---
 
@@ -1058,408 +987,214 @@ sequenceDiagram
 
 | | |
 |---|---|
-| **Acteur principal** | V, ou VE si le vendeur l'y autorise |
-| **Fonctionnalités** | F5.1, F5.2, F5.6 · **Règles** R-L4, R-H8 |
-| **Préconditions** | Commande `PAYEE`. |
-| **Postconditions** | Colis `PRET`, bordereau émis, statut visible **des deux côtés** *(R-L4)*. |
+| **Acteur principal** | B |
+| **Fonctionnalités** | F5.1, F5.2 · **Règles** R-L3, R-L9, R-H8 · **Décision** `DP-04` |
+| **Préconditions** | Commande `PAYEE`, point de remise convenu *(UC-43)*. |
+| **Postconditions** | Expédition `EXPEDIEE`, statut visible **des deux côtés** *(R-L3)*. |
+
+**Description.** **JP n'opère aucune logistique** *(`DP-04`)*. La boutique choisit
+son moyen — son coursier, un transporteur, une remise en main propre. JP fournit
+**la frise de statuts**, et c'est la boutique qui la fait avancer.
 
 **Scénario nominal**
-1. V ouvre « À préparer » : une **file unique**, triée par échéance, avec un marqueur d'origine *(R-H2)*.
-2. V ouvre le bordereau : articles, tailles, mode de livraison, destinataire, montant à encaisser si espèces, note de l'acheteuse.
-3. V prépare le colis et marque « Prêt ».
+1. B ouvre « À préparer » : une **file unique**, triée par échéance, avec un marqueur d'origine *(R-H2)*.
+2. B ouvre le bordereau : articles, tailles, destinataire, **point de remise convenu** *(UC-43)*, note de l'acheteuse.
+3. B prépare le colis et marque « Expédiée ».
 4. SYS met le statut à jour des deux côtés et notifie A.
+5. B marque « Livrée » à la remise ; A confirme *(UC-31)*.
 
 **Scénarios alternatifs**
-- **A1 — refus par le vendeur** *(depuis 3)* : motif **obligatoire**, remboursement **automatique et intégral**, effet sur le score de confiance *(F3.9, F6.2)*.
-- **A2 — délai d'acceptation dépassé** *(depuis 3)* : A est notifiée, la réservation est protégée, l'absence de réaction pèse sur le score *(R-H8)*.
-- **A3 — plusieurs colis** *(depuis 3)* : regroupement pour un enlèvement en une seule validation *(F5.6)*.
-- **A4 — employé** : VE prépare, **sans voir aucun montant** *(R-R8)*.
+- **A1 — refus par la boutique** *(depuis 3)* : motif **obligatoire**. ⚠️ **Le remboursement n'est plus automatique** *(`DP-07`)* : JP n'a rien à rendre. **C'est la boutique qui rembourse**, depuis son compte, et son refus de le faire pèse sur son score *(R-T8)*.
+- **A2 — délai d'acceptation dépassé** *(depuis 3)* : A est notifiée, et l'absence de réponse **pèse sur le score de confiance** *(R-H8, F6.2)*.
+- **A3 — plusieurs commandes pour la même acheteuse** *(depuis 3)* : la boutique regroupe si elle le souhaite. **JP ne l'organise pas** *(`DP-04`)*.
 
-**Diagramme de séquence**
+> ### Le point faible assumé
+>
+> **La déclaration d'expédition n'est vérifiée par personne** *(`R-L9`)*. Aucun
+> tiers neutre ne constate la remise. Une boutique qui marque « Expédiée » sans
+> expédier n'est arrêtée que par le signalement de l'acheteuse *(UC-50)* et par
+> l'effet de ce signalement sur son score.
 
 ```mermaid
 sequenceDiagram
-    actor V as V · Vendeur
-    participant APP as Studio vendeur
+    actor B as B · Boutique
     participant API as API JP
     participant DB as PostgreSQL
-    participant NOT as Notifications
-    actor A as A · Acheteur
-    V->>APP: ouvre « À préparer »
-    APP->>API: GET /commandes?statut=PAYEE
-    API->>DB: SELECT commandes triées par échéance
-    API-->>APP: file UNIQUE, marqueur d'origine direct / catalogue (R-H2)
-    Note over APP: employé VE — aucun montant dans la réponse (A4, R-R8)
-    V->>APP: ouvre le bordereau
-    APP->>API: GET /commandes/:id/bordereau
-    API-->>APP: articles, tailles, mode de livraison, destinataire, note
-    alt refus par le vendeur (A1)
-        V->>APP: « Refuser » + motif OBLIGATOIRE
-        APP->>API: POST /commandes/:id/refus {motif}
-        API->>DB: remboursement automatique et intégral
-        API->>DB: remise en stock + impact sur le score de confiance
-        API->>NOT: notifie A
-        NOT-->>A: « Commande refusée · remboursée »
-    else délai d'acceptation dépassé (A2)
-        API->>DB: la réservation est protégée (R-H8)
-        API->>NOT: notifie A
-        NOT-->>A: « Le vendeur n'a pas répondu »
-    else préparé
-        V->>APP: marque « Prêt »
-        APP->>API: POST /commandes/:id/pret
-        API->>DB: colis → PRET, statut partagé DES DEUX CÔTÉS (R-L4)
-        API->>NOT: notifie A
-        NOT-->>A: « Votre colis est prêt »
-        API-->>APP: 200
-    end
-    opt plusieurs colis du même vendeur (A3)
-        V->>APP: regroupe pour un enlèvement en une seule validation (F5.6)
-    end
+    actor A as A · Acheteuse
+
+    B->>API: GET /commandes?statut=a_preparer
+    API-->>B: file unique, triée par échéance (R-H2)
+    B->>API: GET /commandes/:id/bordereau
+    API-->>B: articles, tailles, point de remise convenu (UC-43)
+
+    B->>API: PATCH /expeditions/:id { statut: EXPEDIEE, moyen_declare }
+    API->>DB: expedition.statut = EXPEDIEE
+    API->>DB: INSERT evenement_livraison (auteur_id = boutique)
+    Note over API,DB: R-L9 — personne ne vérifie cette déclaration
+    API->>A: « Votre commande est expédiée »
+
+    B->>API: PATCH /expeditions/:id { statut: LIVREE }
+    API->>DB: expedition.statut = LIVREE
+    API->>A: « Avez-vous bien reçu ? » → UC-31
 ```
 
 ---
 
-## UC-41 — Livrer un colis à domicile ★
+## UC-43 — Convenir du point de remise 🆕
 
 | | |
 |---|---|
-| **Acteur principal** | L — livreur |
-| **Acteurs secondaires** | A, V, SYS |
-| **Fonctionnalités** | F5.5, F5.2, F5.7, F4.3 · **Règles** R-L2, R-L4 |
-| **Préconditions** | Colis `ENLEVE`, tournée du jour téléchargée. |
-| **Postconditions** | Colis `REMIS` avec **preuve**, espèces enregistrées si applicable, fenêtre de confirmation ouverte *(UC-31)*. |
-
-**Description.** L'application livreur fonctionne **hors ligne par défaut** : la tournée est téléchargée, les actions sont enregistrées localement et synchronisées quand le réseau revient. Une application qui exige une connexion à chaque appui ne sera pas utilisée à moto.
+| **Acteur principal** | A *(ou le bénéficiaire dans le cas du cadeau)* + B |
+| **Fonctionnalités** | *(neuve)* · **Règles** R-L1, R-G1, R-G7 · **Décisions** `DP-04`, `DP-10` |
+| **Préconditions** | Commande créée. |
+| **Postconditions** | `fil_remise.point_convenu` et `accord_le` renseignés ; le point figure sur le bordereau *(UC-40)*. |
 
 **Scénario nominal**
-1. L ouvre sa tournée : enlèvements d'abord, puis remises, dans l'ordre.
-2. L arrive chez le vendeur, enlève les colis en **une seule validation** *(F5.6)*.
-3. L arrive chez l'acheteuse et appuie sur « Arrivé ».
-4. L produit la **preuve de remise** : photo du colis ou code de l'acheteuse.
-5. Si paiement à la livraison, L saisit le montant encaissé.
-6. SYS enregistre localement, puis synchronise : colis `REMIS`, événement horodaté et attribué, notification à A et à V, ouverture de la fenêtre de confirmation.
+1. SYS ouvre un fil entre A et B à la création de la commande.
+2. A et B conviennent du lieu et du moment de la remise.
+3. B enregistre le point convenu ; il apparaît sur le bordereau.
 
 **Scénarios alternatifs**
-- **A1 — hors réseau** *(à toute étape)* : les actions sont mises en file locale avec une clé d'idempotence ; la synchronisation d'une file rejouée **ne double rien**.
-- **A2 — échec de livraison** *(depuis 3)* : motif — absente, refuse, adresse introuvable, injoignable — plus une photo. Le colis part en retour vendeur *(F5.7)* ou en nouvelle tentative.
-- **A3 — montant encaissé différent du montant dû** *(depuis 5)* : l'écart est **signalé**, jamais absorbé silencieusement *(F11.5)*.
+- **A1 — commande-cadeau** *(`DP-10`)* : l'échange a lieu entre **la boutique et le bénéficiaire**, jamais le donateur, qui **ne voit jamais l'adresse** *(`RB8`, `R-G1`)*. **C'est `accord_le` qui débloque alors le paiement.**
+- **A2 — pas d'accord** : la commande ne peut pas avancer. ⚠️ **L'article doit être tenu pendant tout l'échange** — 30 minutes ne suffisent pas entre deux fuseaux horaires *(`PO-10`)*.
 
-```mermaid
-sequenceDiagram
-    actor L as L · Livreur
-    participant TER as Application terrain
-    participant FILE as File hors ligne locale
-    participant API as API JP
-    participant DB as PostgreSQL
-    actor A as A · Acheteuse
-    actor V as V · Vendeur
-
-    L->>TER: ouvre sa tournée
-    TER->>API: GET /livreur/tournee
-    API-->>TER: points ordonnés (enlèvements puis remises)
-    TER->>TER: met la tournée en cache local
-
-    L->>TER: « Arrivé » chez le vendeur
-    L->>TER: enlève 5 colis (une seule validation)
-    TER->>FILE: action locale (clé d'idempotence)
-    TER->>API: POST /enlevements {colisIds}
-    API->>DB: 5 colis = ENLEVE + 5 événements
-    API->>V: « Vos colis ont été enlevés »
-
-    L->>TER: « Arrivé » chez l'acheteuse
-    L->>TER: photo du colis remis
-    opt paiement à la livraison
-        L->>TER: saisit le montant encaissé
-    end
-    TER->>FILE: action locale
-
-    alt réseau disponible
-        TER->>API: POST /colis/:id/remise-livreur {preuve, montant}
-        API->>DB: colis = REMIS + événement horodaté et attribué
-        API->>DB: écritures espèces si applicable
-        API->>A: « Colis remis » + demande de confirmation (UC-31)
-        API->>V: statut mis à jour
-    else hors réseau
-        TER-->>L: « Enregistré — 3 actions en attente »
-        Note over TER,FILE: synchronisation au retour du réseau, idempotente
-        TER->>API: POST /livreur/synchronisation {lot}
-        API->>DB: applique le lot · aucun doublon
-    end
-
-    alt échec de livraison
-        L->>TER: motif + photo
-        TER->>API: POST /colis/:id/echec {motif}
-        API->>DB: colis = ECHEC_LIVRAISON
-        API->>A: options : nouvelle tentative ou remboursement (F5.7)
-    end
-```
-
----
-
-## UC-42 — Recevoir et remettre un colis au point relais ★
-
-| | |
-|---|---|
-| **Acteur principal** | PR — point relais |
-| **Acteurs secondaires** | A, L, SYS, NOT |
-| **Fonctionnalités** | F5.3, F5.4, F5.10 · **Règles** R-L5, R-L6, R-L7 |
-| **Préconditions** | Colis déposé par le livreur, relais actif et non saturé. |
-| **Postconditions** | Colis `REMIS` contre code à **usage unique**, ou retour vendeur au terme du délai de garde. |
-
-**Description.** Le code de retrait est **la notification la plus critique du produit** : repli SMS obligatoire *(R-L6)* et consultation **hors ligne** *(F13.5)* — l'acheteuse est devant l'épicerie, souvent sans données.
-
-**Scénario nominal**
-1. PR reçoit les colis du livreur en **une seule validation**.
-2. SYS génère un code à 6 chiffres, le **hache**, et l'envoie à A **par notification et par SMS**.
-3. A se présente au relais quand elle veut et donne le code.
-4. PR saisit le code ; SYS vérifie, marque le code consommé, passe le colis à `REMIS`.
-5. SYS notifie A et V, et ouvre la fenêtre de confirmation *(UC-31)*.
-
-**Scénarios alternatifs**
-- **A1 — code déjà utilisé** *(depuis 4)* : refus, **avec la date de la première utilisation**.
-- **A2 — code inconnu** *(depuis 4)* : refus explicite.
-- **A3 — deux remises simultanées avec le même code** : une seule réussit *(transaction)*.
-- **A4 — délai de garde dépassé** *(depuis 3)* : le colis repart chez le vendeur *(F5.7)*, A est notifiée.
-- **A5 — relais saturé** *(depuis 1)* : le relais **n'apparaît plus** dans les choix de livraison, mais reste opérationnel pour les colis déjà présents *(F11.4)*.
-
-```mermaid
-sequenceDiagram
-    actor L as L · Livreur
-    actor PR as PR · Point relais
-    participant TER as Application relais
-    participant API as API JP
-    participant DB as PostgreSQL
-    participant NOT as Push + SMS
-    actor A as A · Acheteuse
-
-    L->>PR: dépose 5 colis
-    PR->>TER: « Réception » (5 colis, une validation)
-    TER->>API: POST /relais/receptions {colisIds}
-    API->>DB: colis = AU_RELAIS · garde_jusqu_au = +X jours
-    API->>DB: génère le code, stocke son EMPREINTE (jamais en clair)
-    API->>NOT: notification + SMS obligatoire (R-L6)
-    NOT-->>A: « Colis arrivé — code 482913 »
-    Note over NOT,A: SMS obligatoire · code consultable hors ligne (F13.5)
-
-    A->>PR: se présente et donne le code
-    PR->>TER: saisit 482913
-    TER->>API: POST /colis/:id/remise {code}
-    API->>DB: BEGIN · vérifie l'empreinte du code
-    alt code valide et non consommé
-        API->>DB: code consommé · colis = REMIS · événement
-        API->>DB: COMMIT
-        API-->>TER: « Code valide » + photo et nom
-        TER-->>PR: remet le colis
-        API->>A: demande de confirmation (UC-31)
-    else code déjà utilisé
-        API->>DB: ROLLBACK
-        API-->>TER: refus + « utilisé le 14 août à 15 h 02 »
-    else code inconnu
-        API-->>TER: refus explicite
-    end
-
-    opt délai de garde dépassé
-        API->>DB: colis = RETOUR_VENDEUR
-        API->>A: « Votre colis repart chez la vendeuse »
-    end
-```
+> **`RB8` devient structurel.** Il fallait cacher activement l'adresse au
+> donateur ; désormais **il ne la manipule jamais** — elle se négocie entre deux
+> personnes dont il ne fait pas partie.
 
 ---
 
 # 8. Paquetage Confiance
 
-## UC-50 — Ouvrir un litige sur une commande ★
+## UC-50 — Signaler un problème sur une commande ★
 
 | | |
 |---|---|
 | **Acteur principal** | A |
-| **Acteurs secondaires** | V, OP, SYS |
-| **Fonctionnalités** | F6.3, F6.4 · **Règles** R-T1 à R-T4 · **Recette RB4** |
-| **Préconditions** | Une commande livrée ou en cours, dont les fonds sont encore séquestrés. |
-| **Postconditions** | Dossier ouvert, **fonds bloqués**, libération automatique suspendue. |
+| **Acteurs secondaires** | B, SYS |
+| **Fonctionnalités** | F6.3, F6.4, F6.8 · **Règles** R-T1, R-T2, R-T4, R-T8, R-T9 · **Recette** RB4 · **Décisions** `DP-05`, `DP-07` |
+| **Préconditions** | Une commande livrée ou en cours. |
+| **Postconditions** | Dossier ouvert, **inscrit au compteur de la boutique**. **Aucun fonds bloqué : il n'y en a plus.** |
 
-**Description.** Point culturel déterminant : **le litige se signale à JP, jamais en face à face avec le vendeur**. Cela évite la confrontation, socialement coûteuse, qui fait qu'on abandonne au lieu de réclamer.
+**Description.** Le point culturel ne change pas : **le problème se signale à JP,
+jamais en face à face avec la boutique.** La confrontation directe est socialement
+coûteuse et conduit les gens à abandonner plutôt qu'à réclamer.
+
+**Mais JP ne tranche plus** *(`DP-05`)* **et ne détient plus l'argent**
+*(`DP-07`)*. **Le signalement ne rend rien : il compte.**
 
 **Scénario nominal**
 1. A ouvre sa commande et choisit « Il y a un problème ».
 2. A choisit un motif — non reçu, abîmé, pas conforme, mauvaise taille, autre — ajoute des photos et une description.
-3. SYS ouvre le dossier, **bloque les fonds**, suspend la libération automatique, attribue un numéro.
-4. SYS notifie V, qui voit le motif et les photos, et répond **dans le même fil**.
-5. V propose une solution : renvoi, remboursement partiel, geste commercial.
-6. A accepte : **le dossier se clôt sans arbitrage** et la solution est exécutée.
+3. SYS ouvre le dossier, attribue un numéro, et **l'inscrit immédiatement au compteur de la boutique** *(R-T8)*.
+4. SYS notifie B, qui voit le motif et les photos, et répond **dans le même fil**. Le fil présente **l'historique complet aux deux parties** *(R-T1)* : ce qui était assemblé pour l'arbitre l'est désormais pour les parties elles-mêmes — c'est ce qui rend l'accord possible sans tiers.
+5. B propose une solution : renvoi, remboursement de sa propre initiative, geste commercial. **SYS n'exécute aucun mouvement d'argent.**
+6. A confirme que c'est réglé : le dossier se clôt et **le compteur est décrémenté**.
 
 **Scénarios alternatifs**
-- **A1 — pas d'accord sous 48 h** *(depuis 5)* : SYS escalade en arbitrage *(UC-51)*, une seule fois, et notifie les deux parties.
-- **A2 — A refuse la proposition** *(depuis 6)* : la discussion continue jusqu'à l'échéance, puis arbitrage.
+- **A1 — pas d'accord** *(depuis 5)* : **il n'y a pas d'escalade, il n'y a plus d'arbitre.** Le dossier reste ouvert et **pèse durablement sur le score**.
+- **A2 — seuil de signalements non résolus atteint** : SYS **suspend automatiquement la mise en vente** de la boutique *(R-T8, F6.8)*. ⚠️ Seuil non arrêté *(`PO-12`)*.
 - **A3 — commande hors direct** : parcours **identique** *(R-H1)*.
+- **A4 — la boutique n'a jamais expédié** : aucune preuve n'existe *(`R-L9`, `DP-04`)*. **Le signalement est le seul recours**, et il n'ouvre droit à aucun remboursement par JP *(`R-E5`)*.
 
 ```mermaid
 sequenceDiagram
     actor A as A · Acheteuse
     participant API as API JP
     participant DB as PostgreSQL
-    actor V as V · Vendeur
-    participant SYS as Plateforme
-    actor OP as OP · Opérateur
+    actor B as B · Boutique
 
-    A->>API: POST /commandes/:id/litige {motif, photos, description}
-    API->>DB: INSERT litige (OUVERT) + numéro de dossier
-    API->>DB: sequestre reste RETENU · libération auto SUSPENDUE
-    API-->>A: « Votre argent reste bloqué chez JP » + n° de dossier
-    Note over API,A: R-T1 — l'acheteuse ne discute jamais en face à face
+    A->>API: POST /commandes/:id/signalement { motif, photos }
+    API->>DB: BEGIN
+    API->>DB: INSERT signalement_commande (ouvert)
+    API->>DB: compte_dans_le_score = true (CHECK compteur_coherent)
+    API->>DB: boutique.taux_signalement recalculé
+    API->>DB: COMMIT
+    Note over API,DB: aucun fonds bloqué — il n'y en a plus (DP-07)
+    API->>B: « Un problème a été signalé — commande n° … »
 
-    API->>V: notification du litige (motif + photos)
-    V->>API: POST /litiges/:id/messages (réponse)
-    V->>API: POST /litiges/:id/proposition {remboursement partiel 20 000 Ar}
-    API->>A: notification de la proposition
+    B->>API: répond dans le fil + propose une solution
+    API->>A: notification
 
-    alt A accepte
-        A->>API: POST /litiges/:id/accord
-        API->>DB: litige = RESOLU (par accord) · exécution
-        API->>DB: remboursement partiel + libération du solde
-        Note over API,DB: chemin le plus souhaitable : rapide et peu coûteux
-    else pas d'accord sous 48 h
-        SYS->>API: tâche d'escalade
-        API->>DB: litige = ARBITRAGE
-        API->>OP: entrée en file d'arbitrage
-        API->>A: « JP va trancher »
-        API->>V: « JP va trancher »
-        Note over API,OP: suite en UC-51
-    end
-```
-
----
-
-## UC-51 — Arbitrer un litige ★
-
-| | |
-|---|---|
-| **Acteur principal** | OP |
-| **Acteurs secondaires** | A, V, SYS |
-| **Fonctionnalités** | F6.5, F6.6, F11.3 · **Règles** R-T2, R-T5 · **Recette RB4** |
-| **Préconditions** | Litige en statut `arbitrage`. |
-| **Postconditions** | **Décision écrite, motivée, notifiée aux deux parties**, exécutée automatiquement, archivée et versée aux scores. |
-
-**Description.** Ce que l'épique 6 apporte, ce n'est pas la collecte de preuves — c'est leur **assemblage**. Le dossier d'instruction réunit ce que les autres modules ont déjà produit : événements de livraison horodatés et attribués, preuve de remise, journal financier, transcription du fil, historique des deux parties.
-
-**Scénario nominal**
-1. OP ouvre la file, triée par âge, urgences en tête.
-2. OP s'attribue le dossier — **affectation exclusive**, pour éviter le double traitement.
-3. SYS présente le dossier assemblé.
-4. OP tranche et **rédige un motif** — obligatoire, refusé par la base sinon.
-5. SYS exécute : remboursement total, partiel, ou libération des fonds au vendeur.
-6. SYS notifie les deux parties avec la décision écrite, archive, et met à jour les scores *(F6.2)*.
-
-**Scénarios alternatifs**
-- **A1 — décision sans motif** *(depuis 4)* : **refusée par la contrainte de base** `decision_motivee`. La clôture silencieuse est impossible.
-- **A2 — dossier approchant l'engagement** *(depuis 1)* : il remonte en tête de file et déclenche une alerte.
-- **A3 — un second opérateur ouvre le même dossier** *(depuis 2)* : conflit d'affectation signalé.
-
-```mermaid
-sequenceDiagram
-    actor OP as OP · Opérateur
-    participant BO as Back-office
-    participant API as API JP
-    participant DB as PostgreSQL
-    actor A as A · Acheteuse
-    actor V as V · Vendeur
-
-    OP->>BO: file d'arbitrage (triée par âge, urgences en tête)
-    BO->>API: POST /admin/litiges/:id/affectation
-    API->>DB: affecte_a_id = OP (exclusif)
-    BO->>API: GET /admin/litiges/:id/dossier
-    API->>DB: assemble les preuves
-    Note over API,DB: événements de livraison · preuve de remise ·<br/>journal financier · fil du litige · historique des parties
-    API-->>BO: dossier d'instruction complet
-
-    OP->>BO: décision + motif écrit (obligatoire)
-    BO->>API: POST /admin/litiges/:id/decision {decision, motif}
-
-    alt motif absent
-        API-->>BO: refusé par la contrainte decision_motivee
-        Note over API,BO: RB4 — pas de clôture sans décision écrite
-    else motif présent
-        API->>DB: BEGIN
-        API->>DB: litige = RESOLU (decision_texte, decide_par_id, decide_le)
-        alt en faveur de l'acheteuse
-            API->>DB: remboursement + écritures inverses
-        else en faveur du vendeur
-            API->>DB: sequestre = LIBERE (motif = arbitrage)
+    alt A confirme que c'est réglé
+        A->>API: POST /signalements/:id/resoudre
+        API->>DB: statut = resolu · compte_dans_le_score = false
+        API->>DB: score_confiance recalculé
+    else pas d'accord
+        Note over API,DB: pas d'escalade, pas d'arbitre (DP-05)
+        API->>DB: le dossier reste ouvert et pèse
+        opt seuil atteint (PO-12)
+            API->>DB: boutique.vente_gelee = true (R-T8)
+            API->>B: sanction automatique, écrite et motivée (R-T2, RB4)
         end
-        API->>DB: mise à jour du score de confiance du vendeur
-        API->>DB: journal_audit
-        API->>DB: COMMIT
-        API->>A: décision écrite et motivée
-        API->>V: décision écrite et motivée
     end
 ```
 
+> ### Ce que l'acheteuse doit savoir **avant** de payer
+>
+> **JP ne rembourse pas** *(`R-E5`)*. Cette phrase doit être lisible à l'écran de
+> paiement, là où figurait l'ancienne phrase de séquestre *(`RB12`)*. **La
+> protection est en amont** — boutique vérifiée, historique visible, avis — jamais
+> en aval.
+
 ---
 
-## UC-52 — Vérifier l'identité d'un vendeur
+## UC-52 — Se faire vérifier
 
 | | |
 |---|---|
-| **Acteur principal** | OP |
-| **Acteurs secondaires** | V, P, C, SYS |
-| **Fonctionnalités** | F0.6, F11.1, F15.1 · **Règles** R-V1 à R-V6 · **Recette RB6** |
-| **Préconditions** | Dossier soumis : pièce d'identité recto/verso ou NIF/STAT, selfie, numéro mobile money, adresse d'enlèvement. |
-| **Postconditions** | Encaissement débloqué et badge attribué, ou refus **motivé et précis sur ce qui manque** *(R-V3)*. |
+| **Acteur principal** | B ou C |
+| **Acteurs secondaires** | PSP, SYS |
+| **Fonctionnalités** | F0.6, F15.1 · **Règles** R-V1 à R-V7 · **Recette RB6** · **Décisions** `DP-05`, `DP-07` |
+| **Préconditions** | Dossier soumis : pièce d'identité recto/verso ou NIF/STAT, selfie, numéro mobile money. |
+| **Postconditions** | **Mise en vente débloquée** et badge attribué, ou refus **motivé et précis sur ce qui manque** *(R-V3, R-V7)*. |
+
+**Description.** **Il n'y a plus de file humaine** *(`DP-05`)* : la vérification
+est exécutée par `SYS` et le prestataire. Et **ce qu'elle débloque a changé** —
+elle ouvrait l'encaissement, elle ouvre désormais **la mise en vente**
+*(`DP-07`)* : l'argent partant directement à la boutique au moment du paiement,
+vérifier après la vente n'aurait plus de sens.
 
 **Scénario nominal**
-1. OP ouvre la file de vérification, triée par ancienneté, avec le délai d'engagement affiché.
-2. OP compare **pièce, selfie et titulaire du compte mobile money** *(R-V2)* — chaque point à cocher explicitement.
-3. SYS **journalise l'accès aux documents**, nominativement *(R-V5, N3.1)*.
-4. OP valide. SYS débloque l'encaissement et attribue le badge *(F0.7)*.
+1. B dépose sa pièce d'identité et son selfie. → `document_identite` *(chiffré)*
+2. SYS transmet au prestataire, qui compare **pièce, selfie et titulaire du compte mobile money** *(R-V2)* — **les trois points séparément**, jamais une validation globale.
+3. SYS **journalise tout accès aux documents** *(R-V5, N3.1)*.
+4. SYS décide, **motif écrit obligatoire**, et débloque la mise en vente + le badge *(F0.7)*.
 
 **Scénarios alternatifs**
 - **A1 — discordance de noms** *(depuis 2)* : refus *(R-V2)*.
 - **A2 — pièce illisible** *(depuis 2)* : demande de pièce complémentaire, statut intermédiaire, notification.
 - **A3 — mineur** *(depuis 2)* : refus **définitif** *(R-V6, RB6)*.
-- **A4 — pendant l'instruction** : le vendeur **peut** préparer son catalogue, il ne peut ni publier, ni diffuser, ni encaisser *(R-V1)*.
-
-**Diagramme de séquence**
+- **A4 — pendant l'instruction** : la boutique **peut** préparer son catalogue, elle ne peut ni publier, ni diffuser, ni mettre en vente *(R-V1)*.
+- **A5 — refus à tort** : ⚠️ **il n'existe plus d'instance de recours** *(`DP-05`, `R-V7`)*. Le motif écrit est la **seule** voie de correction : il doit nommer la pièce ou le point de contrôle en défaut, jamais « document non conforme ».
 
 ```mermaid
 sequenceDiagram
-    actor OP as OP · Opérateur JP
-    participant BO as Back-office
+    actor B as B · Boutique
     participant API as API JP
     participant DB as PostgreSQL
-    participant NOT as Notifications
-    actor V as V · Vendeur
-    OP->>BO: ouvre la file de vérification
-    BO->>API: GET /verifications?tri=anciennete
-    API-->>BO: dossiers + délai d'engagement affiché
-    OP->>BO: ouvre un dossier
-    BO->>API: GET /verifications/:id/documents
-    API->>DB: INSERT journal_audit — accès NOMINATIF aux documents
-    Note over API,DB: R-V5, N3.1 — l'accès aux pièces d'identité est tracé
-    API-->>BO: pièce recto/verso, selfie, titulaire du compte mobile money
-    OP->>BO: coche EXPLICITEMENT chaque point de comparaison (R-V2)
-    alt discordance de noms (A1)
-        OP->>BO: refuse
-        BO->>API: POST /verifications/:id/refus {motif précis}
-        API->>NOT: notifie V
-        NOT-->>V: refus motivé, précis sur ce qui manque (R-V3)
-    else pièce illisible (A2)
-        BO->>API: POST /verifications/:id/complement
-        API->>DB: statut intermédiaire
-        NOT-->>V: « Pièce complémentaire demandée »
-    else mineur (A3)
-        OP->>BO: refuse DÉFINITIVEMENT
-        BO->>API: POST /verifications/:id/refus-definitif
-        API->>DB: blocage de la publication vidéo (R-V6, RB6)
-        NOT-->>V: refus définitif et motivé
-    else conforme
-        OP->>BO: valide
-        BO->>API: POST /verifications/:id/validation
-        API->>DB: débloque l'encaissement, attribue le badge (F0.7)
-        API->>NOT: notifie V
-        NOT-->>V: « Vendeur vérifié »
+    participant PSP as Prestataire KYC
+
+    B->>API: POST /verification { cin_recto, cin_verso, selfie, msisdn }
+    API->>DB: INSERT document_identite (url_chiffree)
+    API->>DB: INSERT journal_audit (accès aux pièces, R-V5)
+    API->>PSP: contrôle document + vivacité + titularité msisdn
+    PSP-->>API: { document: ok, selfie: ok, titulaire: ok|ko }
+
+    alt les trois points concordent
+        API->>DB: boutique.statut_verification = VERIFIEE
+        API->>DB: badge attribué (F0.7)
+        API->>B: « Vous pouvez mettre en vente » (DP-07)
+    else discordance
+        API->>DB: statut = REFUSEE + motif nommant le point en défaut (R-V7)
+        API->>B: motif actionnable, pièces manquantes nommées
+        Note over API,B: DP-05 — aucun recours possible, le motif est la seule voie
     end
-    Note over V,BO: pendant l'instruction, V prépare son catalogue —<br/>il ne peut ni publier, ni diffuser, ni encaisser (R-V1, A4)
 ```
+
+> **La journalisation reste obligatoire même sans lecteur humain.** Elle ne
+> protège plus des employés de JP — il n'y en a plus — mais reste **la seule
+> preuve de ce que la plateforme a consulté et décidé**.
 
 ---
 
@@ -1472,7 +1207,7 @@ sequenceDiagram
 | **Acteur principal** | A |
 | **Fonctionnalités** | F7.1, F7.15, F7.17 · **Stories** US-SOCIAL-01, 02, 05 · **Règles** R-Q1 à R-Q6 |
 | **Préconditions** | Aucune pour consulter ; un compte pour suivre. |
-| **Postconditions** | Abonnement enregistré, fil « Abonnements » alimenté, réglage de notification par vendeur disponible. |
+| **Postconditions** | Abonnement enregistré, fil « Abonnements » alimenté, réglage de notification par boutique disponible. |
 
 **Scénario nominal**
 1. A appuie sur « Suivre » depuis une vitrine, une fiche, un direct, un clip ou une story — **un seul appui, aucune confirmation** *(R-Q1)*.
@@ -1483,7 +1218,7 @@ sequenceDiagram
 **Scénarios alternatifs**
 - **A1 — non connectée** *(depuis 1)* : l'inscription est déclenchée et **l'abonnement est posé après connexion**.
 - **A2 — hors ligne** *(depuis 1)* : l'état s'affiche localement, se synchronise à la reconnexion, **sans doublon** (clé primaire composite).
-- **A3 — vendeur suspendu** *(depuis 1)* : action indisponible, état expliqué.
+- **A3 — boutique suspendue** *(depuis 1)* : action indisponible, état expliqué.
 
 **Diagramme de séquence**
 
@@ -1504,9 +1239,9 @@ sequenceDiagram
         APP->>API: synchronisation à la reconnexion
         API->>DB: INSERT abonnement — clé composite, AUCUN doublon
     else connectée
-        APP->>API: POST /abonnements {vendeur}
+        APP->>API: POST /abonnements {boutique}
     end
-    alt vendeur suspendu (A3)
+    alt boutique suspendue (A3)
         API-->>APP: 409 VENDEUR_SUSPENDU
         APP-->>A: action indisponible, état expliqué
     else
@@ -1520,7 +1255,7 @@ sequenceDiagram
     API->>DB: directs + NOUVEAUTÉS CATALOGUE + promotions + événements (R-Q5)
     API-->>APP: 200 fil
     opt couper les notifications de promotion sans se désabonner (R-Q6)
-        A->>APP: règle par vendeur
+        A->>APP: règle par boutique
         APP->>API: PUT /abonnements/:id/notifications {promotions: false}
         API-->>APP: 200 — l'abonnement est conservé
     end
@@ -1540,14 +1275,14 @@ sequenceDiagram
 
 **Description.** Le geste le plus important de la couche sociale : **une action, cinq résultats**.
 
-**Le point technique** : les cinq effets doivent être **atomiques du point de vue de l'utilisatrice** mais **résilients individuellement**. Si la création de l'avis échoue, la confirmation de réception ne doit pas être annulée — sinon un bogue d'avis bloque le paiement du vendeur.
+**Le point technique** : les cinq effets doivent être **atomiques du point de vue de l'utilisatrice** mais **résilients individuellement**. Si la création de l'avis échoue, la confirmation de réception ne doit pas être annulée — sinon un bogue d'avis bloque le paiement de la boutique.
 
 **Scénario nominal**
 1. SYS notifie A à l'arrivée du colis : *« Filmez l'ouverture et gagnez X Ar de crédit »*.
 2. A enregistre une vidéo de 30 s ; **l'article de sa commande est attaché automatiquement** *(R-K2)*.
 3. A indique si l'article taille bien et met une note.
-4. SYS, **en transaction** : confirme la réception *(donc libère le séquestre)*, crée le contenu avec l'article attaché, crédite la cagnotte.
-5. SYS, **en asynchrone idempotent** : crée l'avis vérifié, notifie le vendeur, fait entrer l'article au dressing.
+4. SYS, **en transaction** : confirme la réception *(elle vaut `UC-31` — mais ne déclenche **aucun** mouvement d'argent, `DP-07`)*, crée le contenu avec l'article attaché, crédite la cagnotte.
+5. SYS, **en asynchrone idempotent** : crée l'avis vérifié, notifie la boutique, fait entrer l'article au dressing.
 
 **Scénarios alternatifs**
 - **A1 — sans vidéo** *(depuis 1)* : la confirmation classique en un appui reste toujours disponible *(UC-31)*. **On n'oblige personne à se filmer** — et cette règle n'est pas négociable sur un produit qui expose de jeunes femmes.
@@ -1562,7 +1297,7 @@ sequenceDiagram
     participant API as API JP
     participant DB as PostgreSQL
     participant JOB as File asynchrone
-    actor V as V · Vendeur
+    actor V as V · Boutique
 
     SYS->>A: « Votre colis est arrivé — filmez et gagnez 2 000 Ar »
     A->>APP: enregistre 30 s
@@ -1598,12 +1333,12 @@ sequenceDiagram
 | | |
 |---|---|
 | **Acteur principal** | V |
-| **Acteurs secondaires** | VE (lecture, **sans les montants**), SYS |
+| **Acteurs secondaires** | SYS |
 | **Fonctionnalités** | F7.5, F7.6, F7.18, F7.19 · **Stories** US-FID-01 à 05 · **Règles** R-R1 à R-R11 |
 | **Préconditions** | Au moins une commande confirmée. Fidélisation activée pour les paliers. |
 | **Postconditions** | Liste ordonnée et **actionnable** : offrir une promo, envoyer un code. |
 
-**Description.** Ce que le vendeur veut savoir : **à qui faire un geste**. Pas un tableau de bord analytique — une liste de noms, ordonnée, avec une action à côté de chaque ligne *(R-R7)*.
+**Description.** Ce que la boutique veut savoir : **à qui faire un geste**. Pas un tableau de bord analytique — une liste de noms, ordonnée, avec une action à côté de chaque ligne *(R-R7)*.
 
 **Scénario nominal**
 1. SYS recalcule le rang à chaque commande confirmée, **en asynchrone**, sur quatre composantes : montant cumulé, fréquence, récence avec décote, fiabilité *(R-R3)*.
@@ -1617,7 +1352,7 @@ sequenceDiagram
 - **A3 — cliente ayant supprimé son compte** : ligne **anonymisée**, agrégats conservés pour la comptabilité.
 - **A4 — cliente perdant un palier par décote** : elle est **informée avant** la bascule *(R-R10)*.
 
-**Règle non négociable** *(R-R1)* : le rang est **par vendeur**, jamais global. Un vendeur n'a aucune raison de connaître les dépenses de sa cliente ailleurs — et **la garantie est structurelle** : aucun index, aucune vue ne permet l'agrégation inter-vendeurs.
+**Règle non négociable** *(R-R1)* : le rang est **par boutique**, jamais global. Une boutique n'a aucune raison de connaître les dépenses de sa cliente ailleurs — et **la garantie est structurelle** : aucun index, aucune vue ne permet l'agrégation inter-boutiques.
 
 **Diagramme de séquence**
 
@@ -1625,27 +1360,27 @@ sequenceDiagram
 sequenceDiagram
     participant JOB as Travailleur « rang client »
     participant DB as PostgreSQL
-    actor V as V · Vendeur
-    participant APP as Studio vendeur
+    actor V as V · Boutique
+    participant APP as Studio boutique
     participant API as API JP
     Note over JOB,DB: à chaque commande confirmée, en ASYNCHRONE
     JOB->>DB: recalcule — montant cumulé, fréquence, récence décotée, fiabilité (R-R3)
-    JOB->>DB: UPDATE rang_client (vendeur_id, utilisateur_id)
-    Note over DB: par vendeur, JAMAIS global —<br/>aucun index, aucune vue inter-vendeurs (R-R1)
+    JOB->>DB: UPDATE rang_client (boutique_id, utilisateur_id)
+    Note over DB: par boutique, JAMAIS global —<br/>aucun index, aucune vue inter-boutiques (R-R1)
     V->>APP: ouvre « Mes clientes »
-    APP->>API: GET /vendeurs/:id/clients
+    APP->>API: GET /boutiques/:id/clients
     API->>DB: SELECT rang_client ORDER BY score DESC
     alt moins de 5 clientes (A1)
         API-->>APP: liste SANS palmarès (R-R6)
         APP-->>V: liste simple
-    else employé VE (A2)
+    else ~~employé~~ supprimé (DP-01)
         API-->>APP: lecture seule — montants ABSENTS de la réponse (R-R8)
     else
         API-->>APP: liste ordonnée, filtrable par palier et par inactivité
         APP-->>V: une liste de noms, une action par ligne (R-R7)
     end
     V->>APP: ouvre une fiche cliente
-    APP->>API: GET /vendeurs/:id/clients/:uid
+    APP->>API: GET /boutiques/:id/clients/:uid
     API->>DB: historique, tailles, articles préférés, litiges, note privée
     alt cliente ayant supprimé son compte (A3)
         API-->>APP: ligne ANONYMISÉE, agrégats conservés pour la comptabilité
@@ -1678,7 +1413,7 @@ sequenceDiagram
 
 **Scénarios alternatifs**
 - **A1 — aucun article attaché** : `422 CONTENU_SANS_ARTICLE`. Le bouton est déjà inactif côté client, mais **le client n'est pas la garantie**.
-- **A2 — créatrice, vendeur refusant l'affiliation** : attachement refusé *(R-N3)*.
+- **A2 — créatrice, boutique refusant l'affiliation** : attachement refusé *(R-N3)*.
 - **A3 — acheteuse, article non acheté** : attachement refusé — impossible d'attacher ce qu'on n'a pas reçu.
 - **A4 — contenu sponsorisé** : l'étiquette « Partenariat rémunéré » est **automatique et non retirable** *(F18.8)*.
 
@@ -1696,7 +1431,7 @@ sequenceDiagram
     API->>DB: catalogue autorisé SELON LE RÔLE
     Note over API: V son catalogue · C tout catalogue affiliable ·<br/>A ses achats confirmés uniquement
     API-->>APP: liste filtrée
-    alt créatrice, vendeur refusant l'affiliation (A2)
+    alt créatrice, boutique refusant l'affiliation (A2)
         API-->>APP: 403 AFFILIATION_REFUSEE (R-N3)
     else acheteuse, article non acheté (A3)
         API-->>APP: 403 ARTICLE_NON_ACHETE
@@ -1724,6 +1459,45 @@ sequenceDiagram
 
 ---
 
+## UC-63 — Partager un lien d'affiliation 🆕
+
+| | |
+|---|---|
+| **Acteur principal** | C |
+| **Acteurs secondaires** | B, A, SYS |
+| **Fonctionnalités** | F15.3, F15.4, F15.5 · **Règles** R-N1 à R-N6, R-N13 · **Décision** `DP-09` |
+| **Préconditions** | Créatrice vérifiée ; la boutique autorise l'affiliation *(R-N3)*. |
+| **Postconditions** | Lien porteur de l'identifiant de créatrice, attribution armée pour la fenêtre glissante. |
+
+**Description.** **La créatrice ne vend pas, elle apporte.** Elle partage un
+article — sur son profil JP, ou **hors JP, sur son compte Facebook où son
+audience est déjà**. Le lien renvoie vers la fiche article ; l'acheteur voit le
+détail et achète normalement. **Il ne voit aucune complexité supplémentaire**
+*(R-N5)*.
+
+**Scénario nominal**
+1. C attache un article à « Ma sélection » *(R-N13)*. SYS affiche **le taux offert par la boutique, avant l'attachement** *(R-N4)*.
+2. SYS génère un lien portant l'identifiant de créatrice, **valable y compris hors application** *(R-N1)*.
+3. C partage le lien sur son réseau.
+4. A clique, voit la fiche, achète *(UC-12 ou UC-21)*.
+5. **Au paiement**, la part de C est **créditée directement** par l'éclatement, en même temps que celle de la boutique *(`DP-16`, R-N6)*.
+
+**Scénarios alternatifs**
+- **A1 — deux créatrices cliquées** : attribution à **la dernière cliquée** dans la fenêtre glissante ⚠️ *(R-N2, hypothèse 7 jours)*.
+- **A2 — la boutique refuse l'affiliation** *(R-N3, R-K4)* : ses articles sont inattachables.
+- **A3 — le versement à C échoue** : **la commande existe, la boutique est payée, l'expédition suit.** La part de C est enregistrée et **rejouée après vérification** *(R-M5, R-M7)*.
+- **A4 — la boutique n'expédie jamais** : ⚠️ **C a déjà été payée** *(R-N6)*. Incohérent avec l'ancien modèle, **cohérent avec le nouveau** : plus personne n'attend la livraison pour être payé. Une créatrice qui recommande des boutiques qui n'expédient pas **perd son audience** — c'est là que la sanction se produit.
+
+> **`R-N4` a changé de payeur.** La commission d'affiliation était prélevée sur
+> la commission JP ; JP n'en prend plus *(`DP-08`)*. **C'est désormais la
+> boutique qui paie**, sur son prix, à un taux qu'elle fixe et que la créatrice
+> connaît d'avance.
+>
+> **`F15.10` — portefeuille et retrait créatrice — est supprimée** *(`DP-07`)* :
+> l'argent arrive sur son mobile money, JP n'a pas de solde à lui montrer.
+
+---
+
 # 10. Paquetage Promotions et événements
 
 ## UC-70 — Lancer une promotion et notifier ses abonnés ★
@@ -1734,16 +1508,16 @@ sequenceDiagram
 | **Acteurs secondaires** | A (abonnés), NOT, SYS |
 | **Fonctionnalités** | F7.22, F7.23, F7.26, F7.8 · **Stories** US-PROMO-01, 02, 03, 07 |
 | **Règles** | R-U1 à R-U4, R-U10 à R-U12 |
-| **Préconditions** | Vendeur avec un catalogue. **L'employé n'y a pas accès** *(matrice §3.2)*. |
+| **Préconditions** | Boutique avec un catalogue. **L'employé n'y a pas accès** *(matrice §3.2)*. |
 | **Postconditions** | Promotion active, prix barrés affichés, abonnés notifiés **dans la limite des plafonds**. |
 
 **Scénario nominal**
 1. V choisit type, valeur, période, périmètre et cible.
 2. SYS détecte un éventuel **chevauchement** avec une promotion existante et rappelle la règle de non-cumul *(R-U7)*.
-3. SYS affiche **le net qui restera au vendeur** sur un article représentatif, commission déduite *(R-U10)*.
+3. SYS affiche **le net qui restera à la boutique** sur un article représentatif, commission déduite *(R-U10)*.
 4. SYS annonce le nombre d'abonnés qui seront notifiés, avec un interrupteur pour ne pas notifier.
 5. V lance. SYS active la promotion, applique les prix barrés, et déclenche le fan-out de notification.
-6. NOT applique, **pour chaque abonné** : réglage individuel, plafond par vendeur et par 24 h, seuil de regroupement *(R-U4)*.
+6. NOT applique, **pour chaque abonné** : réglage individuel, plafond par boutique et par 24 h, seuil de regroupement *(R-U4)*.
 7. SYS marque `notifiee_le` — **verrou d'idempotence** : après un incident, la promotion ne renotifie pas *(R-U3)*.
 8. À la date de fin, SYS **rétablit automatiquement** les prix d'origine *(R-U11)*.
 
@@ -1755,7 +1529,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor V as V · Vendeur
+    actor V as V · Boutique
     participant APP as Application
     participant API as API JP
     participant DB as PostgreSQL
@@ -1765,10 +1539,10 @@ sequenceDiagram
     actor A2 as A · abonnée (promos coupées)
 
     V->>APP: type, valeur, période, périmètre, cible
-    APP->>API: POST /vendeur/promotions
+    APP->>API: POST /boutique/promotions
     API->>DB: détection de chevauchement (R-U7)
     API-->>APP: avertissement + règle « une seule remise, la plus favorable »
-    API-->>APP: aperçu du net vendeur (R-U10)
+    API-->>APP: aperçu du net boutique (R-U10)
     APP-->>V: « Robe 50 000 → 40 000 Ar · commission 2 000 · vous recevez 38 000 »
     APP-->>V: « Vos 1 240 abonnés seront prévenus » + interrupteur
     V->>APP: « Lancer la promotion »
@@ -1779,7 +1553,7 @@ sequenceDiagram
     loop pour chaque abonné
         JOB->>NOT: envoyer(abonné, promo)
         NOT->>DB: réglage individuel ? (R-Q6)
-        NOT->>DB: plafond vendeur / 24 h ? (R-U4)
+        NOT->>DB: plafond boutique / 24 h ? (R-U4)
         NOT->>DB: seuil de regroupement atteint ?
         alt autorisé
             NOT-->>A1: « Miora lance -20 % jusqu'à dimanche »
@@ -1822,8 +1596,8 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor V as V · Vendeur
-    participant APP as Studio vendeur
+    actor V as V · Boutique
+    participant APP as Studio boutique
     participant API as API JP
     participant DB as PostgreSQL
     actor A as A · Cliente
@@ -1834,7 +1608,7 @@ sequenceDiagram
     API-->>APP: 201
     A->>APP: ouvre la boutique
     APP->>API: GET /promotions/mes-offres
-    API->>DB: SELECT rang_client de A CHEZ CE VENDEUR
+    API->>DB: SELECT rang_client de A CHEZ CE BOUTIQUE
     alt cliente éligible
         API-->>APP: offre nommée « Offre réservée aux clientes VIP de Miora »
     else non éligible (A1)
@@ -1865,15 +1639,15 @@ sequenceDiagram
 
 | | |
 |---|---|
-| **Acteur principal** | OP |
+| **Acteur principal** | B ou C *(organisateur)* |
 | **Fonctionnalités** | F20.1, F20.4 · **Story** US-EVT-01 · **Règles** R-W1, R-W2, R-W12 |
 | **Préconditions** | Aucune. |
 | **Postconditions** | Événement en `brouillon` puis `annonce`, adresse publique partageable, transitions pilotées par les dates. |
 
 **Scénario nominal**
-1. OP renseigne nom, thème, dates, visuel, couleur, mot-dièse, présentation, règles de participation.
+1. **L'organisateur** renseigne nom, thème, dates, visuel, couleur, mot-dièse, présentation, règles de participation. *(L'événement de portée JP disparaît avec l'opérateur — `DP-05`.)*
 2. SYS génère un `slug` unique et enregistre en `brouillon`.
-3. OP **annonce** l'événement — action humaine, volontairement.
+3. **L'organisateur annonce** l'événement — action humaine, volontairement.
 4. SYS le rend visible dans le calendrier *(F20.9)* avec un compte à rebours et un bouton « Me prévenir ».
 5. À la date de début, SYS passe en `en_cours` **et refuse automatiquement** les candidatures restées en attente, avec notification *(R-W4)*.
 6. À la date de fin, SYS clôt et produit le bilan *(F20.8)*.
@@ -1887,13 +1661,13 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor OP as OP · Opérateur JP
+    actor B as B · Organisateur
     participant BO as Back-office
     participant API as API JP
     participant DB as PostgreSQL
     participant JOB as Ordonnanceur
     participant NOT as Notifications
-    OP->>BO: nom, thème, dates, visuel, couleur, mot-dièse, règles de participation
+    B->>API: nom, thème, dates, visuel, couleur, mot-dièse, règles de participation
     BO->>API: POST /evenements
     alt dates incohérentes (A1)
         API-->>BO: 422 DATES_INVALIDES — refus AVANT enregistrement
@@ -1901,7 +1675,7 @@ sequenceDiagram
         API->>DB: génère un slug unique, INSERT evenement (brouillon)
         API-->>BO: 201 brouillon
     end
-    OP->>BO: « Annoncer » — action humaine, volontaire
+    B->>API: « Annoncer » — action humaine, volontaire
     BO->>API: POST /evenements/:id/annonce
     API->>DB: statut → annonce
     API-->>BO: 200 adresse publique partageable
@@ -1909,14 +1683,14 @@ sequenceDiagram
     JOB->>DB: à la date de début — statut → en_cours
     JOB->>DB: refuse AUTOMATIQUEMENT les candidatures restées en attente (R-W4)
     JOB->>NOT: notifie les candidats refusés
-    NOT-->>OP: récapitulatif
+    NOT-->>B: récapitulatif
     JOB->>DB: à la date de fin — statut → termine
     JOB->>DB: produit le bilan (F20.8)
     opt mini-événement de boutique (A2)
         Note over API,DB: créé par V SANS validation · portée limitée à sa vitrine<br/>et à ses abonnés · ABSENT du calendrier général (R-W8)
     end
     opt annulation (A3)
-        OP->>BO: annule — possible depuis tout statut sauf termine
+        B->>API: annule — possible depuis tout statut sauf termine
     end
 ```
 
@@ -1927,9 +1701,9 @@ sequenceDiagram
 | | |
 |---|---|
 | **Acteur principal** | V, ou C |
-| **Acteurs secondaires** | OP, A, SYS |
+| **Acteurs secondaires** | A, SYS |
 | **Fonctionnalités** | F20.2, F20.3, F20.4, F20.7 · **Story** US-EVT-02, 03 · **Règles** R-W3 à R-W7 |
-| **Préconditions** | Vendeur **vérifié**, événement ouvert aux candidatures. |
+| **Préconditions** | Boutique **vérifié**, événement ouvert aux candidatures. |
 | **Postconditions** | Articles et promotions visibles sur la page de l'événement, pastille sur les vignettes. |
 
 **Description.** **La validation est ce qui fait la valeur de l'événement** *(R-W3)*. Sans elle, le premier événement de Noël se remplit de 400 articles hors sujet et la page ne vaut plus rien.
@@ -1937,13 +1711,13 @@ sequenceDiagram
 **Scénario nominal**
 1. V voit les événements ouverts dans son studio.
 2. V candidate en choisissant les articles et la promotion qu'il engage.
-3. OP examine et accepte.
+3. **L'organisateur** examine et accepte.
 4. V rattache ses éléments : articles, promotion, clips avec le mot-dièse, direct programmé.
 5. À l'ouverture, les éléments apparaissent sur la page publique, accessible **sans compte** *(R-W6)*.
 6. Les vignettes des articles portent une **pastille** aux couleurs de l'événement, sans coût de données supplémentaire *(R-W7)*.
 
 **Scénarios alternatifs**
-- **A1 — vendeur non vérifié** *(depuis 2)* : refus **avec la condition manquante** et un lien vers la vérification.
+- **A1 — boutique non vérifiée** *(depuis 2)* : refus **avec la condition manquante** et un lien vers la vérification.
 - **A2 — refus éditorial** *(depuis 3)* : motif écrit **obligatoire**.
 - **A3 — candidature sans réponse à l'ouverture** *(depuis 3)* : **refus automatique avec notification** *(R-W4)*. Le silence est le pire traitement.
 - **A4 — article dans deux événements simultanés** *(depuis 4)* : autorisé, mais **une seule remise** *(R-U7)* et **une seule pastille**, celle de l'événement qui finit le plus tôt *(R-W7)*.
@@ -1951,33 +1725,33 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor V as V · Vendeur
+    actor V as V · Boutique
     participant APP as Studio
     participant API as API JP
     participant DB as PostgreSQL
-    actor OP as OP · Opérateur
+    actor B as B · Organisateur
     participant JOB as Tâche planifiée
     actor AN as AN · Visiteur
 
     V->>APP: « Participer à Noël JP »
     APP->>API: POST /evenements/:id/participations {articles, promotion}
-    API->>DB: vérifie statut_verification du vendeur
-    alt vendeur non vérifié
+    API->>DB: vérifie statut_verification de la boutique
+    alt boutique non vérifiée
         API-->>APP: 403 + condition manquante + lien vers la vérification
-    else vendeur vérifié
+    else boutique vérifiée
         API->>DB: participation = CANDIDATE
         API-->>V: « Candidature envoyée · réponse sous 48 h »
 
-        OP->>API: GET /admin/evenements/:id/candidatures
-        API-->>OP: articles engagés, avec vignettes
+        B->>API: GET /admin/evenements/:id/candidatures
+        API-->>B: articles engagés, avec vignettes
         alt acceptée
-            OP->>API: POST .../decision {acceptee}
+            B->>API: POST .../decision {acceptee}
             API->>DB: participation = ACCEPTEE
             API-->>V: « Candidature acceptée »
             V->>API: POST /evenements/:id/elements {articles, promo, clips, direct}
             API->>DB: INSERT evenement_element
         else refusée
-            OP->>API: POST .../decision {refusee, motif}
+            B->>API: POST .../decision {refusee, motif}
             API-->>V: refus + motif écrit (R-W4)
         end
     end
@@ -2062,15 +1836,15 @@ sequenceDiagram
 | **Préconditions** | Un lien de panier cadeau valide. |
 | **Postconditions** | Commande payée, parcours normal, **adresse jamais exposée au donateur**, suivi et preuve de remise accessibles par le lien. |
 
-**Description.** Ce qui manque à un transfert d'argent classique : celui qui envoie ne sait jamais ce qui en est fait. Ici il choisit l'objet, voit la vendeuse vérifiée, suit la livraison et obtient une preuve.
+**Description.** Ce qui manque à un transfert d'argent classique : celui qui envoie ne sait jamais ce qui en est fait. Ici il choisit l'objet, voit la boutique vérifiée, suit la livraison et obtient une preuve.
 
 **Scénario nominal**
 1. D ouvre le lien dans son navigateur, **sans installer l'application**.
 2. SYS détecte le pays, affiche le montant en Ariary **et une conversion indicative**, propose la **carte en premier**, et annonce **les frais de conversion à l'avance** *(RB7)*.
-3. SYS affiche les articles, le total, les frais de livraison, le **badge de vendeur vérifié**, et le mode de livraison **agrégé** — sans quartier, sans repère, sans nom de relais, sans téléphone *(RB8)*.
+3. SYS affiche les articles, le total, les frais de livraison, le **badge de boutique vérifiée**, et le mode de livraison **agrégé** — sans quartier, sans repère, sans nom de relais, sans téléphone *(RB8)*.
 4. D laisse un message et paie.
-5. SYS crée la commande, séquestre les fonds, notifie A : *« Naina vous a offert votre panier »* avec le message.
-6. La commande suit le parcours normal *(UC-40 à UC-42)*.
+5. **L'accord sur le point de remise constaté** *(UC-43)*, D confirme le paiement ; SYS crée la commande et notifie le bénéficiaire : *« Naina vous a offert votre panier »* avec le message.
+6. La commande suit le parcours normal *(UC-40)*.
 7. D suit la livraison **depuis son lien, sans compte**, et voit la preuve de remise.
 8. À la réception, A publie son remerciement *(UC-61)* — **du contenu, donc de l'acquisition. La boucle se referme.**
 
@@ -2097,7 +1871,7 @@ sequenceDiagram
     WEB->>API: GET /cadeau/:jeton
     API->>DB: projectionDonateur()
     Note over API,DB: RB8 — la projection NE CONTIENT AUCUN champ d'adresse
-    API-->>WEB: articles, total, frais, vendeuse vérifiée,<br/>livraison « point relais à Antananarivo » (agrégé)
+    API-->>WEB: articles, total, frais, boutique vérifiée,<br/>AUCUNE information de livraison (RB8)
     WEB-->>D: 135 000 Ar ≈ 28,90 € · frais de conversion annoncés (RB7)
 
     D->>WEB: message + paiement par carte
@@ -2107,7 +1881,7 @@ sequenceDiagram
     API->>DB: commande PAYEE + sequestre RETENU + donateur_ref
     API->>A: « Naina vous a offert votre panier » + message
 
-    Note over API,DB: la commande suit le parcours normal (UC-40 à UC-42)
+    Note over API,DB: la commande suit le parcours normal (UC-40)
 
     D->>WEB: suit la livraison depuis son lien
     WEB->>API: GET /cadeau/:jeton/suivi
@@ -2150,7 +1924,7 @@ sequenceDiagram
     participant API as API JP
     participant DB as PostgreSQL
     participant NOT as Notifications
-    actor MO as MO · Modérateur
+    participant SYS as SYS · Filtre automatique
     U->>APP: appui long sur un contenu, un commentaire, un message ou un profil
     APP-->>U: « Signaler »
     U->>APP: choisit un motif dans une liste courte
@@ -2160,7 +1934,7 @@ sequenceDiagram
         Note over API: harcèlement, menace, contenu sexuel non consenti, mineur
         API->>DB: place le dossier EN TÊTE de file
         API->>NOT: alerte l'équipe
-        NOT-->>MO: alerte immédiate
+        NOT-->>SYS: traitement automatique prioritaire (DP-05)
         API-->>APP: 201 + délai court annoncé
         APP-->>U: propose immédiatement « Bloquer » ou « Masquer » (F19.4)
         Note over APP,U: se protéger SANS ATTENDRE la décision
@@ -2176,113 +1950,37 @@ sequenceDiagram
 
 ---
 
-## UC-91 — Traiter un signalement
-
-| | |
-|---|---|
-| **Acteur principal** | MO — modérateur |
-| **Fonctionnalités** | F19.6, F19.7, F19.8, F19.9, F11.2 · **Règles** R-X4, R-X6, R-X7 |
-| **Préconditions** | Un signalement en file. |
-| **Postconditions** | **Décision motivée notifiée à l'auteur et au signalant** *(R-X6)*, sanction graduée éventuelle, voie de recours ouverte. |
-
-**Scénario nominal**
-1. MO traite la file **par priorité**, urgences en tête.
-2. MO s'attribue le dossier — affectation exclusive.
-3. SYS présente le contenu, **l'historique de l'auteur** et ses signalements antérieurs, côte à côte.
-4. MO retire, avertit, suspend, ou classe — **avec un motif obligatoire**.
-5. SYS notifie **les deux** parties avec la décision écrite.
-
-**Scénarios alternatifs**
-- **A1 — direct en cours** *(depuis 4)* : MO peut **couper la diffusion** en quelques secondes *(F11.2)*.
-- **A2 — contenu volé** *(depuis 3)* : panneau de comparaison des deux vidéos avec un score de proximité ; **aucun retrait automatique** — un faux positif bloquerait une créatrice légitime *(R-X7)*.
-- **A3 — mineur détecté** : traitement prioritaire, retrait et blocage de la publication vidéo *(RB6)*.
-- **A4 — contestation** : instruite par **une personne différente** de celle qui a sanctionné *(F19.9)*. Sinon ce n'est pas un recours, c'est une confirmation.
-- **A5 — reprise d'un crédit** : si le contenu retiré avait déclenché un crédit d'unboxing, il est repris **par écriture inverse** *(F19.6)*.
-
-**Diagramme de séquence**
-
-```mermaid
-sequenceDiagram
-    actor MO as MO · Modérateur
-    participant BO as Back-office
-    participant API as API JP
-    participant DB as PostgreSQL
-    participant NOT as Notifications
-    actor AU as Auteur du contenu
-    actor SI as Signalant
-    MO->>BO: ouvre la file, urgences en tête
-    BO->>API: GET /signalements?tri=priorite
-    API-->>BO: file priorisée
-    MO->>BO: s'attribue le dossier
-    BO->>API: POST /signalements/:id/affectation
-    API->>DB: affectation EXCLUSIVE
-    BO->>API: GET /signalements/:id
-    API->>DB: contenu + historique de l'auteur + signalements antérieurs
-    API-->>BO: les trois CÔTE À CÔTE
-    opt direct en cours (A1)
-        MO->>BO: « Couper la diffusion »
-        BO->>API: POST /directs/:id/coupure
-        API-->>BO: 200 en quelques secondes (F11.2)
-    end
-    opt suspicion de contenu volé (A2)
-        API-->>BO: comparaison des deux vidéos + score de proximité
-        Note over BO,MO: AUCUN retrait automatique — un faux positif<br/>bloquerait une créatrice légitime (R-X7)
-    end
-    MO->>BO: retire, avertit, suspend ou classe — motif OBLIGATOIRE
-    BO->>API: POST /signalements/:id/decision {action, motif}
-    API->>DB: INSERT decision + sanction graduée
-    API->>NOT: notifie LES DEUX parties (R-X6)
-    NOT-->>AU: décision écrite et motivée
-    NOT-->>SI: décision écrite et motivée
-    opt mineur détecté (A3)
-        API->>DB: retrait + blocage de la publication vidéo (RB6)
-    end
-    opt crédit d'unboxing lié au contenu retiré (A5)
-        API->>DB: écriture INVERSE — jamais de suppression (F19.6)
-    end
-    opt contestation (A4)
-        AU->>BO: conteste la décision
-        API->>DB: instruite par une personne DIFFÉRENTE (F19.9)
-        Note over API,DB: sinon ce n'est pas un recours, c'est une confirmation
-    end
-```
-
----
-
 # 13. Matrice cas d'utilisation × acteurs
 
-| Cas d'utilisation | AN | A | P | V | VE | C | D | L | PR | MO | OP | PM |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| UC-01 Créer un compte | ● | | | | | | | | | | | |
-| UC-02 Se connecter | | ● | ● | ● | ● | ● | | ● | ● | ● | ● | ● |
-| UC-03 Récupérer son compte | | ● | ● | ● | | ● | | | | | ○ | |
-| UC-10 Publier un article | | | ○ | ● | ○ | | | | | | | |
-| UC-11 Déposer une annonce | | ● | ● | | | | | | | | ○ | |
-| UC-12 Acheter hors direct | ○ | ● | | | | | | | | | | |
-| UC-13 Remplir un panier | | ● | | | | | | | | | | |
-| UC-20 Diffuser un direct | | | | ● | ○ | ○ | | | | ○ | | |
-| UC-21 Acheter en direct | ○ | ● | | | | | | | | | | |
-| UC-30 Payer une commande | | ● | | | | | ○ | | | | | |
-| UC-31 Confirmer la réception | | ● | | ○ | | | | | | | | |
-| UC-32 Retirer son argent | | | ● | ● | | ● | | | | | | |
-| UC-40 Préparer et expédier | | | ● | ● | ● | | | | | | | |
-| UC-41 Livrer un colis | | ○ | | ○ | | | | ● | | | | |
-| UC-42 Remettre au relais | | ○ | | | | | | ○ | ● | | | |
-| UC-50 Ouvrir un litige | | ● | | ○ | | | | | | | ○ | |
-| UC-51 Arbitrer un litige | | ○ | | ○ | | | | | | | ● | |
-| UC-52 Vérifier une identité | | | ○ | ○ | | ○ | | | | | ● | |
-| UC-60 Suivre une boutique | | ● | | ○ | | ○ | | | | | | |
-| UC-61 Publier un unboxing | | ● | | ○ | | | | | | | | |
-| UC-62 Consulter ses clientes | | ○ | | ● | ○ | | | | | | | |
-| UC-70 Lancer une promotion | | ○ | ● | ● | | | | | | | | |
-| UC-71 Promo VIP | | ○ | | ● | | | | | | | | |
-| UC-72 Créer un événement | | | | ○ | | | | | | | ● | |
-| UC-73 Participer à un événement | | | | ● | | ● | | | | | ○ | |
-| UC-80 Demander un cadeau | | ● | | | | | ○ | | | | | |
-| UC-81 Offrir un panier | | ○ | | | | | ● | | | | | |
-| UC-90 Signaler | ○ | ● | ● | ● | ● | ● | | | | | | |
-| UC-91 Traiter un signalement | | ○ | | ○ | | ○ | | | | ● | ○ | |
-| UC-92 Publier un contenu | | ● | ● | ● | | ● | | | | | | |
+| Cas d'utilisation | AN | A | B | C | D |
+|---|:-:|:-:|:-:|:-:|:-:|
+| UC-01 Créer un compte | ● | | | | |
+| UC-02 Se connecter | | ● | ● | ● | |
+| UC-03 Récupérer son compte | | ● | ● | ● | |
+| UC-10 Publier un article | | | ● | | |
+| UC-12 Acheter hors direct | ○ | ● | ○ | ○ | |
+| UC-13 Remplir un panier | | ● | ○ | ○ | |
+| UC-20 Diffuser un direct | | | ● | | |
+| UC-21 Acheter en direct | ○ | ● | ○ | ○ | |
+| UC-30 Payer une commande | | ● | | | ○ |
+| UC-31 Confirmer la réception | | ● | ○ | | |
+| **UC-33 Gérer son abonnement** 🆕 | | | ● | | |
+| UC-40 Préparer et expédier | | | ● | | |
+| **UC-43 Convenir du point de remise** 🆕 | | ● | ● | | |
+| UC-50 Signaler un problème | | ● | ○ | | |
+| UC-52 Se faire vérifier | | | ● | ● | |
+| UC-60 Suivre une boutique | | ● | ○ | ○ | |
+| UC-61 Publier un unboxing | | ● | ○ | ● | |
+| UC-62 Consulter ses clientes | | ○ | ● | | |
+| **UC-63 Partager un lien d'affiliation** 🆕 | | | ○ | ● | |
+| UC-70 Lancer une promotion | | ○ | ● | | |
+| UC-71 Promo VIP | | ○ | ● | | |
+| UC-72 Créer un événement de boutique | | | ● | ● | |
+| UC-73 Participer à un événement | | | ● | ● | |
+| UC-80 Demander un cadeau | | ● | | | ○ |
+| UC-81 Offrir un article | | ○ | | | ● |
+| UC-90 Signaler | ○ | ● | ● | ● | |
+| UC-92 Publier un contenu | | ● | ● | ● | |
 
 ● acteur principal · ○ acteur secondaire ou destinataire
 
@@ -2295,11 +1993,11 @@ Chaque critère bloquant du cahier des charges est couvert par au moins un cas d
 | Critère | Cas d'utilisation à jouer | Vérification |
 |---|---|---|
 | **RB1** Aucune survente | UC-21 *(A1)*, UC-12 *(A2)* | Appuis simultanés sur `stock = 1`, **inter-canaux** |
-| **RB2** Fonds correctement séquestrés et libérés | UC-30, UC-31 *(4 chemins)*, UC-51 | Jeu de scénarios complet, réconciliation à 100 % |
+| **RB2** Chaque crédit atteint le bon compte, aucun ne reste en souffrance | UC-30 *(A5, A6)*, UC-31 | Jeu de scénarios complet, réconciliation à 100 % |
 | **RB3** Remboursement automatique si seuil non atteint | Précommande *(F15.8)* | Bout en bout, **sans intervention humaine** |
-| **RB4** 100 % des litiges décidés et motivés | UC-50, UC-51 *(A1)* | Contrainte de base + revue des dossiers |
+| **RB4** 100 % des sanctions automatiques écrites et motivées | UC-50 *(A2)*, UC-52 *(A5)* | Contrainte de base + revue des dossiers |
 | **RB5** Aucun contenu sans article attaché | UC-92 *(A1)* | Tentative sur chaque type de contenu |
-| **RB6** Aucune publication vidéo par un mineur | UC-52 *(A3)*, UC-91 *(A3)* | Compte déclaré mineur **et** compte vérifié mineur |
+| **RB6** Aucune publication vidéo par un mineur | UC-52 *(A3)* | Compte déclaré mineur **et** compte vérifié mineur |
 | **RB7** Aucun frais découvert après l'engagement | UC-12 *(4)*, UC-13 *(A2)*, UC-81 *(2)* | Revue de tous les parcours d'achat |
 | **RB8** Adresse jamais exposée au donateur | UC-81 *(3, 7)* | Assertion récursive sur les clés de la réponse |
 | **RB9** Aucun affichage de rareté non réel | UC-20 *(5)*, UC-21 | Revue de tous les compteurs et minuteurs |

@@ -12,7 +12,7 @@
 > `Comment` est copiable en un an. Notre `Pourquoi` ne l'est pas, parce qu'il
 > engage des choix qu'un concurrent opportuniste ne fera pas : refuser la
 > publicité qui dégrade, refuser la fausse rareté, refuser de gagner avant le
-> vendeur.
+> boutique.
 
 ---
 
@@ -27,8 +27,8 @@ qu'elle est au bon niveau :
 
 | Qui | De quoi la règle « il faut être connu » l'exclut |
 |---|---|
-| **Hanta, l'acheteuse** | Elle n'achète que chez les vendeuses qu'une amie lui a recommandées. Son choix est plafonné par son carnet d'adresses. |
-| **Miora, la vendeuse** | Son chiffre d'affaires est plafonné par le cercle des gens qui la connaissent déjà. |
+| **Hanta, l'acheteuse** | Elle n'achète que chez les boutiques qu'une amie lui a recommandées. Son choix est plafonné par son carnet d'adresses. |
+| **Miora, la boutique** | Son chiffre d'affaires est plafonné par le cercle des gens qui la connaissent déjà. |
 | **Ony, la créatrice** | Elle a l'audience, pas le capital — donc pas le droit d'entrée. |
 | **Naina, la diaspora** | Il ne peut faire confiance qu'à sa famille, donc il envoie de l'argent au lieu d'acheter. |
 
@@ -53,10 +53,10 @@ ces interdits sont **notre défendabilité**, pas notre handicap :
 
 | Le Pourquoi nous interdit | Ce que ça nous coûte | Pourquoi on l'accepte |
 |---|---|---|
-| De gagner de l'argent avant le vendeur | Pas de frais d'inscription, pas d'abonnement obligatoire | Un vendeur qui paie avant de vendre ne revient pas |
+| De gagner de l'argent avant la boutique | Pas de frais d'inscription, pas d'abonnement obligatoire | Une boutique qui paie avant de vendre ne revient pas |
 | D'afficher une rareté fausse | Une conversion à court terme plus basse | Une rareté fausse découverte détruit le séquestre avec elle |
 | De monétiser l'attention plutôt que la vente | Une ligne de revenu publicitaire | Une expérience dégradée sur un produit de confiance est un suicide lent |
-| De privilégier les vendeurs installés | Un catalogue plus lent à remplir | Privilégier les connus, c'est reproduire exactement le problème |
+| De privilégier les boutiques installés | Un catalogue plus lent à remplir | Privilégier les connus, c'est reproduire exactement le problème |
 | De rendre la protection payante | Un abonnement acheteuse plus rentable | **La garantie n'est jamais un avantage premium** — voir `D-11` |
 
 > **Le test du Pourquoi.** S'il n'interdit rien, ce n'est pas un Pourquoi, c'est
@@ -66,9 +66,9 @@ ces interdits sont **notre défendabilité**, pas notre handicap :
 
 - Ce n'est pas « démocratiser le commerce en ligne à Madagascar ». *Trop large,
   personne ne peut être contre, donc ça n'engage à rien.*
-- Ce n'est pas « faire gagner du temps aux vendeurs ». *C'est un Quoi.*
+- Ce n'est pas « faire gagner du temps aux boutiques ». *C'est un Quoi.*
 - Ce n'est pas « lutter contre l'arnaque ». *C'est une posture d'ennemi, et elle
-  nous mettrait à dos les vendeurs, dont l'immense majorité est honnête.*
+  nous mettrait à dos les boutiques, dont l'immense majorité est honnête.*
 - Ce n'est pas « créer de l'emploi » ou « digitaliser l'économie ». *C'est du
   vocabulaire de bailleur, pas une croyance.*
 
@@ -87,13 +87,13 @@ intentions, ce sont des règles opposables.
 
 Nous ne demandons à personne de nous faire confiance. **Nous supprimons le
 besoin d'en avoir.** L'argent est tenu, la commande est écrite, la facture est
-horodatée, quelqu'un arbitre.
+horodatée, **et il en reste une trace opposable** *(`D-21`)*.
 
 > *La confiance n'est pas une promesse. C'est un mécanisme.*
 
 C'est le principe fondateur. Tous les autres en découlent.
 
-### 2. Nous ne gagnons que quand le vendeur gagne.
+### 2. Nous ne gagnons que quand la boutique gagne.
 
 Commission prélevée sur une vente réellement conclue. Rien à payer pour
 essayer, rien à payer pour être visible au départ, aucune facture à relancer.
@@ -108,7 +108,7 @@ spectateurs est le vrai nombre.
 > **Ce n'est pas une position morale, c'est un calcul économique.** Sur un
 > produit dont l'actif unique est la confiance, le jour où une acheteuse
 > comprend qu'on lui a menti sur le stock, elle ne croit plus rien — ni le
-> stock, ni le séquestre, ni la facture. *(N6.1, N6.2, RB7, RB9)*
+> stock, ni la vérification, ni la facture. *(N6.1, N6.2, RB7, RB9)*
 
 ### 4. Nous outillons un usage qui existe, nous n'en inventons pas un.
 
@@ -138,7 +138,7 @@ preuve dans le produit :
 
 | Principe | Où il est vérifiable |
 |---|---|
-| 1 — Le mécanisme, pas la promesse | Séquestre `F4.4`–`F4.6`, arbitrage `F6.3`, facture `F4.7` |
+| 1 — Le mécanisme, pas la promesse | **Vérification `F0.6`–`F0.7`, traçabilité `F4.11`, score public `F6.2`** *(`D-21`)*. Ancienne rédaction : séquestre `F4.4`–`F4.6`, arbitrage `F6.3`, facture `F4.7` |
 | 2 — Nous gagnons quand il gagne | Commission par univers `F21.5`, aucun abonnement obligatoire en phase 1 |
 | 3 — Rien de faux | `N6.1`, `N6.2`, `RB7`, `RB9`, minuteur calé sur le serveur `MinuteurReservation` |
 | 4 — Un usage existant | Le nom même du produit, `N4.4`, la vente hors direct qui prolonge le direct |
@@ -151,7 +151,7 @@ preuve dans le produit :
 ## Ce que nous vendons, concrètement
 
 > **JP est une application mobile où l'on achète en direct et en vidéo, à
-> Madagascar, et où l'argent est gardé par JP jusqu'à la confirmation de
+> Madagascar, et où **l'on sait à qui l'on paie** — identité vérifiée, historique visible, trace de
 > réception.**
 
 Le détail :
@@ -165,7 +165,7 @@ Le détail :
 | **Les univers** | JP Mode et JP Beauté ouverts. JP Tech déclaré, fermé. |
 | **Sans capital** | Affiliation et précommande groupée, pour vendre sans avancer un ariary |
 | **Le cadeau** | Un panier composé ici, payé par quelqu'un d'autre — y compris depuis l'étranger |
-| **L'arbitrage** | Litiges signalés à JP, jamais en face à face, avec une décision motivée et tracée |
+| **Le registre** | Problèmes signalés à JP, jamais en face à face, **comptés dans la note publique de la boutique** *(`D-21`, `R-T8`)*. Ancienne rédaction : avec une décision motivée et tracée |
 
 ## La règle absolue qui borne le Quoi
 
@@ -208,7 +208,7 @@ géographique, pas une raison de rester.
 Acheter chez quelqu'un qu'on ne connaît pas.        ← le Pourquoi
 Enfin possible.
 
-Votre argent est gardé par JP jusqu'à ce que        ← le Comment
+Vous savez à qui vous payez.                        ← le Comment
 vous confirmiez avoir reçu.
 
 [ Continuer avec Google ]
@@ -239,7 +239,7 @@ avant de financer une fonctionnalité.)*
 | Niveau | Ce qu'on dit | Où ça va |
 |---|---|---|
 | **Pourquoi** | Personne ne devrait avoir besoin d'être connu pour commercer | Manifeste, page « Qui sommes-nous », ouverture du deck, interviews |
-| **Comment** | Votre argent est gardé jusqu'à ce que vous confirmiez avoir reçu | **Partout.** C'est notre phrase de tous les jours |
+| **Comment** | **Vous savez à qui vous payez** *(`D-21`)* | **Partout.** C'est notre phrase de tous les jours |
 | **Quoi** | Une application pour acheter en direct, Mode et Beauté | Magasin d'applications, fiche technique, presse spécialisée |
 
 > **Règle de terrain.** Si l'on n'a le temps que d'une phrase, on dit le
@@ -260,7 +260,7 @@ sans décision explicite.*
 > Pas par habitude. Parce que c'est la seule garantie disponible.
 >
 > Cette garantie est solide. Mais elle enferme tout le monde. Elle enferme
-> l'acheteuse dans ce que son entourage connaît déjà. Elle enferme la vendeuse
+> l'acheteuse dans ce que son entourage connaît déjà. Elle enferme la boutique
 > dans le cercle des gens qui la connaissent. Elle enferme la créatrice dehors,
 > parce qu'elle n'a pas le capital pour entrer.
 >

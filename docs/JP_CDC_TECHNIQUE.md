@@ -32,8 +32,9 @@ Toute décision technique se justifie contre cette liste.
 
 ```
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  App mobile  │  │  App livreur │  │  App relais  │  │ Web (cadeau, │
-│   Android    │  │              │  │              │  │  back-office)│
+│  App mobile  │  │  Web public  │  │ Tableau de   │
+│   Android    │  │ (cadeau,     │  │ bord interne │
+│              │  │  vitrines)   │  │  (F11.7)     │
 └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
        └─────────────────┴─────────┬───────┴─────────────────┘
                                    │  HTTPS / WebSocket
@@ -65,9 +66,9 @@ Toute décision technique se justifie contre cette liste.
 
 | Couche | Recommandation | Justification |
 |---|---|---|
-| **Mobile** | **React Native (Expo)** — *décision arrêtée* | Une base pour l'application principale et pour les applications de terrain (livreur, relais), et la même langue que le back-end et le back-office. **Contrepartie à surveiller comme un risque de recette** : le poids de l'APK et l'empreinte mémoire (**C1**) sont moins maîtrisés qu'en natif. À instrumenter dès la première livraison, avec le plafond de poids fixé en J0 comme critère bloquant. |
+| **Mobile** | **React Native (Expo)** — *décision arrêtée* | Une base pour l'application principale. *(Les applications terrain ont disparu — `DP-04`.)* Ancienne justification : et pour les applications de terrain (livreur, relais), et la même langue que le back-end et le back-office. **Contrepartie à surveiller comme un risque de recette** : le poids de l'APK et l'empreinte mémoire (**C1**) sont moins maîtrisés qu'en natif. À instrumenter dès la première livraison, avec le plafond de poids fixé en J0 comme critère bloquant. |
 | **Back-end** | **Node.js 22 + TypeScript**, service unique modulaire, pas de micro-services | À cette taille d'équipe, les micro-services coûtent plus qu'ils ne rapportent. Modules séparés par domaine, base commune, découpage possible plus tard. Le partage des types et des schémas de validation avec les clients supprime une classe entière de défauts de contrat. |
-| **Back-office et pages publiques** | **React + Vite** | Tableaux, files de modération, page cadeau, page événement, vitrines partageables. Rendu côté serveur là où le partage social l'exige (aperçus de lien). |
+| **Tableau de bord interne et pages publiques** | **React + Vite** | Séries temporelles du pilote *(`F11.7`)*, page cadeau, page événement, *(plus de files de modération — `DP-05`)*, vitrines partageables. Rendu côté serveur là où le partage social l'exige (aperçus de lien). |
 | **Base** | **PostgreSQL** | Transactions strictes indispensables pour le stock (**C3**) et l'argent (**C4**). Ce point n'est pas négociable, quelle que soit la pile retenue. |
 | **Cache / verrous / temps réel** | **Redis** | Verrous de réservation, compteurs de stock en direct, diffusion des événements du direct |
 | **Temps réel** | WebSocket, repli par sondage long | Stock en direct, commandes, chat |
@@ -116,9 +117,9 @@ profil_acheteur
   budget_min · budget_max · styles[] · couleurs[]
   -- alimente le fil « Pour toi » (R-K8) et la présélection de taille (R-J1)
 
-profil_vendeur
+boutique
   id PK · utilisateur_id FK UQ
-  type_vendeur(boutique|particulier)   -- R-H5, R-H6
+  type_boutique(boutique|particulier)   -- R-H5, R-H6
   nom_boutique NULL · description · adresse_enlevement
   statut_verification(brouillon|en_cours|verifie|refuse)
   msisdn_mobile_money · operateur_mm
@@ -143,7 +144,7 @@ document_identite
   -- chiffré au repos, accès journalisé (N3.1)
 
 membre_equipe                    -- F10.4
-  id PK · vendeur_id FK · utilisateur_id FK
+  id PK · boutique_id FK · utilisateur_id FK
   permissions[]  -- voir_commandes, preparer, moderer_chat, creer_article
   -- jamais : portefeuille, retrait, modification de prix (R matrice §3.2 du CDC)
 ```
@@ -152,7 +153,7 @@ membre_equipe                    -- F10.4
 
 ```
 article
-  id PK · vendeur_id FK · nom · description · categorie_id FK
+  id PK · boutique_id FK · nom · description · categorie_id FK
   marque · matiere · prix_ariary int
   prix_barre_ariary int null
   statut(brouillon|en_ligne|masque|epuise)
@@ -161,7 +162,7 @@ article
   etat_vetement(neuf_etiquette|tres_bon|bon|correct) null   -- R-H4
   mesures jsonb null              -- epaules_cm, poitrine_cm, taille_cm, longueur_cm
   achat_direct_actif bool         -- R-H1, achat hors direct autorisé
-  cree_le · IDX(vendeur_id, statut)
+  cree_le · IDX(boutique_id, statut)
   -- `mesures` est un jsonb et non des colonnes : les champs pertinents varient
   -- par catégorie (chaussures ≠ robe). Bornes validées applicativement (R-H4).
 
@@ -198,7 +199,7 @@ mouvement_stock
   quantite_delta · reference · auteur_id · cree_le
 ```
 
-## 3.3 Commande, paiement, séquestre
+## 3.3 Commande et paiement *(`DP-07` — plus de séquestre)*
 
 ```
 commande
@@ -215,7 +216,7 @@ commande
   IDX(origine, cree_le)           -- statistiques par canal, F9.2
 
 ligne_commande
-  id PK · commande_id FK · variante_id FK · vendeur_id FK
+  id PK · commande_id FK · variante_id FK · boutique_id FK
   quantite · prix_unitaire · commission_jp · commission_createur
   remise_ligne int DEFAULT 0 · promotion_id FK null   -- R-U7, traçabilité
   -- prix figé à la commande : une modification ultérieure ne le change pas
@@ -244,7 +245,7 @@ ecriture_financiere               -- journal inaltérable, C4
   -- toute correction est une écriture inverse
 
 portefeuille
-  id PK · titulaire_id FK · type(vendeur|createur)
+  id PK · titulaire_id FK · type(boutique|createur)
   solde_en_attente · solde_disponible          -- R-E6, distincts
   -- dérivés du journal, jamais saisis directement
 
@@ -272,8 +273,8 @@ point_relais
   statut(actif|inactif)
 
 colis
-  id PK · commande_id FK · vendeur_id FK
-  statut(voir §4.3) · livreur_id null · relais_id null
+  id PK · commande_id FK · boutique_id FK
+  statut(voir §4.3) · moyen_declare · point_convenu     -- DP-04
   code_retrait char(6) null       -- usage unique, R-L6
   preuve_remise_url · remis_le
 
@@ -311,11 +312,11 @@ interaction
   type(vue|reaction|commentaire|partage|favori) · texte null · cree_le
 
 abonnement                        -- R-Q1
-  suiveur_id FK · suivi_id FK · type(vendeur|createur) · cree_le
-  notifications_promo bool DEFAULT true    -- R-Q6, réglage par vendeur
+  suiveur_id FK · suivi_id FK · type(boutique|createur) · cree_le
+  notifications_promo bool DEFAULT true    -- R-Q6, réglage par boutique
   PK(suiveur_id, suivi_id)
-  IDX(suivi_id, cree_le)          -- liste des abonnés côté vendeur, R-Q3
-  -- profil_vendeur.nb_abonnes et profil_createur.nb_abonnes sont dénormalisés
+  IDX(suivi_id, cree_le)          -- liste des abonnés côté boutique, R-Q3
+  -- boutique.nb_abonnes et profil_createur.nb_abonnes sont dénormalisés
   -- et maintenus par déclencheur : compter 200 000 lignes à chaque affichage
   -- de vitrine est exclu (C1, C2)
 ```
@@ -350,39 +351,39 @@ precommande_engagement
 
 ```
 palier_fidelite                   -- R-R4
-  id PK · vendeur_id FK
+  id PK · boutique_id FK
   nom · rang_ordre int            -- 1 = le plus bas
   seuil_montant int null · seuil_commandes int null
   avantage_texte
-  UQ(vendeur_id, rang_ordre)
+  UQ(boutique_id, rang_ordre)
   -- au moins un des deux seuils est renseigné
   -- les seuils DOIVENT être strictement croissants avec rang_ordre :
   -- contrôle applicatif à la sauvegarde de l'ensemble des paliers
 
 rang_client                       -- R-R1, R-R2, R-R3
-  id PK · vendeur_id FK · utilisateur_id FK
+  id PK · boutique_id FK · utilisateur_id FK
   palier_id FK null
   score int                       -- entier, jamais un flottant
   montant_cumule int · nb_commandes int
   premiere_commande_le · derniere_commande_le
   nb_litiges_perdus int · nb_annulations int
   calcule_le
-  UQ(vendeur_id, utilisateur_id)
-  IDX(vendeur_id, score DESC)     -- le classement, R-R7
-  IDX(vendeur_id, derniere_commande_le)  -- filtre « inactives depuis X »
-  -- PAR VENDEUR, jamais global (R-R1). Il n'existe volontairement AUCUN
+  UQ(boutique_id, utilisateur_id)
+  IDX(boutique_id, score DESC)     -- le classement, R-R7
+  IDX(boutique_id, derniere_commande_le)  -- filtre « inactives depuis X »
+  -- PAR BOUTIQUE, jamais global (R-R1). Il n'existe volontairement AUCUN
   -- index ni aucune vue permettant d'agréger le montant d'un client
-  -- tous vendeurs confondus : l'absence de chemin d'accès est la garantie.
+  -- tous boutiques confondues : l'absence de chemin d'accès est la garantie.
 
-note_client                       -- R-R7, note privée du vendeur
-  id PK · vendeur_id FK · utilisateur_id FK · texte · modifie_le
-  UQ(vendeur_id, utilisateur_id)
+note_client                       -- R-R7, note privée de la boutique
+  id PK · boutique_id FK · utilisateur_id FK · texte · modifie_le
+  UQ(boutique_id, utilisateur_id)
   -- jamais exposée au client, sur aucune interface
 
 vente_confirmee_journal           -- R-R11, à créer DÈS LA PHASE 1
-  id PK · vendeur_id FK · utilisateur_id FK · commande_id FK UQ
+  id PK · boutique_id FK · utilisateur_id FK · commande_id FK UQ
   montant_confirme int · confirme_le
-  IDX(vendeur_id, utilisateur_id, confirme_le)
+  IDX(boutique_id, utilisateur_id, confirme_le)
   -- écrit à l'entrée en statut CONFIRMEE, dans la même transaction.
   -- Alimente le recalcul de rang_client, y compris en rattrapage sur
   -- l'historique. L'unicité sur commande_id rend le rattrapage idempotent.
@@ -392,7 +393,7 @@ vente_confirmee_journal           -- R-R11, à créer DÈS LA PHASE 1
 
 ```
 promotion                         -- R-U1
-  id PK · vendeur_id FK · evenement_id FK null
+  id PK · boutique_id FK · evenement_id FK null
   type(pourcentage|montant|livraison_offerte)
   valeur int                      -- pourcentage entier, ou montant en Ariary
   perimetre(boutique|categorie|selection) · categorie_id FK null
@@ -403,7 +404,7 @@ promotion                         -- R-U1
   statut(brouillon|programmee|active|terminee|annulee)
   notifier_abonnes bool · notifiee_le null        -- R-U3, R-U4
   cree_par_id · cree_le
-  IDX(vendeur_id, statut, debut_le) · IDX(statut, debut_le) WHERE statut='programmee'
+  IDX(boutique_id, statut, debut_le) · IDX(statut, debut_le) WHERE statut='programmee'
   -- `notifiee_le` non nul est le verrou d'idempotence de la notification :
   -- après un incident du planificateur, la promotion ne renotifie pas (R-U3)
 
@@ -432,7 +433,7 @@ promotion_beneficiaire            -- cible = clients_nommes, R-U6
 
 ```
 evenement                         -- R-W1
-  id PK · portee(jp|vendeur) · proprietaire_id FK null
+  id PK · portee(jp|boutique) · proprietaire_id FK null
   nom · theme · slug UQ · description
   visuel_url · couleur_accent · hashtag null
   debut_le · fin_le
@@ -440,13 +441,13 @@ evenement                         -- R-W1
   candidatures_ouvertes bool
   cree_par_id · cree_le
   IDX(statut, debut_le) · IDX(portee, statut)
-  -- proprietaire_id est NULL si portee=jp, renseigné si portee=vendeur (R-W8)
+  -- proprietaire_id est NULL si portee=jp, renseigné si portee=boutique (R-W8)
   -- les bascules annonce → en_cours → termine sont pilotées par les dates
   -- par une tâche périodique ; l'annonce reste une action humaine
 
 evenement_participation           -- R-W3, R-W4
   id PK · evenement_id FK · participant_id FK
-  role(vendeur|createur)
+  role(boutique|createur)
   statut(candidate|acceptee|refusee|refusee_sans_reponse)
   motif_refus null · decide_par_id null · decide_le null
   cree_le · UQ(evenement_id, participant_id)
@@ -496,7 +497,7 @@ sanction
   conteste bool · resultat_contestation      -- R-X6
 
 avis                              -- F6.1
-  id PK · commande_id FK UQ · auteur_id FK · vendeur_id FK
+  id PK · commande_id FK UQ · auteur_id FK · boutique_id FK
   note int · texte · photo_url
   conformite_taille(conforme|petit|grand)
   contenu_id FK null              -- si généré par un unboxing (R-T7)
@@ -510,12 +511,12 @@ parametre                         -- R-O1
   -- duree_reservation_direct_s, duree_reservation_catalogue_s,
   -- delai_liberation_auto_j, taux_commission_<categorie>,
   -- credit_unboxing_ariary, fenetre_affiliation_j, delai_garde_relais_j...
-  -- délai d'acceptation vendeur : delai_acceptation_direct_s
+  -- délai d'acceptation boutique : delai_acceptation_direct_s
   --                               delai_acceptation_catalogue_s  (R-H8)
   -- bascule particulier : seuil_bascule_ventes, seuil_bascule_montant  (R-H11)
   -- authentification : otp_ttl_s, otp_max_par_heure, otp_max_par_jour,
   --                    otp_max_tentatives  (R-C5, R-C7)
-  -- notifications : promo_max_par_vendeur_24h, promo_seuil_regroupement,
+  -- notifications : promo_max_par_boutique_24h, promo_seuil_regroupement,
   --                 evenement_max_notifications  (R-U4, R-W9)
   -- rang client : poids_montant, poids_frequence, poids_recence,
   --               poids_fiabilite, demi_vie_recence_j  (R-R3)
@@ -544,27 +545,31 @@ Toute transition non listée est interdite et doit lever une erreur.
           │         └──────┬───────┘                   ┌────▼─────┐
           │        paiement confirmé                   │ ANNULEE  │
           │         ┌──────▼───────┐                   └──────────┘
-          │         │    PAYEE     │──── annulation acheteur ──┐
-          │         └──────┬───────┘     (avant préparation)   │
-          │      vendeur accepte / prépare                     │
-          │         ┌──────▼───────┐                      ┌────▼──────┐
-          │         │ EN_PREPARATION├─── refus vendeur ───►│ REMBOURSEE│
-          │         └──────┬───────┘                      └───────────┘
-          │           remise transport                          ▲
-          │         ┌──────▼───────┐                            │
-          │         │  EXPEDIEE    │                            │
-          │         └──────┬───────┘                            │
-          │            remise faite                             │
-          │         ┌──────▼───────┐                            │
-          │         │   LIVREE     │──── litige ──► ARBITRAGE ──┤
-          │         └──────┬───────┘                            │
-          │   confirmation OU unboxing OU délai automatique     │
-          │         ┌──────▼───────┐                            │
-          └────────►│  CONFIRMEE   │  → libération séquestre ───┘
-                    └──────────────┘     (R-E1, R-E3, R-E4)
+          │         │    PAYEE     │
+          │         └──────┬───────┘
+          │      boutique accepte / prépare
+          │         ┌──────▼───────┐
+          │         │ EN_PREPARATION│
+          │         └──────┬───────┘
+          │        expédition déclarée par la boutique (R-L9)
+          │         ┌──────▼───────┐
+          │         │  EXPEDIEE    │
+          │         └──────┬───────┘
+          │            remise faite
+          │         ┌──────▼───────┐        ┌─────────────────────┐
+          │         │   LIVREE     │─ signalement ─►│ compteur boutique │
+          │         └──────┬───────┘        │  (R-T8) — PAS un état │
+          │   confirmation OU unboxing OU délai automatique
+          │         ┌──────▼───────┐        └─────────────────────┘
+          └────────►│  CONFIRMEE   │  → clôture + score (R-E3, R-E4)
+                    └──────────────┘
+
+  DP-07 : plus d'état REMBOURSEE ni ARBITRAGE. JP ne rembourse pas et
+  n'arbitre plus. Un signalement n'est pas une transition d'état de la
+  commande — c'est un compteur qui pèse sur la boutique.
 ```
 
-**Précommande** — un état `EN_ATTENTE_SEUIL` s'insère entre `PAYEE` et `EN_PREPARATION`. Sortie vers `EN_PREPARATION` si le seuil est atteint, vers `REMBOURSEE` **automatiquement** à la date limite sinon *(R-N8, RB3)*.
+**Précommande** ⚠️ *(`PO-8`)* — un état `EN_ATTENTE_SEUIL` s'insère **avant** `PAYEE` : sans séquestre, la piste retenue est de **n'encaisser qu'à l'atteinte du seuil**. Ancienne rédaction : s'insère entre `PAYEE` et `EN_PREPARATION`. Sortie vers `EN_PREPARATION` si le seuil est atteint, vers `REMBOURSEE` **automatiquement** à la date limite sinon *(R-N8, RB3)*.
 
 ## 4.2 Paiement
 
@@ -606,7 +611,7 @@ A_PREPARER → PRET → ENLEVE → EN_LIVRAISON ──────────�
                                             (R-S6, R-S7)
 ```
 
-**Suspension du minuteur** *(R-S5)* : `suspendu_depuis` est renseigné à l'entrée en attente opérateur ou lors d'une coupure vendeur ; à la reprise, `expire_le` est repoussé de la durée écoulée.
+**Suspension du minuteur** *(R-S5)* : `suspendu_depuis` est renseigné à l'entrée en attente opérateur ou lors d'une coupure boutique ; à la reprise, `expire_le` est repoussé de la durée écoulée.
 
 **Durée initiale selon l'origine** *(R-H3)* : la seule différence entre une réservation de direct et une réservation de catalogue est la valeur de `expire_le` à la création. Ensuite, un seul moteur d'expiration, un seul chemin de code, une seule série de tests de concurrence.
 
@@ -711,7 +716,7 @@ GET    /articles/:id
 GET    /articles/:id/questions          questions publiques  (R-H9)
 POST   /articles/:id/questions
 POST   /articles/:id/questions/:qid/reponse
-GET    /vendeurs/:id/vitrine
+GET    /boutiques/:id/vitrine
 GET    /createurs/:id
 GET    /recherche?q=&taille=&prix_max=&categorie=
 
@@ -719,7 +724,7 @@ POST   /abonnements                     suivre, un appui  (R-Q1)
 DELETE /abonnements/:suivi_id
 GET    /moi/abonnements
 PATCH  /moi/abonnements/:suivi_id       couper les promos sans se désabonner
-GET    /vendeurs/:id/abonnes            vendeur seulement, sans coordonnées
+GET    /boutiques/:id/abonnes            boutique seulement, sans coordonnées
 
 POST   /reservations                    ← « Je prends », Idempotency-Key requis
                                         corps : origine (direct|catalogue|…)
@@ -749,32 +754,32 @@ GET    /precommandes/:id
 GET    /portefeuille
 POST   /portefeuille/retrait            Idempotency-Key requis
 
-GET    /vendeur/clients                 classement, tri, filtres  (R-R7)
-GET    /vendeur/clients/:uid            fiche client + note privée
-PUT    /vendeur/clients/:uid/note
-GET    /vendeur/paliers                 paliers de fidélité
-PUT    /vendeur/paliers                 remplacement de l'ensemble, validé en bloc
-GET    /moi/avantages                   mon palier et ma progression par vendeur
+GET    /boutique/clients                 classement, tri, filtres  (R-R7)
+GET    /boutique/clients/:uid            fiche client + note privée
+PUT    /boutique/clients/:uid/note
+GET    /boutique/paliers                 paliers de fidélité
+PUT    /boutique/paliers                 remplacement de l'ensemble, validé en bloc
+GET    /moi/avantages                   mon palier et ma progression par boutique
 
-GET    /vendeur/promotions
-POST   /vendeur/promotions              → notification différée si notifier_abonnes
-PATCH  /vendeur/promotions/:id          interdit après le début, sauf annulation
-DELETE /vendeur/promotions/:id
-POST   /vendeur/promotions/:id/codes    codes nominatifs pour une liste de clients
-GET    /vendeur/promotions/:id/stats    notifiés · ouvertures · ventes  (R-U4)
+GET    /boutique/promotions
+POST   /boutique/promotions              → notification différée si notifier_abonnes
+PATCH  /boutique/promotions/:id          interdit après le début, sauf annulation
+DELETE /boutique/promotions/:id
+POST   /boutique/promotions/:id/codes    codes nominatifs pour une liste de clients
+GET    /boutique/promotions/:id/stats    notifiés · ouvertures · ventes  (R-U4)
 GET    /moi/offres                      codes · promos éligibles · cagnotte
 
 GET    /evenements                      calendrier public
 GET    /evenements/:slug                page publique, sans authentification
-POST   /admin/evenements                opérateur  (R-W1)
-POST   /admin/evenements/:id/annoncer
-GET    /admin/evenements/:id/candidatures
-POST   /admin/evenements/:id/candidatures/:cid/decision   motif requis si refus
-POST   /evenements/:id/participations    candidature vendeur ou créatrice
+POST   /evenements                      boutique ou créatrice  (R-W1, DP-05)
+POST   /evenements/:id/annoncer
+GET    /evenements/:id/candidatures
+POST   /evenements/:id/candidatures/:cid/decision   organisateur · motif requis si refus
+POST   /evenements/:id/participations    candidature boutique ou créatrice
 POST   /evenements/:id/elements          rattachement article/promo/contenu/direct
 DELETE /evenements/:id/elements/:type/:cible_id
 POST   /evenements/:id/rappel            « me prévenir à l'ouverture »
-GET    /evenements/:id/bilan             vendeur : son bilan · opérateur : global
+GET    /evenements/:id/bilan             boutique : son bilan · opérateur : global
 
 POST   /signalements
 POST   /contenus/:id/parametres-commentaires
@@ -834,7 +839,7 @@ POST   /webhooks/paiement/:prestataire  signature vérifiée, idempotent
 | **Dans l'application** | Historique complet | — |
 
 **Règles**
-- Regroupement obligatoire : une seule notification de direct par soirée, même si l'utilisateur suit quinze vendeuses. Sans cela, il coupe tout — et l'on perd alors les notifications utiles, ce qui coûte beaucoup plus cher.
+- Regroupement obligatoire : une seule notification de direct par soirée, même si l'utilisateur suit quinze boutiques. Sans cela, il coupe tout — et l'on perd alors les notifications utiles, ce qui coûte beaucoup plus cher.
 - Réglage fin par catégorie.
 - Aucune notification sans contenu réel *(N6.4)*.
 - Un seul rappel de panier abandonné, et seulement s'il reste du stock *(F17.12)*.
@@ -850,7 +855,7 @@ POST   /webhooks/paiement/:prestataire  signature vérifiée, idempotent
 | **Adresses** | Jamais exposées au donateur, à la créatrice, ni publiquement *(RB8)*. À vérifier en revue de chaque interface. |
 | **Paiement** | Aucun secret de carte ni de compte ne transite par JP *(N3.3)*. Redirection ou composant du prestataire. |
 | **Journal financier** | `ecriture_financiere` en écriture seule. Une correction est une écriture inverse, jamais une modification. |
-| **Journal d'audit** | Toute action de back-office, avec valeur avant et après |
+| **Journal d'audit** | **Toute décision automatique et tout accès aux pièces d'identité** *(`R-V5`, `DP-05`)*, avec valeur avant et après |
 | **Mineurs** | Contrôle de l'âge au moment de la publication, pas seulement à l'inscription *(RB6)* |
 | **Contenus retirés** | Conservés le temps de l'instruction d'un litige, même supprimés par l'auteur *(R-X9)* |
 | **Suppression de compte** | Effacement des données personnelles, **conservation des écritures financières et des factures** — obligation comptable. À expliquer clairement à l'utilisateur. |
@@ -914,7 +919,7 @@ Dimensionner sur le pic 18 h – 23 h *(C5)*, avec un scénario de référence :
 | `signalement_urgence` + délai de traitement | Engagement de modération |
 | `otp_demande`, `otp_verifie`, `otp_echoue` + motif | Où l'on perd les gens à l'entrée *(R-C7)* |
 | `commande_creee` + **origine** | Part du chiffre d'affaires réalisée hors direct *(R-H2)* |
-| `abonnement_cree`, `abonnement_supprime` | Ce que le vendeur construit réellement |
+| `abonnement_cree`, `abonnement_supprime` | Ce que la boutique construit réellement |
 | `promo_notifiee`, `promo_ouverte`, `promo_convertie` | Efficacité réelle d'une promotion *(R-U4)* |
 | `notification_coupee` + canal | **Signal d'alerte** : sommes-nous en train de saturer l'attention ? |
 | `evenement_page_vue`, `evenement_converti` | Un événement mérite-t-il d'être reconduit *(R-W11)* |
@@ -927,7 +932,7 @@ Dimensionner sur le pic 18 h – 23 h *(C5)*, avec un scénario de référence :
 |---|---|---|
 | Développement | Local | Prestataires simulés |
 | Recette | Tests d'intégration | **Bacs à sable des prestataires** — à obtenir en J0 |
-| Pilote | Vendeurs pilotes, **argent réel** | Production, volume limité |
+| Pilote | Boutiques pilotes, **argent réel** | Production, volume limité |
 | Production | Ouverture publique | Production |
 
 **Exigences**
@@ -957,8 +962,8 @@ Dimensionner sur le pic 18 h – 23 h *(C5)*, avec un scénario de référence :
 | **Vente hors direct** | Concurrence **inter-canaux** : un appui en direct et un appui sur catalogue sur `stock = 1` → exactement une réservation. La somme des réservations n'excède jamais le stock physique, quelle que soit l'origine *(R-H1)*. |
 | **Particulier** | Publication possible sans vérification · **encaissement impossible** sans elle · refus de vérification sur commande payée → remboursement intégral *(R-H5, R-H10)* |
 | **Remises** | **Aucun cumul** : deux promotions éligibles sur une ligne → une seule appliquée, la plus favorable · articles et livraison sont les deux seules assiettes distinctes · le total affiché est le total prélevé · une promotion modifiée après commande ne change pas la commande *(R-U7, R-U9)* |
-| **Notifications** | Plafond respecté : deux promotions du même vendeur en 24 h → une seule notification · regroupement au-delà du seuil · promotion démarrée deux fois par le planificateur → **une seule** notification *(R-U3, R-U4)* |
-| **Rang client** | Calcul **par vendeur** : aucune interface, aucune requête ne permet d'agréger un client tous vendeurs confondus *(R-R1)* · commande remboursée exclue du score *(R-R2)* · rattrapage sur l'historique **idempotent et relançable** *(R-R11)* |
+| **Notifications** | Plafond respecté : deux promotions du même boutique en 24 h → une seule notification · regroupement au-delà du seuil · promotion démarrée deux fois par le planificateur → **une seule** notification *(R-U3, R-U4)* |
+| **Rang client** | Calcul **par boutique** : aucune interface, aucune requête ne permet d'agréger un client tous boutiques confondues *(R-R1)* · commande remboursée exclue du score *(R-R2)* · rattrapage sur l'historique **idempotent et relançable** *(R-R11)* |
 | **Événements** | Candidature sans réponse à l'ouverture → refusée automatiquement avec notification *(R-W4)* · page publique accessible sans compte · article dans deux événements → une seule pastille et une seule remise *(R-W5, R-W7)* |
 
 ## 13.2 Tests terrain — non substituables
@@ -975,7 +980,8 @@ Les tests automatisés ne peuvent pas valider ce produit à eux seuls. Condition
 | 2 | **Vidéo : service géré ou auto-hébergé**, et lequel | L'architecture et le budget |
 | 3 | **Appareil de référence, version Android minimale, plafond de poids** | Tous les arbitrages d'implémentation |
 | 4 | **Prestataires de paiement retenus**, et obtention des bacs à sable | Toute la chaîne de paiement |
-| 5 | **Modalité juridique et technique de conservation des fonds** | Le séquestre — cœur du produit |
+| 5 | ~~**Modalité juridique de conservation des fonds**~~ → ✅ **sans objet** *(`DP-07`)*. **JP ne conserve plus aucun fonds** — ce qui supprime du même coup le risque juridique désigné comme *« principal risque du projet »* par `docs/marque/` *(loi 2016-056, art. 79-80)* | *Résolu* |
+| 5 bis | **Le prestataire honore-t-il une clé d'idempotence sur une requête rejouée ?** *(`PO-11`)* | Le rejeu des parts créatrice *(`R-M5`)* |
 | 6 | **Fournisseur SMS** et coût par message | Le repli de notification |
 | 7 | **Hébergement** : région, latence depuis Madagascar, coût de sortie de données | La performance perçue |
 | 8 | **Politique de rétention des médias** | Le coût de stockage |

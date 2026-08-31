@@ -56,7 +56,7 @@ viewer counts; "Ce soir" as two compact rows with times and "Me rappeler" button
 "Nouveautés" as a two-column product grid; and a promotion banner inserted between
 sections.
 Produce a guest variant: identical but with a slim dismissible top banner reading
-"Achetez en confiance : votre argent est gardé par JP jusqu'à la livraison" and a
+"Achetez en confiance : toutes les boutiques sont vérifiées par JP" and a
 "Créer mon compte" link.
 ```
 
@@ -90,7 +90,7 @@ depend: [F7.2, F14.3]
 
 **Un filtre par taille doit filtrer sur la disponibilité réelle** : un article dont la taille M est épuisée ne doit pas apparaître dans un filtre « M », sinon le filtre ne sert à rien. Il s'appuie donc sur `disponible = stock − réservé` *(R-S2)*.
 
-**Correspondance de tailles** : « 38 » et « M » doivent filtrer pareil quand ils désignent la même taille *(F0.5 §backend)*. Table de correspondance dans `packages/contracts`, sinon l'acheteuse doit deviner la convention de chaque vendeur.
+**Correspondance de tailles** : « 38 » et « M » doivent filtrer pareil quand ils désignent la même taille *(F0.5 §backend)*. Table de correspondance dans `packages/contracts`, sinon l'acheteuse doit deviner la convention de chaque boutique.
 
 ### 2. Structure de code
 ```
@@ -209,7 +209,7 @@ depend: [F1.4]
 
 **Conception** — sélection d'articles **disponibles dans sa taille**, dans son budget, dans ses catégories. Réutilise l'ordonnancement de `F14.3` appliqué aux articles plutôt qu'aux contenus.
 
-**Pas d'apprentissage automatique** : le filtre dur sur la taille disponible plus une pondération explicable suffisent, et restent corrigeables quand un vendeur se plaint.
+**Pas d'apprentissage automatique** : le filtre dur sur la taille disponible plus une pondération explicable suffisent, et restent corrigeables quand une boutique se plaint.
 
 **Backend** — `GET /recommandations/articles`.
 
@@ -263,7 +263,7 @@ depend: [F10.5]
 
 `P1 · C · cadre`
 
-**F8.4 — Tri** : nouveauté, prix croissant et décroissant, popularité, score vendeur *(F6.2)*. Le tri par défaut est la **pertinence** (filtre taille + fraîcheur + score), pas la nouveauté seule.
+**F8.4 — Tri** : nouveauté, prix croissant et décroissant, popularité, score boutique *(F6.2)*. Le tri par défaut est la **pertinence** (filtre taille + fraîcheur + score), pas la nouveauté seule.
 
 **F8.8 — Recherches récentes et suggestions** : historique local, suggestions au fil de la saisie depuis les termes fréquents.
 
@@ -271,7 +271,7 @@ depend: [F10.5]
 
 ```issues
 feature: F8.4
-titre: Tri nouveauté, prix, popularité, score vendeur
+titre: Tri nouveauté, prix, popularité, score boutique
 epic: "08"
 phase: P1
 prio: C

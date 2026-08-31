@@ -10,13 +10,14 @@ La promesse tient en une phrase : **l'argent de l'acheteuse est gardé par JP ju
 
 | # | Document | Contenu |
 |---|---|---|
+| **0** | **[JP_DECISIONS_PRODUIT.md](docs/JP_DECISIONS_PRODUIT.md)** | 🔴 **À lire en premier.** Les **11 décisions** `DP-xx` qui retirent ou redéfinissent quelque chose · les **12 points ouverts** `PO-xx` · la carte du chantier. **C'est l'amont de tous les autres documents.** |
 | 1 | [JP_POSITIONNEMENT.md](docs/JP_POSITIONNEMENT.md) | Pourquoi ce produit, pour qui, contre quoi |
 | 2 | [JP_DESCRIPTION_PROJET.md](docs/JP_DESCRIPTION_PROJET.md) | Présentation générale |
 | 3 | [JP_EXPRESSION_DE_BESOIN.md](docs/JP_EXPRESSION_DE_BESOIN.md) | Besoins `Bx.y` et exigences non fonctionnelles `Nx.y` |
-| 4 | **[JP_BACKLOG.md](docs/JP_BACKLOG.md)** | **266 fonctionnalités** `Fxx.y` · 21 épiques · parcours par persona |
+| 4 | **[JP_BACKLOG.md](docs/JP_BACKLOG.md)** | **255 fonctionnalités** `Fxx.y` · 21 épiques · parcours par persona |
 | 5 | **[JP_USER_STORIES.md](docs/JP_USER_STORIES.md)** | **45 user stories** avec critères d'acceptation, dont au moins un cas d'échec chacune |
-| 6 | **[JP_CAS_UTILISATION.md](docs/JP_CAS_UTILISATION.md)** | **30 cas d'utilisation**, acteurs, scénarios, **30 diagrammes de séquence** — un par cas |
-| 7 | [JP_CAHIER_DES_CHARGES.md](docs/JP_CAHIER_DES_CHARGES.md) | Volet fonctionnel · **180 règles** `R-xx` · matrice des droits · critères de recette `RBx` |
+| 6 | **[JP_CAS_UTILISATION.md](docs/JP_CAS_UTILISATION.md)** | **27 cas d'utilisation**, acteurs, scénarios, **26 diagrammes de séquence** — un par cas |
+| 7 | [JP_CAHIER_DES_CHARGES.md](docs/JP_CAHIER_DES_CHARGES.md) | Volet fonctionnel · **205 règles** `R-xx` · matrice des droits · critères de recette `RBx` |
 | 8 | [JP_CDC_TECHNIQUE.md](docs/JP_CDC_TECHNIQUE.md) | Volet technique · modèle de données · machines à états · API |
 | 9 | **[JP_CONCEPTION_BDD.md](docs/JP_CONCEPTION_BDD.md)** | **113 tables** · 6 diagrammes ER · ordre des migrations · garanties structurelles |
 | 10 | **[JP_CONCEPTION_APP.md](docs/JP_CONCEPTION_APP.md)** | Architecture · 16 modules · navigation · design system · stratégie de tests |
@@ -37,7 +38,7 @@ Deux fichiers, dans cet ordre, avant tout le reste :
 1. **[plan/VAGUE0-socle.md](plan/VAGUE0-socle.md)** — les dix éléments `S1`→`S10` du socle. **Rien ne démarre avant.** Trois à quatre semaines, aucune fonctionnalité visible produite, et c'est normal.
 2. **[plan/TRANCHE1.md](plan/TRANCHE1.md)** — **la première vente réelle**. 58 fonctionnalités : le plus court chemin où de l'argent circule vraiment, du compte créé jusqu'aux fonds libérés. Elle met à l'épreuve **RB1, RB2, RB4, RB7 et RB10** — les cinq critères les plus difficiles.
 
-La phase 1 du backlog fait 841 issues. Réalisée d'un bloc, c'est huit à douze mois avant le premier ariary encaissé. La tranche 1 en fait le tiers et permet de vérifier le modèle sur de vraies vendeuses. Les tranches suivantes sont listées en fin de [TRANCHE1.md](plan/TRANCHE1.md#ce-qui-vient-ensuite).
+La phase 1 du backlog fait 841 issues. Réalisée d'un bloc, c'est huit à douze mois avant le premier ariary encaissé. La tranche 1 en fait le tiers et permet de vérifier le modèle sur de vraies boutiques. Les tranches suivantes sont listées en fin de [TRANCHE1.md](plan/TRANCHE1.md#ce-qui-vient-ensuite).
 
 ---
 
@@ -117,7 +118,7 @@ Le modèle est généré depuis [JP_CONCEPTION_BDD.md](docs/JP_CONCEPTION_BDD.md
 | Base | **PostgreSQL 16** — non négociable *(intégrité du stock, argent de tiers)* |
 | Cache, verrous, temps réel | **Redis 7** — accélérateur d'affichage, **jamais autorité** |
 | Asynchrone | BullMQ |
-| Mobile | **React Native (Expo)** — acheteuse, vendeuse, créatrice, livreur, point relais |
+| Mobile | **React Native (Expo)** — acheteuse, boutique, créatrice |
 | Web | **React + Vite**, rendu serveur pour les aperçus de lien |
 | Contrat API | **Zod** partagé serveur ↔ clients |
 
@@ -141,7 +142,7 @@ Aucune livraison n'est acceptable si l'un échoue. Le plan de recette est en fin
 | # | Critère |
 |---|---|
 | **RB1** | Aucune survente, y compris sur appuis simultanés et **entre canaux** |
-| **RB2** | Fonds correctement séquestrés et libérés dans tous les cas |
+| **RB2** | **Le paiement atteint le bon compte, sans double prélèvement** — pivot seul, et pivot + secondaire *(`DP-11`)* |
 | **RB3** | Remboursement automatique intégral si un seuil de précommande n'est pas atteint |
 | **RB4** | 100 % des litiges reçoivent une décision **motivée** dans le délai |
 | **RB5** | Aucun contenu publiable sans article attaché |
@@ -153,4 +154,4 @@ Aucune livraison n'est acceptable si l'un échoue. Le plan de recette est en fin
 
 ---
 
-*Dépôt privé. Ces documents contiennent la stratégie produit, les taux de commission et les décisions ouvertes du projet.*
+*Dépôt privé. Ces documents contiennent la stratégie produit, les paliers d'abonnement et les décisions ouvertes du projet.*

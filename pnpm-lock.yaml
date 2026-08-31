@@ -195,7 +195,6 @@ importers:
         specifier: ^19.2.18
         version: 19.2.18
 
-  apps/terrain: {}
 
   apps/web:
     dependencies:

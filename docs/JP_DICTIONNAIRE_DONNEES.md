@@ -41,12 +41,12 @@
 
 | Domaine | Tables | Rôle du domaine |
 |---|---:|---|
-| [1. Identité](#1--identité) | 12 | Qui est qui, et qui a le droit d'encaisser |
+| [1. Identité](#1--identité) | **11** | Qui est qui, et qui a le droit de **mettre en vente** *(`DP-07`)* |
 | [2. Univers](#2--univers) | 1 | Les jeux de règles Mode / Beauté / Tech |
 | [3. Catalogue et stock](#3--catalogue-et-stock) | 7 | Ce qui est à vendre, et combien il en reste |
 | [4. Commande](#4--commande) | 3 | L'engagement écrit, figé |
-| [5. Paiement et argent](#5--paiement-et-argent) | 6 | Le séquestre et le journal financier |
-| [6. Livraison](#6--livraison) | 11 | Du colis préparé au colis remis |
+| [5. Paiement et argent](#5--paiement-et-argent) | **2** | L'éclatement et le journal — **JP ne détient aucun fonds** *(`DP-07`, `DP-16`)* |
+| [6. Livraison](#6--livraison) | **5** | Ce que la boutique déclare, ce que l'acheteur confirme *(`DP-04`)* |
 | [7. Contenu](#7--contenu) | 7 | La boutique dont le catalogue est fait de vidéos |
 | [8. Direct](#8--direct) | 4 | La diffusion et son bilan |
 | [9. Créatrice](#9--créatrice) | 5 | Vendre sans capital |
@@ -54,10 +54,19 @@
 | [11. Promotions](#11--promotions) | 3 | Les remises, sans cumul possible |
 | [12. Événements](#12--événements) | 5 | Les rendez-vous thématiques |
 | [13. Cadeau](#13--cadeau) | 1 | Le panier payé par un tiers |
-| [14. Confiance](#14--confiance) | 4 | Litiges, avis, score |
+| [14. Confiance](#14--confiance) | 4 | Signalements, avis, score — **la seule protection de l'acheteuse** |
 | [15. Modération](#15--modération) | 5 | La protection des personnes |
 | [16. Exploitation](#16--exploitation) | 19 | Paramètres, journaux, mesures, notifications |
-| **Total recensé** | **102** | |
+| **Total recensé** | **~~102~~ 87** | |
+
+> **15 tables supprimées** par les décisions `DP-01`, `DP-04`, `DP-07` et
+> `DP-08` : `membre_equipe` · `sequestre` · `portefeuille` · `retrait` ·
+> `remboursement` · `point_relais` · `livreur` · `tournee` · `tournee_point` ·
+> `collecte_especes` · `retour` · `bareme_commission` — et **2 renommées**
+> *(`colis` → `expedition`, `litige` → `signalement_commande`)*.
+>
+> **2 tables neuves** : `fil_remise` *(`DP-10`)* et `abonnement_boutique`
+> promue au premier plan *(`DP-08`)*.
 
 > **Écart assumé, et il est double.** `JP_CONCEPTION_BDD.md` annonce
 > **113 tables**.
@@ -86,14 +95,13 @@
 
 | Table | État | Rôle |
 |---|:---:|---|
-| **`utilisateur`** | ✅ | Le compte. Un seul par adresse électronique, quels que soient les rôles cumulés |
+| **`utilisateur`** | ✅ | Le compte. Un seul par adresse électronique, **et d'un seul type — acheteur, boutique ou créatrice** *(`DP-02`)* |
 | **`code_otp`** | ⬜ | Le code à 6 chiffres d'entrée. Remplace le mot de passe |
 | **`identite_externe`** | ⬜ | Le rattachement à un compte Google |
 | **`session`** | ✅ | Une session ouverte sur un appareil |
 | **`profil_acheteur`** | ⬜ | Tailles, morphologie, budget, styles — ce qui personnalise le fil |
-| **`profil_vendeur`** | ⬜ | La boutique : vérification, encaissement, score, abonnés |
+| **`boutique`** | ⬜ | La boutique : vérification, **abonnement**, score, abonnés |
 | **`profil_createur`** | ⬜ | La créatrice : audience, palier, ventes générées |
-| **`membre_equipe`** | ⬜ | L'employé d'un vendeur, et **ce qu'il ne pourra jamais faire** |
 | **`document_identite`** | ⬜ | Les pièces du dossier de vérification, chiffrées au repos |
 | **`demande_recuperation`** | ⬜ | La récupération d'un compte dont l'adresse est perdue |
 | **`demande_changement_email`** | ⬜ | Le changement d'identifiant, en deux étapes |
@@ -143,22 +151,29 @@ carte SIM, première cause historique de perte de compte.
 | `appareil`, `adresse_ip` | Affichage « mes appareils » |
 | `expire_le`, `revoquee_le` | — |
 
-## `profil_vendeur` ⬜
+## `boutique` ⬜
 
-**Rôle** — la boutique. **C'est la table qui décide si l'argent peut sortir.**
+**Rôle** — la boutique. **C'est la table qui décide si un article peut être mis
+en vente.**
 
 | Attribut | Rôle |
 |---|---|
-| `type_vendeur` | `boutique` \| `particulier` *(R-H5)*. Le particulier publie sans vérification, **il n'encaisse pas sans elle** |
 | `nom_boutique`, `slug` **UK** | Vitrine publique |
-| **`statut_verification`** | **Le verrou de l'encaissement** |
-| **`msisdn_mobile_money`** | Le numéro vérifié. **Seule destination possible d'un retrait** |
-| `affiliation_autorisee` | Le vendeur accepte-t-il les créatrices ? *(R-N3)* |
-| `encaissement_gele` | Gel administratif *(F6.8)* |
-| `score_confiance` | Public, calculé sur des faits |
+| **`statut_verification`** | **Le verrou de la mise en vente** *(`DP-07`)*. Il verrouillait l'encaissement ; l'argent partant désormais directement à la boutique, vérifier **après** la vente n'aurait plus de sens |
+| **`msisdn_mobile_money`** | Le numéro vérifié. **Seule destination possible d'un crédit** *(`DP-16`)* |
+| `affiliation_autorisee` | La boutique accepte-t-elle les créatrices ? *(R-N3)* |
+| **`taux_commission_createur`** | Le taux qu'elle offre aux créatrices, **sur son prix** *(`DP-09`, `R-N4`)*. Connu de la créatrice **avant** qu'elle attache l'article |
+| **`vente_gelee`** | Gel automatique au-delà du seuil de signalements *(`R-T8`)*. *(Anciennement `encaissement_gele` — il n'y a plus d'encaissement à geler, `DP-07`)* |
+| **`palier_abonnement_id`** | Le forfait en cours *(`DP-08`)* |
+| **`ventes_du_mois`, `directs_du_mois`** | **Dénormalisés**, remis à zéro au cycle. Portent les quotas de `R-B4` |
+| **`score_confiance`** | Public, calculé sur des faits. **Devenu la seule protection de l'acheteuse** *(`DP-07`)* |
+| **`taux_signalement`** | Dénormalisé, public *(`R-E2`)* |
 | `delai_expedition_moyen` | **Dénormalisé**, tâche quotidienne — affiché **avant** achat *(F5.9)* |
-| `nb_abonnes` | **Dénormalisé**, déclencheur + réconciliation. Compter 200 000 lignes à chaque vitrine est exclu *(C1, C2)* |
+| `nb_abonnes` | **Dénormalisé** *(abonnés au sens social, §5.12 du CDC — pas l'abonnement payant)* |
 | `fidelite_activee` | — |
+
+> **`type_boutique` est supprimé** *(`DP-01`)* : il distinguait `boutique` de
+> `particulier`. Il n'y a plus de vendeur particulier.
 
 ## `profil_acheteur` ⬜
 
@@ -174,16 +189,10 @@ carte SIM, première cause historique de perte de compte.
 `palier`, `badge_verifie`, `nb_abonnes`, **`nb_ventes_generees`** — *« on ne lui
 montre pas des vues, on lui montre ce qu'elle a fait gagner »*.
 
-## `membre_equipe` ⬜
+## ~~`membre_equipe`~~ ❌ **supprimée** *(`DP-01`)*
 
-**Rôle** — l'employé du vendeur, et surtout **la liste de ce qu'il ne pourra
-jamais faire**.
-
-| Attribut | Rôle |
-|---|---|
-| `vendeur_id`, `utilisateur_id` | Le lien |
-| **`permissions`** *(json)* | **Jamais, sous aucune permission : le portefeuille, le retrait, les prix, les promotions.** Une promotion engage la marge exactement comme un prix |
-| `revoque_le` | **UK partiel si `NULL`** — un seul lien actif à la fois |
+L'employé du vendeur n'existe plus. La table, son attribut `permissions` et les
+« quatre interdits absolus » qu'elle portait disparaissent avec lui.
 
 ## `document_identite` ⬜
 
@@ -200,10 +209,19 @@ peut changer de propriétaire, un sujet non.
 
 ## `demande_recuperation` ⬜
 
-**Rôle** — récupérer un compte dont l'adresse n'est plus accessible. Le seul
-parcours du produit où un humain de JP décide.
+**Rôle** — récupérer un compte dont l'adresse n'est plus accessible.
 `numero` **UK** *(dicible au téléphone)*, `utilisateur_cible_id`, `email_ancien`,
-`email_nouveau`, `statut`, **`motif_decision`**, `decide_par_id`.
+`email_nouveau`, `statut`, **`motif_decision`**, **`points_concordants`** *(json)*.
+
+> **`decide_par_id` est supprimé** *(`DP-05`)*. C'était « le seul parcours du
+> produit où un humain de JP décide » — il n'y en a plus aucun. `SYS` décide sur
+> **seuil de concordance**, et `points_concordants` journalise ce qui a été
+> comparé.
+>
+> ⚠️ **C'est ici que `DP-05` coûte le plus cher.** Une usurpation réussie donne
+> accès à un compte ; un refus à tort enferme dehors quelqu'un de légitime, **et
+> il n'y a personne à qui faire appel**. Le seuil et la liste des points comparés
+> DOIVENT être versionnés, pas réglés à la volée.
 
 ## `demande_changement_email` ⬜
 
@@ -217,8 +235,8 @@ puis nouvelle. `nouvel_email`, `etape`, `expire_le`.
 ## `univers` ✅
 
 **Rôle** — porter **ce qui doit être modifiable sans déploiement** dans le jeu de
-règles d'un univers : son ouverture et son taux de commission. Le reste des
-règles *(livraisons, champs de fiche, motifs de litige)* vit dans le code
+règles d'un univers : **son ouverture**. Le reste des
+règles *(champs de fiche, motifs de signalement)* vit dans le code
 *(`packages/contracts/src/univers.ts`)*, parce que cela change le produit et doit
 passer par une revue.
 
@@ -227,7 +245,7 @@ passer par une revue.
 | **`cle`** PK | `mode` \| `beaute` \| `tech`. **Ne change jamais** — il est dans les URL et les lignes de commande |
 | `nom`, `signature`, `onglet` | Affichage |
 | **`ouvert`** | Un univers fermé garde ses règles et **n'apparaît nulle part**. L'ouvrir est un `UPDATE` |
-| **`commission_pour_mille`** | `80` = 8 %. **Le levier économique du pilote.** 30 pour Tech — un revendeur de téléphones gagne ~5 %, lui en prendre 8 rendrait l'univers vide |
+| ~~`commission_pour_mille`~~ | ❌ **Supprimé** *(`DP-08`)* — si un univers doit coûter plus cher, cela se joue sur **le palier d'abonnement**, plus sur la vente. *(Ancien libellé : `80` = 8 %. 30 pour Tech — un revendeur de téléphones gagne ~5 %, lui en prendre 8 rendrait l'univers vide |
 | `rang` | Ordre des onglets |
 
 ---
@@ -252,7 +270,7 @@ passer par une revue.
 
 | Attribut | Rôle |
 |---|---|
-| `vendeur_id` | IDX(`vendeur_id`, `statut`) |
+| `boutique_id` | IDX(`boutique_id`, `statut`) |
 | **`univers_cle`** | **Immuable** *(R-Y1)*, garanti par **déclencheur** — une contrainte `CHECK` ne peut pas comparer l'ancienne et la nouvelle valeur. Changer l'univers changerait les règles de litige et la commission **après** une commande |
 | `prix_ariary`, `prix_barre_ariary` | **Entiers** *(D6)* |
 | `statut` | `brouillon` \| `en_ligne` \| `masque` \| `epuise` |
@@ -262,7 +280,7 @@ passer par une revue.
 | `mesures` *(json)* | Épaules, poitrine, taille, longueur *(R-H4)*. **Sans essayage, les mesures remplacent le fait de toucher le vêtement** |
 | `a_mesures` | **Dénormalisé**, déclencheur — sert le tri par pertinence |
 | `achat_direct_actif` | *(R-H1)* |
-| `epingle`, `position_vitrine` | Mise en avant par le vendeur |
+| `epingle`, `position_vitrine` | Mise en avant par la boutique |
 | `peremption_le` | **Colonne générée** + index partiel — JP Beauté. Vérifiée **à la publication et à l'achat**, car un article périme en stock *(R-Y13)* |
 
 ## `variante` ⬜
@@ -270,7 +288,7 @@ passer par une revue.
 | Attribut | Rôle |
 |---|---|
 | `taille`, `couleur` | **UK(`article_id`, `taille`, `couleur`)** |
-| `sku` | Référence vendeur |
+| `sku` | Référence boutique |
 | **`quantite_stock`** | **LA vérité** *(D2)* |
 | **`quantite_reservee`** | `CHECK (>= 0)` et **`CHECK (<= quantite_stock)`** — **le dernier filet contre la survente, même en cas de bogue applicatif** |
 | `seuil_alerte` | Alerte stock bas |
@@ -319,7 +337,7 @@ PK(`variante_id`, `utilisateur_id`), `notifie_le`.
 
 > **Rôle du domaine.** Le carrefour : **le seul endroit où l'argent et le stock
 > se rencontrent.** Tout y est **figé au moment de la commande** — prix, remise,
-> taux de commission, univers. Rien ne rétroagit.
+> part créatrice, univers. Rien ne rétroagit.
 
 | Table | Rôle |
 |---|---|
@@ -344,24 +362,24 @@ PK(`variante_id`, `utilisateur_id`), `notifie_le`.
 | `evenement_id`, `direct_id` | Rattachements |
 | `donateur_ref` | Commande cadeau *(RB8)* |
 | `statut` | Machine à états — voir §18 |
-| **`origine`** | IDX(`origine`, `cree_le`). **Une file de commandes unique** *(R-H2)* : deux files signifieraient deux logistiques, et le vendeur en oublierait une |
+| **`origine`** | IDX(`origine`, `cree_le`). **Une file de commandes unique** *(R-H2)* : deux files signifieraient deux logistiques, et la boutique en oublierait une |
 | `mode_livraison` | `domicile` \| `relais` |
 | `adresse_id` \| `relais_id` | L'un ou l'autre |
 | `code_promo` | **Figé à la commande** *(R-U9)* |
 | `sous_total`, `frais_livraison`, `remise`, `remise_livraison`, `credit_cagnotte_utilise`, `total` | Entiers, en Ariary |
 | **`univers_cle`** | **Figé** *(R-Y3)* |
-| **`taux_commission_pour_mille`** | **Figé** *(R-Y3)*. **Un changement de taux ne rétroagit jamais** |
+| **`taux_commission_pour_mille`** | ♻️ **Rétabli et figé** *(`DP-15`, `R-G3`)* — un changement de taux ne rétroagit jamais |
+| **`mode_remuneration`** | 🆕 `abonnement` \| `commission`, **figé à la commande** *(`R-B5`)* — un changement de mode ne rétroagit pas non plus |
 
 ## `ligne_commande` ⬜
 
 | Attribut | Rôle |
 |---|---|
-| `variante_id`, `vendeur_id`, `quantite` | — |
+| `variante_id`, `boutique_id`, `quantite` | — |
 | **`prix_unitaire`** | **FIGÉ à la commande** |
 | `remise_ligne` | `CHECK (<= prix_unitaire * quantite)` |
 | **`promotion_id`** | **SCALAIRE, pas une table de liaison** *(D4)*. **Le cumul de remises est impossible par construction**, pas seulement interdit par convention *(R-U7)*. C'est la décision de modélisation la plus importante du domaine commercial |
-| `commission_jp`, `commission_createur` | Calculées à la commande |
-| `bareme_id` | Le barème historisé appliqué |
+| **`part_createur`** | La part due à la créatrice si la vente est affiliée *(`DP-09`)*, **figée à la commande**. *(`commission_jp` et `bareme_id` sont supprimés — `DP-08`.)* |
 
 ## `facture` ⬜
 `commande_id` **UK** · `numero` **UK** *(séquence dédiée, continue)* · `url_pdf` ·
@@ -371,44 +389,59 @@ PK(`variante_id`, `utilisateur_id`), `notifie_le`.
 
 # 5 · Paiement et argent
 
-> **Rôle du domaine.** Le cœur de la conformité *(C4)*. **`ecriture_financiere`
-> est `append only`**, garanti par révocation de droits. **Les soldes de
-> `portefeuille` en sont dérivés, jamais saisis** — un test recalcule les soldes
-> par relecture du journal et compare.
+> **Rôle du domaine.** **JP ne détient aucun fonds** *(`DP-07`)*. Ce domaine ne
+> tient plus de soldes : il tient **la trace** de paiements qui vont directement
+> d'un acheteur à une boutique. `ecriture_financiere` reste `append only` —
+> c'est désormais un **journal de traçabilité**, plus un grand livre de comptes
+> détenus.
 
 | Table | Rôle |
 |---|---|
-| **`paiement`** | La tentative de règlement, et son idempotence |
-| **`sequestre`** | **Ce qui matérialise la promesse du produit** |
-| **`ecriture_financiere`** | Le journal comptable, inaltérable |
-| **`portefeuille`** | Les deux soldes du vendeur |
-| `retrait` | La sortie d'argent |
-| `remboursement` | L'écriture inverse |
+| **`paiement`** | **Une ligne par crédit** — boutique, commission JP, créatrice *(`DP-16`)* |
+| **`ecriture_financiere`** | Le journal, inaltérable |
+| ~~`sequestre`~~ | ❌ **supprimée** *(`DP-07`)* |
+| ~~`portefeuille`~~ | ❌ **supprimée** — JP ne tient plus de solde |
+| ~~`retrait`~~ | ❌ **supprimée** — il n'y a rien à retirer |
+| ~~`remboursement`~~ | ❌ **supprimée** — **JP ne rembourse pas** *(`R-E5`)* |
 
 ## `paiement` ⬜
 
+**Une ligne par crédit, pas par commande** *(`DP-16`)*. Un débit de l'acheteuse
+produit **1 à 3 lignes** : la boutique, la commission JP, la créatrice.
+
 | Attribut | Rôle |
 |---|---|
-| `moyen` | `mvola` \| `orange` \| `airtel` \| `carte` \| `especes` |
-| `montant` | `CHECK (> 0)` |
+| `commande_id` | IDX(`commande_id`, `rang`) |
+| **`rang`** | **`pivot`** \| **`secondaire`**. En **repli** *(N requêtes)*, le pivot est émis en premier ; **son échec annule tout** *(`R-M4`)*. En **éclatement atomique**, le rang n'ordonne rien — il documente |
+| **`beneficiaire_type`** | `boutique` \| **`jp`** \| `createur` — **la patte `jp` est la commission** *(`DP-15`)* |
+| **`beneficiaire_id`** | Vers **quel compte** va le crédit |
+| **`msisdn_destination`** | Figé depuis `boutique.msisdn_mobile_money` — **jamais saisissable** |
+| `moyen` | `mvola` \| `orange` \| `airtel` \| `carte` |
+| `montant` | `CHECK (> 0)`. **La somme des crédits d'une commande égale le montant débité** — vérifié par test |
 | `statut` | `INITIE` → `EN_ATTENTE_OPERATEUR` → `CONFIRME` \| `ECHOUE` \| `EXPIRE` |
+| **`nb_rejeux`, `prochain_rejeu_le`** | **IDX partiel `WHERE rang = 'secondaire' AND statut = 'ECHOUE'`** *(`R-M5`)* |
 | `reference_externe` | La référence du prestataire |
-| **`cle_idempotence`** **UK** | **Porte `RB10`** *(R-M2)*. **Un rejeu renvoie le résultat initial sans nouveau prélèvement** |
-| **`motif_echec`** | **Le motif réel.** « Le paiement a échoué » ne dit pas s'il faut recharger son compte ou réessayer dans cinq minutes |
+| **`cle_idempotence`** **UK** | **Porte `RB10`** *(R-M2)*. Un rejeu renvoie le résultat initial sans nouveau prélèvement |
+| **`motif_echec`** | **Le motif réel.** « Le paiement a échoué » ne dit pas s'il faut recharger ou réessayer |
 | `payeur_utilisateur_id`, `payeur_pays` | **Diaspora** — qui a payé, depuis où |
 | `montant_devise_origine`, `devise_origine`, `taux_indicatif` | Paiement par carte depuis l'étranger |
 
-## `sequestre` ⬜
+> ### Le nombre de crédits, par situation
+>
+> | | Crédits |
+> |---|---|
+> | Boutique en **abonnement**, vente simple | **1** — la boutique |
+> | Boutique en **commission**, vente simple | **2** — la boutique, JP |
+> | Boutique en **commission**, vente affiliée | **3** — la boutique, JP, la créatrice |
 
-**Rôle** — retenir le montant dû au vendeur jusqu'à la confirmation de réception.
-
-| Attribut | Rôle |
-|---|---|
-| `montant_retenu` | `CHECK (> 0)` |
-| `statut` | `retenu` \| `libere` \| `rembourse` \| `partiel` |
-| **`liberable_le`** | **IDX partiel `WHERE statut = retenu`** — la libération automatique doit être bon marché à balayer |
-| `libere_le` | — |
-| **`motif_liberation`** | `confirmation` \| `unboxing` \| `automatique` \| `arbitrage`. **Savoir *pourquoi* les fonds sont partis est ce qui rend l'arbitrage possible** |
+> ### ⚠️ Ce que le modèle ne dit pas encore
+>
+> **En éclatement atomique** *(le cas nominal, `R-M10`)*, ces lignes sont créées
+> **après** la réponse du prestataire : c'est lui qui a réparti. **En repli**,
+> elles sont créées **avant**, et `rang` porte l'ordre d'émission.
+>
+> **Le même schéma sert les deux modes** — c'est ce qui permet de commencer sans
+> attendre la réponse à `PO-11`.
 
 ## `ecriture_financiere` ⬜ — *append only*
 
@@ -416,7 +449,7 @@ PK(`variante_id`, `utilisateur_id`), `notifie_le`.
 |---|---|
 | `type`, `reference`, `montant` | — |
 | `sens` | `debit` \| `credit` |
-| **`compte`** | `sequestre` \| `portefeuille_vendeur` \| `portefeuille_createur` \| `commission_jp` \| `especes` \| `cagnotte` |
+| **`compte`** | `boutique` \| `createur` \| `cagnotte` \| `abonnement_jp`. *(Disparus : `sequestre`, `portefeuille_*`, `commission_jp`, `especes` — `DP-04`, `DP-07`, `DP-08`.)* |
 | `titulaire_id` | IDX(`titulaire_id`, `compte`, `cree_le`) |
 
 ```sql
@@ -425,51 +458,50 @@ REVOKE UPDATE, DELETE ON ecriture_financiere FROM app_role;
 
 **Toute correction est une écriture inverse, jamais une modification.**
 
-## `portefeuille` ⬜
-
-| Attribut | Rôle |
-|---|---|
-| `type` | `vendeur` \| `createur`. **Les portefeuilles restent séparés** même sur un compte qui cumule les rôles — sinon on ne sait plus d'où vient l'argent |
-| **`solde_en_attente`** | **Dérivé du journal** *(R-E6)*. Libellé produit : *« Gardé pour la cliente »* |
-| **`solde_disponible`** | **Dérivé du journal**. Libellé produit : *« À vous — retirable »* |
-| `retraits_geles` | *(R-C14)* |
-
-## `retrait` ⬜
-`montant` · **`msisdn_destination` = le numéro vérifié uniquement** · `statut` ·
-`cle_idempotence` **UK**.
-
-## `remboursement` ⬜
-`paiement_id`, `montant`, `motif`, `cle_idempotence` **UK**, `statut`. **Produit
-des écritures inverses**, jamais une modification.
+> **Ce que ce journal est devenu.** Il ne décrit plus des mouvements sur des
+> comptes que JP détient — il **atteste** que tel montant est parti de tel
+> payeur vers tel bénéficiaire, à telle date. C'est exactement la **traçabilité**
+> sur laquelle repose la nouvelle promesse *(`DP-07`, §5.5.2 du CDC)** : le seul
+> recours de l'acheteuse étant externe, JP doit pouvoir **fournir les pièces**.
 
 ---
 
 # 6 · Livraison
 
+> **Rôle du domaine.** **JP n'opère aucune logistique** *(`DP-04`)*. La boutique
+> fait parvenir le colis par le moyen de son choix. Ce domaine ne suit plus un
+> colis dans un réseau : il **enregistre ce que la boutique déclare** et **ce que
+> l'acheteur confirme**. De onze tables, il en reste cinq.
+
 | Table | Rôle |
 |---|---|
-| **`colis`** | L'objet physique, et son code de retrait |
+| **`expedition`** | Ce que la boutique déclare · *(anciennement `colis`)* |
 | **`evenement_livraison`** | L'historique partagé, **avec son auteur** |
-| `point_relais` | Le lieu de retrait |
-| `livreur` | Le porteur |
-| `tournee` / `tournee_point` | La journée du livreur, ordonnée |
-| `zone_livraison` / `tarif_livraison` | Le prix de la livraison |
-| `retour` | Le retour ou l'échange |
-| `collecte_especes` | Ce que doit le porteur d'espèces |
+| **`fil_remise`** | 🆕 Où et quand la remise a lieu — convenu entre les parties |
+| `zone_livraison` / `tarif_livraison` | Le prix, **fixé par la boutique** |
 | `adresse` | L'adresse enregistrée de l'acheteuse |
+| ~~`point_relais`~~ · ~~`livreur`~~ · ~~`tournee`~~ · ~~`tournee_point`~~ | ❌ **supprimées** *(`DP-04`)* |
+| ~~`collecte_especes`~~ | ❌ **supprimée** — il n'y a plus d'espèces |
+| ~~`retour`~~ | ❌ **supprimée** — un retour se règle entre la boutique et l'acheteur *(`R-T3`)* ; JP n'exécute aucun mouvement d'argent |
 
-## `colis` ⬜
+## `expedition` ⬜ *(anciennement `colis`)*
 
 | Attribut | Rôle |
 |---|---|
-| `statut` | `A_PREPARER` → `PRET` → `ENLEVE` → `EN_LIVRAISON` → `REMIS` |
-| `livreur_id` \| `relais_id` | — |
-| **`code_retrait`** | **HACHÉ**, comme un code à usage unique *(R-L6)*. Les six chiffres ne sont en clair que dans la notification et le SMS |
-| `garde_jusqu_au` | Au-delà : retour vendeur |
-| `preuve_remise_url` | Photo de remise |
-| `montant_a_encaisser` / **`montant_encaisse`** | **Deux colonnes distinctes : l'écart est signalé, jamais absorbé silencieusement** *(F11.5)* |
+| `commande_id` | IDX |
+| **`statut`** | `EN_PREPARATION` → `EXPEDIEE` → `LIVREE` → `CONFIRMEE` *(`R-L3`)* |
+| `moyen_declare` | Texte libre — coursier, transporteur, main propre. **JP n'impose rien et ne vérifie rien** |
 | `telephone_verifie` | **Figé à la création** |
 | `nb_tentatives`, `motif_echec` | — |
+
+> **Huit attributs ont disparu** *(`DP-04`)* : `livreur_id`, `relais_id`,
+> `code_retrait`, `garde_jusqu_au`, `preuve_remise_url`, `montant_a_encaisser`,
+> `montant_encaisse`, et les transitions `ENLEVE` / `EN_LIVRAISON`.
+>
+> ⚠️ **`preuve_remise_url` est la perte la plus lourde.** Aucun tiers neutre ne
+> constate la remise *(`R-L9`)*. En cas de désaccord il n'y a **ni preuve, ni
+> arbitre, ni argent retenu** : le signalement pèse sur la réputation, et c'est
+> tout *(`R-T8`)*.
 
 ## `evenement_livraison` ⬜
 
@@ -477,40 +509,38 @@ des écritures inverses**, jamais une modification.
 
 | Attribut | Rôle |
 |---|---|
-| `colis_id` | IDX(`colis_id`, `horodatage`) |
+| `expedition_id` | IDX(`expedition_id`, `horodatage`) |
 | `statut` | La transition |
-| **`auteur_id`** | **QUI a fait avancer le colis.** Réduit les contestations et rend l'arbitrage possible |
+| **`auteur_id`** | **QUI a fait avancer.** C'était ce qui rendait l'arbitrage possible ; l'arbitrage a disparu *(`DP-05`)*, mais **la trace reste** — c'est elle qu'on fournit quand le recours est externe |
 | `horodatage`, `commentaire` | — |
 
-## `point_relais` ⬜
-`nom`, `quartier`, `latitude`, `longitude`, `horaires` *(json)*,
-**`photo_devanture`** *(on ne trouve pas une épicerie avec une adresse, on la
-trouve avec une photo)*, `delai_garde_jours`, `capacite_max`,
-**`nb_colis_en_stock`** *(dénormalisé — la saturation du relais, F11.4)*,
-`statut`.
+## `fil_remise` ⬜ 🆕 *(`DP-04`, `DP-10`)*
 
-## `livreur` ⬜ · `tournee` ⬜ · `tournee_point` ⬜
-`livreur` : `utilisateur_id`, `vehicule`, `zone_id`, `statut`.
-`tournee` : `livreur_id`, `date`, `statut`.
-`tournee_point` : `ordre`, `type` *(`enlevement` \| `remise`)*, `colis_id`,
-`arrive_le`, `termine_le`.
+**Rôle** — le lieu et le moment de la remise, **convenus entre les parties**, pas
+imposés par JP.
+
+| Attribut | Rôle |
+|---|---|
+| `commande_id` **UK** | Un fil par commande |
+| `participants` | L'acheteur *(ou **le bénéficiaire** dans le cas du cadeau)* et la boutique. **Jamais le donateur** *(`RB8`, `R-G1`)* |
+| `point_convenu`, `moment_convenu` | Reportés sur le bordereau de préparation |
+| **`accord_le`** | **Dans le cas du cadeau, c'est cette date qui débloque le paiement** *(`DP-10`)* |
+
+> **L'invariant `RB8` devient structurel.** Il fallait cacher activement
+> l'adresse au donateur ; désormais **il ne la manipule jamais** — elle se
+> négocie entre deux personnes dont il ne fait pas partie.
+>
+> ⚠️ **Conséquence sur la réservation** : le paiement du cadeau venant après
+> l'accord, l'article doit être tenu bien plus que 30 minutes *(`PO-10`)*.
 
 ## `zone_livraison` ⬜ · `tarif_livraison` ⬜
 `zone_livraison` : `nom`, `quartiers` *(json)*, `delai_transport_j`.
-`tarif_livraison` : PK(`zone_id`, `mode`), `montant`. **Le tarif est affiché dès
-le direct** — un frais découvert au paiement est le premier tueur de panier.
-
-## `retour` ⬜
-`motif`, `type` *(`echange` \| `remboursement`)*, `variante_echange_id`,
-`statut`, **`frais_a_charge_de`** *(`vendeur` \| `acheteur` — décidé, jamais
-implicite)*.
-
-## `collecte_especes` ⬜
-`porteur_id`, `porteur_type` *(`livreur` \| `relais`)*, `montant_du`,
-`montant_reverse`, `periode_debut`, `periode_fin`.
+`tarif_livraison` : PK(`boutique_id`, `zone_id`), `montant`. **Le tarif est fixé
+par la boutique** *(`DP-04`)* et **affiché dès le direct** — un frais découvert
+au paiement est le premier tueur de panier *(`R-P2`)*.
 
 ## `adresse` ⬜
-`libelle`, `quartier`, **`reperes`** — **pas de code postal** *(R-L3)* :
+`libelle`, `quartier`, **`reperes`** — **pas de code postal** *(R-L2)* :
 l'adressage postal n'est pas praticable à Madagascar. `telephone_destinataire`.
 
 ---
@@ -569,8 +599,8 @@ bloc transactionnel *(RB5)*.
 
 ## `abonnement` ⬜
 PK(`suiveur_id`, `suivi_id`) · IDX(`suivi_id`, `cree_le`) · `type` ·
-**`notifications_promo`** — **réglable vendeur par vendeur** *(R-Q6)* : couper
-un vendeur bavard ne doit pas obliger à tout couper.
+**`notifications_promo`** — **réglable boutique par boutique** *(R-Q6)* : couper
+une boutique bavard ne doit pas obliger à tout couper.
 
 ---
 
@@ -581,7 +611,7 @@ un vendeur bavard ne doit pas obliger à tout couper.
 | **`direct`** | La diffusion |
 | **`direct_article`** | Les articles préparés, **et leur minute de passage** |
 | `message_direct` | Le chat |
-| `direct_bilan` | Ce que le vendeur lit après |
+| `direct_bilan` | Ce que la boutique lit après |
 
 ## `direct` ⬜
 `titre`, `affiche_url`, `statut` *(`planifie` \| `en_cours` \| `en_pause` \|
@@ -640,10 +670,10 @@ IDX(`utilisateur`, `article`, `expire_le`), **la fenêtre d'attribution** *(R-N2
 
 | Table | Rôle |
 |---|---|
-| `palier_fidelite` | Les paliers définis **par vendeur** |
-| **`rang_client`** | Le classement, **par vendeur uniquement** |
+| `palier_fidelite` | Les paliers définis **par boutique** |
+| **`rang_client`** | Le classement, **par boutique uniquement** |
 | **`vente_confirmee_journal`** | La source du rang — **à créer dès la phase 1** |
-| `note_client` | La note privée du vendeur |
+| `note_client` | La note privée de la boutique |
 | `cagnotte` / `mouvement_cagnotte` | Le crédit d'achat |
 | `piece_dressing` / `look` / `look_piece` | La garde-robe et les looks |
 
@@ -651,14 +681,14 @@ IDX(`utilisateur`, `article`, `expire_le`), **la fenêtre d'attribution** *(R-N2
 
 | Attribut | Rôle |
 |---|---|
-| **UK(`vendeur_id`, `utilisateur_id`)** | **Le rang est par vendeur** *(R-R1)* |
-| `palier_id`, `score` | IDX(`vendeur_id`, `score DESC`) |
+| **UK(`boutique_id`, `utilisateur_id`)** | **Le rang est par boutique** *(R-R1)* |
+| `palier_id`, `score` | IDX(`boutique_id`, `score DESC`) |
 | `montant_cumule`, `nb_commandes` | — |
 | `derniere_commande_le` | IDX — pour « clientes inactives depuis » |
-| `nb_litiges_perdus`, `nb_annulations` | — |
+| `nb_signalements`, `nb_annulations` | — |
 
 > **Il n'existe volontairement aucun index sur `utilisateur_id` seul dans
-> `vente_confirmee_journal`, et aucune vue agrégeant un client tous vendeurs
+> `vente_confirmee_journal`, et aucune vue agrégeant un client tous boutiques
 > confondus** *(D5, R-R1)*.
 >
 > **Un contrôle d'autorisation se contourne par une nouvelle requête ; l'absence
@@ -674,7 +704,7 @@ IDX(`utilisateur`, `article`, `expire_le`), **la fenêtre d'attribution** *(R-N2
 > effacer la fidélité des premières clientes, **qui sont précisément les plus
 > fidèles**.
 
-`vendeur_id`, `utilisateur_id`, **`commande_id` UK** *(rend le rattrapage
+`boutique_id`, `utilisateur_id`, **`commande_id` UK** *(rend le rattrapage
 idempotent)*, `montant_confirme`, `confirme_le`.
 
 ## `cagnotte` ⬜ / `mouvement_cagnotte` ⬜
@@ -722,7 +752,7 @@ rend la pièce achetable dans un look publié**.
 | `evenement_bilan` | Le résultat, comparé à une période équivalente |
 
 ## `evenement` ⬜
-**`portee`** : `jp` \| `vendeur` *(R-W8)* · `proprietaire_id` *(NULL si portée
+**`portee`** : `jp` \| `boutique` *(R-W8)* · `proprietaire_id` *(NULL si portée
 JP)* · `nom`, `theme`, `slug` **UK**, `visuel_url`, **`couleur_accent`**
 *(appliquée par jeton, jamais par image — le budget de données, R-W7)*,
 `hashtag`, `debut_le` *(IDX partiel `WHERE annonce`)*, `fin_le`, `statut`,
@@ -763,32 +793,47 @@ message, et le rattachement au paiement du donateur *(RB8)*.
 
 # 14 · Confiance
 
+> **Rôle du domaine.** **C'est devenu le domaine le plus important du produit.**
+> Le séquestre protégeait l'acheteuse ; il a disparu *(`DP-07`)*. Ce qui la
+> protège désormais tient **entièrement** dans ces quatre tables.
+
 | Table | Rôle |
 |---|---|
-| **`litige`** | Le désaccord, et **sa décision motivée** |
-| `message_litige` | Le fil de discussion |
+| **`signalement_commande`** | Le problème déclaré, et **son effet sur le compteur** · *(anciennement `litige`)* |
+| `message_litige` | Le fil de discussion entre les parties |
 | **`avis`** | L'avis vérifié |
-| `score_confiance` | La note publique du vendeur |
+| **`score_confiance`** | La note publique de la boutique — **la protection elle-même** |
 
-## `litige` ⬜
+## `signalement_commande` ⬜ *(anciennement `litige`)*
 
 | Attribut | Rôle |
 |---|---|
 | `commande_id` | IDX |
 | `ouvert_par_id` | — |
-| `motif` | Filtré par univers — *« pas ma taille »* n'a aucun sens pour un téléphone, *« batterie morte »* aucun pour une robe. **Un litige mal qualifié est un litige mal arbitré** *(RB4)* |
-| `statut` | `ouvert` \| `en_discussion` \| `arbitrage` \| `resolu` \| `clos` |
-| **`decision_texte`** + **`decide_par_id`** | **La contrainte qui traduit `RB4` en base** |
-| `affecte_a_id` | Affectation exclusive |
-| `prioritaire` | — |
+| `motif` | Filtré par univers — *« pas ma taille »* n'a aucun sens pour un téléphone, *« batterie morte »* aucun pour une robe |
+| **`statut`** | `ouvert` \| `en_discussion` \| `resolu`. *(`arbitrage` et `clos` disparaissent — `DP-05`.)* |
+| **`compte_dans_le_score`** | **`true` tant que `statut <> 'resolu'`.** C'est **toute** la sanction du produit *(`R-T8`)* |
+| `resolu_le` | La résolution **décrémente le compteur** |
+
+> **Trois attributs sont supprimés** *(`DP-05`)* : `decision_texte`,
+> `decide_par_id` et `affecte_a_id`. **Personne n'instruit, personne ne tranche,
+> personne ne s'attribue de dossier.**
+>
+> **La contrainte `decision_motivee` disparaît avec eux.** Elle traduisait `RB4`
+> en base — *« la clôture silencieuse est impossible »*. `RB4` porte désormais
+> sur **les sanctions automatiques** *(`R-T2`)*, et la contrainte se déplace sur
+> `sanction.motif_texte`.
 
 ```sql
-ALTER TABLE litige ADD CONSTRAINT decision_motivee
-  CHECK (statut <> 'resolu'
-     OR (decision_texte IS NOT NULL AND decide_par_id IS NOT NULL));
+-- Ce que le compteur doit garantir : un signalement ouvert pèse, toujours.
+ALTER TABLE signalement_commande ADD CONSTRAINT compteur_coherent
+  CHECK (compte_dans_le_score = (statut <> 'resolu'));
 ```
 
-**La clôture silencieuse est impossible.**
+> ⚠️ **Le seuil de suspension n'est pas tranché** *(`PO-12`)*. Trop bas, une
+> boutique honnête est coupée par deux clientes mécontentes ; trop haut, la
+> protection est décorative. **C'est le paramètre le plus sensible du produit
+> depuis `DP-07`.**
 
 ## `avis` ⬜
 
@@ -799,7 +844,7 @@ ALTER TABLE litige ADD CONSTRAINT decision_motivee
 | `conformite_taille` | `conforme` \| `petit` \| `grand` |
 | **`morphologie_autrice`** *(json)* | **FIGÉE au moment de l'avis** — sinon un changement de profil réécrirait le sens d'un avis passé *(F6.10)* |
 | `contenu_id` | L'unboxing qui a produit l'avis *(R-T7)* |
-| `reponse_texte` | Le vendeur répond **une seule fois** *(F6.9)* |
+| `reponse_texte` | La boutique répond **une seule fois** *(F6.9)* |
 
 ## `score_confiance` ⬜
 `score`, `nb_ventes_honorees`, `delai_expedition_reel_h`, `taux_annulation`,
@@ -849,22 +894,22 @@ celle qui a sanctionné**.
 | Table | État | Rôle | Particularité |
 |---|:---:|---|---|
 | **`parametre`** | ✅ | Tous les réglages économiques *(R-O1)* | **Modifiable sans déploiement.** Bornes min/max **codées** : une durée de réservation à 0 s doit être impossible à saisir, pas seulement déconseillée |
-| **`parametre_modification`** | ✅ | Double validation | **Proposé par l'un, confirmé par l'autre. Personne ne change seul un taux de commission** |
-| **`journal_audit`** | ✅ | Toutes les actions du back-office | **`append only`** *(D3)* |
+| **`parametre_modification`** | ✅ | Historique des changements | ⚠️ **La double validation supposait deux opérateurs** *(`R-O1`)* ; il n'y en a plus *(`DP-05`)*. La table reste — **la trace de qui a changé quoi et quand n'a pas disparu avec l'humain** |
+| **`journal_audit`** | ✅ | **Les décisions automatiques et les accès aux pièces d'identité** *(`R-V5`)* | **`append only`** *(D3)*. Il ne protège plus des employés de JP — il n'y en a plus — mais reste **la seule preuve de ce que la plateforme a consulté et décidé** |
 | **`cle_idempotence`** | ✅ | Le rejeu sûr des écritures | **`statut = NULL` tant que la requête est en cours** — c'est ce qui distingue « rejeu terminé » de « deux requêtes simultanées ». `empreinte_requete` garde contre la même clé sur une requête **différente** |
 | `evenement_usage` | ⬜ | Événements d'usage bruts | Rétention 90 j, puis agrégés |
 | **`agregat_quotidien`** | ⬜ | **Les 4 mesures fondatrices** *(F11.7)* | Précalculé. **Disponible dès le premier direct** |
-| `agregat_vendeur` | ⬜ | Statistiques vendeur par jour et par origine | Précalculé |
+| `agregat_boutique` | ⬜ | Statistiques boutique par jour et par origine | Précalculé |
 | `notification` | ⬜ | Toutes les notifications émises | Rétention 180 j |
 | **`notification_compteur`** | ⬜ | **Les plafonds** *(R-U4, R-W9)* | PK(utilisateur, émetteur, type, jour) |
-| `preference_notification` | ⬜ | Réglages par type | **Les critiques ne sont pas désactivables** — colis arrivé, code de retrait |
+| `preference_notification` | ⬜ | Réglages par type | **Les critiques ne sont pas désactivables** — commande expédiée, point de remise convenu, signalement |
 | `notification_sms` | ⬜ | Envois SMS **et leur coût** | Une ligne de dépense à suivre |
-| `reconciliation` | ⬜ | Rapprochement quotidien *(R-O3)* | — |
+| `reconciliation` | ⬜ | Rapprochement quotidien *(R-O3)* | **Rapproche désormais les encaissements déclarés par les opérateurs et les commandes créées** — plus d'encours séquestré, de retrait, de commission ni d'espèces |
 | `ecart` | ⬜ | Les écarts constatés | **Résolus par écriture inverse**, jamais par correction |
-| `bareme_commission` | ⬜ | Taux **en pour mille**, historisé | **Une commande garde son taux** |
+| **`bareme_commission`** | ⬜ | ♻️ **Rétablie** *(`DP-15`)* — taux en pour mille, **historisé** | **Une commande garde son taux** *(`R-G3`)*. Jamais d'`UPDATE` : une nouvelle version à chaque changement |
 | `mise_en_avant` | ⬜ | Emplacements payés | **Mention « Sponsorisé » obligatoire**, contraste imposé par le composant |
-| `abonnement_vendeur` | ⬜ | Paliers d'abonnement | **Le palier gratuit reste fonctionnel** |
-| `adhesion_club` | ⬜ | Abonnement acheteuse | ⚠️ **Ne doit jamais porter sur la protection** — voir la décision `D-11` du dossier de marque |
+| **`abonnement_boutique`** | ⬜ | **Le modèle économique** *(`DP-08`)* | `palier`, `quota_ventes`, `quota_directs`, `montant`, `debut_le`, `echeance_le`, `statut`. **Le palier gratuit reste fonctionnel** — sans lui la boutique paie avant d'avoir gagné *(`R-B3`)*. ⚠️ Montants et quotas non arrêtés *(`PO-6`)* |
+| `adhesion_club` | ⬜ | Adhésion acheteuse | ⚠️ **Ne doit jamais porter sur la protection** — voir la décision `D-11` du dossier de marque. **La règle est devenue plus contraignante** : la protection étant maintenant la réputation seule, un club qui la modulerait vendrait le dernier rempart |
 | `lien_partage` | ⬜ | Liens courts et attribution | **Canal d'acquisition principal** |
 | `taux_change` | ⬜ | Conversion indicative | **Jamais un taux périmé sans mention** |
 
@@ -880,7 +925,7 @@ elles n'ont **jamais reçu de schéma** — ni diagramme ER, ni liste de colonne
 | Table | Où elle est citée | Conséquence |
 |---|---|---|
 | **`panier_cadeau`** | Migration 27 | **Bloque `UC-80` et `UC-81`** — tout le canal diaspora |
-| **`demande_verification`** | Migration 5 | **Bloque `UC-52`** — donc l'encaissement de tout vendeur |
+| **`demande_verification`** | Migration 5 | **Bloque `UC-52`** — donc l'encaissement de toute boutique |
 | `hashtag`, `contenu_hashtag` | Relations du domaine Contenu | Le rassemblement thématique et les événements à mot-dièse |
 
 > ### Une fausse piste, écartée — `remise_ligne`
@@ -990,7 +1035,7 @@ Promotion : BROUILLON → PROGRAMMEE → ACTIVE → TERMINEE   (| ANNULEE)
 
 ---
 
-# 19 · Les quinze garanties que la base tient toute seule
+# 19 · Les dix-huit garanties que la base tient toute seule
 
 Indépendantes du code applicatif. **Un test de recette doit les vérifier en
 écrivant directement en base.**
@@ -1003,15 +1048,18 @@ Indépendantes du code applicatif. **Un test de recette doit les vérifier en
 | 4 | Journal d'audit inaltérable | `REVOKE UPDATE, DELETE` |
 | 5 | Pas de cumul de remises | `promotion_id` **scalaire** |
 | 6 | Pas de remise supérieure au prix | `CHECK (remise_ligne <= prix_unitaire * quantite)` |
-| 7 | Pas de litige clos sans décision motivée | `CHECK decision_motivee` |
+| 7 | **Pas de signalement qui cesse de peser sans être résolu** | `CHECK compteur_coherent` *(`R-T8`)* — remplace `decision_motivee`, la décision motivée ayant disparu avec l'arbitre *(`DP-05`)* |
 | 8 | Pas de contenu publié sans article | **Déclencheur de contrainte différé** |
 | 9 | Pas d'unboxing sans commande source | `CHECK` sur `commande_source_id` |
 | 10 | Pas de publication vidéo par un mineur | `CHECK` sur `auteur_majeur` |
-| 11 | **Pas de rang client global** | **Absence** d'index et de vue inter-vendeurs |
+| 11 | **Pas de rang client global** | **Absence** d'index et de vue inter-boutiques |
 | 12 | Pas de double usage d'un code personnel | `UNIQUE(code_personnel)` + contrôle transactionnel |
 | 13 | Pas de changement d'univers après coup | **Déclencheur** sur `article.univers_cle` |
-| 14 | Pas de commission rétroactive | `commande.taux_commission_pour_mille` **figé** |
+| 14 | **Pas de part créatrice rétroactive** | `ligne_commande.part_createur` **figée à la commande** *(`DP-09`)* |
 | 15 | Pas de cosmétique périmé vendu | Colonne générée `peremption_le` + index partiel |
+| **16** | 🆕 **Pas de crédit vers un numéro non vérifié** | `paiement.msisdn_destination` **figé** depuis `boutique.msisdn_mobile_money`, jamais saisissable *(`DP-16`)* |
+| **17** | 🆕 **Pas de patte secondaire sans patte pivot confirmée** | `CHECK` sur `paiement.rang` *(`R-M4`)* — une commission encaissée sur une commande inexistante serait irrattrapable |
+| **18** | 🆕 **Pas de commission rétroactive** | `commande.taux_commission_pour_mille` et `mode_remuneration` **figés à la création** *(`R-G3`, `R-B5`)* |
 
 > **La n° 11 est la seule garantie « par absence », et c'est la plus fragile.**
 > Elle demande d'être **documentée dans la migration**, sinon quelqu'un ajoutera

@@ -9,17 +9,17 @@
 
 | ID | Fonctionnalité | Phase | Prio | Détail |
 |---|---|---|---|---|
-| F3.1 | Panier multi-articles et multi-vendeurs | P1 | M | complet |
+| F3.1 | Panier multi-articles et multi-boutiques | P1 | M | complet |
 | F3.2 | Récapitulatif sous-total, livraison, remise, total | P1 | M | complet |
 | F3.3 | Carnet d'adresses | P1 | M | complet |
-| F3.4 | Choix domicile / point relais | P1 | M | complet |
+| F3.4 | **Point de remise convenu** *(`DP-04`, `F5.11`)* | P1 | M | complet |
 | F3.5 | Frais de livraison par zone | P1 | M | complet |
 | F3.6 | Code promo ou crédit fidélité | P2 | S | moyen |
 | F3.7 | Création de commande et numéro | P1 | M | complet |
 | F3.8 | Annulation par l'acheteuse | P1 | S | moyen |
-| F3.9 | Annulation / refus par le vendeur | P1 | S | moyen |
+| F3.9 | Annulation / refus par la boutique | P1 | S | moyen |
 | F3.10 | Expiration → remise en stock | P1 | M | complet |
-| F3.11 | Note au vendeur | P1 | C | cadre |
+| F3.11 | Note à la boutique | P1 | C | cadre |
 | F3.12 | Commande cadeau | P2 | C | cadre |
 | F3.13 | Panier entre amies | P3 | W | cadre |
 | F3.14 ★ | Commande hors direct, parcours identique | P1 | M | complet |
@@ -43,7 +43,7 @@
 4. Écrire `remise_ligne` et `promotion_id` sur la ligne de commande ; le libellé va sur la facture.
 5. Le total affiché est le total prélevé *(R-U2, RB7)*.
 
-**Pourquoi une seule remise et non un cumul** *(R-U7)*. Un cumul est indéfendable en trois points : le vendeur ne peut plus prévoir sa marge, le calcul devient inexplicable à l'acheteuse, et l'ordre d'application change le résultat (−20 % puis −5 000 Ar n'est pas −5 000 Ar puis −20 %). Une seule remise, la plus favorable, se dit en une phrase et se vérifie à la main.
+**Pourquoi une seule remise et non un cumul** *(R-U7)*. Un cumul est indéfendable en trois points : la boutique ne peut plus prévoir sa marge, le calcul devient inexplicable à l'acheteuse, et l'ordre d'application change le résultat (−20 % puis −5 000 Ar n'est pas −5 000 Ar puis −20 %). Une seule remise, la plus favorable, se dit en une phrase et se vérifie à la main.
 
 **L'exception documentée** : une remise sur les articles **et** une livraison offerte peuvent coexister, parce qu'elles portent sur des assiettes distinctes. C'est la seule, et elle est nommée dans la règle.
 
@@ -61,7 +61,7 @@ apps/api/src/modules/promotion/
 ├─ calcul.ts          ← LA fonction de remise, pure, entièrement testable
 └─ calcul.test.ts     table de cas, y compris tous les conflits
 apps/api/src/modules/commande/
-├─ panier.ts          appelle calcul.ts, groupe par vendeur
+├─ panier.ts          appelle calcul.ts, groupe par boutique
 └─ service.ts         fige remise_ligne et promotion_id à la création
 packages/money/src/remise.ts        pourcentage et montant en entiers, arrondi
 apps/mobile/src/features/panier/composants/LigneRemise.tsx
@@ -154,18 +154,18 @@ depend: [F3.2, F7.22, F7.26]
 
 ### 1. Conception
 
-**Ce mini-plan consiste surtout à ne rien dupliquer.** Une commande née du catalogue emprunte la même machine à états, le même séquestre, la même livraison, le même litige *(R-H1)*. L'origine est une donnée pour les statistiques et l'affiliation, **jamais une règle métier** *(R-H2)*.
+**Ce mini-plan consiste surtout à ne rien dupliquer.** Une commande née du catalogue emprunte la même machine à états, le même paiement, la même livraison, le même parcours de signalement *(R-H1)*. L'origine est une donnée pour les statistiques et l'affiliation, **jamais une règle métier** *(R-H2)*.
 
 Deux différences seulement, toutes deux documentées et paramétrées :
 - la **durée de réservation** *(R-H3, F1.16)* ;
-- le **délai d'acceptation vendeur** *(R-H8)* : hors direct, le vendeur n'est pas devant son téléphone.
+- le **délai d'acceptation boutique** *(R-H8)* : hors direct, la boutique n'est pas devant son téléphone.
 
 Le travail de réalisation porte donc sur trois choses : ajouter le champ `origine`, paramétrer le délai d'acceptation, et **garantir par les tests** qu'aucune autre règle ne bifurque.
 
 - **V** : une seule file « À préparer », avec un marqueur d'origine.
-- **OP** : conversion et délai d'expédition comparables **par origine** *(F11.7)* — c'est la mesure qui dira si la vente hors direct tient sa promesse.
+- **Tableau de bord** : conversion et délai d'expédition comparables **par origine** *(F11.7)* — c'est la mesure qui dira si la vente hors direct tient sa promesse.
 
-**Cas d'échec** *(US-VENTE-06 CA5)* — le vendeur ne réagit pas dans le délai : l'acheteuse est notifiée, sa réservation est protégée, et l'absence de réaction pèse sur le score de confiance *(F6.2)*.
+**Cas d'échec** *(US-VENTE-06 CA5)* — la boutique ne réagit pas dans le délai : l'acheteuse est notifiée, sa réservation est protégée, et l'absence de réaction pèse sur le score de confiance *(F6.2)*.
 
 ### 2. Structure de code
 
@@ -175,7 +175,7 @@ apps/api/src/modules/commande/
 ├─ machine.ts        LA machine à états, une seule, partagée
 └─ machine.test.ts   toutes les origines empruntent les mêmes transitions
 apps/api/src/jobs/delaiAcceptation.ts
-apps/mobile/src/features/commandes-vendeur/composants/MarqueurOrigine.tsx
+apps/mobile/src/features/commandes-boutique/composants/MarqueurOrigine.tsx
 apps/admin/src/pages/indicateurs/ParOrigine.tsx
 ```
 
@@ -187,7 +187,7 @@ Paramètres : `delai_acceptation_direct_s`, `delai_acceptation_catalogue_s`.
 
 ### 4. Design
 
-Marqueur d'origine discret dans la file du vendeur (pastille « Direct » / « Catalogue »). Aucun écran nouveau : c'est une propriété, pas une fonctionnalité visible.
+Marqueur d'origine discret dans la file de la boutique (pastille « Direct » / « Catalogue »). Aucun écran nouveau : c'est une propriété, pas une fonctionnalité visible.
 
 **Prompt Stitch** — préambule commun, puis :
 
@@ -206,7 +206,7 @@ not by origin — the queue is one queue.
 Aucun endpoint nouveau. `POST /panier/valider` propage `origine` depuis les réservations. Travail périodique de dépassement de délai.
 
 **Tests — ce sont eux le livrable** :
-- Commande catalogue de bout en bout : payée → préparée → expédiée → livrée → confirmée → séquestre libéré.
+- Commande catalogue de bout en bout : payée → préparée → expédiée → livrée → confirmée. **Aucun mouvement d'argent à la confirmation** *(`DP-07`)*.
 - **Test paramétré sur les 5 origines** : la même série de transitions passe pour chacune. Une divergence est un échec.
 - Litige sur commande catalogue → parcours identique *(F6.3)*.
 - Délai d'acceptation catalogue > direct ; dépassement → notification + effet sur le score.
@@ -228,16 +228,16 @@ depend: [F3.7, F1.15]
 
 ---
 
-## F3.1 / F3.2 — Panier multi-vendeurs et récapitulatif
+## F3.1 / F3.2 — Panier multi-boutiques et récapitulatif
 
 `P1 · M · complet` — **Règles** R-U8, RB7 · **Voir** F1.16
 
 ### 1. Conception
-Le panier **regroupe par vendeur**, parce que les frais de livraison et l'expédition sont par vendeur. Un seul paiement pour l'ensemble.
+Le panier **regroupe par boutique**, parce que les frais de livraison et l'expédition sont par boutique. Un seul paiement pour l'ensemble.
 
-**Point d'attention** : les frais doivent être affichés **par vendeur et cumulés**, sinon l'acheteuse découvre à la fin qu'elle paie trois livraisons — puis abandonne. Proposition active : « Regroupez au même point relais et économisez X Ar ».
+**Point d'attention** : les frais doivent être affichés **par boutique et cumulés**, sinon l'acheteuse découvre à la fin qu'elle paie trois livraisons — puis abandonne. **Et le nombre de confirmations de paiement — une par boutique — est annoncé avant l'écran de paiement** *(`DP-11`, `R-M6`)*.
 
-Récapitulatif : sous-total, remise nommée *(F3.15)*, frais par vendeur, total. **Aucun frais découvert après l'engagement** *(RB7)*.
+Récapitulatif : sous-total, remise nommée *(F3.15)*, frais par boutique, total. **Aucun frais découvert après l'engagement** *(RB7)*.
 
 ### 2. Structure de code
 `modules/commande/panier.ts` (groupement, totaux) · `apps/mobile/src/features/panier/` *(détaillé en F1.16)*.
@@ -251,14 +251,14 @@ Aucune table : le panier est la projection des réservations actives *(F1.16 §3
 ### 5. Backend
 `GET /panier` · `DELETE /panier/lignes/:id` · `POST /panier/regrouper-relais`. Totaux **serveur**, en entiers d'Ariary.
 
-**Tests** : groupement correct sur 3 vendeurs ; frais par vendeur et cumulés ; suggestion de regroupement calculant l'économie réelle ; total = somme des lignes moins remises plus frais, vérifié sur paniers aléatoires.
+**Tests** : groupement correct sur 3 boutiques ; frais par boutique et cumulés ; suggestion de regroupement calculant l'économie réelle ; total = somme des lignes moins remises plus frais, vérifié sur paniers aléatoires.
 
 ### 6. Frontend
-Groupes par vendeur, minuteurs par ligne, resynchronisation au retour au premier plan.
+Groupes par boutique, minuteurs par ligne, resynchronisation au retour au premier plan.
 
 ```issues
 feature: F3.1
-titre: Panier multi-articles et multi-vendeurs
+titre: Panier multi-articles et multi-boutiques
 epic: "03"
 phase: P1
 prio: M
@@ -286,7 +286,7 @@ La validation du panier crée une commande en `EN_ATTENTE_PAIEMENT`, avec un **n
 
 **Machine à états** *(CDC §4.1)* : `BROUILLON → EN_ATTENTE_PAIEMENT → PAYEE → EN_PREPARATION → EXPEDIEE → LIVREE → CONFIRMEE`, avec `ANNULEE` et `REMBOURSEE`. **Toute transition non listée lève une erreur.**
 
-`commande.confirmee` est **l'événement le plus écouté du système** *(PLAN_SOCLE §6)* : libération du séquestre, journal des ventes confirmées *(R-R11)*, recalcul de rang, invitation à l'avis, entrée au dressing. Tout consommateur est idempotent et **ne bloque jamais** la confirmation.
+`commande.confirmee` est **l'événement le plus écouté du système** *(PLAN_SOCLE §6)*. ⚠️ **Il ne déclenche plus aucun mouvement d'argent** *(`DP-07`)* — il alimente le **score de confiance**, le rang client, le dressing et l'avis. Ancienne rédaction : libération du séquestre, journal des ventes confirmées *(R-R11)*, recalcul de rang, invitation à l'avis, entrée au dressing. Tout consommateur est idempotent et **ne bloque jamais** la confirmation.
 
 ### 2. Structure de code
 `modules/commande/{service,machine,numero,repository}.ts` · `modules/commande/machine.test.ts`.
@@ -295,15 +295,16 @@ La validation du panier crée une commande en `EN_ATTENTE_PAIEMENT`, avec un **n
 `commande`, `ligne_commande` (CDC §3.3). Numéro par séquence dédiée, pas par comptage. Index `(acheteur_id, cree_le)`, `(statut)`, `(origine, cree_le)`.
 
 ### 4. Design
-Écran de confirmation avec numéro en grand, phrase de séquestre *(R-E1)* : *« Votre argent est gardé par JP. Miora sera payée quand vous confirmerez avoir reçu. »* — **à l'écran, pas dans les conditions générales.**
+Écran de confirmation avec numéro en grand, **phrase honnête** *(R-E1, RB12)* : *« Boutique vérifiée — identité et compte Mobile Money contrôlés par JP. »* **Jamais** *« votre argent est gardé par JP »* — faux et juridiquement exposé *(`D-02`)*. *(« Vous payez directement la boutique » reste exacte : les fonds vont sur son mobile money — `R-M9`, `DP-16`.)* Ancienne rédaction : *« Votre argent est gardé par JP. Miora sera payée quand vous confirmerez avoir reçu. »* — **à l'écran, pas dans les conditions générales.**
 
 **Prompt Stitch** — préambule commun, puis :
 ```
 Screen — order confirmation.
 Vertical order: a large green check illustration; title "Commande confirmée";
 the order number "#1042" in very large bold, with a small copy icon beside it;
-a prominent bordered card with a shield icon reading "Votre argent est gardé par
-JP. Miora sera payée quand vous confirmerez avoir reçu votre colis."; a summary
+a prominent bordered card with a verified-badge icon reading "Vous avez payé
+directement Miora. Elle est vérifiée par JP : identité et compte Mobile Money
+contrôlés." — NEVER a claim that JP holds the money (R-E1, RB12); a summary
 card with the item row, "Total payé 55 000 Ar", and "Livraison estimée : 12 août";
 a full-width primary button "Suivre ma commande" and a secondary text link
 "Voir ma facture".
@@ -352,7 +353,7 @@ depend: [F3.1]
 Screen 1 — "Ajouter une adresse".
 Fields in order: "Quartier" as a searchable dropdown showing "Analamahitsy";
 "Repère" as a multiline field with placeholder "Près de l'épicerie Tsara, portail
-bleu" and a helper line "Décrivez comment vous trouver — c'est ce que le livreur
+bleu" and a helper line "Décrivez comment vous trouver — c'est ce que la boutique
 lira"; "Numéro du destinataire" with a phone mask; a "Nom de cette adresse" chip
 row "Maison · Travail · Autre". No postal code field anywhere.
 Full-width primary button "Enregistrer".
@@ -384,7 +385,7 @@ depend: []
 ```
 ```issues
 feature: F3.4
-titre: Choix domicile ou point relais
+titre: Point de remise convenu entre l'acheteur et la boutique
 epic: "03"
 phase: P1
 prio: M
@@ -407,7 +408,7 @@ depend: [F3.4]
 
 `P1 · M · complet` — **Règles** R-S6, R-S7 · **Voir** F1.10
 
-**Conception** — à l'expiration : décrément de `quantite_reservee`, écriture d'un `mouvement_stock`, notification de l'acheteuse avec bouton « Reprendre », **notification du suivant en file** *(R-S7)*, ligne passée en « expirée » dans le panneau vendeur. Le taux de réservations expirées est l'une des quatre mesures fondatrices *(F11.7)*.
+**Conception** — à l'expiration : décrément de `quantite_reservee`, écriture d'un `mouvement_stock`, notification de l'acheteuse avec bouton « Reprendre », **notification du suivant en file** *(R-S7)*, ligne passée en « expirée » dans le panneau boutique. Le taux de réservations expirées est l'une des quatre mesures fondatrices *(F11.7)*.
 
 **Structure, base de données, tests** — mutualisés avec `F1.10`. Ce mini-plan couvre les **effets** de l'expiration ; `F1.10` couvre le moteur.
 
@@ -431,7 +432,7 @@ depend: [F1.10]
 
 `P1 · S · moyen`
 
-**Conception** — annulation possible tant que la commande n'est pas `EXPEDIEE`. Remboursement intégral automatique, stock rendu, séquestre remboursé *(R-E…)*. Motif demandé mais non obligatoire — un motif obligatoire produit des motifs faux.
+**Conception** — annulation possible tant que la commande n'est pas `EXPEDIEE`. ⚠️ **Le remboursement n'est plus automatique** *(`DP-07`)* : JP n'a rien à rendre. **C'est la boutique qui rembourse**, depuis son compte, et son refus de le faire pèse sur son score *(`R-T8`)*. Ancienne rédaction : Remboursement intégral automatique, stock rendu, séquestre remboursé *(R-E…)*. Motif demandé mais non obligatoire — un motif obligatoire produit des motifs faux.
 
 **Base de données** — `commande.motif_annulation`, transition vers `ANNULEE` puis `REMBOURSEE`.
 
@@ -453,17 +454,17 @@ depend: [F3.7]
 
 ---
 
-## F3.9 — Annulation ou refus par le vendeur
+## F3.9 — Annulation ou refus par la boutique
 
 `P1 · S · moyen`
 
-**Conception** — cas réel : erreur de stock, article abîmé. Le vendeur annule avec un motif, **le remboursement est automatique et intégral**. Un taux d'annulation vendeur élevé pèse sur son score de confiance *(F6.2)* — c'est ce qui empêche l'annulation de devenir une habitude commode.
+**Conception** — cas réel : erreur de stock, article abîmé. La boutique annule avec un motif, **le remboursement est automatique et intégral**. Un taux d'annulation boutique élevé pèse sur son score de confiance *(F6.2)* — c'est ce qui empêche l'annulation de devenir une habitude commode.
 
 L'acheteuse est notifiée, remboursée, invitée à laisser un avis sur l'incident.
 
-**Base de données** — `commande.motif_annulation`, compteur d'annulations dans `profil_vendeur` (alimente `F6.2` et la composante fiabilité du rang client, `R-R3`).
+**Base de données** — `commande.motif_annulation`, compteur d'annulations dans `boutique` (alimente `F6.2` et la composante fiabilité du rang client, `R-R3`).
 
-**Backend** — `POST /commandes/:id/refuser` `{ motif }`, motif **obligatoire** ici (contrairement à `F3.8` : le vendeur doit se justifier, il est en position de force).
+**Backend** — `POST /commandes/:id/refuser` `{ motif }`, motif **obligatoire** ici (contrairement à `F3.8` : la boutique doit se justifier, elle est en position de force).
 
 **Design** — motifs en liste courte. Prompt Stitch : *seller cancel sheet with an amber warning card "Les annulations répétées font baisser votre score de confiance", a required reason radio list "Stock épuisé · Article abîmé · Erreur de prix · Autre", a text field appearing for "Autre", and a red primary button "Annuler et rembourser 55 000 Ar".*
 
@@ -471,7 +472,7 @@ L'acheteuse est notifiée, remboursée, invitée à laisser un avis sur l'incide
 
 ```issues
 feature: F3.9
-titre: Annulation ou refus par le vendeur
+titre: Annulation ou refus par la boutique
 epic: "03"
 phase: P1
 prio: S
@@ -487,7 +488,7 @@ depend: [F3.7]
 
 **Conception** — saisie manuelle d'un code, application de la cagnotte *(F7.7)*. La cagnotte est un **crédit**, pas une remise : elle ne concourt pas à la règle du non-cumul et s'applique après, sur le total.
 
-**Distinction à tenir** : une remise réduit le prix (et donc la commission et la marge du vendeur) ; un crédit de cagnotte est payé par JP. Les deux ne se traitent pas au même endroit du calcul, ni dans la même écriture financière.
+**Distinction à tenir** : une remise réduit le prix (et donc la commission et la marge de la boutique) ; un crédit de cagnotte est payé par JP. Les deux ne se traitent pas au même endroit du calcul, ni dans la même écriture financière.
 
 **Base de données** — `cagnotte (utilisateur_id, solde)`, `mouvement_cagnotte`. `commande.credit_cagnotte_utilise`.
 
@@ -507,11 +508,11 @@ depend: [F3.15]
 
 ---
 
-## F3.11 — Note à l'attention du vendeur
+## F3.11 — Note à l'attention de la boutique
 
 `P1 · C · cadre`
 
-**Conception** — champ libre court sur la commande (« sonnez fort », « c'est un cadeau »). Visible du vendeur et sur le bordereau, jamais public.
+**Conception** — champ libre court sur la commande (« sonnez fort », « c'est un cadeau »). Visible de la boutique et sur le bordereau, jamais public.
 
 **Impact base de données** — `commande.note_acheteur text null`, limité en longueur.
 
@@ -519,7 +520,7 @@ depend: [F3.15]
 
 ```issues
 feature: F3.11
-titre: Note à l'attention du vendeur
+titre: Note à l'attention de la boutique
 epic: "03"
 phase: P1
 prio: C

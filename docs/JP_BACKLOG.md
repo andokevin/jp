@@ -8,25 +8,32 @@
 > **Épique 20** — les événements thématiques : les rendez-vous commerciaux datés qui font exister la plateforme au-delà de la somme de ses boutiques.
 >
 > Codes : **P1 / P2 / P3** = phase (slide 20). **M** = indispensable au lancement · **S** = important · **C** = confort · **W** = plus tard.
-> Les fonctionnalités marquées ⚠️ sont des **décisions produit ouvertes**, à trancher avec les vendeurs pilotes.
+> Les fonctionnalités marquées ⚠️ sont des **décisions produit ouvertes**, à trancher avec les boutiques pilotes.
 
 ---
 
 ## Les personas
 
+> **Amont normatif** : [`JP_DECISIONS_PRODUIT.md`](JP_DECISIONS_PRODUIT.md).
+> Six personas ont été retirés *(`DP-01`)*.
+
 | Code | Persona | Description | Ce qu'il vient chercher |
 |---|---|---|---|
-| **V** | **Miora — la vendeuse en direct** | 28 ans, Antananarivo. Vend des vêtements importés en direct sur Facebook 4 soirs par semaine. Un téléphone Android milieu de gamme, un cahier, un compte MVola personnel. | Ne plus perdre de ventes. Être prise au sérieux. |
-| **VE** | **Fara — l'employée du vendeur** | Aide Miora : prépare les colis, répond aux messages, ne gère pas l'argent. | Voir les commandes à préparer sans toucher aux finances. |
-| **A** | **Hanta — l'acheteuse fidèle** | 32 ans, salariée. Achète 1 à 2 fois par mois en direct. A déjà été arnaquée une fois. Paie en MVola. | Ne pas reperdre son argent. Trouver sa taille. |
-| **AN** | **Tiana — la visiteuse non inscrite** | Tombe sur un direct partagé par une amie sur WhatsApp. N'a pas l'application. | Regarder sans s'engager. Comprendre à qui elle a affaire. |
-| **L** | **Rado — le livreur** | Moto, tournée quotidienne, application dédiée. | Une tournée claire, une preuve de remise. |
-| **PR** | **Le point relais** | Épicerie, kiosque ou boutique partenaire qui stocke et remet les colis. | Recevoir, stocker, remettre contre code, être payé. |
-| **C** | **Ony — la créatrice** | 22 ans, étudiante. 8 000 abonnés sur Facebook et TikTok. Filme ses tenues, sait faire une vidéo. **N'a pas d'argent à immobiliser dans du stock.** Aujourd'hui elle fait de la publicité gratuite à des vendeurs qui ne la paient pas. | Gagner de l'argent avec ce qu'elle fait déjà, **sans capital et sans stock**. |
-| **D** | **Naina — le donateur / la diaspora** | Frère de Hanta, vit en France. Envoie de l'argent à sa famille tous les mois, sans savoir ce qui en est fait. Paie par carte. | Offrir **un objet précis**, vérifié, livré, avec une preuve. |
-| **MO** | **Le modérateur JP** | Traite les signalements de contenu et de commentaires. Poste distinct de l'arbitrage des litiges. | Protéger les créatrices, vite. |
-| **OP** | **L'équipe JP — opérations** | Back-office : vérification, arbitrage, réconciliation, réseau relais. | Traiter vite, avec des preuves. |
-| **PM** | **Le partenaire marque** | Marque ou distributeur. Cherche des créatrices et de la visibilité. | Des campagnes mesurables et des données de marché. |
+| **B** | **Miora — la boutique en direct** | 28 ans, Antananarivo. Vend des vêtements importés en direct sur Facebook 4 soirs par semaine. | Ne plus perdre de ventes, être prise au sérieux. |
+| **A** | **Hanta — l'acheteuse fidèle** | 32 ans, salariée. Achète 1 à 2 fois par mois en direct. A déjà été arnaquée une fois. | **Savoir à qui elle paie**, trouver sa taille. |
+| **AN** | **Tiana — la visiteuse non inscrite** | Tombe sur un direct partagé par une amie sur WhatsApp. N'a pas l'application. | Regarder sans s'engager. |
+| **C** | **Ony — la créatrice** | 22 ans, étudiante. 8 000 abonnés sur Facebook et TikTok. Filme ses tenues, sait faire une vidéo. | Gagner de l'argent sans capital et sans stock. |
+| **D** | **Naina — le donateur / la diaspora** | Frère de Hanta, vit en France. Envoie de l'argent à sa famille tous les mois. | **Savoir ce que l'argent devient.** |
+| **PM** | **Le partenaire marque** | Marque ou distributeur. Cherche des créatrices et de la visibilité. | Des campagnes mesurables *(phase 3)*. |
+
+> **Six personas retirés** *(`DP-01`)* : **VE** Fara l'employée · **L** Rado le
+> livreur · **PR** le point relais · **MO** le modérateur JP · **OP** l'équipe
+> opérations · **P** le vendeur particulier.
+>
+> **Et le persona `B` a changé de nom** : on dit **boutique**, plus « vendeur »
+> *(`DP-03`)*.
+
+---
 
 ---
 
@@ -39,10 +46,10 @@ Le socle de la confiance. Sans lui, rien du reste n'a de valeur.
 | F0.1 | **Inscription et connexion par email + code OTP** | P1 | M |
 | F0.2 | Connexion, session longue, multi-appareil | P1 | M |
 | F0.3 | Récupération de compte (perte de l'email, changement de SIM) | P1 | S |
-| F0.4 | Bascule de rôle acheteur ↔ vendeur ↔ **particulier** sur un même compte | P1 | S |
+| ~~F0.4~~ | ~~Bascule de rôle~~ — ❌ **supprimée** *(`DP-02`)* : un compte a un type, et un seul, choisi à l'inscription. Il n'en change jamais | — | — |
 | F0.5 | Profil acheteur (nom, photo, tailles habituelles, morphologie) | P1 | S |
-| F0.6 | Vérification vendeur — CIN ou NIF/STAT, selfie, numéro mobile money, adresse | P1 | M |
-| F0.7 | Badge « vendeur vérifié » affiché partout | P1 | M |
+| F0.6 | Vérification boutique — CIN ou NIF/STAT, selfie, numéro mobile money, adresse | P1 | M |
+| F0.7 | Badge « boutique vérifiée » affiché partout | P1 | M |
 | F0.8 | Choix de la langue : malgache / français | P1 | S |
 | F0.9 | Mode économie de données | P1 | S |
 | F0.10 | Consultation en invité, sans compte | P1 | S |
@@ -66,16 +73,16 @@ Le socle de la confiance. Sans lui, rien du reste n'a de valeur.
 - **Règle de confidentialité** : la réponse à une demande de code est **identique** que le compte existe ou non — sinon l'écran de connexion devient un outil d'énumération des comptes (`F0.14`).
 
 ### F0.3 — Récupération de compte
-- **A (accès perdu à sa boîte mail)** : saisit son ancienne adresse → l'app ne peut plus envoyer de code → formulaire (prénom, dernière commande, montant approximatif, numéro de téléphone de livraison) → **OP** vérifie sous 24 h → réattribution manuelle à la nouvelle adresse.
+- **A (accès perdu à sa boîte mail)** : saisit son ancienne adresse → l'app ne peut plus envoyer de code → formulaire (prénom, dernière commande, montant approximatif, numéro de téléphone de livraison) → **SYS** décide **sur seuil de concordance**, points comparés journalisés *(`DP-05`)*. ⚠️ **Aucun recours en cas de refus à tort.**
 - **A (email accessible)** : la récupération est intégrée au parcours normal — un code envoyé à son adresse suffit, il n'y a rien à « récupérer ». C'est l'avantage direct de `F0.1`.
 - **A (changement de SIM)** : sans impact sur le compte ; elle met simplement à jour son contact de livraison (`F0.16`).
-- **OP** : file « récupérations » → compare avec l'historique de commandes → valide ou refuse → trace horodatée dans le journal d'audit.
+- **SYS** : compare les déclarations à l'historique réel **sur seuil de concordance**, avec les points comparés journalisés *(`DP-05`)*. ⚠️ **Un refus à tort n'a aucune instance de recours** — c'est le point où `DP-05` coûte le plus cher.
 
 ### F0.4 — Trois rôles sur un même compte
-Un même compte peut être acheteur, **vendeur professionnel** (boutique) ou **vendeur particulier** — quelqu'un qui liquide son propre dressing, sans boutique ni stock d'import. Le particulier suit le parcours `F1.17` : dépôt d'annonce simplifié, pièces uniques, vérification allégée jusqu'au premier encaissement.
+**Un compte a un type, et un seul, choisi à l'inscription. Il n'en change jamais** *(`DP-02`)*. Acheteur, boutique ou créatrice — aucun écran de bascule, aucune montée en grade, **aucune procédure de support**. Qui veut vendre crée un compte boutique.
 
-- **A → particulier** : « Vendre un article que je ne porte plus » → 4 champs → en ligne. **Aucune création de boutique demandée** : exiger un nom de boutique et un KYC complet pour vendre une robe fait abandonner tout le monde.
-- **Particulier → vendeur** : dès qu'il dépasse un seuil de ventes ou veut encaisser, bascule vers `F0.6`, expliquée et non subie.
+- **A** : n'a **aucun chemin** vers la vente. La réciproque est fermée et le reste *(`DP-02`)*.
+- **Particulier → boutique** : dès qu'il dépasse un seuil de ventes ou veut encaisser, bascule vers `F0.6`, expliquée et non subie.
 
 ### F0.13 — Connexion Google
 - **A** : « Continuer avec Google » → sélecteur de compte Google → connectée. Si l'adresse Google correspond à un compte email existant, **les deux identités sont rattachées au même compte**, jamais dupliquées.
@@ -84,23 +91,23 @@ Un même compte peut être acheteur, **vendeur professionnel** (boutique) ou **v
 ### F0.14 — Débit, renvoi et anti-abus
 - **Limites** : 1 code par adresse toutes les 60 s, 5 par heure, 10 par jour ; 5 tentatives de saisie par code. Au-delà, attente affichée en clair (« Réessayez dans 4 minutes »), jamais une erreur muette.
 - **Côté serveur** : le code est stocké **haché**, jamais en clair ; il est invalidé à la première utilisation, à l'expiration, ou à l'émission d'un nouveau code.
-- **OP** : voit les adresses en anomalie (nombre de demandes, IP) dans le back-office.
+- **SYS** : détecte les adresses en anomalie (nombre de demandes, IP) et applique une limitation de débit *(`DP-05`)*.
 
 ### F0.15 — Changement d'adresse email
 - **A** : réglages → « Changer mon email » → code envoyé à **l'ancienne** adresse (autorisation) → puis code envoyé à la **nouvelle** (vérification) → bascule. Notification à l'ancienne adresse *« Votre email a été modifié »*, avec un moyen de contester.
-- **Règle** : un vendeur avec un solde disponible ne peut pas changer d'email sans que la modification soit journalisée et notifiée — c'est un vecteur de détournement de compte.
+- **Règle** : une boutique avec un solde disponible ne peut pas changer d'email sans que la modification soit journalisée et notifiée — c'est un vecteur de détournement de compte.
 
 ### F0.16 — Téléphone, contact de livraison
 - **A** : renseigne son numéro **au moment de sa première livraison à domicile**, pas à l'inscription. Vérifié par code SMS uniquement à ce moment-là : le SMS coûte, autant ne le dépenser que là où il sert.
 - **L / PR** : voient le numéro du destinataire sur le bordereau, jamais l'adresse email.
 
-### F0.6 — Vérification vendeur (KYC)
-- **V** : « Devenir vendeur » → nom de la boutique → photo recto/verso de la CIN ou permis ou passeport → selfie → numéro mobile money **au même nom que la CIN** → adresse d'enlèvement → soumet → **statut « en cours de vérification » : elle peut déjà créer son catalogue mais pas encaisser.** ou NIF STAT si boutique si il on de NF state, je veux dire entreprise
-- **OP** : file d'attente → compare CIN / selfie / titulaire du compte mobile money → valide, refuse, ou demande une pièce → notification à **V**.
+### F0.6 — Vérification boutique (KYC)
+- **V** : « Devenir boutique » → nom de la boutique → photo recto/verso de la CIN ou permis ou passeport → selfie → numéro mobile money **au même nom que la CIN** → adresse d'enlèvement → soumet → **statut « en cours de vérification » : elle peut déjà créer son catalogue mais pas encaisser.** ou NIF STAT si boutique si il on de NF state, je veux dire entreprise
+- **SYS + prestataire** : compare **CIN, selfie et titulaire du compte mobile money** — les trois points séparément *(R-V2)* → valide, refuse avec un motif **actionnable**, ou demande une pièce *(`DP-05`, `R-V7`)*. **Ce qui est débloqué est la mise en vente, plus l'encaissement** *(`DP-07`)*.
 - **A** : ne voit rien du processus — elle voit seulement le résultat, le badge (`F0.7`).
 - **Règle** : aucun encaissement possible sans vérification validée. C'est le mécanisme central de la slide 11.
 
-### F0.7 — Badge vendeur vérifié
+### F0.7 — Badge boutique vérifiée
 - **A / AN** : voient le badge sur la vignette du direct, dans le fil, sur la fiche produit, dans le panier et sur la facture. Un appui sur le badge ouvre une explication en une phrase : *« Identité et compte mobile money vérifiés par JP. »*  et pour partuculier aussi on voit qu'il sont verifier s'il veut vendre
 - **V** : voit son badge sur son profil ; s'il n'est pas vérifié, une bannière permanente lui rappelle ce qui manque.
 
@@ -127,26 +134,26 @@ Un même compte peut être acheteur, **vendeur professionnel** (boutique) ou **v
 | F1.8 | Duplication d'un article | P1 | C |
 | F1.9 | Prix barré / promotion sur un article | P1 | S |
 | F1.10 | **Réservation temporaire du stock (minuteur)** | P1 | M |
-| F1.11 | Vitrine publique du vendeur, ouverte 24 h/24 | P1 | M |
+| F1.11 | Vitrine publique de la boutique, ouverte 24 h/24 | P1 | M |
 | F1.12 | Réorganisation de la vitrine (épinglage, ordre) | P2 | C |
 | F1.13 | Import d'un catalogue existant (tableur / photos en masse) | P2 | C |
 | F1.14 | Pièce unique (stock = 1, comportement spécifique) | P1 | S |
 | F1.15 | **Achat immédiat depuis la fiche article, hors direct** | P1 | M |
 | F1.16 | **Ajout au panier depuis le catalogue, réservation longue** | P1 | M |
-| F1.17 | **Dépôt d'annonce par un particulier** | P1 | S |
+| ~~F1.17~~ | ~~Dépôt d'annonce par un particulier~~ ❌ **supprimée** *(`DP-01`)* | — | — |
 | F1.18 | **Fiche enrichie hors live : état, mesures réelles, photos multiples** | P1 | M |
 | F1.19 | **Vitrine « catalogue d'abord » — vendre 24 h/24 sans direct** | P1 | M |
 | F1.20 | Questions publiques sur une fiche article | P2 | S |
 
 ### F1.1 / F1.2 — Créer un article avec variantes
 - **V** : « + Article » → prend ou choisit 1 à 5 photos → recadrage carré → nom → prix → catégorie → **grille de variantes** : coche les tailles (S/M/L/XL ou 36→44) et saisit une quantité par taille → couleurs si besoin → « Mettre en ligne ».
-- **V (raccourci direct)** : pendant un direct, création express en 3 champs — photo, prix, quantité — le reste se complète après. *Sans ce raccourci, aucune vendeuse ne créera de fiche en plein direct.*
-- **VE** : peut créer et modifier des articles, **ne peut pas modifier le prix** (permission séparée, voir `F10.4`).
+- **V (raccourci direct)** : pendant un direct, création express en 3 champs — photo, prix, quantité — le reste se complète après. *Sans ce raccourci, aucune boutique ne créera de fiche en plein direct.*
+- **B** : seule à créer et modifier ses articles et leurs prix. ~~L'employé~~ est supprimé *(`DP-01`)*.
 - **A** : voit la fiche avec les tailles disponibles ; une taille en rupture est barrée, pas cachée — ça permet de demander une alerte (`F7.4`).
 
 ### F1.6 — Gestion du stock
 - **V** : écran « Stock » → liste triée par quantité croissante → modification en ligne d'une quantité → historique des mouvements (vente, retour, correction manuelle, réservation expirée).
-- **Alerte** : notification quand une variante passe sous un seuil défini par la vendeuse.
+- **Alerte** : notification quand une variante passe sous un seuil défini par la boutique.
 - **Cohérence** : le stock affiché en direct (`F2.5`) est le stock réel **moins** les réservations en cours.
 
 ### F1.10 — Réservation temporaire du stock ⚠️
@@ -170,43 +177,43 @@ Un même compte peut être acheteur, **vendeur professionnel** (boutique) ou **v
 
 ## La vente hors direct — F1.15 à F1.20
 
-> **Le direct n'est plus la seule façon de vendre.** Un vendeur publie une fiche, l'acheteuse achète quand elle veut — comme sur Vinted. Le direct devient un **accélérateur** de ce catalogue, pas la condition d'existence des ventes.
+> **Le direct n'est plus la seule façon de vendre.** Une boutique publie une fiche, l'acheteuse achète quand elle veut — comme sur Vinted. Le direct devient un **accélérateur** de ce catalogue, pas la condition d'existence des ventes.
 >
-> Pourquoi c'est structurant : un vendeur qui ne fait qu'un direct par semaine ne vend que quatre soirs par mois. Avec la vente hors direct, il vend 30 jours sur 30, et la plateforme a une raison d'être ouverte à 10 h du matin. C'est aussi la seule porte d'entrée réaliste pour le **vendeur particulier** (`F1.17`), qui ne se filmera jamais en direct.
+> Pourquoi c'est structurant : une boutique qui ne fait qu'un direct par semaine ne vend que quatre soirs par mois. Avec la vente hors direct, il vend 30 jours sur 30, et la plateforme a une raison d'être ouverte à 10 h du matin. C'est aussi la seule porte d'entrée réaliste pour **une boutique qui ne se filmera jamais en direct** — profil qui existe, et que `DP-01` rend d'autant plus important depuis la disparition du dépôt d'annonce de particulier.
 
 ### F1.15 — Achat immédiat depuis la fiche article
-- **A** : navigue dans le fil, la recherche ou une vitrine → ouvre une fiche → voit photos, prix, tailles disponibles, état, mesures, délai d'expédition, badge du vendeur → **[ JE PRENDS ]** → même feuille que le direct (taille, quantité, livraison, total avec frais) → paie. **Le parcours de paiement, de séquestre, de livraison et de litige est identique au direct** : aucune règle spécifique, aucun code en double (`F3.14`).
+- **A** : navigue dans le fil, la recherche ou une vitrine → ouvre une fiche → voit photos, prix, tailles disponibles, état, mesures, délai d'expédition, badge de la boutique → **[ JE PRENDS ]** → même feuille que le direct (taille, quantité, livraison, total avec frais) → paie. **Le parcours de paiement, de livraison et de signalement est identique au direct** *(`R-H1`)* : aucune règle spécifique, aucun code en double (`F3.14`).
 - **A (pièce unique)** : sur un article `piece_unique` (`F1.14`), l'achat immédiat est le comportement par défaut — pas de choix de quantité, pas de variante.
-- **V** : reçoit une notification « Nouvelle commande » sans être en direct ; l'article apparaît dans « À préparer ». **Point d'attention** : hors direct, le vendeur n'est pas devant son téléphone. Le délai d'acceptation doit donc être plus long qu'en direct, et l'acheteuse doit voir un délai d'expédition annoncé (`F5.9`) avant de payer, sinon elle croit à un abandon.
+- **V** : reçoit une notification « Nouvelle commande » sans être en direct ; l'article apparaît dans « À préparer ». **Point d'attention** : hors direct, la boutique n'est pas devant son téléphone. Le délai d'acceptation doit donc être plus long qu'en direct, et l'acheteuse doit voir un délai d'expédition annoncé (`F5.9`) avant de payer, sinon elle croit à un abandon.
 - **AN** : arrive par un lien partagé sur WhatsApp → voit la fiche complète sans compte → l'inscription se déclenche au « Je prends ».
 
 ### F1.16 — Ajout au panier et réservation longue
-- **A** : « Ajouter au panier » depuis la fiche → l'article est **réservé pour une durée longue** (hypothèse : 30 minutes, contre 5 en direct — `F1.10`) → elle continue à naviguer, cumule plusieurs vendeurs, paie une fois (`F3.1`).
+- **A** : « Ajouter au panier » depuis la fiche → l'article est **réservé pour une durée longue** (hypothèse : 30 minutes, contre 5 en direct — `F1.10`) → elle continue à naviguer, cumule plusieurs boutiques, paie une fois (`F3.1`).
 - **Différence assumée avec le direct** : hors direct il n'y a pas de pic ni de rareté à l'instant ; geler un article 30 minutes ne coûte presque rien et évite de perdre le panier. La durée est un paramètre distinct (`F11.6`), pas la même valeur que celle du direct.
 - **A (panier expiré)** : notification unique *« Votre panier a expiré »* avec un bouton « Reprendre » si le stock est encore là (`F17.12` encadre le nombre de rappels).
 
-### F1.17 — Dépôt d'annonce par un particulier
+### ~~F1.17~~ — Dépôt d'annonce par un particulier ❌ **supprimée** *(`DP-01`)*
 **Le parcours qui ouvre JP aux gens qui n'ont pas de boutique.** Miora importe et revend ; Hanta veut juste vendre trois robes qu'elle ne met plus. Ce ne sont pas les mêmes personnes, et ce n'est pas le même formulaire.
 
-- **A → particulier** : depuis « Moi » ou son dressing (`F17.10`) → « Vendre un article que je ne porte plus » → **4 champs : photos, prix, taille, état** → en ligne en moins d'une minute. Stock à 1 par défaut, pièce unique.
+**L'acteur `P` n'existe plus.** Qui veut vendre — même trois vêtements — crée un compte boutique et se fait vérifier *(`DP-02`, `UC-52`)*. Les règles `R-H5`, `R-H6`, `R-H10` et `R-H11` sont supprimées avec lui.
 - **Vérification allégée** : il peut publier et recevoir des commandes sans KYC complet ; **la vérification (`F0.6`) est exigée au premier encaissement**, pas avant. Sinon on demande une CIN et un selfie à quelqu'un qui n'est pas sûr de vouloir vendre — et il part.
-- **A (acheteuse)** : voit clairement qu'elle achète à un **particulier** et non à une boutique : badge distinct, mention du délai d'expédition, pas de politique de retour commerciale. La protection reste la même (séquestre, litige) — c'est justement ce qui rend l'achat à un inconnu acceptable.
-- **⚠️ À trancher** : le seuil de bascule particulier → vendeur (nombre de ventes ou montant cumulé sur 90 jours), et le taux de commission appliqué au particulier, qui n'est pas forcément celui d'une boutique (`F10.2`).
+
+
 
 ### F1.18 — Fiche enrichie pour la vente hors live
-Sans démonstration vidéo, la fiche porte seule la charge de la confiance. Elle doit répondre aux questions qu'on posait au vendeur en direct.
+Sans démonstration vidéo, la fiche porte seule la charge de la confiance. Elle doit répondre aux questions qu'on posait à la boutique en direct.
 
-- **V / particulier** : renseigne **l'état** (neuf avec étiquette / très bon / bon / correct), les **mesures réelles** (épaules, poitrine, taille, longueur — les mesures comptent plus que l'étiquette de taille sur des vêtements importés), la matière, la marque, la raison de la vente pour un particulier, et **au moins 5 photos** dont une de l'étiquette et une des défauts éventuels.
+- **B** : renseigne **l'état** (neuf avec étiquette / très bon / bon / correct), les **mesures réelles** (épaules, poitrine, longueur).
 - **A** : compare les mesures aux siennes (`F0.5`) → réduit le risque de retour pour cause de taille, première cause de litige (`F5.8`).
 - **Règle** : les mesures sont **facultatives mais mises en avant** — un article mesuré est signalé comme tel et remonte dans le tri. On incite, on n'interdit pas.
 
 ### F1.19 — Vitrine « catalogue d'abord »
-- **V** : sa vitrine est vendeuse en permanence. Le bandeau « en direct » n'est qu'un état temporaire ; hors direct, la vitrine présente le catalogue, les promotions en cours (`F7.22`), les événements auxquels elle participe (`F20.2`) et son prochain rendez-vous (`F17.4`).
+- **V** : sa vitrine est boutique en permanence. Le bandeau « en direct » n'est qu'un état temporaire ; hors direct, la vitrine présente le catalogue, les promotions en cours (`F7.22`), les événements auxquels elle participe (`F20.2`) et son prochain rendez-vous (`F17.4`).
 - **A** : peut acheter à 6 h du matin. **C'est ce qui fait passer JP d'une application d'événements à une application de commerce.**
 - **Mesure à suivre** : la part du chiffre d'affaires réalisée hors direct. Si elle reste marginale, la promesse « vendre 24 h/24 » est décorative ; si elle dépasse le direct, le produit a changé de nature et la stratégie de contenu doit suivre.
 
 ### F1.20 — Questions publiques sur une fiche
-- **A** : pose une question sous la fiche (« ça taille grand ? ») → le vendeur répond → **la réponse est publique** et sert aux acheteuses suivantes.
+- **A** : pose une question sous la fiche (« ça taille grand ? ») → la boutique répond → **la réponse est publique** et sert aux acheteuses suivantes.
 - **Pourquoi public et pas en message privé** : cela évite de rouvrir la messagerie libre (`F7.14`), et une réponse écrite une fois sert cent fois. Modération identique aux commentaires (`F19.1`).
 
 ---
@@ -220,8 +227,8 @@ Le cœur du produit. Slides 7, 8, 15.
 | F2.1 | Planifier un direct (date, heure, titre, affiche) | P1 | S |
 | F2.2 | Notification aux abonnés avant et au démarrage | P2 | M |
 | F2.3 | Démarrer / arrêter un direct depuis le téléphone | P1 | M |
-| F2.4 | Sélectionner l'article « à l'écran maintenant » | P1 | M |
-| F2.5 | Bandeau prix + stock restant en temps réel | P1 | M |
+| F2.4 | Sélectionner **et retirer** l'article « à l'écran » — **facultatif** *(`DP-06`)* | P1 | M |
+| F2.5 | Bandeau prix + stock restant — **conditionnel** *(`DP-06`)* | P1 | M |
 | F2.6 | **Le bouton « Je prends »** | P1 | M |
 | F2.7 | File d'ordre d'arrivée sur un article | P1 | M |
 | F2.8 | Feuille rapide quantité / taille / livraison | P1 | M |
@@ -230,7 +237,7 @@ Le cœur du produit. Slides 7, 8, 15.
 | F2.11 | Modération du chat (masquer, bloquer, mots interdits) | P1 | S |
 | F2.12 | Compteur de spectateurs et réactions | P1 | C |
 | F2.13 | Qualité adaptative et reprise après coupure réseau | P1 | M |
-| F2.14 | Panneau vendeur en direct (commandes qui tombent) | P1 | M |
+| F2.14 | Panneau boutique en direct (commandes qui tombent) | P1 | M |
 | F2.15 | Bilan de fin de direct | P1 | S |
 | F2.16 | **Replay achetable, articles repérés à la minute** | P2 | S |
 | F2.17 | Direct à deux (co-animation, catalogue partagé) | P3 | W |
@@ -238,6 +245,7 @@ Le cœur du produit. Slides 7, 8, 15.
 | F2.19 | Enchère en direct | P3 | W |
 | F2.20 | Épingler un message dans le chat | P1 | C |
 | F2.21 | Rediffusion simultanée vers Facebook ⚠️ | P2 | S |
+| F2.22 | 🆕 **Liste des articles du direct, côté acheteur** *(`DP-06`)* | P1 | M |
 
 ### F2.3 — Démarrer un direct
 - **V** : « Passer en direct » → titre → sélection des articles préparés pour la soirée (une liste de côté) → vérification de la connexion → compte à rebours 3-2-1 → en ligne. Notification envoyée à ses abonnés (`F2.2`).
@@ -251,7 +259,7 @@ Le cœur du produit. Slides 7, 8, 15.
 ### F2.6 / F2.8 / F2.9 — Le geste central : « Je prends »
 Slide 7. Tout le produit tient dans ce parcours ; il doit tenir sous 30 secondes.
 
-- **A** : appuie sur **[ JE PRENDS ]** → une feuille remonte du bas, **le direct continue à jouer au-dessus** → taille (sa taille habituelle est présélectionnée depuis `F0.5`) → quantité → livraison (domicile / point relais, dernier choix mémorisé) → **le total avec frais de livraison est affiché ici, pas plus tard** → « Payer » → `F4.1`.
+- **A** : appuie sur **[ JE PRENDS ]** → une feuille remonte du bas, **le direct continue à jouer au-dessus** → taille (sa taille habituelle est présélectionnée depuis `F0.5`) → quantité → **point de remise** *(dernier choix mémorisé, `DP-04`)* → **le total avec frais de livraison est affiché ici, pas plus tard** → « Payer » → `F4.1`.
 - **A (variante « je continue à regarder »)** : bouton « Ajouter au panier » au lieu de payer → l'article reste réservé, elle continue le direct et paie tout à la fin en un seul paiement (`F3.1`). **Ce chemin est essentiel : il augmente le panier et évite 5 paiements mobile money d'affilée.**
 - **AN** : appuie sur « Je prends » → inscription express (`F0.10`) → **sa réservation est déjà posée pendant l'inscription** → reprend au choix de la taille.
 - **V** : voit la commande tomber dans son panneau (`F2.14`), avec le prénom de l'acheteuse — elle peut la remercier à voix haute. *Détail mineur, effet énorme sur l'ambiance du direct.*
@@ -264,14 +272,25 @@ Slide 7. Tout le produit tient dans ce parcours ; il doit tenir sous 30 secondes
 ### F2.10 / F2.11 — Chat et modération
 - **A** : écrit dans le chat pour poser une question (matière, longueur, autre couleur).
 - **V** : voit le chat ; peut masquer un message, bloquer un utilisateur, épingler une info (`F2.20`). Liste de mots interdits automatique.
-- **VE** : peut modérer le chat pendant que la vendeuse parle. Rôle réel dans les directs actuels — à supporter dès la phase 1.
+- ~~**VE**~~ : la modération du chat par un employé est supprimée *(`DP-01`)*. **La boutique modère son propre chat.**
 ou dans le directe dans le lateral ou clique sur produit et on vois tout son decription avec de photo
 ### F2.13 — Reprise après coupure
 - **V** : sa connexion tombe → le direct passe en pause avec un message aux spectateurs (*« Connexion en cours de rétablissement »*) → si elle revient sous 2 minutes, le direct reprend **avec les mêmes spectateurs et les mêmes réservations en cours**. Au-delà, le direct est clôturé et un bilan est généré.
 - **A** : son minuteur de réservation est **suspendu** pendant la coupure. Sinon elle perd un article pour un problème réseau qui n'est pas le sien.
 
-### F2.14 — Panneau vendeur en direct
-- **V** : un tiroir avec, en temps réel : spectateurs, réservations en cours, commandes payées, **chiffre d'affaires de la soirée qui monte**. Le chiffre qui monte est la fonctionnalité de rétention n° 1 côté vendeur.
+### F2.4 / F2.5 / F2.22 — Le direct est d'abord une vidéo *(`DP-06`)*
+
+**L'acheteur voit la boutique en plein écran, comme sur Facebook. Rien ne recouvre le visage.**
+
+- **B** : peut mettre un article « à l'écran » et parler dessus — **ou ne rien présenter du tout**. Un second appui le retire.
+- **A** : **quand aucun article n'est à l'écran, aucun bandeau ne s'affiche** *(`R-D8`)*. L'ancienne spécification supposait qu'un article était toujours présenté : c'est cette hypothèse qui tombe.
+- **A** : un bouton **à trois tirets ☰** *(`R-D9`)*, discret, sur le côté, ouvre **la liste de tous les articles en vente pendant ce direct** — pas seulement celui qui est présenté.
+- **A** : depuis la liste comme depuis le bandeau, **deux gestes et deux seulement** *(`R-D10`)* : « Je prends », ou ouvrir la fiche détaillée.
+
+**Pourquoi le bandeau devient conditionnel** : une boutique qui présente en continu épuise son catalogue en vingt minutes, puis n'a plus de raison de rester à l'antenne. **Un direct où l'on parle et où l'on répond est un direct plus long, donc plus d'audience.** Le bouton ☰ récupère ce que le bandeau perd : le catalogue reste accessible à tout moment.
+
+### F2.14 — Panneau boutique en direct
+- **V** : un tiroir avec, en temps réel : spectateurs, réservations en cours, commandes payées, **chiffre d'affaires de la soirée qui monte**. Le chiffre qui monte est la fonctionnalité de rétention n° 1 côté boutique.
 
 ### F2.15 — Bilan de fin de direct
 - **V** : à l'arrêt, un écran récapitulatif : durée, spectateurs, pic d'audience, articles vendus, chiffre d'affaires, taux de conversion, réservations expirées, **articles qui ont eu du chat mais pas de vente** (signal de prix trop haut). Bouton « Partager mon bilan » et « Programmer le prochain direct ».
@@ -293,50 +312,50 @@ Slide 15, point 1. Le différenciateur le plus fort de la phase 2.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F3.1 | Panier multi-articles et multi-vendeurs | P1 | M |
+| F3.1 | Panier multi-articles et multi-boutiques | P1 | M |
 | F3.2 | Récapitulatif : sous-total, livraison, remise, total | P1 | M |
 | F3.3 | Carnet d'adresses de livraison | P1 | M |
-| F3.4 | Choix domicile / point relais | P1 | M |
+| F3.4 | **Point de remise convenu entre l'acheteur et la boutique** *(`DP-04`)* | P1 | M |
 | F3.5 | Calcul des frais de livraison par zone | P1 | M |
 | F3.6 | Application d'un code promo ou d'un crédit fidélité | P2 | S |
 | F3.7 | Création de commande et numéro de commande | P1 | M |
 | F3.8 | Annulation par l'acheteuse avant expédition | P1 | S |
-| F3.9 | Annulation / refus par le vendeur | P1 | S |
+| F3.9 | Annulation / refus par la boutique | P1 | S |
 | F3.10 | Expiration de réservation → remise en stock automatique | P1 | M |
-| F3.11 | Note à l'attention du vendeur | P1 | C |
+| F3.11 | Note à l'attention de la boutique | P1 | C |
 | F3.12 | Commande cadeau (adresse d'un tiers) | P2 | C |
 | F3.13 | Panier entre amies (partage des frais) | P3 | W |
 | F3.14 | **Commande hors direct — parcours complet identique** | P1 | M |
 | F3.15 | **Application d'une promotion et d'un rang client au panier** | P1 | M |
 
 ### F3.1 / F3.2 — Le panier
-- **A** : accumule des articles de plusieurs vendeuses pendant la soirée → le panier **regroupe par vendeuse**, car les frais de livraison et l'expédition sont par vendeuse → un seul paiement pour l'ensemble.
-- **Point d'attention** : les frais de livraison doivent être affichés **par vendeuse et cumulés**, sinon l'acheteuse découvre à la fin qu'elle paie trois livraisons. Proposer alors : « Regrouper au même point relais et économiser X Ar ».
+- **A** : accumule des articles de plusieurs boutiques pendant la soirée → le panier **regroupe par boutique**, car les frais de livraison et l'expédition sont par boutique → un seul paiement pour l'ensemble.
+- **Point d'attention** : les frais de livraison doivent être affichés **par boutique et cumulés**, sinon l'acheteuse découvre à la fin qu'elle paie trois livraisons. **Et annoncer le nombre de confirmations de paiement attendues — une par boutique** *(`DP-11`, `R-M6`)*. Un deuxième code non annoncé est indiscernable d'une fraude.
 
-### F3.4 / F3.5 — Domicile ou point relais
+### F3.4 / F3.5 — Le point de remise *(`DP-04`)*
 Slide 14.
 
 - **A (domicile)** : choisit une adresse enregistrée, ou en ajoute une (quartier, repère — *pas de code postal, l'adressage se fait par repères*), numéro de téléphone du destinataire. Frais calculés par zone.
-- **A (point relais)** : voit une liste triée par proximité, avec horaires et photo de la devanture. Choisit. **Pas d'adresse personnelle demandée.**
-- **V** : voit le mode choisi sur le bordereau ; en point relais elle dépose plusieurs colis en un trajet (`F5.6`).
+- **A** : convient du **lieu et du moment** avec la boutique, dans un fil ouvert à la création de la commande *(`F5.11`)*. **Il n'y a plus ni domicile ni point relais au choix** : JP n'opère aucune logistique.
+- **B** : voit le point convenu sur le bordereau, et choisit son moyen — son coursier, un transporteur, une remise en main propre.
 - **PR** : n'intervient pas encore à cette étape.
 
 ### F3.10 — Expiration de réservation
 - **A** : notification *« Votre réservation de [article] a expiré »* avec un bouton « Reprendre » si le stock est encore là.
 - **V** : voit la ligne passer en « expirée » dans son panneau ; l'article revient au stock immédiatement.
 - **A (2e de la file)** : notifiée que l'article est disponible (`F2.7`).
-- **OP** : le taux de réservations expirées est un des quatre indicateurs de la slide 6 — il doit remonter dans le tableau de bord pilote (`F11.7`).
+- **Tableau de bord** : le taux de réservations expirées est un des quatre indicateurs du pilote — il doit y remonter *(`F11.7`)*. ⚠️ Les quatre mesures sont à redéfinir sans le séquestre *(`PO-4`)*.
 
-### F3.9 — Refus par le vendeur
-- **V** : cas réel — elle s'est trompée de stock, l'article est abîmé. Elle annule la commande, choisit un motif, **le remboursement est automatique et intégral**. Un taux d'annulation vendeur élevé pèse sur son score de confiance (`F6.2`).
+### F3.9 — Refus par la boutique
+- **V** : cas réel — elle s'est trompée de stock, l'article est abîmé. Elle annule la commande, choisit un motif, **le remboursement est automatique et intégral**. Un taux d'annulation boutique élevé pèse sur son score de confiance (`F6.2`).
 - **A** : notifiée, remboursée, invitée à laisser un avis sur l'incident.
 
 ### F3.14 — Commande hors direct
-**Rien de nouveau, et c'est le but.** Une commande née d'une fiche article suit exactement la même machine à états qu'une commande née d'un direct : réservation, paiement, séquestre, statuts de livraison, confirmation de réception, litige, avis. Le canal d'origine est une simple donnée (`origine = direct | catalogue | clip | story | evenement`), utile aux statistiques (`F9.2`) et à l'attribution d'affiliation (`F15.4`), jamais aux règles métier.
+**Rien de nouveau, et c'est le but.** Une commande née d'une fiche article suit exactement la même machine à états qu'une commande née d'un direct *(`R-H1`)* — même paiement, même livraison, même parcours de signalement.
 
 - **V** : voit dans « À préparer » les commandes des deux origines dans une même file, avec un marqueur d'origine.
-- **OP** : suit le taux de conversion et le délai d'expédition **par origine** — c'est ce qui dira si la vente hors direct tient ses promesses.
-- **Règle** : toute règle qui ne s'appliquerait qu'à une origine doit être explicitement justifiée. Deux existent aujourd'hui, et deux seulement : la **durée de réservation** (`F1.16`) et le **délai d'acceptation par le vendeur** (`F1.15`).
+- **Tableau de bord** : taux de conversion et délai d'expédition **par origine** — c'est ce qui dira si la vente hors direct tient ses promesses *(`F11.7`)*.
+- **Règle** : toute règle qui ne s'appliquerait qu'à une origine doit être explicitement justifiée. Deux existent aujourd'hui, et deux seulement : la **durée de réservation** (`F1.16`) et le **délai d'acceptation par la boutique** (`F1.15`).
 
 ### F3.15 — Promotion et rang client dans le panier
 - **A** : voit dans le récapitulatif (`F3.2`) une ligne de remise nommée : *« Promo Noël −20 % »*, *« Avantage cliente Or : livraison offerte »*, ou *« Code MERCI10 »*. Le calcul est fait **côté serveur**, jamais côté client.
@@ -347,94 +366,115 @@ Slide 14.
 
 # ÉPIQUE 4 — Paiement et argent
 
-Slide 11. C'est ici que se joue la proposition de valeur.
+> **Le séquestre est supprimé** *(`DP-07`)*. **L'acheteur paie directement la
+> boutique.** JP ne détient aucun fonds, à aucun moment. C'est ici que la
+> proposition de valeur a changé de nature — voir `DP-07` et §5.5.2 du cahier
+> des charges.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
 | F4.1 | Paiement MVola / Orange Money / Airtel Money ⚠️ | P1 | M |
 | F4.2 | Paiement par carte bancaire (agrégateur) ⚠️ | P1 | S |
-| F4.3 | **Paiement à la livraison** ⚠️ | P1 | M |
-| F4.4 | Séquestre : les fonds sont retenus par JP | P1 | M |
-| F4.5 | Libération à la confirmation de réception | P1 | M |
-| F4.6 | Libération automatique après délai sans contestation | P1 | M |
-| F4.7 | Remboursement total ou partiel | P1 | M |
-| F4.8 | Portefeuille vendeur et retrait vers mobile money | P1 | M |
-| F4.9 | Relevé des commissions prélevées | P1 | S |
-| F4.10 | Reprise après échec de paiement | P1 | M |
+| F4.14 | **Éclatement du paiement** *(`DP-16`)* | P1 | M |
+| F4.9 | ♻️ **Relevé des commissions** *(`DP-15`)* | P1 | S |
+| F4.10 | Reprise après échec de paiement, **et rejeu des pattes secondaires** | P1 | M |
 | F4.11 | Facture PDF horodatée, des deux côtés | P1 | M |
-| F4.12 | Acompte + solde à la livraison ⚠️ | P2 | S |
 | F4.13 | Historique de tous les mouvements | P1 | S |
+| ~~F4.3~~ | ~~Paiement à la livraison~~ ❌ *(`DP-04`)* — plus personne pour encaisser des espèces | — | — |
+| ~~F4.4 / F4.5 / F4.6~~ | ~~Séquestre, libération, libération automatique~~ ❌ *(`DP-07`)* | — | — |
+| ~~F4.7~~ | ~~Remboursement~~ ❌ *(`DP-07`)* — **JP ne rembourse pas**, il n'a rien à rendre | — | — |
+| ~~F4.8~~ | ~~Portefeuille et retrait~~ ❌ *(`DP-07`)* — l'argent arrive directement | — | — |
+| ~~F4.9~~ | ~~Relevé des commissions~~ ❌ *(`DP-08`)* — il n'y a plus de commission par vente | — | — |
+| ~~F4.12~~ | ~~Acompte + solde à la livraison~~ ❌ *(`DP-04`)* | — | — |
 
 ### F4.1 — Paiement mobile money
-- **A** : « Payer » → choisit son opérateur (celui de son numéro est présélectionné) → confirme le montant → **reçoit la demande de validation sur son téléphone (USSD ou notification opérateur)** → saisit son code → retour dans l'app → écran de confirmation avec le numéro de commande.
-- **Point critique** : pendant l'attente de confirmation opérateur (jusqu'à 60 s), afficher un écran d'attente explicite avec le minuteur de réservation **suspendu**. Ne jamais laisser un écran figé — c'est là que l'acheteuse croit avoir perdu son argent.
-- **V** : notification « Commande payée » avec le montant net (commission déduite, affichée).
+- **A** : « Payer » → choisit son opérateur (celui de son numéro est présélectionné) → confirme le montant → reçoit la demande sur son téléphone. **Le nombre de confirmations lui est annoncé avant** *(`R-M6`)*, et il vaut **1** en éclatement atomique *(`R-M10`, `DP-16`)*.
+- **Point critique inchangé** : pendant l'attente de confirmation opérateur (jusqu'à 60 s), afficher un écran d'attente explicite et animé.
+- **Ce que `DP-16` vise** : **une seule confirmation**, quel que soit le nombre de crédits — à condition que le prestataire éclate de façon atomique *(`R-M10`, `PO-11`)*. Sinon, le nombre est **annoncé avant** *(`R-M6`)*.
+- **B** : notification « Commande payée » avec **le montant reçu** — plus de commission à déduire *(`DP-08`)*.
 
-### F4.3 — Paiement à la livraison ⚠️
-**Non prévu dans le deck. Probablement la fonctionnalité la plus déterminante du lancement.**
+### F4.14 — L'éclatement du paiement *(`DP-16`)*
 
-- **A** : choisit « Payer à la réception » → la commande est créée sans paiement → elle paie en espèces au livreur ou au point relais.
-- **V** : voit le mode de paiement sur le bordereau ; **elle porte le risque du refus à la livraison**, sauf mécanisme de couverture.
-- **L / PR** : encaisse les espèces, saisit le montant reçu, remet le colis. Les espèces sont reversées à JP lors de la réconciliation (`F11.5`).
-- **⚠️ À trancher** : ce mode annule le séquestre et déplace le risque sur le vendeur et la logistique. Trois options à tester au pilote — (a) le réserver aux acheteuses ayant déjà une commande honorée, (b) le limiter aux points relais uniquement, moins coûteux que le domicile, (c) exiger un acompte mobile money couvrant les frais de livraison (`F4.12`). Sans réponse à cette question, une part importante de la demande reste inaccessible.
+**Le client paie, le vendeur reçoit son argent, JP ne récupère que sa commission.**
 
-### F4.4 / F4.5 / F4.6 — Le séquestre
-**C'est le mécanisme qui matérialise la promesse « ton argent n'est pas perdu ».**
+- **SYS** : calcule les parts, puis **un débit unique éclaté en 2 ou 3 crédits** — la boutique *(le net)*, JP *(la commission, si mode commission)*, la créatrice *(si affiliée)*.
+- **A** : ne voit **qu'une confirmation** en éclatement atomique *(`R-M10`)*, et **ne voit jamais la répartition** — elle paie un prix, comment il se répartit ne la regarde pas *(`R-B1`)*.
+- **JP ne détient aucun fonds, à aucun moment** *(`R-M9`)*. Ce qui est enregistré chez lui, c'est **la transaction**, pas l'argent.
 
-- **A** : après paiement, voit clairement *« Votre argent est gardé par JP. [Vendeuse] sera payée quand vous confirmerez avoir reçu. »* Cette phrase doit être visible à l'écran de confirmation, pas enfouie dans les CGU.
-- **A (réception)** : reçoit le colis → notification « Avez-vous bien reçu ? » → « Oui, tout va bien » → les fonds sont libérés → invitation à laisser un avis (`F6.1`).
-- **A (problème)** : « Il y a un problème » → ouvre un litige (`F6.3`) → **les fonds restent bloqués.**
-- **V** : voit dans son portefeuille deux soldes distincts : **« en attente de confirmation »** et **« disponible au retrait »**. La distinction doit être limpide, sinon elle croit qu'on la vole.
-- **F4.6** : sans réponse de l'acheteuse après N jours suivant la livraison confirmée, les fonds sont libérés automatiquement. ⚠️ N à caler — hypothèse : 3 jours après remise. Sans cette règle, les vendeuses attendent indéfiniment et quittent la plateforme.
-- **OP** : voit l'encours total séquestré — donnée réglementaire sensible, à cadrer avec le partenaire de paiement (slide 11 le mentionne déjà).
+| Situation | Crédits |
+|---|---|
+| Boutique en **abonnement**, vente simple | **1** |
+| Boutique en **commission**, vente simple | **2** |
+| Boutique en **commission**, vente affiliée | **3** |
 
-### F4.8 — Portefeuille et retrait
-- **V** : écran « Mon argent » → solde disponible → « Retirer » → vers son numéro mobile money **vérifié** (`F0.6`) → confirmation → reçu.
-- **⚠️ À trancher** : retrait à la demande ou versement automatique hebdomadaire ? Les frais mobile money par transaction plaident pour un regroupement ; la trésorerie de la vendeuse plaide pour l'instantané. Hypothèse : retrait à la demande, gratuit une fois par semaine, payant au-delà.
+**Le repli si le prestataire n'éclate pas** *(`PO-11`)* : N requêtes ordonnées — la patte boutique d'abord, **son échec annule tout** *(`R-M4`)* ; les autres sont rattrapables *(`R-M5`)* ; **on interroge avant de rejouer** *(`R-M7`)* ; et **le nombre de confirmations est annoncé avant** *(`R-M6`)*.
+
+> ⚠️ **`PO-11` est la question la plus importante du projet.** Si aucun
+> bénéficiaire tiers n'est possible, l'argent devra transiter par JP — **et
+> l'exposition juridique reviendra**.
+
+### F4.9 — Relevé des commissions ♻️ *(`DP-15`)*
+
+- **B (mode commission)** : voit **avant la mise en vente et sur chaque commande** — *« Vente 50 000 Ar — commission 2 500 Ar — vous recevez 47 500 Ar »* *(`R-G1`)*.
+- **B (mode abonnement)** : *« vous recevez 100 % »*, et l'abonnement facturé séparément.
+- **Le barème est historisé et figé à la commande** *(`R-G3`)* : un changement de taux ne rétroagit jamais. **Un changement de mode non plus** *(`R-B5`)*.
+
+### Ce qui protège l'acheteur, désormais *(`DP-07`)*
+**L'assurance ne vient plus de la détention des fonds** mais de trois faits vérifiables : **la boutique vérifiée**, **la transaction historisée**, **la traçabilité**.
+
+- **A (avant de payer)** : voit identité vérifiée, ancienneté, nombre de ventes, avis, taux de signalement *(R-E2)*.
+- **A (à l'écran de paiement)** : lit *« Boutique vérifiée — identité et compte Mobile Money contrôlés par JP — anciennement « vous payez directement la boutique »* — **jamais** « votre argent est gardé par JP » *(R-E1, RB12)*.
+- **A (à la réception)** : « Avez-vous bien reçu ? » → la confirmation **ne libère plus d'argent**, elle **clôt la commande et alimente la réputation** *(R-E3)*.
+- **A (problème)** : « Il y a un problème » → signalement *(`F6.3`)* → **rien n'est bloqué, mais le compteur de la boutique monte** *(R-T8)*.
+
+> **Le point de comparaison n'est pas le séquestre, c'est le direct Facebook** —
+> où l'acheteuse envoie de l'argent à un numéro de téléphone dont elle ne sait
+> rien. Mesurée contre **cette** référence, une plateforme sans séquestre reste
+> massivement plus sûre. **JP ne se porte plus garant : il rend l'anonymat
+> impossible.**
 
 ### F4.11 — Facture
-- **A** : facture PDF avec numéro, date, articles, prix unitaires, frais de livraison, total, identité du vendeur vérifié, mention JP. Consultable et téléchargeable depuis la commande.
-- **V** : même facture de son côté, plus le détail de la commission. Les factures sont exportables pour sa comptabilité.
-- **Note** : la facture n'est pas un document administratif, c'est **une preuve psychologique**. Elle doit être belle et partageable.
+- **A** : facture PDF avec numéro, date, articles, prix unitaires, frais de livraison, total, identité de la boutique vérifiée.
+- **B** : même facture de son côté. **Plus de détail de commission** *(`DP-08`)* — l'abonnement est facturé séparément, mensuellement.
+- **Note** : la facture n'est pas un document administratif, c'est **une preuve psychologique**. Elle doit être belle et parfaitement lisible. **Son rôle a grandi** : c'est l'une des trois pièces de la traçabilité *(`DP-07`)*.
 
 ---
 
 # ÉPIQUE 5 — Livraison
 
+> **JP n'opère plus aucune logistique** *(`DP-04`)*. La boutique fait parvenir le
+> colis par le moyen de son choix. JP fournit **la frise de statuts, les
+> notifications et la confirmation de réception** — rien d'autre. **De 10
+> fonctionnalités, il en reste 4.**
+
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F5.1 | Bordereau de préparation / étiquette colis | P1 | M |
+| F5.1 | Bordereau de préparation | P1 | M |
 | F5.2 | Statuts de livraison partagés des deux côtés | P1 | M |
-| F5.3 | Réseau de points relais : carte, horaires, fiche | P1 | M |
-| F5.4 | Code de retrait à usage unique | P1 | M |
-| F5.5 | Application livreur : tournée, scan, preuve de remise | P1 | S |
-| F5.6 | Regroupement des colis d'un même vendeur | P1 | S |
-| F5.7 | Échec de livraison et retour | P1 | S |
-| F5.8 | Retour produit pour cause de taille | P2 | S |
+| F5.11 | 🆕 **Fil de remise : convenir du lieu et du moment** *(`DP-10`)* | P1 | M |
 | F5.9 | Estimation du délai affichée avant l'achat | P1 | S |
-| F5.10 | Application point relais : réception, stock, remise | P1 | M |
+| ~~F5.3 / F5.4 / F5.10~~ | ~~Réseau de relais, code de retrait, app relais~~ ❌ *(`DP-04`)* | — | — |
+| ~~F5.5~~ | ~~Application livreur~~ ❌ *(`DP-04`)* | — | — |
+| ~~F5.6~~ | ~~Regroupement des colis~~ ❌ *(`DP-04`)* — la boutique regroupe si elle veut, JP ne l'organise pas | — | — |
+| ~~F5.7 / F5.8~~ | ~~Échec de livraison, retour pour cause de taille~~ ❌ *(`DP-04`, `DP-07`)* — se règle entre la boutique et l'acheteur, JP n'exécute aucun mouvement d'argent | — | — |
 
 ### F5.2 — Statuts partagés
-Statuts communs : `Payée` → `En préparation` → `Remise au transport` → `En cours de livraison` / `Arrivée au point relais` → `Livrée` → `Confirmée`.
-- **A** : voit une frise dans sa commande, avec notification à chaque changement. **C'est la réponse directe au « plus de nouvelles » de la slide 4.**
-- **V** : fait avancer les statuts qui la concernent ; les autres sont mis à jour par **L** ou **PR**.
+Statuts communs : `Payée` → `En préparation` → `Expédiée` → `Livrée` → `Confirmée` *(R-L3)*.
+- **A** : voit une frise dans sa commande, **avec notification à chaque changement**. C'est la réponse directe au « plus de nouvelles » qui fait le procès des ventes Facebook — **et c'est ce qui survit du domaine livraison**.
+- **B** : **fait avancer tous les statuts elle-même.** Il n'y a plus de `L` ni de `PR` pour les mettre à jour.
 
-### F5.3 / F5.4 / F5.10 — Point relais
-- **A** : choisit son relais → à l'arrivée du colis, reçoit une notification **et un SMS** avec un **code à 6 chiffres** → passe quand elle veut → donne le code → repart avec le colis.
-- **PR** : app simple → « Réception » : scanne ou saisit le numéro de colis, le colis entre en stock → « Remise » : saisit le code donné par l'acheteuse, confirme, le statut passe à `Livrée` → écran « Colis en attente » avec les délais de garde.
-- **L** : dépose plusieurs colis d'un coup au relais, une seule validation.
-- **⚠️ Délai de garde** : au-delà de X jours, le colis repart chez le vendeur (`F5.7`). X à caler avec les relais.
+> ### ⚠️ Le point faible assumé
+>
+> **La déclaration d'expédition n'est vérifiée par personne** *(`R-L9`)*. Aucun
+> tiers neutre ne constate la remise. Une boutique qui marque « Expédiée » sans
+> expédier n'est arrêtée que par le signalement de l'acheteuse et l'effet de ce
+> signalement sur son score *(`R-T8`)*. **C'est la perte la plus lourde de toute
+> la refonte** — l'ancienne `preuve_remise_url` n'a aucun remplaçant.
 
-### F5.5 — Application livreur
-- **L** : se connecte → « Ma tournée du jour » → liste ordonnée : enlèvements chez les vendeurs, puis remises → à chaque point, appuie sur « Arrivé » → à la remise, **photo du colis remis ou code de l'acheteuse** → si paiement à la livraison (`F4.3`), saisit le montant encaissé → passe au suivant.
-- **A** : voit le nom et le numéro du livreur quand la course démarre.
-- **V** : voit que ses colis ont bien été enlevés.
-
-### F5.8 — Retour pour cause de taille
-Slide 15, point 2 : la première cause de litige dans le vestimentaire.
-- **A** : dans sa commande livrée → « La taille ne va pas » → choisit : échange contre une autre taille (si dispo) ou remboursement → dépose le colis au point relais → à réception par le vendeur, échange expédié ou remboursement déclenché.
-- **V** : accepte ou conteste ; règles définies dans sa politique de retour, affichée sur sa vitrine.
-- **⚠️** : qui paie le retour ? À trancher — c'est un coût réel sur des paniers faibles.
+### F5.11 — Fil de remise 🆕 *(`DP-04`, `DP-10`)*
+- **A + B** : conviennent du **lieu et du moment** de la remise dans un fil ouvert à la création de la commande. Le point convenu apparaît sur le bordereau.
+- **Cadeau** *(`DP-10`)* : l'échange a lieu entre **la boutique et le bénéficiaire**, jamais le donateur — qui **ne voit jamais l'adresse** *(`RB8`)*. **C'est l'accord qui débloque alors le paiement.**
+- **⚠️** : l'article doit être tenu pendant tout l'échange. 30 minutes ne suffisent pas entre deux fuseaux horaires *(`PO-10`)*.
 
 ---
 
@@ -442,17 +482,25 @@ Slide 15, point 2 : la première cause de litige dans le vestimentaire.
 
 Slide 11. L'antidote à la slide 4.
 
+> ### Cette épique est devenue le cœur du produit
+>
+> Le séquestre protégeait l'acheteuse ; il a disparu *(`DP-07`)*. **Ce qui la
+> protège tient désormais entièrement ici.** Conséquence de périmètre :
+> **`F6.1` et `F6.2` passent de P2 à P1** — les avis et le score n'étaient qu'un
+> confort, ils sont devenus le mécanisme de protection lui-même. **`F6.8` passe
+> de S à M** : c'est la seule sanction du produit.
+
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F6.1 | Avis vérifiés (seul un acheteur ayant payé peut noter) | P2 | M |
-| F6.2 | Score de confiance vendeur, public | P2 | M |
+| F6.1 | Avis vérifiés (seul un acheteur ayant payé peut noter) | **P1** | M |
+| F6.2 | Score de confiance boutique, public | **P1** | M |
 | F6.3 | Signalement d'un litige sur une commande | P1 | M |
 | F6.4 | Fil de litige avec pièces jointes (photos) | P1 | M |
-| F6.5 | Arbitrage par l'équipe JP, décision tracée | P1 | M |
+| ~~F6.5~~ | ~~Arbitrage par l'équipe JP~~ ❌ *(`DP-05`, `DP-07`)* — plus d'arbitre, et plus d'argent à trancher | — | — |
 | F6.6 | Historique complet consultable des deux côtés | P1 | M |
 | F6.7 | Signalement d'un contenu ou d'un utilisateur | P1 | S |
-| F6.8 | Sanctions vendeur : avertissement, gel, suspension | P1 | S |
-| F6.9 | Réponse publique du vendeur à un avis | P2 | C |
+| F6.8 | **Sanctions automatiques** : avertissement, gel de la mise en vente, suspension | P1 | **M** |
+| F6.9 | Réponse publique de la boutique à un avis | P2 | C |
 | F6.10 | Avis avec photo portée et morphologie | P2 | S |
 
 ### F6.1 / F6.10 — Avis vérifiés
@@ -461,17 +509,17 @@ Slide 11. L'antidote à la slide 4.
 - **V** : notifiée, peut répondre publiquement une fois (`F6.9`).
 
 ### F6.2 — Score de confiance
-- Calculé sur : ventes honorées, délai d'expédition réel, taux d'annulation vendeur, taux de litige, issue des litiges.
+- Calculé sur : ventes honorées, délai d'expédition réel, taux d'annulation boutique, taux de litige, issue des litiges.
 - **A** : voit le score sur la vitrine et sur chaque direct — **c'est ce qui remplace la recommandation d'une amie**, donc c'est le mécanisme central de croissance.
 - **V** : voit son score, **et surtout ce qui le fait monter ou baisser**, avec des conseils concrets (« expédiez sous 24 h pour gagner 0,2 »). Le score doit être un objectif motivant, pas une sanction opaque.
 
-### F6.3 / F6.4 / F6.5 — Litige
-Point culturel clé : **le litige se signale à JP, jamais en face à face avec le vendeur.** Cela évite la confrontation, socialement coûteuse, qui fait que les gens abandonnent au lieu de réclamer.
+### F6.3 / F6.4 — Signalement d'un problème
+Point culturel clé, inchangé : **le problème se signale à JP, jamais en face à face avec la boutique.** Cela évite la confrontation, socialement coûteuse, qui fait que les gens abandonnent au lieu de réclamer.
 
 - **A** : commande → « Il y a un problème » → motif (non reçu / abîmé / pas conforme / mauvaise taille / autre) → photos → description → envoi. **Les fonds restent bloqués.** Elle reçoit un numéro de dossier.
 - **V** : notifiée, voit le motif et les photos, répond dans le même fil, propose une solution (renvoi, remboursement partiel, geste commercial).
-- **A / V** : si un accord est trouvé entre eux dans le fil, le dossier se clôt sans arbitrage.
-- **OP** : si pas d'accord sous 48 h → arbitrage. Voit l'historique complet des deux côtés (`F6.6`), les statuts de livraison, la preuve de remise, les échanges → tranche → **décision écrite, motivée, notifiée aux deux** → exécute le remboursement ou la libération des fonds.
+- **A / B** : si un accord est trouvé entre eux dans le fil, le dossier se clôt **et le compteur est décrémenté**.
+- **Pas d'accord** : ⚠️ **il n'y a pas d'escalade, il n'y a plus d'arbitre** *(`DP-05`)*. Le dossier **reste ouvert et pèse durablement sur le score** ; au-delà d'un seuil, `SYS` **suspend automatiquement la mise en vente** *(`R-T8`, `F6.8`, seuil non arrêté — `PO-12`)*. L'historique complet (`F6.6`) est présenté **aux deux parties** au lieu de l'être à un arbitre : c'est ce qui rend l'accord possible sans tiers. Ancienne rédaction : les statuts de livraison, la preuve de remise, les échanges → tranche → **décision écrite, motivée, notifiée aux deux** → exécute le remboursement ou la libération des fonds.
 - **Toutes les décisions sont archivées** et alimentent les scores (`F6.2`).
 
 ---
@@ -486,7 +534,7 @@ Slide 12. Le moteur de rétention et de défendabilité.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F7.1 | Suivre / ne plus suivre un vendeur ou une créatrice | P1 | M |
+| F7.1 | Suivre / ne plus suivre une boutique ou une créatrice | P1 | M |
 | F7.2 | Fil des directs en cours et à venir | P1 | M |
 | F7.3 | Notifications : direct, promo, retour en stock | P2 | M |
 | F7.4 | Alerte « prévenez-moi quand c'est dispo » | P2 | S |
@@ -498,8 +546,8 @@ Slide 12. Le moteur de rétention et de défendabilité.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F7.5 | **Écran « Mes clientes » — CRM léger vendeur** | P2 | S |
-| F7.6 | **Paliers de fidélité paramétrables par le vendeur** | P2 | S |
+| F7.5 | **Écran « Mes clientes » — CRM léger boutique** | P2 | S |
+| F7.6 | **Paliers de fidélité paramétrables par la boutique** | P2 | S |
 | F7.18 | **Moteur de rang client (score volume · fréquence · récence)** | P2 | S |
 | F7.19 | **Rang visible côté acheteuse et progression vers le palier suivant** | P2 | S |
 | F7.7 | Cagnotte : % de chaque achat en crédit | P3 | S |
@@ -522,64 +570,64 @@ Slide 12. Le moteur de rétention et de défendabilité.
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
 | F7.11 | **Partage d'un direct / article vers WhatsApp et Facebook** | P1 | M |
-| F7.12 | **Parrainage vendeur et parrainage acheteur** | P1 | M |
+| F7.12 | **Parrainage boutique et parrainage acheteur** | P1 | M |
 | F7.13 | Liste d'envies | P2 | C |
-| F7.14 | Message privé acheteur ↔ vendeur ⚠️ | P2 | S |
+| F7.14 | Message privé acheteur ↔ boutique ⚠️ | P2 | S |
 
 ### F7.3 — Notifications
-- **A** : reçoit, selon ses réglages : « [Vendeuse] est en direct », « Nouvelle promotion », « L'article que vous attendiez est revenu », « Votre colis est arrivé au relais », « Votre réservation expire dans 2 minutes ».
-- **Réglage fin obligatoire** : sinon, une acheteuse qui suit 15 vendeuses désinstalle l'application au bout d'une semaine. Regrouper les notifications de direct en une seule par soirée.
+- **A** : reçoit, selon ses réglages : « [Boutique] est en direct », « Nouvelle promotion », « L'article que vous attendiez est revenu », « Votre colis est arrivé au relais », « Votre réservation expire dans 2 minutes ».
+- **Réglage fin obligatoire** : sinon, une acheteuse qui suit 15 boutiques désinstalle l'application au bout d'une semaine. Regrouper les notifications de direct en une seule par soirée.
 - **Fallback SMS** pour les notifications critiques (colis arrivé, code de retrait) — le push ne suffit pas sur des téléphones bas de gamme et des connexions intermittentes.
 
 ### F7.1 / F7.15 / F7.16 / F7.17 — Les abonnements
-**L'abonnement est l'actif que le vendeur construit sur JP.** C'est aussi le canal qui rend les promotions (`F7.23`) et les événements (`F20.6`) possibles sans acheter de publicité. Un vendeur sans abonnés doit repartir de zéro à chaque direct.
+**L'abonnement est l'actif que la boutique construit sur JP.** C'est aussi le canal qui rend les promotions (`F7.23`) et les événements (`F20.6`) possibles sans acheter de publicité. Une boutique sans abonnés doit repartir de zéro à chaque direct.
 
 - **A** : appuie sur « Suivre » depuis une vitrine, une fiche, un direct, un clip ou une story. Un seul appui, jamais de confirmation. Elle retrouve la liste dans « Moi → Abonnements », triable par activité récente.
 - **A (F7.15)** : voit sur chaque vitrine le **nombre d'abonnés** — c'est un signal de confiance au même titre que le score (`F6.2`), et il est gratuit à produire.
-- **V / C (F7.16)** : notification « [Prénom] vous suit », regroupée par jour au-delà de 5 par jour pour ne pas devenir du bruit. Le compteur d'abonnés est visible sur le tableau de bord, avec sa progression sur 30 jours — **c'est l'indicateur de rétention que le vendeur regarde le plus souvent.**
+- **V / C (F7.16)** : notification « [Prénom] vous suit », regroupée par jour au-delà de 5 par jour pour ne pas devenir du bruit. Le compteur d'abonnés est visible sur le tableau de bord, avec sa progression sur 30 jours — **c'est l'indicateur de rétention que la boutique regarde le plus souvent.**
 - **A (F7.17)** : le fil « Abonnements » ne montre pas seulement les directs. Il montre aussi les **nouveaux articles**, les **promotions** et les **événements** des boutiques suivies. Sans ça, une acheteuse qui suit une boutique ne vendant qu'hors direct ne voit jamais rien, et l'abonnement ne sert à rien.
 - **Réciprocité** : suivre n'est pas symétrique et ne crée aucune obligation. Il n'y a pas de « demande d'abonnement » à accepter, sauf compte privé (`F19.10`).
-- **Ce qui est visible** : le vendeur voit le prénom et la photo de ses abonnés, jamais leur email ni leur téléphone.
+- **Ce qui est visible** : la boutique voit le prénom et la photo de ses abonnés, jamais leur email ni leur téléphone.
 
 ### F7.18 / F7.5 / F7.6 / F7.19 — Le classement des clients
-**Ce que le vendeur veut savoir : à qui je dois faire un geste.** Pas un tableau de bord analytique — une liste de noms, ordonnée, avec une action possible à côté de chaque ligne.
+**Ce que la boutique veut savoir : à qui je dois faire un geste.** Pas un tableau de bord analytique — une liste de noms, ordonnée, avec une action possible à côté de chaque ligne.
 
-**F7.18 — le moteur de rang.** Chaque couple (vendeur, cliente) porte un **score recalculé** à chaque commande confirmée, sur quatre composantes :
-- **volume** — montant cumulé confirmé chez ce vendeur ;
+**F7.18 — le moteur de rang.** Chaque couple (boutique, cliente) porte un **score recalculé** à chaque commande confirmée, sur quatre composantes :
+- **volume** — montant cumulé confirmé chez cette boutique ;
 - **fréquence** — nombre de commandes confirmées ;
 - **récence** — date de la dernière commande, avec décote dans le temps : une cliente inactive depuis six mois ne doit pas rester « VIP » indéfiniment ;
 - **fiabilité** — pénalité en cas d'annulations à répétition, de litiges perdus ou de retours systématiques.
 
 Règles non négociables :
-- Le score est **par vendeur**, jamais global. Une vendeuse n'a aucune raison de connaître ce que sa cliente dépense chez ses concurrentes. C'est une exigence de vie privée, pas un choix technique.
+- Le score est **par boutique**, jamais global. Une boutique n'a aucune raison de connaître ce que sa cliente dépense chez ses concurrentes. C'est une exigence de vie privée, pas un choix technique.
 - Seules les commandes **confirmées** comptent. Une commande payée puis remboursée ne fabrique pas un VIP.
-- Le calcul est **explicable en une phrase** à la cliente comme au vendeur. Un rang opaque produit le même rejet qu'un score de confiance opaque (`F6.2`).
+- Le calcul est **explicable en une phrase** à la cliente comme à la boutique. Un rang opaque produit le même rejet qu'un score de confiance opaque (`F6.2`).
 
-**F7.6 — les paliers.** Le vendeur définit ses propres paliers (nom, seuil, avantage) : par défaut **Bronze / Argent / Or / VIP**, renommables. Les seuils sont exprimés en montant cumulé **et/ou** en nombre de commandes. Un vendeur qui ne veut pas de paliers n'en a pas : la fonctionnalité est désactivable, et la liste de clientes reste utile sans elle.
+**F7.6 — les paliers.** La boutique définit ses propres paliers (nom, seuil, avantage) : par défaut **Bronze / Argent / Or / VIP**, renommables. Les seuils sont exprimés en montant cumulé **et/ou** en nombre de commandes. Une boutique qui ne veut pas de paliers n'en a pas : la fonctionnalité est désactivable, et la liste de clientes reste utile sans elle.
 
 **F7.5 — l'écran « Mes clientes ».**
 - **V** : liste ordonnée par rang → chaque ligne : prénom, photo, palier, montant cumulé, nombre de commandes, date de la dernière → tri et filtres (palier, inactives depuis X, meilleures du mois) → appui sur une ligne → **fiche client** : historique des commandes, tailles achetées, articles préférés, litiges éventuels, note privée.
 - **V (l'action, qui est le point de tout l'écran)** : depuis la fiche ou depuis une sélection multiple → **« Offrir une promo »** (`F7.24`) ou **« Envoyer un code »** (`F7.9`). Une liste qu'on ne peut pas actionner ne sert à rien.
-- **VE** : accès en lecture seule si le vendeur l'autorise, **sans les montants** (`F10.4`). L'employée prépare les colis, elle n'a pas à connaître le chiffre d'affaires par cliente.
-- **Cas du démarrage** : un vendeur qui a trois clientes n'a pas besoin d'un classement. L'écran affiche alors simplement ses clientes et un message expliquant que les paliers s'activeront quand il y aura de quoi classer.
+- ~~**VE**~~ : l'accès délégué en lecture seule est supprimé avec l'employé *(`DP-01`, `R-R8`)*.
+- **Cas du démarrage** : une boutique qui a trois clientes n'a pas besoin d'un classement. L'écran affiche alors simplement ses clientes et un message expliquant que les paliers s'activeront quand il y aura de quoi classer.
 
 **F7.19 — côté acheteuse.**
-- **A** : voit son palier sur la vitrine de la vendeuse (*« Vous êtes cliente Or chez Miora »*) et **la progression vers le suivant** (*« Encore 2 commandes pour devenir VIP »*), avec l'avantage à la clé.
+- **A** : voit son palier sur la vitrine de la boutique (*« Vous êtes cliente Or chez Miora »*) et **la progression vers le suivant** (*« Encore 2 commandes pour devenir VIP »*), avec l'avantage à la clé.
 - **Le statut visible est un levier de rétention plus fort que la remise elle-même** — à condition d'être vrai. Un palier annoncé sans avantage réel derrière est perçu comme une manipulation, et l'épique 17 en pose la règle générale.
-- **A** : peut refuser d'apparaître dans les classements publics ; le rang reste visible du vendeur, pas des autres acheteuses (`F17.5` reste une exception assumée).
+- **A** : peut refuser d'apparaître dans les classements publics ; le rang reste visible de la boutique, pas des autres acheteuses (`F17.5` reste une exception assumée).
 
 ### F7.22 / F7.8 / F7.26 — La promotion boutique
 - **V** : « Catalogue → Promotions → Nouvelle promotion » → **type** (pourcentage, montant fixe, livraison offerte) → **valeur** → **période** (immédiate ou programmée, `F7.8`) → **périmètre** (toute la boutique, une catégorie, une sélection d'articles) → **cible** (tous, mes abonnés, un palier, des clientes nommées) → écran de résumé qui annonce *« Vos 320 abonnés seront notifiés »* avec possibilité de couper la notification → « Lancer ».
 - **A** : voit le prix barré et le nouveau prix (`F1.9`) sur la vignette, la fiche, le panier et la facture. **Le prix affiché est toujours le prix payé** — aucune remise « appliquée au paiement » qui apparaîtrait au dernier écran.
-- **V (garde-fou)** : avant validation, l'app affiche **le net qui lui restera** sur un article représentatif : *« Robe 50 000 Ar → 40 000 Ar, commission 2 000 Ar, vous recevez 38 000 Ar. »* Une vendeuse qui découvre sa marge après coup n'en refait pas.
-- **F7.26 — cumul** : une seule remise s'applique par ligne de commande, **la plus favorable à l'acheteuse**, jamais l'addition de deux. La règle est affichée au vendeur au moment où il crée une promotion susceptible de chevaucher une autre.
+- **V (garde-fou)** : avant validation, l'app affiche **le net qui lui restera** sur un article représentatif : *« Robe 50 000 Ar → 40 000 Ar, commission 2 000 Ar, vous recevez 38 000 Ar. »* Une boutique qui découvre sa marge après coup n'en refait pas.
+- **F7.26 — cumul** : une seule remise s'applique par ligne de commande, **la plus favorable à l'acheteuse**, jamais l'addition de deux. La règle est affichée à la boutique au moment où il crée une promotion susceptible de chevaucher une autre.
 - **Fin de promotion** : retour automatique au prix d'origine, sans intervention. Un prix barré qui reste barré indéfiniment est un mensonge commercial, et il détruit l'effet de la promotion suivante.
 
 ### F7.23 — La notification aux abonnés
 **C'est ce qui donne sa valeur à l'abonnement.** C'est aussi le mécanisme le plus facile à transformer en spam, donc celui qui doit être le plus encadré.
 
 - **A** : reçoit *« Miora lance −20 % sur toute sa boutique jusqu'à dimanche »* → un appui → la vitrine filtrée sur les articles en promotion.
-- **Plafonds** : **une notification de promotion par vendeur et par 24 h** ; au-delà de 3 promotions d'abonnements différents dans la même journée, elles sont **regroupées en un seul message** (*« 4 boutiques que vous suivez sont en promotion »*). Réglage fin par vendeur côté acheteuse : couper les promos d'une boutique sans se désabonner.
+- **Plafonds** : **une notification de promotion par boutique et par 24 h** ; au-delà de 3 promotions d'abonnements différents dans la même journée, elles sont **regroupées en un seul message** (*« 4 boutiques que vous suivez sont en promotion »*). Réglage fin par boutique côté acheteuse : couper les promos d'une boutique sans se désabonner.
 - **V** : voit le nombre d'abonnés notifiés, le nombre d'ouvertures et **les ventes générées** par la notification. Sans ce retour, il ne sait pas si ça marche et il en abuse.
 - **Pourquoi le plafond n'est pas négociable** : une acheteuse qui suit 15 boutiques et reçoit 15 notifications coupe **toutes** les notifications de l'application — y compris « votre colis est arrivé au relais » et le code de retrait, qui sont les seules dont la plateforme a réellement besoin (`F7.3`).
 
@@ -597,9 +645,9 @@ Règles non négociables :
 - **AN** : ouvre le lien → voit le contenu sans compte (`F0.10`) → convertit au « Je prends ».
 
 ### F7.12 — Parrainage
-- **V** : « Inviter une vendeuse » → lien personnel → si la filleule réalise sa première vente, la marraine obtient un avantage (commission réduite un mois, mise en avant offerte).
+- **V** : « Inviter une boutique » → lien personnel → si la filleule réalise sa première vente, la marraine obtient un avantage (commission réduite un mois, mise en avant offerte).
 - **A** : « Inviter une amie » → l'amie obtient une réduction sur sa première commande, la marraine un crédit à la livraison de cette commande.
-- **OP** : suit le coût d'acquisition par parrainage contre acquisition payante — c'est une des hypothèses de la slide 18.
+- **Tableau de bord** : coût d'acquisition par parrainage contre acquisition payante — une des hypothèses de la slide 18 *(`F11.7`)*.
 
 ### F7.14 — Message privé ⚠️
 - **⚠️ Décision** : la messagerie privée est ce que JP est censé remplacer (slide 3). Mais sans elle, les acheteuses retournent sur Messenger et la transaction sort de la plateforme. Recommandation : une messagerie **rattachée à une commande** uniquement, pas une messagerie libre. Les questions avant achat passent par le chat public du direct ou par les questions sur la fiche produit.
@@ -615,14 +663,14 @@ Slide 13.
 | F8.1 | Fil d'accueil : directs en cours, à venir, replays, articles | P1 | M |
 | F8.2 | Recherche texte | P1 | S |
 | F8.3 | Filtres : taille, couleur, marque, budget, catégorie | P1 | S |
-| F8.4 | Tri : nouveauté, prix, popularité, score vendeur | P1 | C |
+| F8.4 | Tri : nouveauté, prix, popularité, score boutique | P1 | C |
 | F8.5 | Recommandations « à ma taille » | P2 | S |
 | F8.6 | Mise en avant sponsorisée dans le fil et la recherche | P2 | S |
 | F8.7 | Navigation par catégories | P1 | S |
 | F8.8 | Recherches récentes et suggestions | P1 | C |
 
 ### F8.1 — Le fil
-- **A** : à l'ouverture — en haut, les directs **en cours** de ses vendeuses suivies ; puis les directs en cours des autres ; puis « ce soir à 20 h » ; puis les replays récents ; puis des articles du catalogue.
+- **A** : à l'ouverture — en haut, les directs **en cours** de ses boutiques suivies ; puis les directs en cours des autres ; puis « ce soir à 20 h » ; puis les replays récents ; puis des articles du catalogue.
 - **AN** : même fil sans personnalisation, avec un bandeau expliquant JP en une phrase.
 
 ### F8.3 / F8.5 — Filtres et taille
@@ -630,7 +678,7 @@ Slide 13.
 
 ---
 
-# ÉPIQUE 9 — Statistiques vendeur
+# ÉPIQUE 9 — Statistiques boutique
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
@@ -643,68 +691,91 @@ Slide 13.
 | F9.7 | Heures et jours les plus rentables | P3 | C |
 
 - **V** : ouvre « Mes ventes » → chiffre d'affaires, nombre de commandes, panier moyen, commissions, articles les plus vendus, tailles qui partent en premier. **L'information la plus actionnable : quelles tailles racheter.**
-- **VE** : accès en lecture seule, sans les montants, si la vendeuse le décide (`F10.4`).
+- ~~**VE**~~ : supprimé *(`DP-01`)*.
 
 ---
 
-# ÉPIQUE 10 — Monétisation et abonnement vendeur
+# ÉPIQUE 10 — Monétisation : la boutique choisit son mode
 
-Slide 17.
+> **La boutique choisit à l'inscription, et peut changer** *(`DP-15`)* :
+> **abonnement mensuel** — elle encaisse 100 % — ou **commission** — JP retient
+> avant de reverser. C'est l'éclatement qui rend la commission de nouveau possible :
+> l'argent transitant par JP, retenir est **une soustraction, pas un transfert**.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F10.1 | Commission prélevée automatiquement au paiement | P1 | M |
-| F10.2 | Barème de commission par catégorie / par palier ⚠️ | P1 | M |
-| F10.3 | Paliers d'abonnement vendeur (dont un gratuit) | P2 | S |
-| F10.4 | Comptes multi-utilisateurs et permissions | P2 | S |
+| F10.3 | **Paliers d'abonnement boutique, dont un gratuit** — *le modèle économique* | P1 | M |
 | F10.5 | Achat d'une mise en avant (produit ou direct) | P2 | S |
 | F10.6 | Direct premium : durée étendue, meilleure qualité, co-animation | P3 | W |
 | F10.7 | Espace partenaire marque | P3 | W |
 | F10.8 | Insights marché anonymisés, vendus aux marques | P3 | W |
+| F10.1 | ♻️ **Commission créditée par l'éclatement** *(`DP-15`)* | P1 | M |
+| F10.2 | ♻️ **Barème de commission, historisé** ⚠️ *(`DP-15`)* | P1 | M |
+| ~~F10.4~~ | ~~Comptes multi-utilisateurs et permissions~~ ❌ *(`DP-01`)* — l'employé n'existe plus | — | — |
 
-### F10.1 / F10.2 — Commission
-- **V** : voit la commission **avant** de mettre en ligne, et sur chaque commande, en clair : *« Vente 50 000 Ar — commission 2 500 Ar — vous recevez 47 500 Ar. »* Aucune surprise, jamais. Une commission découverte après coup est la première cause de désengagement.
-- **⚠️ Slide 18** : le taux, et surtout **à partir de quel taux la vendeuse cherche à contourner la plateforme**, est l'hypothèse la plus importante à mesurer au pilote.
+### F10.3 — Les paliers *(`DP-08`)*
+- **B** : ouvre « Mon abonnement » → palier en cours, **ventes du mois / quota**, **directs du mois / quota**, échéance.
+- **Palier gratuit actif par défaut** *(R-B3)*. Sans lui, la boutique paie avant d'avoir gagné, et l'acquisition se ferme.
+- **Quota atteint ou impayé** : la mise en vente et le lancement d'un direct sont bloqués. **Le compte n'est jamais suspendu** — catalogue visible, commandes en cours menées à terme *(R-B4)*.
+- **A** : ne voit **rien** de tout cela. Le prix affiché est le prix de la boutique, sans ajout ni déduction *(R-B1)*.
+- **⚠️ `PO-6`** : montants et quotas non arrêtés. Ils bloquent l'ouverture des inscriptions boutique **et** la migration 20.
 
-### F10.4 — Multi-utilisateurs
-- **V (propriétaire)** : invite Fara par son numéro → choisit ses permissions : voir les commandes, préparer, modérer le chat, créer des articles — **jamais : voir le portefeuille, retirer l'argent, modifier les prix**.
-- **VE** : se connecte avec son propre numéro, ne voit que ce qui lui est ouvert. **Sans séparation claire de l'argent, aucune vendeuse ne donnera d'accès à son employée.**
+> ### L'ancien risque n° 1 a disparu
+>
+> La slide 18 posait : *« à partir de quel taux la boutique cherche-t-elle à
+> contourner la plateforme ? »* — présenté comme **la question de survie du
+> modèle**, mesurée par le taux de transactions engagées sur JP puis conclues
+> ailleurs.
+>
+> **Sans commission par vente, la boutique n'a plus aucun intérêt à conclure
+> ailleurs.** Le contournement cesse d'être un risque et devient un non-sujet.
+> C'est le gain le plus important de `DP-08`, et il n'était pas recherché.
 
 ### F10.5 — Mise en avant
-- **V** : « Mettre en avant ce direct » → budget, durée → paiement depuis son portefeuille → son direct apparaît en haut du fil, signalé « Sponsorisé ».
+- **B** : « Mettre en avant ce direct » → budget, durée → **paiement par mobile money** *(il n'y a plus de portefeuille — `DP-07`)* → son direct apparaît en tête.
 - **A** : voit la mention « Sponsorisé » — obligatoire pour ne pas abîmer la confiance, qui est l'actif du produit.
 
 ---
 
-# ÉPIQUE 11 — Back-office JP
+# ÉPIQUE 11 — Le compte Admin JP
 
-Non décrit dans le deck, mais toutes les promesses de la slide 11 reposent dessus.
+> **Les files de travail humaines sont supprimées** *(`DP-05`)*. Mais **un compte
+> d'exploitation subsiste** *(`DP-12`)* : sans lui, personne ne peut fixer un
+> palier d'abonnement ni lire un rapport. **De 11 fonctionnalités, il en reste
+> trois.**
+>
+> **La frontière** : l'Admin JP **règle les règles, il n'applique pas les
+> règles**. Il fixe le seuil qui suspend, il ne suspend pas.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F11.1 | File de vérification des vendeurs | P1 | M |
-| F11.2 | Modération des contenus et des directs | P1 | M |
-| F11.3 | Console d'arbitrage des litiges | P1 | M |
-| F11.4 | Gestion du réseau de points relais | P1 | M |
-| F11.5 | Réconciliation des paiements et des encaissements espèces | P1 | M |
-| F11.6 | Paramètres : commissions, frais, durée de réservation, délais | P1 | M |
-| F11.7 | **Tableau de bord des 4 indicateurs du pilote (slide 6)** | P1 | M |
-| F11.8 | Recherche d'un utilisateur, d'une commande, d'un paiement | P1 | M |
-| F11.9 | Journal d'audit de toutes les actions du back-office | P1 | S |
-| F11.10 | Gestion des livreurs et des tournées | P1 | S |
-| F11.11 | Envoi de notifications de masse | P2 | C |
+| F11.7 | **Tableau de bord des 4 indicateurs du pilote** | P1 | M |
+| ~~F11.1~~ | ~~File de vérification~~ ❌ — vérification automatisée *(`DP-05`, `UC-52`)* | — | — |
+| ~~F11.2~~ | ~~Modération des contenus~~ ❌ — filtre automatique + signalement *(`DP-05`, F19.1)* | — | — |
+| ~~F11.3~~ | ~~Console d'arbitrage~~ ❌ — plus d'arbitre, et plus d'argent à trancher *(`DP-05`, `DP-07`)* | — | — |
+| ~~F11.4~~ | ~~Réseau de points relais~~ ❌ *(`DP-04`)* | — | — |
+| ~~F11.5~~ | ~~Réconciliation espèces~~ ❌ *(`DP-04`)* — il n'y a plus d'espèces | — | — |
+| F11.6 | ♻️ **Paramètres : paliers, quotas, seuils** — **double validation** *(`DP-12`, `R-O1`)* | P1 | M |
+| ~~F11.8~~ | ~~Recherche utilisateur / commande~~ ❌ *(`DP-05`)* | — | — |
+| F11.9 | ♻️ **Journal d'audit consultable, inaltérable** *(`DP-12`)* | P1 | S |
+| ~~F11.10~~ | ~~Gestion des livreurs et tournées~~ ❌ *(`DP-04`)* | — | — |
+| ~~F11.11~~ | ~~Notifications de masse~~ ❌ *(`DP-05`)* | — | — |
 
 ### F11.7 — Le tableau de bord du pilote
-Directement issu de la slide 6. Il doit exister **dès le premier direct**, sinon la slide 6 reste une promesse.
-- **OP** : voit en continu — (1) commandes annoncées en direct jamais conclues, (2) temps administratif par heure de direct, (3) acheteuses ayant abandonné à l'étape paiement, (4) stock immobilisé par des réservations expirées. Plus les hypothèses de la slide 18 : taux de conversion, panier moyen, répartition domicile/relais, taux de litige, coût d'acquisition.
+**C'est l'instrument de mesure du projet, pas un écran d'exploitation** *(`R-O2`)*.
+Il doit exister **dès le premier direct**, sinon l'objectif de mesure n'est pas
+atteint et le pilote ne prouve rien.
 
-### F11.5 — Réconciliation
-- **OP** : rapproche quotidiennement les paiements opérateurs, l'encours séquestré, les retraits vendeurs, les commissions et les espèces collectées par les livreurs et les relais. Écarts signalés.
-- **L / PR** : reversent les espèces selon un rythme défini ; le solde dû est visible dans leur application.
+**En lecture seule** : aucune file de travail, aucune action possible dessus. On
+le lit, on n'y agit pas.
+
+> ⚠️ **Les quatre mesures elles-mêmes sont à redéfinir** *(`PO-4`)* : certaines
+> portaient sur le séquestre, qui n'existe plus. Elles doivent désormais mesurer
+> **la confiance sans mécanisme de garantie**.
 
 ---
 
-# ÉPIQUE 12 — Assistant du vendeur (IA)
+# ÉPIQUE 12 — Assistant de la boutique (IA)
 
 Slide 15, point 7. Phase 3.
 
@@ -772,12 +843,12 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 
 ### F14.1 — Story 24 h shoppable
 - **V / C** : appuie sur « + » → photo ou vidéo de 15 s → **attache un article** (obligatoire, `F14.5`) → publie. Disparaît après 24 h. Les stories sont la forme la moins coûteuse à produire : c'est celle qui remplira le fil au quotidien.
-- **A** : voit les cercles des créatrices et vendeuses suivies en haut du fil → appuie → regarde → **une pastille produit flotte sur la story** → un appui ouvre la fiche → « Je prends ».
+- **A** : voit les cercles des créatrices et boutiques suivies en haut du fil → appuie → regarde → **une pastille produit flotte sur la story** → un appui ouvre la fiche → « Je prends ».
 - **C** : voit qui a vu sa story et combien ont cliqué sur l'article.
 
 ### F14.2 / F14.3 — Clips et fil « Pour toi »
 - **A** : ouvre l'onglet Clips → vidéos verticales plein écran, une par écran, **swipe vertical** → chaque clip porte en bas la pastille de l'article, le prix et le bouton « Je prends » → elle peut acheter **sans quitter le clip** (la feuille remonte, la vidéo continue derrière, comme en direct `F2.6`).
-- **Personnalisation** : le fil est ordonné par sa taille (`F0.5`), son budget habituel, ses catégories, ses vendeuses suivies, et ce qu'elle a regardé jusqu'au bout. Une acheteuse en 42 ne doit pas voir défiler du 36 — c'est la première cause d'abandon d'un fil mode.
+- **Personnalisation** : le fil est ordonné par sa taille (`F0.5`), son budget habituel, ses catégories, ses boutiques suivies, et ce qu'elle a regardé jusqu'au bout. Une acheteuse en 42 ne doit pas voir défiler du 36 — c'est la première cause d'abandon d'un fil mode.
 - **C / V** : publient un clip depuis « + » → sélection ou enregistrement → articles attachés → légende, hashtags → publier.
 - **AN** : accède au fil sans compte (`F0.10`), avec conversion au « Je prends ».
 - **Mode économie de données** (`F0.9`) : préchargement d'un seul clip à l'avance, qualité réduite, pas de lecture automatique en Wi-Fi absent.
@@ -785,7 +856,7 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 ### F14.5 — Attacher des articles à un contenu
 **La fonctionnalité qui fait tenir toute la règle d'or.**
 - **V** : attache ses propres articles.
-- **C** : attache **les articles de n'importe quelle vendeuse** — c'est ce qui fait d'elle une affiliée (`F15.4`). L'article attaché porte son identifiant de créatrice, donc la vente lui est rattachée.
+- **C** : attache **les articles de n'importe quelle boutique** — c'est ce qui fait d'elle une affiliée (`F15.4`). L'article attaché porte son identifiant de créatrice, donc la vente lui est rattachée.
 - **A** : attache l'article qu'elle a réellement acheté (son unboxing, son look) — vérifié depuis son historique de commandes, donc **impossible d'attacher un article qu'on n'a pas acheté**.
 - **Règle** : publication impossible sans au moins un article. Le bouton « Publier » reste inactif.
 
@@ -793,7 +864,7 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 **Le geste le plus important de la couche sociale.** Une action, cinq résultats.
 
 - **A** : son colis arrive → notification *« Filmez l'ouverture et gagnez [X] Ar de crédit »* → elle enregistre → l'article de sa commande est **attaché automatiquement** → elle dit si ça taille bien → publie.
-  - → sa réception est **confirmée** (déclenche `F4.5`, les fonds partent chez la vendeuse) ;
+  - → sa réception est **confirmée** (déclenche `F4.5`, les fonds partent chez la boutique) ;
   - → un **avis vérifié** est créé (`F6.1`) avec la note de taille ;
   - → du **contenu** entre dans le fil ;
   - → sa **cagnotte** est créditée (`F17.13`) ;
@@ -834,34 +905,34 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 |---|---|---|---|
 | F15.1 | Statut créatrice et vérification | P1 | M |
 | F15.2 | Profil créatrice public | P1 | M |
-| F15.3 | « Ma sélection » — vitrine d'articles d'autres vendeurs | P1 | M |
+| F15.3 | « Ma sélection » — vitrine d'articles d'autres boutiques | P1 | M |
 | F15.4 | Lien et attribution d'affiliation traçables | P1 | M |
 | F15.5 | Commission d'affiliation sur les ventes générées | P1 | M |
 | F15.6 | Tableau de bord créatrice (vues → clics → ventes → gains) | P1 | M |
 | F15.7 | Paliers de créatrice | P2 | S |
 | F15.8 | **Précommande groupée avec seuil** ⚠️ | P1 | S |
 | F15.9 | Mode revendeuse (achat fournisseur, revente sous son nom) | P1 | S |
-| F15.10 | Portefeuille et retrait créatrice | P1 | M |
-| F15.11 | Demande de partenariat vendeuse ↔ créatrice | P2 | S |
+| ~~F15.10~~ | ~~Portefeuille et retrait créatrice~~ ❌ *(`DP-07`)* — l'argent arrive sur son mobile money | — | — |
+| F15.11 | Demande de partenariat boutique ↔ créatrice | P2 | S |
 | F15.12 | Envoi d'un article offert contre contenu | P2 | C |
 | F15.13 | Annuaire de fournisseurs / sourcing ⚠️ | P3 | W |
 
 ### F15.1 / F15.2 — Devenir créatrice
-- **C** : profil → « Devenir créatrice » → **vérification d'identité identique au vendeur** (`F0.6`) : sans elle, pas de paiement possible et aucune protection en cas d'usurpation → renseigne ses réseaux existants, son style, ses tailles → validée par **OP**.
-- **Distinction importante** : une créatrice **n'est pas** une vendeuse. Elle ne détient pas de stock, n'expédie pas, ne gère pas de litige. Elle recommande et touche une commission. Une même personne peut cumuler les deux rôles (`F0.4`), mais les deux tableaux de bord et les deux portefeuilles restent séparés — sinon plus personne ne comprend d'où vient son argent.
+- **C** : profil → « Devenir créatrice » → **vérification d'identité identique à la boutique** (`F0.6`) : sans elle, pas de mise en vente possible *(`DP-07`, `R-V1`)*.
+- **Distinction importante** : une créatrice **n'est pas** une boutique. Elle ne détient pas de stock, n'expédie pas, ne gère pas de litige. Elle recommande et touche une commission. Une même personne peut cumuler les deux rôles (`F0.4`), mais les deux tableaux de bord et les deux portefeuilles restent séparés — sinon plus personne ne comprend d'où vient son argent.
 - **A** : voit sur le profil de la créatrice ses contenus, sa sélection, son badge, et le nombre d'articles vendus grâce à elle.
 
 ### F15.3 — « Ma sélection »
-- **C** : parcourt le catalogue de toutes les vendeuses → ajoute des articles à sa sélection → les organise par thème (« mes basiques », « spécial mariage ») → sa sélection est une vitrine publique.
-- **A** : achète depuis la sélection d'Ony **comme depuis n'importe quelle vitrine** — c'est la vendeuse d'origine qui expédie, Ony touche sa commission. L'acheteuse ne voit aucune complexité supplémentaire.
+- **C** : parcourt le catalogue de toutes les boutiques → ajoute des articles à sa sélection → les organise par thème (« mes basiques », « spécial mariage ») → sa sélection est une vitrine publique.
+- **A** : achète depuis la sélection d'Ony **comme depuis n'importe quelle vitrine** — c'est la boutique d'origine qui expédie, Ony touche sa commission. L'acheteuse ne voit aucune complexité supplémentaire.
 - **V** : voit quelles créatrices ont sélectionné ses articles et combien elles lui rapportent.
 
 ### F15.4 / F15.5 — Affiliation
 - **C** : chaque article qu'elle attache à un contenu ou met dans sa sélection porte son identifiant. Un lien partageable hors application fonctionne pareil.
 - **Attribution** : la vente est attribuée à la dernière créatrice cliquée dans une fenêtre de N jours. ⚠️ N à trancher — hypothèse : 7 jours.
-- **V** : voit sur chaque commande si elle vient d'une créatrice, et le montant de la commission versée. **Elle doit pouvoir refuser l'affiliation sur ses articles** — sinon elle subit une charge qu'elle n'a pas choisie.
+- **B** : voit sur chaque commande si elle vient d'une créatrice, et **la part qu'elle lui verse** *(`DP-09`)*. **Elle doit pouvoir refuser l'affiliation sur ses articles** *(`R-N3`)*.
 - **C** : voit chaque vente attribuée, son montant, et son gain.
-- **⚠️ Qui paie la commission d'affiliation ?** Trois options : la vendeuse (sur sa marge), JP (sur sa commission), ou un partage. Recommandation : **prélevée sur la commission JP en V1** — cela ne coûte rien de plus à la vendeuse, elle accepte donc facilement, et JP achète de l'acquisition à un prix connu. À réévaluer une fois le volume établi.
+- ✅ **Tranché** *(`DP-09`)* : **la boutique paie la commission d'affiliation**, sur son prix, à un taux qu'elle fixe et que la créatrice connaît **avant** d'attacher l'article. *(L'ancienne recommandation — prélèvement sur la commission JP — est caduque : JP n'en prend plus, `DP-08`.)* Le versement est **automatique au paiement**, par une requête secondaire *(`DP-11`, `R-M5`)*.
 
 ### F15.6 — Tableau de bord créatrice
 - **C** : entonnoir complet — contenus publiés, vues, clics vers article, « Je prends », ventes confirmées, **gains**. Par contenu et par période. Plus : ses meilleurs contenus, ses meilleurs articles, ses heures de publication les plus efficaces.
@@ -871,23 +942,23 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 **La fonctionnalité qui supprime la barrière du capital. Probablement le meilleur argument de recrutement des créatrices.**
 
 - **C** : publie un article en précommande → fixe le **prix**, le **seuil** (ex. 15 commandes), la **date limite** et le **délai de livraison annoncé** → publie un clip.
-- **A** : voit clairement **« Précommande — livraison prévue vers le [date] · 9 sur 15 commandes »** → « Je prends » → **elle paie, et l'argent est séquestré** (`F4.4`) → elle voit le compteur monter.
-- **Si le seuil est atteint** : les commandes sont confirmées, la créatrice commande chez son fournisseur avec l'argent séquestré libéré **partiellement** (voir décision ci-dessous), expédie à réception.
+- **A** : voit clairement **« Précommande — livraison prévue vers le [date] · 9 sur 15 commandes »** → « Je prends » → **son engagement est enregistré, sans encaissement**. ⚠️ Piste non tranchée *(`PO-8`)*.
+- **Si le seuil est atteint** : **toutes les commandes sont encaissées**, la créatrice commande chez son fournisseur. **Si le seuil n'est pas atteint** : les engagements tombent — personne n'a été débité, il n'y a rien à rembourser. ⚠️ `R-N8` exigeait un remboursement automatique intégral, impossible sans séquestre *(`DP-07`)* : **n'encaisser qu'au seuil** préserve la garantie sans détenir de fonds, mais déplace le risque — rien ne garantit que l'acheteuse aura encore la somme sur son compte *(`PO-8`)*.
 - **Si le seuil n'est pas atteint à la date limite** : **remboursement automatique et intégral de toutes les acheteuses.** Aucune intervention, aucune discussion. C'est ce qui rend la précommande acceptable.
-- **V (variante)** : une vendeuse peut aussi tester un article en précommande avant de l'acheter en volume. Réduit son risque de stock mort.
-- **OP** : suit les précommandes en retard — c'est le principal risque d'abus de cette fonctionnalité.
+- **V (variante)** : une boutique peut aussi tester un article en précommande avant de l'acheter en volume. Réduit son risque de stock mort.
+- **Tableau de bord** : précommandes en retard — **le principal risque d'abus de cette fonctionnalité**, et il n'y a plus personne pour l'instruire *(`DP-05`)*.
 - **⚠️ Décisions ouvertes, importantes** :
   - **Quand libérer les fonds à la créatrice ?** Tout garder jusqu'à livraison la met en incapacité d'acheter le stock. Tout libérer au seuil expose l'acheteuse. Piste : libérer une avance plafonnée au seuil (par exemple le prix d'achat fournisseur), le solde à la réception confirmée.
   - **Délai maximal** entre l'atteinte du seuil et l'expédition, au-delà duquel le remboursement est automatique. Sans cette limite, la précommande devient une machine à litiges.
   - **Plafond de précommandes simultanées** par créatrice non encore établie.
 
 ### F15.9 — Mode revendeuse
-- **C** : achète réellement du stock chez un fournisseur et le revend sous son nom. **Dans ce cas, elle devient une vendeuse** au sens du produit : vérification vendeur (`F0.6`), stock (`F1.6`), expédition, litiges. Le mode revendeuse n'est donc pas une fonctionnalité séparée, c'est **un parcours de bascule** de créatrice vers vendeuse, à rendre fluide et à expliquer clairement (les responsabilités changent).
+- **C** : achète réellement du stock chez un fournisseur et le revend sous son nom. **Dans ce cas, elle devient une boutique** au sens du produit : vérification boutique (`F0.6`), stock (`F1.6`), expédition, litiges. Le mode revendeuse n'est donc pas une fonctionnalité séparée, c'est **un parcours de bascule** de créatrice vers boutique, à rendre fluide et à expliquer clairement (les responsabilités changent).
 
-### F15.11 / F15.12 — Partenariats vendeuse ↔ créatrice
+### F15.11 / F15.12 — Partenariats boutique ↔ créatrice
 - **V** : cherche des créatrices par audience, style, taille, région → propose un partenariat (commission majorée, article offert contre contenu).
 - **C** : reçoit la proposition, accepte ou refuse, suit ses partenariats en cours.
-- **F15.12** : la vendeuse envoie un article gratuitement contre engagement de contenu. Le suivi de l'envoi et la vérification de la publication passent par la plateforme, sinon ces accords se font sur Messenger et JP perd la traçabilité — et la commission.
+- **F15.12** : la boutique envoie un article gratuitement contre engagement de contenu. Le suivi de l'envoi et la vérification de la publication passent par la plateforme, sinon ces accords se font sur Messenger et JP perd la traçabilité — et la commission.
 
 ---
 
@@ -910,7 +981,7 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 
 ### F16.1 / F16.2 / F16.3 — Le parcours cadeau
 - **A** : compose son panier → **« Demander en cadeau »** → un lien → elle l'envoie sur WhatsApp ou Messenger à son frère, son copain, sa mère.
-- **D** : ouvre le lien, **sans avoir l'application** → voit les articles, les photos, le prix total, les frais de livraison, **la vendeuse vérifiée** → paie par carte ou mobile money → laisse un message (`F16.5`).
+- **D** : ouvre le lien, **sans avoir l'application** → voit les articles, les photos, le prix total, les frais de livraison, **la boutique vérifiée** → paie par carte ou mobile money → laisse un message (`F16.5`).
 - **A** : notifiée *« Naina vous a offert votre panier »* → la commande suit le parcours normal → à la réception, elle publie son remerciement (`F14.7`) → **le remerciement est du contenu, donc de l'acquisition. La boucle se referme.**
 - **D** : suit la livraison depuis son lien, **sans compte**, et voit la preuve de remise. C'est exactement ce qui manque à un transfert d'argent classique : il ne sait jamais ce qui en a été fait.
 - **Règle** : l'adresse de livraison n'est **jamais** visible par le donateur. Il paie, il ne voit pas où ça va.
@@ -981,7 +1052,7 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
-| F18.1 | « JP Sélect » — sélection éditoriale de vendeurs et d'articles | P2 | S |
+| F18.1 | « JP Sélect » — sélection éditoriale de boutiques et d'articles | P2 | S |
 | F18.2 | « Le Journal JP » — éditorial, tendances, lookbooks | P2 | C |
 | F18.3 | **JP Club — abonnement acheteuse** | P2 | S |
 | F18.4 | Badge créatrice vérifiée | P1 | S |
@@ -1021,7 +1092,8 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 | F19.4 | Blocage d'un utilisateur | P1 | M |
 | F19.5 | Vérification d'âge à l'inscription | P1 | M |
 | F19.6 | Retrait de contenu avec notification motivée | P1 | M |
-| F19.7 | File de modération dans le back-office | P1 | M |
+| F19.7 | ♻️ **Vérification a posteriori des décisions automatiques** *(`DP-13`)* | P1 | M |
+| F19.13 | 🆕 **Classification du signalement par IA** *(`DP-13`)* | P1 | M |
 | F19.8 | Protection contre la republication de contenu volé | P1 | S |
 | F19.9 | Sanctions graduées et voie de recours | P1 | S |
 | F19.10 | Compte privé / audience restreinte | P2 | C |
@@ -1034,33 +1106,33 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 
 ### F19.3 / F19.12 — Signaler
 - **A / C** : appui long sur un contenu ou un commentaire → « Signaler » → motif en une liste courte → envoyé. **Deux niveaux** : signalement ordinaire (file normale) et **signalement d'urgence** — harcèlement, menace, contenu sexuel non consenti, mineur — qui passe en tête de file avec un engagement de traitement court.
-- **MO** : traite la file par priorité → voit le contenu, l'historique de l'auteur, les signalements antérieurs → retire, avertit, suspend, ou classe → **décision motivée notifiée** à l'auteur et au signalant.
+- **SYS** : traite la file **automatiquement** *(`DP-05`)* → filtre, historique de l'auteur, signalements antérieurs → retire, avertit, suspend, **avec un motif écrit obligatoire** *(`R-T2`)*.
 
 ### F19.5 — Vérification d'âge
 - **A / C** : déclaration d'âge à l'inscription ; pour publier du contenu vidéo, la vérification d'identité (`F0.6` / `F15.1`) donne l'âge réel. **Aucune publication vidéo par un mineur.** Point non négociable, juridiquement et moralement.
 
 ### F19.8 — Contenu volé
-- **C** : signale qu'un contenu est le sien → **MO** compare, retire le contenu republié, sanctionne le récidiviste. Empreinte automatique sur les vidéos publiées pour détecter les republications.
+- **C** : signale qu'un contenu est le sien → **`SYS`** compare les empreintes, retire le contenu republié, sanctionne le récidiviste *(`DP-05`)*. Empreinte automatique.
 - **Pourquoi dès la V1** : reprendre la vidéo d'une autre pour vendre le même article est le premier abus qui apparaîtra, et c'est celui qui fait fuir les créatrices sérieuses.
 
 ### F19.9 — Sanctions et recours
-- **MO** : échelle graduée — avertissement, retrait, restriction de publication, suspension, exclusion. Chaque sanction est écrite, motivée, horodatée.
-- **C / V** : peut **contester** une sanction. Une modération sans recours est vécue comme arbitraire et fait partir les meilleurs profils.
+- **SYS** : échelle graduée — avertissement, retrait, restriction de publication, suspension, exclusion. Chaque sanction est **écrite, motivée, horodatée** *(`R-X6`, `RB4`)*.
+- ⚠️ **La contestation disparaît avec l'instructeur** *(`DP-05`, `R-X6`)*. Une sanction automatique ne peut être levée que par **une nouvelle évaluation automatique** — elle doit donc être **recalculable**, jamais un état figé. **C'est le point où `DP-05` coûte le plus cher** : une modération sans recours fait partir les meilleurs profils.
 
 ---
 
 # ÉPIQUE 20 — Événements thématiques
 
-> **Un événement est un rendez-vous commercial daté, partagé par plusieurs vendeurs, autour d'un thème.** Noël, Pâques, la rentrée, le Nouvel An malgache, un événement Otaku, la Fête des mères, le Black Friday local.
+> **Un événement est un rendez-vous commercial daté, partagé par plusieurs boutiques, autour d'un thème.** Noël, Pâques, la rentrée, le Nouvel An malgache, un événement Otaku, la Fête des mères, le Black Friday local.
 >
-> Pourquoi c'est une épique et non une fonctionnalité de plus : un événement est le seul mécanisme qui donne à la plateforme **une raison d'exister au-delà de la somme de ses boutiques**. Il crée un pic de trafic que JP peut annoncer, il donne aux petits vendeurs une visibilité qu'ils n'achèteraient jamais seuls, et il fabrique un motif de retour daté — plus honnête et moins coûteux qu'une notification de plus (`F17.4`).
+> Pourquoi c'est une épique et non une fonctionnalité de plus : un événement est le seul mécanisme qui donne à la plateforme **une raison d'exister au-delà de la somme de ses boutiques**. Il crée un pic de trafic que JP peut annoncer, il donne aux petits boutiques une visibilité qu'ils n'achèteraient jamais seuls, et il fabrique un motif de retour daté — plus honnête et moins coûteux qu'une notification de plus (`F17.4`).
 >
 > Règle de cohérence avec l'épique 14 : **un événement n'est pas un thème décoratif.** Une page événement qui ne mène pas à des articles achetables n'a pas sa place dans le produit.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
 | F20.1 | Événement JP officiel — thème, dates, visuel, hashtag, page publique | P2 | S |
-| F20.2 | Candidature et acceptation d'un vendeur ou d'une créatrice | P2 | S |
+| F20.2 | Candidature et acceptation d'une boutique ou d'une créatrice | P2 | S |
 | F20.3 | Rattachement d'articles, promotions, contenus et directs à un événement | P2 | S |
 | F20.4 | **Page événement publique, accessible sans compte** | P2 | S |
 | F20.5 | Mini-événement propre à une boutique | P2 | C |
@@ -1070,10 +1142,10 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 | F20.9 | Calendrier des événements à venir côté acheteuse | P2 | C |
 
 ### F20.1 / F20.2 — Créer un événement, y participer
-- **OP** : back-office → « Nouvel événement » → nom, thème, **dates de début et de fin**, visuel, couleur d'accent, hashtag associé (`F14.12`), texte de présentation, règles de participation → statut `brouillon` → `annoncé` (visible, pas encore ouvert) → `en cours` → `terminé`. Les transitions de dates sont automatiques ; l'annonce est manuelle.
-- **V / C** : voient les événements ouverts dans leur studio → « Participer » → choisissent les articles et promotions qu'ils y engagent (`F20.3`) → **OP valide ou refuse**, avec motif.
+- ~~**OP** : événement de portée JP~~ ❌ **supprimé** *(`DP-05`)*. **Il ne reste que les événements de boutique**, créés par leur organisateur *(`F20.x`, `UC-72`)*.
+- **B / C** : voient les événements ouverts dans leur studio → « Participer » → choisissent les articles et promotions qu'ils y engagent (`F20.x`). **L'organisateur valide** — il n'y a plus d'arbitre *(`DP-05`)*.
 - **Pourquoi une validation** : sans elle, le premier événement Noël se remplit de 400 articles hors sujet et la page ne vaut plus rien. La sélection est ce qui fait la valeur de l'événement, exactement comme pour « JP Sélect » (`F18.1`).
-- **⚠️ À trancher** : la participation est-elle **gratuite**, payante (une mise en avant, `F10.5`), ou conditionnée à un palier d'abonnement vendeur (`F10.3`) ? Recommandation : gratuite sur les deux premiers événements pour amorcer, puis payante pour les emplacements en tête de page uniquement — jamais pour l'accès à l'événement lui-même, sous peine de n'avoir que des grosses boutiques et un catalogue pauvre.
+- **⚠️ À trancher** : la participation est-elle **gratuite**, payante (une mise en avant, `F10.5`), ou conditionnée à un palier d'abonnement boutique (`F10.3`) ? Recommandation : gratuite sur les deux premiers événements pour amorcer, puis payante pour les emplacements en tête de page uniquement — jamais pour l'accès à l'événement lui-même, sous peine de n'avoir que des grosses boutiques et un catalogue pauvre.
 
 ### F20.3 — Rattacher du contenu et des offres
 - **V** : coche des articles, rattache une promotion existante (`F7.22`) ou en crée une propre à l'événement, programme un direct « spécial Noël » (`F2.1`), publie des clips avec le hashtag de l'événement.
@@ -1087,7 +1159,7 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 - **État vide** : si l'événement est annoncé mais pas encore ouvert, la page montre le compte à rebours et un bouton **« Me prévenir à l'ouverture »** (`F20.6`).
 
 ### F20.5 — Mini-événement de boutique
-- **V** : crée son propre événement, sans validation OP — « Ma braderie de fin de mois », « Nouvelle collection samedi ». Portée limitée à sa boutique et à ses abonnés.
+- **B** : crée son propre événement, **sans validation d'un tiers** *(`DP-05`)* — « Ma braderie de fin de mois », « Nouvelle collection samedi ». Portée limitée à sa vitrine et à ses abonnés.
 - **Distinction claire** : les événements JP sont curés et visibles de tous ; les événements de boutique n'apparaissent pas dans le calendrier général (`F20.9`), seulement sur la vitrine et dans le fil des abonnés. **Sans cette distinction, le calendrier JP se remplit de 300 braderies et perd toute valeur éditoriale.**
 
 ### F20.6 — Notifications d'événement
@@ -1100,7 +1172,7 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 
 ### F20.8 — Bilan d'événement
 - **V** : à la clôture — articles vendus, chiffre d'affaires, comparaison avec une période équivalente hors événement, **nouveaux abonnés gagnés**, contenus publiés et leurs conversions. C'est ce qui décide de sa participation au suivant.
-- **OP** : participation par vendeur, trafic de la page, conversion, part des ventes de la période attribuable à l'événement, coût de la mise en avant. **Un événement dont le bilan n'est pas mesuré sera reconduit par habitude et non par résultat.**
+- **Tableau de bord** : participation par boutique, trafic de la page, conversion, part des ventes de la période attribuable à l'événement.
 
 ### F20.9 — Calendrier côté acheteuse
 - **A** : « Événements » → les événements en cours puis à venir, avec dates et visuels → « Me prévenir ». Le calendrier est aussi le meilleur écran pour installer une habitude sans notification (`F17.4`).
@@ -1121,7 +1193,7 @@ d'autre**.
 | **JP Beauté** | *Vrai produit, prix vrai* | 8 % | **ouvert** |
 | JP Tech | *Vérifié avant de payer* | **3 %** | déclaré, fermé |
 
-**Les trois partagent la même logistique** — point relais et domicile. C'est ce
+**Les trois partagent la même logistique** — la boutique livre, JP suit *(`DP-04`)*. C'est ce
 qui rend **l'application identique dans les trois univers** : ce qui varie n'est
 pas le flux, ce sont trois listes — champs de fiche, motifs de litige, taux de
 commission.
@@ -1133,7 +1205,7 @@ raison, pas par manque d'intérêt commercial.
 **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre
 une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche
 article, le mode de livraison, les motifs de litige recevables, le taux de
-commission et la vérification exigée du vendeur.
+commission et la vérification exigée de la boutique.
 
 **Pourquoi trois univers déclarés mais fermés.** L'abstraction se construit
 maintenant, l'ouverture devient une ligne de configuration. La rétrofitter
@@ -1141,13 +1213,13 @@ plus tard voudrait dire migrer chaque article, chaque commande et chaque
 promotion — des mois de travail sur des données réelles.
 
 **Pourquoi Mode et Beauté ensemble.** Elles partagent la même logistique
-— léger, point relais — et souvent la même vendeuse. Un seul modèle de
+— léger, remise en main propre ou coursier — et souvent la même boutique. Un seul modèle de
 livraison à roder, deux marchés validés.
 
 | ID | Fonctionnalité | Phase | Prio |
 |---|---|---|---|
 | F21.1 | **Sélecteur d'univers en tête d'écran**, univers mémorisé | P1 | M |
-| F21.2 | **Règles par univers** : commission, livraisons, champs de fiche, motifs de litige | P1 | M |
+| F21.2 | **Règles par univers** : champs de fiche, motifs de signalement *(plus de commission — `DP-08`)* | P1 | M |
 | F21.3 | **Fiche article adaptée à l'univers** — champs obligatoires bloquants | P1 | M |
 | F21.4 | **Motifs de litige filtrés par univers** | P1 | M |
 | F21.5 | **Commission par univers** appliquée au calcul et au récapitulatif | P1 | M |
@@ -1178,9 +1250,9 @@ téléphones gagne environ 5 % sur un appareil : lui en prendre 8 rendrait
 `JP Tech` vide, quel que soit le reste du produit. D'où 3 % — et d'où la
 nécessité que le taux soit par univers, pas global.
 
-## La vendeuse choisit où elle est visible
+## La boutique choisit où elle est visible
 
-**Par défaut, une vendeuse n'est visible que dans UN univers** — celui de son
+**Par défaut, une boutique n'est visible que dans UN univers** — celui de son
 premier article *(R-Y19)*. Elle peut en ajouter, en un geste.
 
 Mais ajouter un univers déclenche un **avertissement** : *« Être visible partout
@@ -1193,10 +1265,10 @@ vend que ça.
 
 ## Ce que le panier ne fait PAS
 
-**Le panier ne se scinde pas par univers.** Il se scinde par vendeur et par
+**Le panier ne se scinde pas par univers.** Il se scinde par boutique et par
 mode de livraison, ce qu'il fait déjà *(F3.1)*.
 
-À Madagascar, la même vendeuse tient souvent le vêtement et le cosmétique :
+À Madagascar, la même boutique tient souvent le vêtement et le cosmétique :
 la forcer à faire payer deux fois serait absurde.
 
 Et comme **les trois univers partagent la même livraison**, la scission par mode
@@ -1208,7 +1280,7 @@ l'univers.
 
 - **F21.8 — qui ouvre un univers ?** Un opérateur seul, ou la double
   validation déjà en place pour les paramètres économiques ? Ouvrir un univers
-  engage un recrutement de vendeurs et une promesse publique.
+  engage un recrutement de boutiques et une promesse publique.
 - **F21.9 — la recherche est-elle transverse par défaut ?** Chercher « crème »
   depuis JP Mode doit-il proposer des résultats de JP Beauté, ou rester muet ?
   Transverse aide à la découverte, mais brouille le repère d'étage.
@@ -1230,7 +1302,7 @@ catalogue et le litige plutôt que de créer un domaine.
 | F1.21 | **Fiche beauté** : date de péremption, contenance, scellé ou entamé, type de peau | P1 | M |
 | F1.22 | **Refus de publication d'un produit périmé** — contrôle à la publication et à l'achat | P1 | M |
 | F1.23 | **Déclaration de provenance** et pièce justificative facultative | P1 | S |
-| F1.24 | Alerte au vendeur à l'approche de la péremption d'un article en stock | P2 | S |
+| F1.24 | Alerte à la boutique à l'approche de la péremption d'un article en stock | P2 | S |
 
 **Pourquoi la péremption est obligatoire et pas facultative.** Un cosmétique
 périmé ou contrefait ne déçoit pas : **il blesse**. C'est la différence de
@@ -1243,14 +1315,14 @@ séparé plutôt qu'une catégorie de plus.
 |---|---|---|---|
 | F6.11 | **Litige « réaction cutanée »** — traitement prioritaire, comme une urgence | P1 | S |
 | F6.12 | **Pas de retour sur un cosmétique entamé**, sauf défaut ou contrefaçon | P1 | M |
-| F6.13 | Signalement de contrefaçon avec transmission au vendeur ET à l'équipe | P1 | S |
+| F6.13 | Signalement de contrefaçon avec transmission à la boutique ET à l'équipe | P1 | S |
 
 **F6.11 est une règle de sécurité des personnes, pas de commerce.** Une réaction
 cutanée peut relever de l'urgence médicale ; le dossier passe devant, comme les
 signalements d'urgence de l'épique 19.
 
-**F6.12 protège le vendeur.** Un cosmétique entamé ne se revend pas : accepter
-son retour reviendrait à faire payer au vendeur le changement d'avis de
+**F6.12 protège la boutique.** Un cosmétique entamé ne se revend pas : accepter
+son retour reviendrait à faire payer à la boutique le changement d'avis de
 l'acheteuse. L'exception — défaut ou contrefaçon — reste entière.
 
 ---
@@ -1264,7 +1336,7 @@ Le périmètre a été élargi : **le noyau social est livré dès le lancement*
 **Le socle commerce**
 - **Identité** — F0.1, F0.2, F0.6, F0.7, F0.10, F0.11, **F0.13, F0.14, F0.16**
 - **Catalogue** — F1.1, F1.2, F1.6, F1.7, F1.10, F1.11, F1.14
-- **Vente hors direct** — **F1.15, F1.16, F1.18, F1.19, F3.14** · et **F1.17** (particulier) dès que le seuil de bascule est tranché
+- **Vente hors direct** — **F1.15, F1.16, F1.18, F1.19, F3.14**. *(`F1.17` supprimée — `DP-01`.)*
 - **Direct** — F2.3, F2.4, F2.5, F2.6, F2.7, F2.8, F2.9, F2.13, F2.14
 - **Commande** — F3.1, F3.2, F3.3, F3.4, F3.5, F3.7, F3.10, **F3.15**
 - **Paiement** — F4.1, F4.3 ⚠️, F4.4, F4.5, F4.6, F4.7, F4.8, F4.10, F4.11
@@ -1277,7 +1349,7 @@ Le périmètre a été élargi : **le noyau social est livré dès le lancement*
 
 **Le noyau social — nouveau**
 - **Contenu** — F14.1 (stories), F14.2 et F14.3 (clips et fil), F14.5 (articles attachés), **F14.7 (unboxing)**, F14.12 (hashtags), F14.15, F14.17, F14.18, F14.20
-- **Créatrices** — F15.1, F15.2, F15.3, F15.4, F15.5, F15.6, F15.10 · et F15.8 (précommande) si la décision est tranchée à temps
+- **Créatrices** — F15.1, F15.2, F15.3, F15.4, F15.5, F15.6 *(F15.10 supprimée — `DP-07`)* · et F15.8 (précommande) si la décision est tranchée à temps
 - **Cadeau** — F16.1, F16.2, F16.3, F16.4, F16.10
 - **Habitude** — F17.4, F17.9, F17.12, F17.13
 - **Modération** — **toute la liste marquée M de l'épique 19**, sans exception
@@ -1287,7 +1359,7 @@ Le périmètre a été élargi : **le noyau social est livré dès le lancement*
 
 **Pourquoi fidélisation et événements passent en phase 2, alors qu'ils viennent d'être demandés.** Ce n'est pas un désaveu, c'est une question de matière première. Un moteur de rang client a besoin d'un historique de commandes confirmées pour classer quoi que ce soit : au premier mois, toutes les clientes sont Bronze et l'écran est vide. Un événement thématique a besoin de plusieurs boutiques actives et d'un catalogue fourni, sinon la page événement est un désert que l'on aura annoncé. Les deux se construisent sur des données que seul le lancement produit.
 
-En revanche, **trois choses doivent être faites en phase 1 sous peine de coûter dix fois plus cher ensuite** : le journal des commandes confirmées par couple (vendeur, cliente), qui alimentera le rang sans reprise de données ; la **table des promotions et la règle de cumul** (`F7.26`), parce qu'une remise rétro-appliquée à des commandes déjà facturées est un cauchemar comptable ; et le **rattachement d'un article à un événement**, un simple champ, qui évite une migration lourde au moment où l'événement Noël sera décidé trois semaines avant Noël.
+En revanche, **trois choses doivent être faites en phase 1 sous peine de coûter dix fois plus cher ensuite** : le journal des commandes confirmées par couple (boutique, cliente), qui alimentera le rang sans reprise de données ; la **table des promotions et la règle de cumul** (`F7.26`), parce qu'une remise rétro-appliquée à des commandes déjà facturées est un cauchemar comptable ; et le **rattachement d'un article à un événement**, un simple champ, qui évite une migration lourde au moment où l'événement Noël sera décidé trois semaines avant Noël.
 
 > **Avertissement de périmètre, à assumer explicitement.** Ce lot est plus large que celui décrit slide 20. L'horizon d'environ 3 mois annoncé slide 19 devient tendu, notamment à cause de la vidéo (enregistrement, transcodage, diffusion, stockage) et de la modération, qui est autant un coût humain qu'un développement. Deux issues honnêtes : allonger l'horizon, ou livrer le noyau social en deux temps — **stories, clips et unboxing d'abord** (ils portent l'essentiel de la valeur), affiliation et précommande six semaines plus tard. Cet arbitrage doit être posé devant l'investisseur, pas découvert en cours de route.
 
@@ -1297,10 +1369,10 @@ En revanche, **trois choses doivent être faites en phase 1 sous peine de coûte
 
 **Sur le commerce**
 
-1. **F4.3 — Le paiement à la livraison.** Sans lui, une part importante de la demande est inaccessible ; avec lui, le séquestre perd son sens et le risque revient au vendeur. À trancher avant de coder le paiement.
+1. ~~**F4.3 — Le paiement à la livraison.**~~ ❌ **Sans objet** *(`DP-04`)* — plus personne pour encaisser des espèces.
 2. **F1.10 — La durée de réservation.** Elle arbitre entre conversion et gel du stock. À mesurer dès les premiers directs.
-3. **F10.2 — Le taux de commission.** À quel niveau la vendeuse contourne-t-elle la plateforme ?
-4. **F4.6 — Le délai de libération automatique des fonds.** Trop long, les vendeuses partent. Trop court, la protection de l'acheteuse est fictive.
+3. ~~**F10.2 — Le taux de commission.**~~ ❌ **Sans objet** *(`DP-08`)*. Remplacée par : **quels montants et quels quotas pour les paliers d'abonnement ?** *(`PO-6`)*
+4. **F4.6 — Le délai de libération automatique des fonds.** Trop long, les boutiques partent. Trop court, la protection de l'acheteuse est fictive.
 5. **F2.21 — La rediffusion vers Facebook.** Pont d'acquisition ou frein à la migration ?
 6. **F5.8 — Qui paie le retour ?** Sur des paniers faibles, le coût du retour peut dépasser la marge.
 7. **F7.14 — Messagerie privée ou non.** Rouvrir le canal que le produit est censé supprimer.
@@ -1308,7 +1380,7 @@ En revanche, **trois choses doivent être faites en phase 1 sous peine de coûte
 **Sur la couche sociale**
 
 8. **F15.8 — La précommande groupée : quand libérer les fonds à la créatrice ?** C'est la décision la plus délicate du produit. Tout garder jusqu'à la livraison la met en incapacité d'acheter le stock, donc la fonctionnalité ne sert à rien ; tout libérer au seuil expose l'acheteuse à exactement l'arnaque que JP prétend supprimer. Il faut aussi fixer le délai maximal d'expédition et le plafond de précommandes simultanées.
-9. **F15.5 — Qui paie la commission d'affiliation ?** La vendeuse, JP, ou les deux. Recommandation : sur la commission JP en V1, pour lever la résistance des vendeuses et acheter de l'acquisition à un prix connu.
+9. ~~**F15.5 — Qui paie la commission d'affiliation ?**~~ ✅ **Tranchée** *(`DP-09`)* : **la boutique**, sur son prix, à un taux qu'elle fixe et que la créatrice connaît avant d'attacher l'article.
 10. **F14.7 — Le montant du crédit d'unboxing.** Trop bas, personne ne filme ; trop haut, on achète du contenu à perte. C'est le réglage qui décide si le moteur d'acquisition gratuite s'amorce.
 11. **F14.13 — La musique.** Les droits sont un risque juridique réel. Bibliothèque restreinte sous licence en V1, pas de catalogue commercial.
 12. **F15.4 — La fenêtre d'attribution d'affiliation.** Hypothèse de 7 jours, à valider.
@@ -1318,12 +1390,12 @@ En revanche, **trois choses doivent être faites en phase 1 sous peine de coûte
 **Sur la vente hors direct, la fidélisation et les événements**
 
 15. **F1.16 — La durée de réservation hors direct.** Hypothèse : 30 minutes contre 5 en direct. Le raisonnement change complètement : hors pic, geler un article coûte peu et sauve le panier. À mesurer sur le taux d'expiration comparé des deux canaux.
-16. **F1.17 — Le seuil de bascule particulier → vendeur professionnel**, et le taux de commission appliqué au particulier. Trop bas, on impose un KYC à quelqu'un qui vend deux robes et il abandonne ; trop haut, on héberge des boutiques non vérifiées qui encaissent. À trancher **avant** d'ouvrir le dépôt d'annonce, car cela conditionne l'écran de vérification.
+16. ~~**F1.17 — Le seuil de bascule particulier → boutique.**~~ ❌ **Sans objet** *(`DP-01`, `DP-02`)* — il n'y a plus de vendeur particulier, et un compte ne change jamais de type.
 17. **F7.26 — La règle de cumul des remises.** Recommandation : une seule remise par ligne, la plus favorable à l'acheteuse, jamais d'addition. À figer **avant** de coder le calcul du panier — c'est le genre de règle qu'on ne change pas après avoir émis des factures.
-18. **F7.23 — Le plafond de notifications de promotion.** Hypothèse : une par vendeur et par 24 h, regroupement au-delà de trois par jour. C'est le réglage qui décide si l'acheteuse garde ses notifications activées, donc si la plateforme peut encore lui dire que son colis est arrivé.
-19. **F7.18 — Les critères et les poids du rang client.** Volume, fréquence, récence, fiabilité : la formule doit rester explicable en une phrase. À caler avec les vendeurs pilotes, qui savent déjà, à la main, qui sont leurs bonnes clientes.
+18. **F7.23 — Le plafond de notifications de promotion.** Hypothèse : une par boutique et par 24 h, regroupement au-delà de trois par jour. C'est le réglage qui décide si l'acheteuse garde ses notifications activées, donc si la plateforme peut encore lui dire que son colis est arrivé.
+19. **F7.18 — Les critères et les poids du rang client.** Volume, fréquence, récence, fiabilité : la formule doit rester explicable en une phrase. À caler avec les boutiques pilotes, qui savent déjà, à la main, qui sont leurs bonnes clientes.
 20. **F7.24 — Une promotion ciblée est-elle découvrable ou privée ?** Visible et grisée pour créer l'envie de progresser, ou invisible pour éviter la frustration.
-21. **F20.2 — La participation à un événement : gratuite, payante, ou réservée à un palier d'abonnement ?** Et surtout : **qui valide** les candidatures, avec quel délai. Sans validation, la page événement perd sa valeur éditoriale ; avec une validation lente, les vendeurs ne jouent plus le jeu.
+21. **F20.2 — La participation à un événement : gratuite, payante, ou réservée à un palier d'abonnement ?** Et surtout : **qui valide** les candidatures, avec quel délai. Sans validation, la page événement perd sa valeur éditoriale ; avec une validation lente, les boutiques ne jouent plus le jeu.
 
 ---
 

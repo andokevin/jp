@@ -46,7 +46,7 @@ const tranche1 = JSON.parse(
     '--limit',
     '400',
     '--json',
-    'number,state',
+    'number,state,labels',
   ]),
 );
 
@@ -60,7 +60,7 @@ const NOMS = {
   S6: 'Temps réel — WebSocket, canaux, resynchronisation',
   S7: 'Design system — jetons, primitives, les quatre états',
   S8: 'Coquille Expo — navigation, session, hors ligne',
-  S9: 'Coquilles Vite — back-office et pages publiques',
+  S9: 'Coquilles Vite — tableau de bord interne et pages publiques',
   S10: 'Observabilité — journaux, métriques, alertes',
 };
 
@@ -87,7 +87,16 @@ for (const cle of ordre) {
   lignes.push(`| \`${cle}\` | ${NOMS[cle]} | \`${jauge}\` | ${etat} | ${numeros} |`);
 }
 
-const t1Fait = tranche1.filter((i) => i.state === 'CLOSED').length;
+// Une issue fermée n'est pas forcément faite : 172 ont été fermées comme
+// devenues sans objet par la refonte produit (voir docs/JP_DECISIONS_PRODUIT.md).
+// Sans distinction, le tableau d'avancement compterait une annulation comme un
+// achèvement — exactement le mensonge que ce fichier existe pour éviter.
+const t1Annulees = tranche1.filter(
+  (i) => i.state === 'CLOSED' && !(i.labels ?? []).some((l) => l.name === 'status:done'),
+).length;
+const t1Fait = tranche1.filter(
+  (i) => i.state === 'CLOSED' && (i.labels ?? []).some((l) => l.name === 'status:done'),
+).length;
 const prochaine = socle.filter((i) => i.state === 'OPEN').sort((a, b) => a.number - b.number)[0];
 
 // ── Ce que le dépôt contient réellement ──────────────────────────────────────
@@ -112,13 +121,13 @@ const md = `# Learning Map
 ## Projet en cours
 
 **JP** — marketplace mode pour Madagascar. Commerce en direct, vente hors
-direct, couche sociale. La promesse : **l'argent de l'acheteuse est gardé par
-JP jusqu'à ce qu'elle confirme avoir reçu.**
+direct, couche sociale. La promesse : **vous savez à qui vous payez** —
+boutique vérifiée, transaction historisée, traçabilité *(DP-07, D-21)*.
 
 ## Objectif
 
 Terminer la **vague 0 — le socle** (\`S1\` → \`S10\`), qui ne livre aucune
-fonctionnalité visible mais que les 266 fonctionnalités supposent en place.
+fonctionnalité visible mais que les 257 fonctionnalités supposent en place.
 Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 ## Le socle
@@ -133,7 +142,8 @@ ${lignes.join('\n')}
 
 | | |
 |---|---|
-| Tranche 1 — première vente réelle | ${t1Fait} / ${tranche1.length} |
+| Tranche 1 — première vente réelle | ${t1Fait} / ${tranche1.length - t1Annulees} |
+| *dont annulées par la refonte produit* | ${t1Annulees} |
 | Prochaine issue | ${prochaine ? `**#${prochaine.number}** — ${prochaine.title.replace(/ · \[socle\]/, '')}` : '— socle terminé —'} |
 
 ## Ce que le dépôt contient
@@ -184,5 +194,5 @@ pnpm couverture    # le plan couvre-t-il encore le backlog ?
 
 writeFileSync(join(RACINE, 'LEARNING-MAP.md'), md);
 console.log(
-  `✓ LEARNING-MAP.md — socle ${totalFait}/${socle.length}, tranche 1 ${t1Fait}/${tranche1.length}`,
+  `✓ LEARNING-MAP.md — socle ${totalFait}/${socle.length}, tranche 1 ${t1Fait}/${tranche1.length - t1Annulees} (${t1Annulees} annulées)`,
 );

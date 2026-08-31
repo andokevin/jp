@@ -43,10 +43,10 @@
 **La fonctionnalité qui fait tenir toute la règle d'or.**
 
 - **V** : attache ses propres articles.
-- **C** : attache **les articles de n'importe quel vendeur** — c'est ce qui fait d'elle une affiliée *(F15.4)*. L'article attaché porte son identifiant de créatrice, donc la vente lui est rattachée.
+- **C** : attache **les articles de n'importe quelle boutique** — c'est ce qui fait d'elle une affiliée *(F15.4)*. L'article attaché porte son identifiant de créatrice, donc la vente lui est rattachée.
 - **A** : attache l'article qu'elle a **réellement acheté** (unboxing, look) — vérifié depuis son historique de commandes, donc **impossible d'attacher un article qu'on n'a pas acheté**.
 
-**Trois règles d'autorisation distinctes selon le rôle**, et c'est le cœur de la complexité : le vendeur est limité à son catalogue, la créatrice a accès à tout catalogue autorisant l'affiliation *(R-N3)*, l'acheteuse est limitée à ses achats confirmés.
+**Trois règles d'autorisation distinctes selon le rôle**, et c'est le cœur de la complexité : la boutique est limité à son catalogue, la créatrice a accès à tout catalogue autorisant l'affiliation *(R-N3)*, l'acheteuse est limitée à ses achats confirmés.
 
 **La contrainte de publication** *(R-K1)* : un contenu publié **doit** avoir au moins une ligne dans `contenu_article`. Appliquée dans la transaction de publication **et** par une contrainte différée en base. Le bouton « Publier » reste inactif côté client, mais **le client n'est pas la garantie** — un appel direct à l'API doit échouer aussi.
 
@@ -95,7 +95,7 @@ Screen 1 — "Attacher des articles" (three role variants, same layout).
 Vertical order: a title, a search field, and a source selector that differs by
 role: for a seller, a single tab "Mon catalogue"; for a creator, two tabs
 "Toutes les boutiques" and "Ma sélection", each product tile showing the shop name
-and a small commission chip "vous gagnez 5 %"; for a buyer, a single tab "Mes
+and a small chip "vous gagnez 5 % — versés au paiement (DP-09)"; for a buyer, a single tab "Mes
 achats" with only confirmed purchases and a muted line "Vous ne pouvez attacher
 que des articles que vous avez reçus".
 Then a two-column product grid with checkboxes, a running count chip "2 articles
@@ -119,8 +119,8 @@ the seller name, a verified badge, and a "Je prends" button.
 - Publication sans article → **422** sur story, clip, photo, unboxing.
 - Appel direct à l'API en contournant le client → refusé.
 - Insertion en base contournant le service → **rejetée par le déclencheur différé**.
-- Vendeur attachant l'article d'un autre → 403.
-- Créatrice attachant l'article d'un vendeur ayant **refusé l'affiliation** *(R-N3)* → 403.
+- Boutique attachant l'article d'un autre → 403.
+- Créatrice attachant l'article d'une boutique ayant **refusé l'affiliation** *(R-N3)* → 403.
 - Acheteuse attachant un article non acheté → 403 ; article acheté mais non confirmé → 403.
 - Contenu de créatrice → `contenu_article.createur_id` renseigné, attribution d'affiliation fonctionnelle *(F15.4)*.
 
@@ -150,7 +150,7 @@ depend: [F1.1]
 
 **A** : son colis arrive → notification *« Filmez l'ouverture et gagnez X Ar de crédit »* → elle enregistre → l'article de sa commande est **attaché automatiquement** → elle dit si ça taille bien → publie. Alors :
 
-1. sa **réception est confirmée** → déclenche la libération du séquestre *(F4.5)* ;
+1. sa **réception est confirmée** → clôt la commande et **alimente le score de la boutique** *(`UC-31`, `DP-07`)*. **Aucun mouvement d'argent** : il n'y a plus de séquestre à libérer ;
 2. un **avis vérifié** est créé *(F6.1)* avec la note de taille ;
 3. du **contenu** entre dans le fil ;
 4. sa **cagnotte** est créditée *(F17.13)* ;
@@ -164,7 +164,7 @@ depend: [F1.1]
 
 **⚠️ À calibrer** : le montant du crédit. Trop bas, personne ne filme ; trop haut, on achète du contenu à perte. **Le taux de production d'unboxings est un indicateur du pilote** *(F11.7)*.
 
-**Point technique délicat** : les cinq effets doivent être **atomiques du point de vue de l'utilisatrice** mais **résilients** individuellement. Si la création de l'avis échoue, la confirmation de réception ne doit pas être annulée — sinon un bogue d'avis bloque le paiement du vendeur. Confirmation et crédit dans la transaction ; avis, contenu et notification en asynchrone idempotent.
+**Point technique délicat** : les cinq effets doivent être **atomiques du point de vue de l'utilisatrice** mais **résilients** individuellement. Si la création de l'avis échoue, la confirmation de réception ne doit pas être annulée — sinon un bogue d'avis bloque le paiement de la boutique. Confirmation et crédit dans la transaction ; avis, contenu et notification en asynchrone idempotent.
 
 ### 2. Structure de code
 
@@ -172,7 +172,7 @@ depend: [F1.1]
 apps/api/src/modules/contenu/
 ├─ unboxing.ts         orchestration des cinq effets
 ├─ unboxing.test.ts    ← chaque effet, et la résilience de chacun
-apps/api/src/jobs/effetsUnboxing.ts     avis, contenu, notification vendeur
+apps/api/src/jobs/effetsUnboxing.ts     avis, contenu, notification boutique
 apps/mobile/src/features/unboxing/
 ├─ ecrans/{EcranInvitation,EcranEnregistrement,EcranNoteTaille,EcranPublication}.tsx
 └─ hooks/useUnboxing.ts
@@ -222,7 +222,7 @@ button "Voir ma vidéo".
 
 `POST /commandes/:id/unboxing` `{ mediaUrl, note, conformiteTaille }` :
 - **transaction** : confirmation de réception *(F4.5)*, création du contenu avec l'article attaché, crédit de cagnotte ;
-- **asynchrone idempotent** : création de l'avis, notification du vendeur, entrée au dressing *(F17.10)*.
+- **asynchrone idempotent** : création de l'avis, notification de la boutique, entrée au dressing *(F17.10)*.
 
 **Tests** : les cinq effets produits ; échec de la création d'avis → **confirmation et crédit conservés**, avis rejoué ; unboxing sans commande source → refusé par la base ; article attaché automatiquement et non modifiable ; chemin sans vidéo → confirmation seule, **pas de crédit** ; crédit versé une seule fois par commande ; contenu visible sans compte.
 
@@ -358,7 +358,7 @@ depend: [F14.2]
 
 ### 1. Conception
 
-Le fil est ordonné par **sa taille** *(F0.5)*, son budget habituel, ses catégories, ses vendeurs suivis, et ce qu'elle a regardé jusqu'au bout.
+Le fil est ordonné par **sa taille** *(F0.5)*, son budget habituel, ses catégories, ses boutiques suivis, et ce qu'elle a regardé jusqu'au bout.
 
 **Une acheteuse en 42 ne doit pas voir défiler du 36** : c'est **la première cause d'abandon d'un fil mode**, et c'est le seul critère de personnalisation qui compte vraiment au démarrage.
 
@@ -368,7 +368,7 @@ Le fil est ordonné par **sa taille** *(F0.5)*, son budget habituel, ses catégo
 3. **signal d'usage** — contenus regardés jusqu'au bout de la même catégorie ;
 4. **diversité** — pas plus de deux contenus consécutifs du même auteur.
 
-Pas d'apprentissage automatique en V1. Un fil dont on ne peut pas expliquer l'ordre est impossible à corriger quand une vendeuse se plaint de ne pas être vue.
+Pas d'apprentissage automatique en V1. Un fil dont on ne peut pas expliquer l'ordre est impossible à corriger quand une boutique se plaint de ne pas être vue.
 
 **Le quiz de style** *(F17.9)* rend le fil pertinent **dès le premier écran** — sans lui, le fil d'un nouveau compte est aléatoire, et le premier écran est celui qui décide.
 
@@ -641,13 +641,13 @@ depend: [F14.6]
 
 `P2 · S · moyen`
 
-**Conception** — deux ou trois articles proposés, les amies votent, l'autrice achète la gagnante. Produit à la fois de l'engagement, de la preuve sociale, et **une intention d'achat mesurable** — les vendeurs voient les résultats agrégés, signal gratuit sur ce qui va se vendre.
+**Conception** — deux ou trois articles proposés, les amies votent, l'autrice achète la gagnante. Produit à la fois de l'engagement, de la preuve sociale, et **une intention d'achat mesurable** — les boutiques voient les résultats agrégés, signal gratuit sur ce qui va se vendre.
 
 **Base de données** — `sondage (contenu_id, options jsonb)`, `sondage_vote (sondage_id, utilisateur_id, option_index)`.
 
 **Design** — Prompt Stitch : *poll content showing two or three product cards side by side with vote buttons and, after voting, horizontal result bars with percentages and a "Vous avez voté" chip; plus the author's view with a "Acheter la gagnante" button.*
 
-**Tests** : un vote par personne ; résultats agrégés visibles du vendeur sans identités.
+**Tests** : un vote par personne ; résultats agrégés visibles de la boutique sans identités.
 
 ```issues
 feature: F14.9

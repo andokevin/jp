@@ -118,7 +118,6 @@ apps/mobile/src/noyau/
 ├─ fileHorsLigne.ts    file persistée, clés d'idempotence locales
 ├─ cache.ts            cache par écran, invalidation ciblée
 └─ etatReseau.ts       détection, bandeau, bascule mode économie
-apps/terrain/src/noyau/fileHorsLigne.ts    version terrain (F5.5)
 ```
 
 ### 3. Base de données
@@ -341,7 +340,7 @@ apps/api/src/modules/identite/documents.ts
 
 ### 4. Design
 
-Un seul élément d'interface : la mention d'accès journalisé dans le back-office *(F11.1)*, visible par l'opérateur. Savoir que la consultation est tracée change le comportement.
+Un seul élément d'interface : la mention d'accès journalisé — **désormais un accès automatisé** *(`DP-05`, `UC-52`)*, visible par l'opérateur. Savoir que la consultation est tracée change le comportement.
 
 **Prompt Stitch** — préambule commun, puis :
 ```
@@ -476,7 +475,7 @@ Les cinq journaux, tous en append only, tous indexés sur leur référence méti
 
 ### 4. Design
 
-Sans objet côté utilisateur. Un écran back-office : l'instruction d'un dossier *(F6.5)*, qui **assemble** ces journaux en une vue lisible.
+Sans objet côté utilisateur. ⚠️ **L'écran d'instruction de dossier a disparu** *(`DP-05`, `F6.5` supprimée)* — le journal reste, son lecteur non. Ancienne rédaction : qui **assemble** ces journaux en une vue lisible.
 
 ### 5. Backend
 
@@ -586,7 +585,7 @@ depend: [F5.4]
 
 **Deux publics distincts** : la diaspora, qui est en partie sur iOS et n'installera pas d'application *(hors périmètre V1)*, et les acheteuses locales **sans place de stockage** — cas réel et fréquent sur des téléphones de 16 Go.
 
-**Périmètre proposé pour la version légère** : consultation, panier, paiement. Pas de direct, pas de publication, pas de studio vendeur. Le direct en navigateur sur un téléphone d'entrée de gamme est une mauvaise expérience qui abîmerait l'image du produit.
+**Périmètre proposé pour la version légère** : consultation, panier, paiement. Pas de direct, pas de publication, pas de studio boutique. Le direct en navigateur sur un téléphone d'entrée de gamme est une mauvaise expérience qui abîmerait l'image du produit.
 
 **Backend** — les mêmes API, aucune duplication.
 

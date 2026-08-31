@@ -27,7 +27,7 @@
 
 | # | Document | Cadre | Ce qu'il produit |
 |---|---|---|---|
-| **1** | [`01_BRANDSCRIPT.md`](01_BRANDSCRIPT.md) | **StoryBrand SB7** — Donald Miller | **4 BrandScripts** — acheteuse, vendeuse, créatrice, diaspora. Les vilains, les plans, les appels à l'action, les *one-liners* |
+| **1** | [`01_BRANDSCRIPT.md`](01_BRANDSCRIPT.md) | **StoryBrand SB7** — Donald Miller | **4 BrandScripts** — acheteuse, boutique, créatrice, diaspora. Les vilains, les plans, les appels à l'action, les *one-liners* |
 | **2** | [`02_CERCLE_DOR.md`](02_CERCLE_DOR.md) | **Le Cercle d'Or** — Simon Sinek | Le **Pourquoi**, les 5 principes du **Comment**, le **Quoi**, le manifeste, et 3 corrections de communication |
 | **3** | [`03_ZAG.md`](03_ZAG.md) | **Zag** — Marty Neumeier | Les **17 points de contrôle**, l'énoncé d'unicité, **les 3 zags**, l'ennemi, le cri de ralliement, ce qu'il faut ajouter et retirer |
 | **4** | [`04_LOIS_RIES.md`](04_LOIS_RIES.md) | **Les 22 lois du branding** — Al & Laura Ries | Les **3 lois que nous violons**, le mot à posséder, la catégorie à créer, la couleur, la forme du logo |
@@ -47,7 +47,7 @@
 | **Nom** | **JP — Je prends** *(jamais séparés)* |
 | **Catégorie** | **Le direct protégé** — créée, pas disputée |
 | **Pourquoi** | *Personne ne devrait avoir besoin d'être connu pour pouvoir commercer.* |
-| **Mono-idée** | **Le vendeur n'est payé qu'à votre confirmation de réception.** |
+| **Mono-idée** | **Vous savez à qui vous payez.** |
 | **Mot possédé** | **« reçu »** |
 | **Ennemi** | **Le numéro personnel.** *Un numéro. Un virement. Et l'espoir.* |
 | **Signature** | **« Je prends. Je reçois. »** |
@@ -73,9 +73,9 @@
 |---|---|---|
 | `LANGUES = ['en', 'fr']` | [`packages/i18n/src/langues.ts`](../../packages/i18n/src/langues.ts) | ❌ **L'anglais n'a aucun destinataire.** `N4.1` impose **mg + fr** — `D-04` |
 | *« Achetez en confiance, partout à Madagascar »* | [`plan/EP00-identite.md`](../../plan/EP00-identite.md) | ❌ Générique + deux mots interdits — `M-1` |
-| *« Votre argent est gardé par JP »* | [`plan/EP04-paiement.md`](../../plan/EP04-paiement.md) | ⚠️ **Exposition juridique** — `D-02` |
+| *« Vous savez à qui vous payez »* ✅ *(`D-21`)* | [`plan/EP04-paiement.md`](../../plan/EP04-paiement.md) | ⚠️ **Exposition juridique** — `D-02` |
 | Garantie visible **seulement** après paiement | `R-E1` | ❌ **La peur agit avant de payer** — `A-1` |
-| « en attente de confirmation » | `EP04` | ⚠️ Suggère un blocage arbitraire — `M-3` |
+| ~~« en attente de confirmation »~~ | — | ❌ **Sans objet** *(`DP-07`)* — JP ne tient aucun solde |
 | « JP Club » | Modèle économique | ❌ Sous-marque, et risque de faire payer la confiance — `D-11` |
 | Régie publicitaire, assistant IA, enchères | Modèle, EP12, phase 3 | ❌ **À retirer du discours** — `R-1`, `R-2`, `R-3` |
 | Violet `#7C2D92` | [`packages/ui/src/jetons.ts`](../../packages/ui/src/jetons.ts) | ✅ **Confirmé et désormais justifié** — `D-06` |
