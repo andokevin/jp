@@ -32,7 +32,13 @@
 
 ### 1. Conception
 
-**Fonctionnel.** Parcours unique et indifférencié : la même saisie crée le compte ou ouvre le compte existant *(R-C4)*. L'utilisateur saisit son adresse, reçoit un code à 6 chiffres valable 10 minutes, le saisit, choisit un prénom, arrive sur le fil. Aucun mot de passe.
+**Fonctionnel.** Parcours unique et indifférencié : la même saisie crée le compte ou ouvre le compte existant *(R-C4)*. L'utilisateur saisit son adresse, reçoit un code à 6 chiffres valable 10 minutes, le saisit, choisit un prénom **et un mot de passe**, arrive sur le fil.
+
+**Le mot de passe est exigé en plus de l'OTP.** L'OTP prouve l'accès à la boîte courriel à un instant donné ; il ne survit pas à la perte de cette boîte, et il coûte un aller-retour réseau à chaque connexion — sur un réseau lent, c'est la marche la plus haute du parcours. Le mot de passe donne une seconde voie d'entrée, et une entrée immédiate.
+
+La colonne `utilisateur.mot_de_passe_empreinte` reste **nullable** : un compte ouvert par Google n'en a jamais choisi. L'exigence tient à l'inscription, pas dans le type de la colonne.
+
+**Facultatif à l'inscription** — le genre et les trois types de vêtements préférés sont demandés en une question qu'on peut sauter. Sauter et répondre « aucune » sont deux faits différents, et seul le second crée une ligne `profil_acheteur`.
 
 - **A** : adresse → code → prénom → fil. Le quiz de style *(F17.9)* est proposé et **passable**.
 - **V** : même parcours, puis « Vous voulez vendre ? » → `F0.6`.
@@ -44,7 +50,7 @@
 2. **Le code est haché** (Argon2id ou bcrypt), jamais stocké en clair *(R-C6)*. Une fuite de la table `code_otp` ne doit pas être une fuite de comptes.
 3. **La réponse est indiscernable** selon que le compte existe ou non — message, code HTTP **et temps de réponse** *(R-C9)*. Voir F0.14, qui porte cette exigence.
 
-**Hors périmètre** : mot de passe, magic link cliquable (un lien dans un courriel ouvre le mauvais navigateur et casse la session sur Android d'entrée de gamme), authentification à deux facteurs.
+**Hors périmètre** : magic link cliquable (un lien dans un courriel ouvre le mauvais navigateur et casse la session sur Android d'entrée de gamme), authentification à deux facteurs.
 
 **Décision — pourquoi un code à saisir et non un lien à cliquer.** Le lien paraît plus simple. Sur le terrain il l'est moins : il ouvre le navigateur par défaut, pas l'application, et le retour vers l'app dépend de liens profonds qui échouent silencieusement sur les surcouches constructeur. Le code à 6 chiffres se copie-colle et fonctionne partout.
 
