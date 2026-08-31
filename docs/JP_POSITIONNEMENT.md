@@ -13,14 +13,14 @@
 
 Ce que JP vend, c'est **la certitude**. Autrement dit : **le risque change de camp.**
 
-- Aujourd'hui, dans un direct Facebook, **le risque est porté par les personnes.** L'acheteur risque son argent. Le vendeur risque son stock. Personne ne garantit rien.
+- Aujourd'hui, dans un direct Facebook, **le risque est porté par les personnes.** L'acheteur risque son argent. La boutique risque son stock. Personne ne garantit rien.
 - Avec JP, **le risque est porté par la plateforme.** L'argent est tenu, la commande est écrite, la preuve existe, quelqu'un arbitre.
 
 Le deck le dit déjà lui-même, dans les notes de la slide 11 :
 
 > « Si l'interlocuteur ne retient qu'une chose de tout le deck, c'est celle-ci : **nous vendons de la confiance, le reste est de la logistique.** »
 
-C'est juste. Mais « confiance » est un mot d'investisseur, trop abstrait pour vendre à une vendeuse d'Analakely ou à une acheteuse de Toamasina. Il faut le traduire en argent et en risque. C'est ce que fait la suite.
+C'est juste. Mais « confiance » est un mot d'investisseur, trop abstrait pour vendre à une boutique d'Analakely ou à une acheteuse de Toamasina. Il faut le traduire en argent et en risque. C'est ce que fait la suite.
 
 Le temps, la rapidité et le confort **existent bien dans le produit** — mais ce sont des *conséquences*, pas des *arguments de vente*. Les confondre ferait rater le pitch.
 
@@ -34,11 +34,11 @@ C'est le piège principal du deck actuel. La slide 3 — « Le direct dure une h
 
 > *« Tsy maninona, zakako ihany »* — ce n'est pas grave, je le fais quand même.
 
-Il ne paiera pas une commission de 5 % pour récupérer des heures qu'il ne sait pas revendre. Le temps gagné n'est un argument que **là où le temps est monétisable** — c'est-à-dire dans une économie de salariat et de coût horaire. Ce n'est pas le cas du vendeur en direct.
+Il ne paiera pas une commission de 5 % pour récupérer des heures qu'il ne sait pas revendre. Le temps gagné n'est un argument que **là où le temps est monétisable** — c'est-à-dire dans une économie de salariat et de coût horaire. Ce n'est pas le cas de la boutique en direct.
 
-**Deuxième raison :** le travail administratif du soir, aussi pénible soit-il, **rassure**. Recopier les commandes dans un cahier, c'est *garder le contrôle*. Un vendeur qui ne fait plus de saisie peut d'abord avoir le sentiment de ne plus savoir où il en est. Le temps gagné doit donc être présenté **avec** une contrepartie visible (le tableau de bord, la liste des commandes), sinon il est vécu comme une perte de maîtrise.
+**Deuxième raison :** le travail administratif du soir, aussi pénible soit-il, **rassure**. Recopier les commandes dans un cahier, c'est *garder le contrôle*. Une boutique qui ne fait plus de saisie peut d'abord avoir le sentiment de ne plus savoir où il en est. Le temps gagné doit donc être présenté **avec** une contrepartie visible (le tableau de bord, la liste des commandes), sinon il est vécu comme une perte de maîtrise.
 
-**Où le temps redevient un bon argument :** en **rétention**, pas en acquisition. Après deux semaines d'usage, le vendeur ne veut plus revenir au cahier. C'est un argument de fidélisation et un argument de bouche-à-oreille entre vendeurs (« depuis JP je dors »). Ce n'est jamais l'argument qui fait signer.
+**Où le temps redevient un bon argument :** en **rétention**, pas en acquisition. Après deux semaines d'usage, la boutique ne veut plus revenir au cahier. C'est un argument de fidélisation et un argument de bouche-à-oreille entre boutiques (« depuis JP je dors »). Ce n'est jamais l'argument qui fait signer.
 
 ---
 
@@ -77,25 +77,25 @@ C'est la phrase. Pas « c'est pratique », pas « c'est rapide ». Le blocage n�
 
 Il faut mesurer ce que ça représente : le prix d'une robe perdu, ce n'est pas un incident, c'est une part réelle du budget du mois. Le calcul de risque de l'acheteuse est **parfaitement rationnel** — c'est exactement ce que dit la slide 5 : elle commande petit, rarement, et seulement chez quelqu'un qu'une amie lui a recommandé.
 
-Et il y a une couche que le deck ne dit pas encore, qui est probablement la plus forte : **le `henatra`**, la honte. Se faire arnaquer, ce n'est pas seulement perdre de l'argent, c'est **être ridicule**. C'est devoir l'avouer à son mari, à sa sœur, à ses collègues. Beaucoup d'acheteuses n'achètent pas pour **ne pas avoir à raconter ça**. JP ne vend donc pas seulement la protection de l'argent : il vend **le droit d'essayer un vendeur inconnu sans risquer sa dignité.**
+Et il y a une couche que le deck ne dit pas encore, qui est probablement la plus forte : **le `henatra`**, la honte. Se faire arnaquer, ce n'est pas seulement perdre de l'argent, c'est **être ridicule**. C'est devoir l'avouer à son mari, à sa sœur, à ses collègues. Beaucoup d'acheteuses n'achètent pas pour **ne pas avoir à raconter ça**. JP ne vend donc pas seulement la protection de l'argent : il vend **le droit d'essayer une boutique inconnue sans risquer sa dignité.**
 
 C'est ça qui fait sauter le plafond du panier. Pas la vitesse.
 
-**Message :** *« Tu paies dans JP. Le vendeur ne touche l'argent que quand tu as reçu. Si ça ne va pas, on tranche, et il y a une trace. »*
+**Message :** *« Tu paies dans JP. La boutique ne touche l'argent que quand tu as reçu. Si ça ne va pas, on tranche, et il y a une trace. »*
 
 ---
 
-### Côté vendeur — on vend : **« les ventes que tu perds déjà »**
+### Côté boutique — on vend : **« les ventes que tu perds déjà »**
 
 Pas du temps. **De l'argent qu'il perd aujourd'hui sans le compter.**
 
 Trois pertes concrètes, dans cet ordre d'impact :
 
 1. **Les « je prends » qui ne paient jamais.** Il l'a vécu la semaine dernière. Il peut nommer la personne. C'est du chiffre d'affaires annoncé, évaporé.
-2. **Le stock gelé.** Un article réservé en commentaire et jamais payé est invendable pendant des jours — pendant lesquels il aurait pu partir. Pour un vendeur avec 3 millions d'Ariary de stock, c'est du capital mort.
-3. **Les acheteuses qui n'osent pas.** Celles qui regardent le direct tous les soirs et n'achètent jamais parce qu'elles ne le connaissent pas. **Le badge « vendeur vérifié » lui ouvre un public qu'il n'a pas aujourd'hui** — c'est son argument de croissance, et le seul qui justifie une commission.
+2. **Le stock gelé.** Un article réservé en commentaire et jamais payé est invendable pendant des jours — pendant lesquels il aurait pu partir. Pour une boutique avec 3 millions d'Ariary de stock, c'est du capital mort.
+3. **Les acheteuses qui n'osent pas.** Celles qui regardent le direct tous les soirs et n'achètent jamais parce qu'elles ne la connaissent pas. **Le badge « boutique vérifiée » lui ouvre un public qu'elle n'a pas aujourd'hui** — c'est son argument de croissance, et le seul qui justifie une commission.
 
-Et il y a un levier de statut, spécifiquement malgache et très puissant : **la vérification est une promotion sociale.** Passer de « quelqu'un qui vend sur Facebook » à « vendeur vérifié, avec facture » — c'est du sérieux, c'est de la reconnaissance. Le badge et le score public ne sont pas des fonctionnalités de conformité, ce sont **des objets de fierté**. Dans une culture où la réputation dans le groupe compte plus que le contrat, un score de confiance visible par tous est l'incitation la plus forte du produit.
+Et il y a un levier de statut, spécifiquement malgache et très puissant : **la vérification est une promotion sociale.** Passer de « quelqu'un qui vend sur Facebook » à « boutique vérifiée, avec facture » — c'est du sérieux, c'est de la reconnaissance. Le badge et le score public ne sont pas des fonctionnalités de conformité, ce sont **des objets de fierté**. Dans une culture où la réputation dans le groupe compte plus que le contrat, un score de confiance visible par tous est l'incitation la plus forte du produit.
 
 **Message :** *« Combien de "je prends" tu as eus hier soir ? Et combien t'ont vraiment payé ? La différence, c'est ce que JP va te récupérer. »*
 
@@ -105,7 +105,7 @@ Et il y a un levier de statut, spécifiquement malgache et très puissant : **la
 
 Là, le vocabulaire change. Pour l'investisseur, la phrase est celle de la slide 2 : *nous ne créons pas un usage, nous outillons un usage existant.* Le risque d'adoption est faible, le risque technique est faible (slide 19), le risque réel est **l'acquisition** — et c'est assumé.
 
-L'actif défendable n'est ni le code ni la vitesse : c'est **l'infrastructure de confiance** (identités vérifiées, historique de transactions, scores) plus **le graphe abonnés-vendeurs** (slide 12). Ces deux-là ne se copient pas, ils s'accumulent.
+L'actif défendable n'est ni le code ni la vitesse : c'est **l'infrastructure de confiance** (identités vérifiées, historique de transactions, scores) plus **le graphe abonnés-boutiques** (slide 12). Ces deux-là ne se copient pas, ils s'accumulent.
 
 ---
 
@@ -124,8 +124,8 @@ L'actif défendable n'est ni le code ni la vitesse : c'est **l'infrastructure de
 
 ## 7. Les cinq leviers culturels malgaches à exploiter
 
-1. **`Fihavanana` — la confiance passe par la relation, pas par l'institution.** Personne ne fait confiance à une marque inconnue. Corollaire produit : **le parrainage entre vendeuses est le canal d'acquisition n° 1**, loin devant la publicité. Une vendeuse recrutée par une autre vendeuse coûte presque rien et reste. À instrumenter dès la phase 1 (voir `F7.12` du backlog).
-2. **`Henatra` — la honte.** Se faire avoir est humiliant, et réclamer est inconfortable. La plupart des gens **ne réclament pas, ils disparaissent**. Corollaire produit : le litige doit pouvoir se signaler **sans confrontation directe** — on parle à JP, pas au vendeur. C'est ce qui fera remonter les vrais chiffres.
+1. **`Fihavanana` — la confiance passe par la relation, pas par l'institution.** Personne ne fait confiance à une marque inconnue. Corollaire produit : **le parrainage entre boutiques est le canal d'acquisition n° 1**, loin devant la publicité. Une boutique recrutée par une autre boutique coûte presque rien et reste. À instrumenter dès la phase 1 (voir `F7.12` du backlog).
+2. **`Henatra` — la honte.** Se faire avoir est humiliant, et réclamer est inconfortable. La plupart des gens **ne réclament pas, ils disparaissent**. Corollaire produit : le litige doit pouvoir se signaler **sans confrontation directe** — on parle à JP, pas à la boutique. C'est ce qui fera remonter les vrais chiffres.
 3. **Le cash reste roi, et le mobile money est une passerelle, pas une évidence.** Une part réelle des acheteuses ne paiera pas d'avance, quel que soit le discours. Il faut trancher tôt la question du **paiement à la livraison** (`F4.3`) : c'est probablement la fonctionnalité qui débloque le plus de volume au lancement, et celle qui coûte le plus cher en logistique. Un compromis existe : acompte mobile money + solde à la remise.
 4. **Le prix affiché doit être le prix final.** Un frais de livraison découvert à la dernière étape est le premier tueur de panier. Afficher les frais **dès le direct**, pas au paiement.
 5. **La réputation publique est une monnaie.** Score de confiance, badge vérifié, palier de fidélité, classement des meilleures clientes : ce sont des leviers de motivation beaucoup plus puissants ici qu'une remise de 5 %.
@@ -156,7 +156,7 @@ C'est le geste le plus important de toute la couche sociale. Une acheteuse filme
 |---|---|
 | Elle filme son colis | Du contenu gratuit pour le fil |
 | Elle publie | La preuve publique que JP livre pour de vrai |
-| Elle valide la réception | Les fonds sont libérés vers la vendeuse (`F4.5`) |
+| Elle valide la réception | Les fonds sont libérés vers la boutique (`F4.5`) |
 | Elle dit si ça taille bien | Un avis vérifié (`F6.1`) |
 | Elle poste | Du crédit dans sa cagnotte (`F7.7`) |
 
@@ -180,7 +180,7 @@ La slide 19 admet que le blocage est l'acquisition et que le marketing est le po
 
 ## 9. Ce qu'on vend à la créatrice — le troisième discours
 
-Jusqu'ici il y avait deux discours de vente : l'acheteuse et le vendeur. Il en faut un troisième, et il est différent des deux autres.
+Jusqu'ici il y avait deux discours de vente : l'acheteuse et la boutique. Il en faut un troisième, et il est différent des deux autres.
 
 **Ce qu'on ne lui vend pas :** ni la gloire, ni l'argent facile. Elle a déjà vu passer assez de promesses comme ça, et elle a déjà des abonnés ailleurs.
 
@@ -190,14 +190,14 @@ C'est le vrai blocage de la créatrice malgache. Elle a une audience, elle sait 
 
 JP lui en donne deux autres :
 
-1. **L'affiliation** (`F15.5`) — elle ne possède rien, elle recommande les articles d'autres vendeuses, et elle touche une commission sur ce qui se vend grâce à elle. Zéro capital, zéro stock, zéro logistique. Elle gagne de l'argent avec ce qu'elle fait déjà gratuitement sur Facebook.
+1. **L'affiliation** (`F15.5`) — elle ne possède rien, elle recommande les articles d'autres boutiques, et elle touche une commission sur ce qui se vend grâce à elle. Zéro capital, zéro stock, zéro logistique. Elle gagne de l'argent avec ce qu'elle fait déjà gratuitement sur Facebook.
 2. **La précommande groupée** (`F15.8`) — elle publie un article, collecte les « Je prends », et **ne commande chez le fournisseur que si le seuil est atteint**. Elle achète avec l'argent des clientes, pas avec le sien. Le risque de stock mort disparaît.
 
 C'est probablement **la fonctionnalité la plus déterminante pour recruter des créatrices**, parce qu'elle supprime la seule barrière réelle. Et elle correspond à un usage informel qui existe déjà — les commandes groupées entre amies, faites à la main sur Messenger.
 
 **Message :** *« Tu n'as pas besoin d'acheter le stock. Tu publies, tu comptes les commandes, et tu commandes seulement ce qui est déjà vendu. »*
 
-Et un levier de statut, comme pour le vendeur : le **badge créatrice vérifiée** (`F18.4`) et le tableau de bord qui montre les ventes générées. Ce n'est pas un compteur d'abonnés — c'est une preuve qu'elle fait gagner de l'argent. C'est ce qui la rend recrutable par les marques (`F18`), et donc ce qui la fait rester.
+Et un levier de statut, comme pour la boutique : le **badge créatrice vérifiée** (`F18.4`) et le tableau de bord qui montre les ventes générées. Ce n'est pas un compteur d'abonnés — c'est une preuve qu'elle fait gagner de l'argent. C'est ce qui la rend recrutable par les marques (`F18`), et donc ce qui la fait rester.
 
 ---
 
@@ -232,7 +232,7 @@ C'est aussi ce qui rend le dossier présentable à un investisseur sérieux et �
 
 ### Le mécanisme de rétention le plus fort : le dressing virtuel
 
-Les articles achetés composent une garde-robe dans l'application (`F17.10`), avec laquelle l'acheteuse crée des looks à publier. C'est ce qui rend le départ coûteux : quitter JP, ce n'est plus perdre une application, c'est **perdre sa garde-robe et son historique de style**. C'est le pendant acheteuse de la défendabilité que la slide 12 construit côté vendeuse.
+Les articles achetés composent une garde-robe dans l'application (`F17.10`), avec laquelle l'acheteuse crée des looks à publier. C'est ce qui rend le départ coûteux : quitter JP, ce n'est plus perdre une application, c'est **perdre sa garde-robe et son historique de style**. C'est le pendant acheteuse de la défendabilité que la slide 12 construit côté boutique.
 
 ---
 
@@ -248,7 +248,7 @@ L'intention est bonne, la forme doit changer.
 |---|---|---|
 | 1 | **Commission d'affiliation** sur les ventes générées par les créatrices | Adossée à une transaction réelle, marge immédiate |
 | 2 | **Campagnes de marque avec créatrices** — la marque paie, JP prend une part | Panier élevé, récurrent, et c'est la slide 17 point 5 rendue concrète |
-| 3 | **Mise en avant payée par les vendeuses** en Ariary (`F10.5`) | Déjà au modèle, s'étend naturellement au contenu |
+| 3 | **Mise en avant payée par les boutiques** en Ariary (`F10.5`) | Déjà au modèle, s'étend naturellement au contenu |
 | 4 | **JP Club** — abonnement acheteuse (`F18.3`) | Revenu récurrent, sans coût marginal |
 | 5 | **Insights marché** vendus aux marques (`F12.5`) | Le plus fort à long terme, mais demande du volume |
 | 6 | **Régie publicitaire display** | À ouvrir seulement quand l'audience le justifie. Annonceurs locaux (télécoms, banques, grande consommation), pas de programmatique. |
@@ -279,7 +279,7 @@ Pourquoi c'est sérieux :
 
 | Slide | Aujourd'hui | Proposition |
 |---|---|---|
-| 3 | « Problème 1 : le temps » — placé en premier | **Rétrograder.** Le mettre après l'arnaque. Le temps n'est pas le problème n° 1 du vendeur, c'est sa plainte n° 1 — ce n'est pas pareil. |
+| 3 | « Problème 1 : le temps » — placé en premier | **Rétrograder.** Le mettre après l'arnaque. Le temps n'est pas le problème n° 1 de la boutique, c'est sa plainte n° 1 — ce n'est pas pareil. |
 | 4 | « Problème 2 : l'arnaque » | **Promouvoir en problème n° 1.** C'est là qu'est l'argent et l'émotion. |
 | 5 | « Le plafond, c'est le doute » | Bon. Y **ajouter le `henatra`** : le doute n'est pas seulement financier, il est social. |
 | 7 | « On remplace le commentaire par un bouton » | Excellente slide-pivot, à garder telle quelle. Mais elle décrit le **mécanisme**, pas la valeur. Elle doit être suivie immédiatement de la 11. |
@@ -287,10 +287,10 @@ Pourquoi c'est sérieux :
 | 11 | « La confiance par construction » | **C'est la slide centrale du deck.** Elle est en 11e position. La remonter, ou au minimum lui donner le double de temps de parole. |
 | 14 | Point relais | Ajouter l'argument **« sans donner son adresse »** — il est déjà mentionné en puce 3, il mérite d'être en tête. |
 | 17 | Modèle économique | Réordonner et **ajouter l'affiliation et les campagnes de marque**. Placer la publicité display en dernier, en la présentant comme une option d'échelle et non comme un pilier. |
-| 18 | Hypothèses | Ajouter quatre lignes : **part des acheteuses refusant le prépaiement**, **taux de recrutement vendeur par parrainage**, **panier moyen d'une commande-cadeau**, **coût d'acquisition via créatrice**. |
+| 18 | Hypothèses | Ajouter quatre lignes : **part des acheteuses refusant le prépaiement**, **taux de recrutement boutique par parrainage**, **panier moyen d'une commande-cadeau**, **coût d'acquisition via créatrice**. |
 | — | *Nouvelles slides à insérer* | **Le contenu comme catalogue vivant** · **L'unboxing comme preuve publique** · **La créatrice sans capital** · **Le cadeau et la diaspora** |
 
-**Phrases à dire** — « ton argent n'est pas perdu » · « le vendeur est payé quand tu as reçu » · « combien de "je prends" t'ont vraiment payé ? » · « vendeur vérifié » · « il y a une trace » · « tu n'as pas besoin d'acheter le stock » · « une boutique dont le catalogue est fait de vidéos ».
+**Phrases à dire** — « ton argent n'est pas perdu » · « la boutique est payée quand tu as reçu » · « combien de "je prends" t'ont vraiment payé ? » · « boutique vérifiée » · « il y a une trace » · « tu n'as pas besoin d'acheter le stock » · « une boutique dont le catalogue est fait de vidéos ».
 
 **Phrases à ne pas dire** — « gagnez du temps » (en premier contact) · « c'est plus pratique » · « expérience utilisateur fluide » · « plateforme e-commerce » · « digitalisation » · « le TikTok malgache » · « réseau social ».
 
@@ -302,9 +302,9 @@ En plus des quatre indicateurs de la slide 6, six tests :
 
 **Sur le message**
 
-1. **Test A/B d'accroche vendeur** — « gagnez du temps » contre « récupérez les ventes que vous perdez ». Mesurer le taux de rendez-vous obtenus.
+1. **Test A/B d'accroche boutique** — « gagnez du temps » contre « récupérez les ventes que vous perdez ». Mesurer le taux de rendez-vous obtenus.
 2. **Test de prépaiement** — proposer à la moitié des acheteuses le prépaiement seul, aux autres le paiement à la livraison. Mesurer l'écart de conversion. **C'est la mesure la plus importante du pilote.**
-3. **Test du badge** — comparer le panier moyen chez un vendeur vérifié inconnu de l'acheteuse et chez un vendeur non vérifié recommandé par une amie. Si le badge égale la recommandation, le modèle tient.
+3. **Test du badge** — comparer le panier moyen chez une boutique vérifiée inconnu de l'acheteuse et chez une boutique non vérifiée recommandé par une amie. Si le badge égale la recommandation, le modèle tient.
 
 **Sur la couche sociale**
 
@@ -373,7 +373,7 @@ technique : un monde avec ses propres codes.
 
 ## Pourquoi des noms descriptifs et pas évocateurs
 
-`JP Mode` plutôt qu'un nom inventé, parce qu'**une vendeuse d'Analakely
+`JP Mode` plutôt qu'un nom inventé, parce qu'**une boutique d'Analakely
 comprend sans qu'on lui explique**. La marque `JP` porte la confiance — le
 séquestre, l'arbitrage ; le suffixe porte la catégorie. Coût d'apprentissage :
 zéro. Extension : gratuite.
@@ -387,17 +387,17 @@ donne le caractère.
 ## Pourquoi Tech attend
 
 Le **téléphone volé** est un vrai problème à Madagascar. `JP Tech` exige l'IMEI
-et la provenance, donc une vérification vendeur plus lourde.
+et la provenance, donc une vérification boutique plus lourde.
 
 On ouvre Tech quand ce contrôle sera éprouvé sur de vrais dossiers. Pas avant :
 **un univers qui laisse passer des appareils volés détruirait la promesse de la
 plateforme entière**, pas seulement la sienne. La certitude ne se vend pas à la
 découpe.
 
-Mode et Beauté, elles, partagent la même vendeuse et le même panier. Deux
+Mode et Beauté, elles, partagent la même boutique et le même panier. Deux
 marchés validés, un seul métier à apprendre.
 
-## Une vendeuse choisit où elle est visible
+## Une boutique choisit où elle est visible
 
 **Par défaut, elle n'est visible que dans un seul univers.** Elle peut en
 ajouter, en un geste — avec un avertissement :
@@ -417,7 +417,7 @@ quand ses ventes stagnent, serait pire que de la prévenir.
 **Décision du 21/08/2026.** La plupart des clients sont sur mobile — l'application
 **React Native** est donc le client principal, et non un site web.
 
-`apps/web` est réduit à ce qui doit être **partageable** : vitrine vendeur, fiche
+`apps/web` est réduit à ce qui doit être **partageable** : vitrine boutique, fiche
 article, page cadeau, page événement, replay. Cinq pages, en rendu serveur, pour
 une seule raison — **l'aperçu de lien**. Un lien collé dans WhatsApp sans titre
 ni image perd l'essentiel de son intérêt à Madagascar, où le partage passe par
@@ -447,7 +447,7 @@ univers séparé plutôt qu'une catégorie de plus :
   qui décide de l'achat ;
 - le litige **« réaction cutanée »** est traité comme une urgence, pas comme un
   désaccord de vente ;
-- la **contrefaçon** est transmise au vendeur *et* à l'équipe : ce n'est pas un
+- la **contrefaçon** est transmise à la boutique *et* à l'équipe : ce n'est pas un
   préjudice commercial, c'est un risque pour les personnes.
 
 ## L'argument qui décide de la viabilité d'un univers

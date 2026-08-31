@@ -36,15 +36,15 @@
 | **Nom** | **JP — Je prends** *(jamais séparés)* |
 | **Catégorie** | **Le direct protégé** — catégorie créée, pas disputée |
 | **Le Pourquoi** | *Nous croyons que personne ne devrait avoir besoin d'être connu pour pouvoir commercer.* |
-| **La mono-idée** | **Le vendeur n'est payé qu'à votre confirmation de réception.** |
+| **La mono-idée** | **Vous savez à qui vous payez.** |
 | **Le mot possédé** | **« reçu »** |
 | **L'ennemi** | **Le numéro personnel.** *Un numéro. Un virement. Et l'espoir.* |
 | **Le héros** | Hanta — l'acheteuse qui s'est déjà fait avoir |
-| **La transformation** | De celle qui demande *« tu connais ce vendeur ? »* à celle à qui on demande *« tu l'as trouvé où ? »* |
+| **La transformation** | De celle qui demande *« tu connais cette boutique ? »* à celle à qui on demande *« tu l'as trouvé où ? »* |
 | **La signature** | **« Je prends. Je reçois. »** |
 | **La ligne institutionnelle** | *« Le direct devient une boutique. »* |
 | **Le registre** | **Le soulagement.** Jamais l'enthousiasme |
-| **L'archétype** | **Le Gardien** — un arbitre, pas un commerçant |
+| **L'archétype** | **Le Gardien** — celui qui tient le registre, pas un commerçant *(`D-21`)* |
 | **La couleur** | Violet `#7C2D92` |
 | **Les langues** | Malgache et français. **L'anglais nulle part** |
 | **Ce qui nous tuerait** | Devenir un réseau social |
@@ -58,7 +58,7 @@
 > **Pour** les Malgaches qui regardent des ventes en direct tous les soirs sans
 > oser acheter chez quelqu'un qu'ils ne connaissent pas,
 > **JP** est la première plateforme de **direct protégé** du pays,
-> **qui** ne paie le vendeur qu'à la confirmation de réception de l'acheteuse,
+> **qui** ne paie la boutique qu'à la confirmation de réception de l'acheteuse,
 > **contrairement à** Facebook, où l'on envoie de l'argent à un numéro personnel
 > et où l'on espère,
 > **parce que** le plafond de ce marché n'est pas le pouvoir d'achat, c'est le
@@ -68,7 +68,7 @@
 
 | Niveau | Levier | Rôle | Quand |
 |---|---|---|---|
-| **1** | **La certitude** — le vendeur n'est payé qu'à votre confirmation | Ce qui fait **essayer** | **Toujours en premier** |
+| **1** | **La certitude** — vous savez à qui vous payez | Ce qui fait **essayer** | **Toujours en premier** |
 | **2** | Le temps récupéré, le chiffre d'affaires visible, la base d'abonnés | Ce qui fait **rester** | Deuxième conversation |
 | **3** | La rapidité, la légèreté, la simplicité | **Condition de survie**, jamais un argument | Jamais pitché |
 | **4** | Le point relais, les frais bas | Ce qui **débloque le petit panier** | Quand on parle prix |
@@ -115,13 +115,13 @@ autre chose est faux.
 
 | Audience | Ce qu'elle vient chercher | Le message, en une phrase | Canal |
 |---|---|---|---|
-| **L'acheteuse** *(principale)* | Ne pas reperdre son argent | *« Le vendeur n'est payé que quand vous avez reçu. »* | Facebook, Messenger, le mur des colis ouverts |
-| **La vendeuse** | Ne plus perdre de ventes. Être prise au sérieux | *« Combien de "je prends" vous ont vraiment payée hier soir ? »* | **Parrainage entre vendeuses — canal n° 1**, terrain |
+| **L'acheteuse** *(principale)* | Ne pas reperdre son argent | *« La boutique n'est payée que quand vous avez reçu. »* | Facebook, Messenger, le mur des colis ouverts |
+| **La boutique** | Ne plus perdre de ventes. Être prise au sérieux | *« Combien de "je prends" vous ont vraiment payée hier soir ? »* | **Parrainage entre boutiques — canal n° 1**, terrain |
 | **La créatrice** | Un revenu sans capital | *« Vous n'avez pas besoin d'acheter le stock. »* | Contact direct, avant l'ouverture |
 | **La diaspora** | Que son argent serve vraiment | *« Offrez-lui, ne lui envoyez pas. »* | France, groupes diaspora, Facebook |
 
 > **Ils ne se mélangent jamais.** Une affiche qui parle à l'acheteuse **et** à
-> la vendeuse ne parle à personne.
+> la boutique ne parle à personne.
 
 ## 3.3 Une décision de genre `D-16`
 
@@ -130,7 +130,7 @@ presque tous, et **le seul acteur local du secteur l'a compris avant nous** :
 Live Pay Mada se présente comme *« La plateforme des liveuses modernes »*.
 
 > **Décision.** La communication de marque **assume le féminin par défaut** —
-> *l'acheteuse, la vendeuse, la créatrice*. Ce n'est pas une posture, c'est une
+> *l'acheteuse, la boutique, la créatrice*. Ce n'est pas une posture, c'est une
 > description du marché, et c'est ce que fait déjà toute notre documentation
 > interne.
 >
@@ -145,17 +145,17 @@ Live Pay Mada se présente comme *« La plateforme des liveuses modernes »*.
 ## L'énoncé central
 
 > **JP transforme le « je prends » que vous tapez déjà en une commande payée,
-> facturée et livrée — et le vendeur n'est payé qu'à votre confirmation de
+> facturée et livrée — et vous savez à qui vous payez de
 > réception.**
 
 ## Par audience
 
 | Audience | Promesse | Preuve mécanique | Émotion visée |
 |---|---|---|---|
-| **Acheteuse** | *« Vous pouvez acheter chez quelqu'un que vous ne connaissez pas. »* | Vendeur vérifié · fonds libérés à la confirmation · facture · litige arbitré par JP | **Le soulagement** |
-| **Vendeuse** | *« Un "je prends" devient une commande déjà payée. »* | Paiement encaissé dans la plateforme · réservation de stock · zéro saisie · badge vérifié | **La considération** |
+| **Acheteuse** | *« Vous pouvez acheter chez quelqu'un que vous ne connaissez pas. »* | Boutique vérifié · fonds libérés à la confirmation · facture · litige arbitré par JP | **Le soulagement** |
+| **Boutique** | *« Un "je prends" devient une commande déjà payée. »* | Paiement encaissé dans la plateforme · réservation de stock · zéro saisie · badge vérifié | **La considération** |
 | **Créatrice** | *« Vous vendez sans acheter le stock. »* | Affiliation · précommande groupée à **remboursement automatique** | **L'autonomie** |
-| **Diaspora** | *« Offrez un objet, pas un virement. »* | Vendeur vérifié · suivi · **preuve de remise** · la vidéo du colis ouvert | **La présence** |
+| **Diaspora** | *« Offrez un objet, pas un virement. »* | Boutique vérifié · suivi · **preuve de remise** · la vidéo du colis ouvert | **La présence** |
 
 ## Les huit choses que personne ne fait
 
@@ -187,14 +187,14 @@ l'étude concurrentielle.)*
 > Pas par habitude. Parce que c'est la seule garantie disponible.
 >
 > Cette garantie est solide. Mais elle enferme tout le monde. Elle enferme
-> l'acheteuse dans ce que son entourage connaît déjà. Elle enferme la vendeuse
+> l'acheteuse dans ce que son entourage connaît déjà. Elle enferme la boutique
 > dans le cercle des gens qui la connaissent. Elle enferme la créatrice dehors,
 > parce qu'elle n'a pas le capital pour entrer.
 >
 > **Nous croyons que personne ne devrait avoir besoin d'être connu pour pouvoir
 > commercer.**
 >
-> Alors nous ne demandons à personne de faire confiance. Le vendeur n'est payé
+> Alors nous ne demandons à personne de faire confiance. La boutique n'est payée
 > qu'à la confirmation de réception. Nous écrivons la commande. Nous datons la
 > facture. Et quand il y a un désaccord, quelqu'un tranche, et il y a une trace.
 >
@@ -207,14 +207,14 @@ l'étude concurrentielle.)*
 > *« Chaque soir, des milliers de gens tapent "je prends" dans un commentaire.
 > La moitié n'ira pas au bout, parce qu'il faut envoyer de l'argent à un numéro
 > inconnu et espérer. Nous avons transformé ce commentaire en bouton, et cet
-> espoir en mécanisme : le vendeur n'est payé qu'à la confirmation de réception.
+> espoir en mécanisme : vous savez à qui vous payez.
 > C'est tout. Et ça change tout. »*
 
 ## Les trois images à réutiliser
 
 | Image | D'où elle vient | Où l'employer |
 |---|---|---|
-| **« Sept téléphones »** | Une vendeuse malgache réelle : 7 appareils, 4 agents *(Newsmada, juil. 2026)* | **Deck, presse, terrain vendeur.** Personne n'a jamais nommé cette friction |
+| **« Sept téléphones »** | Une boutique malgache réelle : 7 appareils, 4 agents *(Newsmada, juil. 2026)* | **Deck, presse, terrain boutique.** Personne n'a jamais nommé cette friction |
 | **« Un numéro. Un virement. Et l'espoir. »** | L'ennemi | Grand public, partout |
 | **« Le mur des colis ouverts »** | L'unboxing | La preuve, partout |
 
@@ -225,11 +225,11 @@ l'étude concurrentielle.)*
 ## L'archétype : **le Gardien**
 
 Pas le Héros *(c'est la cliente)*. Pas le Rebelle. Pas le Bouffon. **Un
-arbitre.** Celui qui se met entre deux personnes, tient l'argent, écrit ce qui
+gardien du registre.** Celui qui se met entre deux personnes, **répond de qui elles sont**, écrit ce qui
 est convenu, et tranche.
 
 **Ce que ça interdit immédiatement** : l'humour sur l'argent, la familiarité
-dans un litige, le superlatif, l'urgence fabriquée, l'enthousiasme de vendeur.
+dans un litige, le superlatif, l'urgence fabriquée, l'enthousiasme de boutique.
 
 ## Les cinq traits
 
@@ -271,14 +271,16 @@ le fait de ne pas s'être fait voler — on respire.
 
 | Qui parle | Forme | Exemples |
 |---|---|---|
-| **JP → l'utilisatrice** | **Vouvoiement**, toujours | *« Le vendeur n'est payé qu'à votre confirmation. »* · *« Connectez-vous pour continuer. »* |
+| **JP → l'utilisatrice** | **Vouvoiement**, toujours | *« Vous savez à qui vous payez. »* · *« Connectez-vous pour continuer. »* |
 | **L'utilisatrice → le produit** *(boutons, actions)* | **Première personne**, toujours | **« Je prends »** · **« Je n'ai rien reçu »** · **« J'ai bien reçu »** · **« Je signale »** |
 
 ### Pourquoi le vouvoiement
 
-**Notre promesse est institutionnelle.** Nous tenons l'argent et nous arbitrons.
+**Notre promesse est institutionnelle.** Nous répondons de l'identité et nous
+tenons le registre. *(Voir `D-21` — nous ne tenons plus l'argent et nous
+n'arbitrons plus.)*
 **Un arbitre qui tutoie n'est pas un arbitre.** Le vouvoiement porte exactement
-ce que la vendeuse vient chercher — être prise au sérieux — et ce que
+ce que la boutique vient chercher — être prise au sérieux — et ce que
 l'acheteuse vient chercher — que ce soit sérieux.
 
 ⚠️ **Correction à faire** : notre document de positionnement utilise *« ton
@@ -314,7 +316,7 @@ qu'elle tapait avant. Le système est complet :
 
 | Contexte | Ton | Exemple |
 |---|---|---|
-| **L'argent, le séquestre, la facture** | **Neutre, précis, factuel** | *« Vente 50 000 Ar — commission 2 500 Ar — vous recevez 47 500 Ar »* |
+| **L'argent, le paiement, la facture** | **Neutre, précis, factuel** | *« Vente 50 000 Ar — vous recevez 50 000 Ar »* *(`DP-08` : plus de commission par vente)*. Ancienne rédaction : *« Vente 50 000 Ar — commission 2 500 Ar — vous recevez 47 500 Ar »* |
 | **Le litige, le signalement** | **Grave, jamais familier, sans jargon juridique** | *« Dites-nous ce qui s'est passé. Les fonds restent bloqués pendant ce temps. »* |
 | **Le fil, le contenu, les créatrices** | **Vivant, mais jamais racoleur** | *« Elle l'a reçue ce matin. »* |
 | **Le terrain, l'accroche, le parrainage** | **Malgache, direct, oral** | *« Firy ny "je prends" omaly hariva ? »* |
@@ -330,14 +332,14 @@ qu'elle tapait avant. Le système est complet :
 |---|---|
 | **« Je prends »** | Le nom, le bouton, le geste |
 | **« reçu », « recevoir », « réception »** | **Le mot que nous possédons** `D-12`. Aucun synonyme ne le remplace |
-| **« Le vendeur n'est payé qu'à votre confirmation de réception »** | La phrase de mécanisme, mot pour mot |
-| **« vendeur vérifié »** · **« Mpivarotra azo antoka »** | Le statut, des deux côtés |
+| **« Vous savez à qui vous payez »** | La phrase de mécanisme, mot pour mot |
+| **« boutique vérifiée »** · **« Mpivarotra azo antoka »** | Le statut, des deux côtés |
 | **« il y a une trace »** | Ce que personne d'autre ne peut dire |
-| **« vous parlez à JP, pas au vendeur »** | L'antidote au `henatra` |
+| **« vous parlez à JP, pas à la boutique »** | L'antidote au `henatra` |
 | **« vous n'avez pas besoin d'acheter le stock »** | Le message créatrice |
 | **« une boutique dont le catalogue est fait de vidéos »** | La règle qui borne le produit |
 | **« le direct protégé »** | **La catégorie** `D-15` |
-| **« combien vous ont vraiment payée ? »** | L'accroche vendeuse |
+| **« combien vous ont vraiment payée ? »** | L'accroche boutique |
 
 ## 8.2 Les mots qu'on ne dit jamais
 
@@ -350,8 +352,10 @@ qu'elle tapait avant. Le système est complet :
 | **« gagnez du temps »**, **« c'est plus pratique »** | ❌ Argument de rétention utilisé en acquisition |
 | **« expérience utilisateur »**, **« fluide »**, **« intuitif »** | ❌ Langue de métier |
 | **« leader »**, **« révolutionnaire »**, **« innovant »** | ❌ Superlatifs invérifiables |
-| **« utilisateur »** | ⚠️ On dit **« l'acheteuse »**, **« la vendeuse »**, **« la créatrice »**. Un utilisateur n'existe pas |
-| **« votre argent est gardé par JP »** | ⚠️ **Exposition juridique** *(loi 2016-056)*. Voir `D-02` |
+| **« utilisateur »** | ⚠️ On dit **« l'acheteuse »**, **« la boutique »**, **« la créatrice »**. Un utilisateur n'existe pas |
+| **« votre argent est gardé par JP »** | ❌ **Interdit — et désormais faux** *(`D-21`, `DP-07`)*. JP ne détient aucun fonds |
+| **« la boutique n'est payée qu'à votre confirmation »** | ❌ **Devenue fausse** *(`D-21`)* — elle était la formulation « sûre » recommandée par `D-02`. La boutique est payée **au paiement** |
+| **« nous arbitrons »**, **« JP tranche »** | ❌ **Faux** *(`DP-05`)* — il n'y a plus d'arbitre |
 | **« tsy very »** en typographie isolée | ⚠️ *very* est homographe de l'anglais, et porte historiquement « réduit en esclavage ». **Bon à l'oral, mauvais en label** |
 | **`toky` sous forme verbale** *(mitoky)* | ❌ **`mitoky` signifie « ensorceler ».** Vérifié au dictionnaire |
 | **`vola`** sous toute forme | ❌ **Collision frontale avec MVola** |
@@ -365,7 +369,7 @@ Détail complet en `06_ETUDE_MARCHE.md` §5.*
 
 | Usage | Mot | Statut |
 |---|---|---|
-| Badge vendeur vérifié | **« Mpivarotra azo antoka »** | ✅ Le mot porte déjà la sémantique assurantielle — caution, aval, compensation en cas de perte |
+| Badge boutique vérifiée | **« Mpivarotra azo antoka »** | ✅ Le mot porte déjà la sémantique assurantielle — caution, aval, compensation en cas de perte |
 | Garantie acheteur | **antoka** | ✅ |
 | Authenticité, certification | **marina** / **fahamarinana** / **manamarina** | ✅ |
 | Programme de confiance | **fitokisana** | ✅ Halo historique favorable : protection de **ceux qui partent commercer en zone dangereuse** |
@@ -413,8 +417,7 @@ Madagascar »* → ❌ générique, contient deux mots interdits.
 Acheter chez quelqu'un qu'on ne connaît pas.
 Enfin possible.
 
-Le vendeur n'est payé qu'à votre confirmation
-de réception.
+Vous savez à qui vous payez.
 
      [  Continuer avec Google  ]
      [  Continuer avec un e-mail  ]
@@ -436,13 +439,13 @@ emplacements : fiche article · feuille « Je prends » · panier · paiement.
 
 ```
 ┌─────────────────────────────────────────┐
-│  La garantie JP                          │
+│  Boutique vérifiée                       │
 │                                          │
-│  Le vendeur n'est payé qu'à votre        │
-│  confirmation de réception.              │
+│  Vous savez à qui vous payez.            │
+│  Identité et Mobile Money contrôlés.     │
 │                                          │
 │  Le prix affiché est le prix payé.       │
-│  En cas de problème, vous parlez à JP.   │
+│  Chaque commande laisse une trace.       │
 │                                    Voir →│
 └─────────────────────────────────────────┘
 ```
@@ -451,9 +454,9 @@ emplacements : fiche article · feuille « Je prends » · panier · paiement.
 
 > ## La garantie JP
 >
-> **1.** Le vendeur n'est payé qu'à votre confirmation de réception.
+> **1.** Vous savez à qui vous payez.
 > **2.** Le prix affiché est le prix payé. Aucun frais découvert à la fin.
-> **3.** En cas de problème, vous parlez à JP — jamais au vendeur en face.
+> **3.** En cas de problème, vous ne discutez jamais en face à face — vous signalez, et cela compte.
 > **4.** Ce qui est affiché est vrai. S'il reste 3 articles, il en reste 3.
 > **5.** Vous n'êtes jamais obligée de vous filmer. Un appui suffit à confirmer.
 
@@ -508,12 +511,12 @@ Ou filmer l'ouverture, si vous voulez.       [ Filmer mon colis ]
            Ce n'est jamais obligatoire.
 ```
 
-## 9.6 Les deux soldes vendeur — `M-3`
+## 9.6 Les deux soldes boutique — `M-3`
 
 **Aujourd'hui** : *« en attente de confirmation »* / *« disponible au retrait »*.
 
 > Le dossier note déjà que *« la distinction doit être limpide, sinon la
-> vendeuse croit qu'on la vole »*. **« En attente » suggère précisément un
+> boutique croit qu'on la vole »*. **« En attente » suggère précisément un
 > blocage arbitraire.**
 
 **Proposé :**
@@ -541,7 +544,7 @@ Ou filmer l'ouverture, si vous voulez.       [ Filmer mon colis ]
 | Achat | **Je prends** | Acheter · Commander · Ajouter au panier |
 | Réception | **J'ai bien reçu** | Confirmer · Valider la réception |
 | Problème | **Je n'ai rien reçu** · **Il y a un problème** | Ouvrir un litige · Réclamation |
-| Vendeur | **Mpivarotra azo antoka** · vendeur vérifié | Marchand certifié · Partenaire |
+| Boutique | **Mpivarotra azo antoka** · boutique vérifiée | Marchand certifié · Partenaire |
 | Solde | **Gardé pour la cliente** / **À vous** | En attente · Bloqué · Pending |
 | Erreur | Le motif réel + l'action possible | Une erreur est survenue |
 | Argent | `50 000 Ar` | 50000 Ariary · Ar 50 000 · 50 000,00 |
@@ -579,7 +582,7 @@ le code ISO du Japon et `.jp` le ccTLD japonais.
 | Registre | La ligne | Où |
 |---|---|---|
 | **Signature de marque** | # « Je prends. Je reçois. » | **Sous le logo, partout, sans exception** |
-| **Phrase de mécanisme** | **« Le vendeur n'est payé qu'à votre confirmation de réception. »** | Fiche article, panier, paiement, affiche, terrain. **La plus dite au quotidien** |
+| **Phrase de mécanisme** | **« Vous savez à qui vous payez. »** | Fiche article, panier, paiement, affiche, terrain. **La plus dite au quotidien** |
 | **Ligne institutionnelle** | *« Le direct devient une boutique. »* | Deck, presse, partenaires, investisseurs |
 | **Accroche de catégorie** | *« Le direct protégé. »* | Campagne de lancement, RP |
 
@@ -685,7 +688,7 @@ speech bubble, a shield, a padlock or any hand-drawn illustration.
 > le résultat.** Le point dans le P, en particulier, ne survivra probablement pas
 > à la génération et devra être construit à la main.
 
-## 11.3 Prompt Stitch — le badge vendeur vérifié
+## 11.3 Prompt Stitch — le badge boutique vérifiée
 
 ```
 Design a small VERIFICATION BADGE component for a Malagasy commerce app,
@@ -694,7 +697,7 @@ to be shown next to a seller's name.
 The badge is a horizontal pill, 24dp tall, with:
 - a solid violet #7C2D92 fill
 - a small white check mark on the left
-- the label "Vendeur vérifié" in white, 13px, medium weight
+- the label "Boutique vérifié" in white, 13px, medium weight
 - a second variant with the Malagasy label "Mpivarotra azo antoka"
   (this label is longer — the pill must grow, never truncate)
 
@@ -735,7 +738,7 @@ marks and no emoji in anything involving money.
 | # | Quoi | Portée | Pourquoi | Effort |
 |---|---|---|---|---|
 | **R-1** | **La régie publicitaire display** | Du **discours** — garder l'option en interne | Contredit le zag : nous monétisons le commerce que le contenu déclenche, pas l'attention qu'il capte. Et le CPM malgache ne finance rien | Nul |
-| **R-2** | **L'assistant du vendeur (IA)** *(EP12)* | Du deck et du récit | Ne sert aucun zag. Brouille le message | Nul |
+| **R-2** | **L'assistant de la boutique (IA)** *(EP12)* | Du deck et du récit | Ne sert aucun zag. Brouille le message | Nul |
 | **R-3** | **Les enchères et ventes flash** | **Réexaminer au périmètre** | **L'enchère crée l'urgence par construction** — contradiction structurelle avec « toute rareté affichée est réelle » | Décision |
 | **R-4** | **JP Tech** | De toute communication publique | Annoncer un univers fermé, c'est promettre. Un appareil volé qui passe détruirait la promesse de **toute** la plateforme | Nul |
 | **R-5** | **L'anglais du catalogue i18n** | **Correctif de code** | `LANGUES = ['en','fr']` contre `N4.1` qui impose **mg + fr**. **0,57 % ne parlent que français ; l'anglais n'a aucun destinataire** | Faible |
@@ -749,10 +752,10 @@ marks and no emoji in anything involving money.
 |---|---|---|---|---|
 | **A-1** | **Le composant « Garantie JP », affiché AVANT le paiement** *(4 emplacements)* | **La correction produit la plus importante du dossier.** La peur agit avant de payer, pas après. Aujourd'hui la phrase n'apparaît qu'à la confirmation | Faible | **★ Critique** |
 | **A-2** | **Le mur des colis ouverts, sans compte — 6ᵉ page publique de `apps/web`** | Notre **appareil de preuve** et l'appel transitionnel du BrandScript. Le seul écran qui répond à « comment je sais que vous livrez ? » | Moyen | **★ Critique** |
-| **A-3** | **Le compteur de ventes perdues** *(outil vendeur, une page)* | *« Combien de "je prends" hier soir ? Combien vous ont payée ? »* **On ne lui explique pas son problème, on le lui fait compter.** Entrée de tout le recrutement terrain | Faible | ★ Haute |
-| **A-4** | **Le reçu de séquestre partageable** | *« Regarde, il ne sera payé que quand j'aurai reçu. »* **Transforme la garantie en objet social, donc en acquisition gratuite** | Faible | Haute |
-| **A-5** | **La protection symétrique du vendeur, nommée et affichée** | La vendeuse la plus visible du pays cite le défaut de paiement comme problème n° 1 — **et personne ne lui dit qu'elle est aussi une victime**. Précédent : SentiBud, Nigeria | Moyen | Haute |
-| **A-6** | **Le badge « Mpivarotra azo antoka » partageable hors application** | Le badge est un **objet de fierté**, pas une case de conformité. Une image à poster sur Facebook = notre canal d'acquisition vendeur n° 1 | Faible | Haute |
+| **A-3** | **Le compteur de ventes perdues** *(outil boutique, une page)* | *« Combien de "je prends" hier soir ? Combien vous ont payée ? »* **On ne lui explique pas son problème, on le lui fait compter.** Entrée de tout le recrutement terrain | Faible | ★ Haute |
+| **A-4** | **Le reçu de commande partageable** — identité vérifiée de la boutique, montant, date, numéro | *« Regarde à qui j'achète : elle est vérifiée, et il y a une trace. »* **Transforme la traçabilité en objet social, donc en acquisition gratuite** *(`D-21`)*. Ancienne rédaction : *« Regarde, il ne sera payé que quand j'aurai reçu. »* **Transforme la garantie en objet social, donc en acquisition gratuite** | Faible | Haute |
+| **A-5** | **La protection symétrique de la boutique, nommée et affichée** | La boutique la plus visible du pays cite le défaut de paiement comme problème n° 1 — **et personne ne lui dit qu'elle est aussi une victime**. Précédent : SentiBud, Nigeria | Moyen | Haute |
+| **A-6** | **Le badge « Mpivarotra azo antoka » partageable hors application** | Le badge est un **objet de fierté**, pas une case de conformité. Une image à poster sur Facebook = notre canal d'acquisition boutique n° 1 | Faible | Haute |
 | **A-7** | **Le test de lexique en intégration continue** | Rend `N4.4` opposable. Le projet le fait déjà pour le contraste et les cibles tactiles | Très faible | Moyenne |
 | **A-8** | **Le Baromètre JP** — publication annuelle des quatre mesures | **Personne ne mesure ce marché.** Un actif, trois usages : autorité, relations publiques, insights marché | Moyen | Après pilote |
 
@@ -761,8 +764,8 @@ marks and no emoji in anything involving money.
 | # | Quoi | Aujourd'hui | Proposé |
 |---|---|---|---|
 | **M-1** | Accroche de première ouverture | *« Achetez en confiance, partout à Madagascar »* | *« Acheter chez quelqu'un qu'on ne connaît pas. Enfin possible. »* — §9.1 |
-| **M-2** | Phrase de séquestre | *« Votre argent est gardé par JP… »* | Retirer la revendication de détention — §9.3, `D-02` |
-| **M-3** | Les deux soldes vendeur | « en attente » / « disponible » | **« Gardé pour la cliente »** / **« À vous — retirable »** — §9.6 |
+| **M-2** | Phrase de paiement | *« Boutique vérifiée — identité et compte Mobile Money contrôlés par JP — anciennement « vous payez directement la boutique. Elle est vérifiée par JP : identité et compte Mobile Money contrôlés. »* | ✅ **Refondue** *(`D-21`)*. Ancienne rédaction : *« Votre argent est gardé par JP… »* — retirer la revendication de détention — §9.3, `D-02` |
+| **M-3** | Les deux soldes boutique | « en attente » / « disponible » | **« Gardé pour la cliente »** / **« À vous — retirable »** — §9.6 |
 | **M-4** | Le bouton d'achat | Variable | **« Je prends », sans exception** — `D-01` |
 | **M-5** | Le mode économie de données | Option de réglages *(F0.9)* | **Une promesse affichée.** À 1,12 USD/Go et 6,28 % du revenu par habitant, la légèreté est une position, pas une performance |
 | **M-6** | Le préambule Stitch | Contraintes techniques seules | **+ 3 lignes de voix de marque** — §11.4 |
@@ -775,13 +778,13 @@ marks and no emoji in anything involving money.
 | # | Décision | Où c'est justifié | Impact |
 |---|---|---|---|
 | **D-01** | **Le bouton d'achat dit toujours « Je prends ».** Sans exception | `01`, `03` §10 | Produit |
-| **D-02** | **La promesse publique décrit *quand le vendeur est payé*, jamais *qui détient les fonds*** — exposition juridique, loi 2016-056 | `06` §2.2 | **Juridique + tout le copywriting** |
+| **D-02** | **La promesse publique décrit *quand la boutique est payée*, jamais *qui détient les fonds*** — exposition juridique, loi 2016-056 | `06` §2.2 | **Juridique + tout le copywriting** |
 | **D-03** | **La « Garantie JP » est un composant produit**, affiché avant le paiement | `01`, §9.2 | Produit |
 | **D-04** | **Malgache + français. L'anglais nulle part.** Nom et institutionnel en français, relation et terrain en malgache | `06` §5 | Code + communication |
 | **D-05** | **Lexique malgache validé** : *azo antoka* oui · **`toky` verbal et `vola` interdits** | `06` §5 | Produit |
 | **D-06** | **Violet `#7C2D92` confirmé** — libre, complémentaire du jaune, loin du bleu Facebook, 7,93:1 | `06` §6, `04` loi 17 | Identité |
 | **D-07** | **Le mur des colis ouverts est notre moteur d'autorité**, consultable sans compte | `01`, `03` §14 | Produit |
-| **D-08** | **Le compteur de ventes perdues** est l'appel transitionnel vendeur | `01` | Produit + acquisition |
+| **D-08** | **Le compteur de ventes perdues** est l'appel transitionnel boutique | `01` | Produit + acquisition |
 | **D-09** | **« JP » ne circule jamais seul.** Verrou « JP — Je prends », 24 mois | `03` §10 | Identité |
 | **D-10** | **Communication sur JP Mode seul, 90 jours.** Beauté existe, mais pas dans le message | `04` loi 1 | Communication |
 | **D-11** | **La garantie n'est jamais un avantage payant.** Abandonner le nom « JP Club » | `04` loi 14 | Modèle + produit |
@@ -797,6 +800,96 @@ marks and no emoji in anything involving money.
 
 ---
 
+# 13 bis. `D-21` — ce que nous garantissons désormais
+
+> **La marque ne change pas. Sa preuve change.**
+>
+> Nous prenons en charge, nous assurons, nous améliorons leur histoire. Ce qui
+> change, c'est **ce qui adosse cette assurance**.
+
+## Ce qui tombe, et pourquoi ce n'est pas une perte de positionnement
+
+`DP-07` supprime le séquestre. Trois formulations de marque deviennent
+**littéralement fausses** :
+
+| Formulation | État |
+|---|---|
+| *« Votre argent est gardé par JP »* | ❌ Faux — et déjà signalé comme **exposition juridique** par `D-02` |
+| *« Vous savez à qui vous payez »* | ❌ Faux — c'était pourtant **le registre « sûr » recommandé par `D-02`** |
+| *« Nous tenons l'argent et nous arbitrons »* | ❌ Faux des deux côtés *(`DP-05`, `DP-07`)* |
+
+**Le premier registre exposait juridiquement. Le second est devenu inexact.**
+Il en faut un troisième — et il existait déjà dans le produit, sans qu'on l'ait
+nommé.
+
+## Le troisième registre : **la vérifiabilité**
+
+> ## « Vous savez à qui vous payez. »
+
+**Trois faits, pas trois engagements** — c'est ce qui les rend tenables :
+
+| Le fait | Ce qui le porte |
+|---|---|
+| **La boutique est vérifiée** | Identité et titularité du compte Mobile Money contrôlées *(`F0.6`, `F0.7`)* |
+| **La transaction est historisée** | Commande, facture, journal de traçabilité *(`F4.11`, `ecriture_financiere`)* |
+| **Tout laisse une trace** | Statuts horodatés et attribués, fil de remise, signalements comptés *(`F5.2`, `F6.2`)* |
+
+**Nous ne nous portons plus garants — nous rendons l'anonymat impossible.**
+
+## Le point de comparaison n'a jamais été Whatnot
+
+C'est l'erreur qu'il faut éviter en lisant `D-21` comme un recul. **Whatnot,
+Poshmark et Shopee ont un séquestre — et aucun d'eux n'opère à Madagascar.**
+
+Le point de comparaison réel, celui que l'acheteuse a sous les yeux ce soir,
+c'est **le direct Facebook** :
+
+| | Direct Facebook | **JP sans séquestre** |
+|---|---|---|
+| À qui je paie | **un numéro de téléphone** | une **boutique vérifiée** |
+| Ce que je sais d'elle avant de payer | rien | ancienneté, ventes, avis, taux de signalement |
+| Ce qu'il reste de l'achat | une capture d'écran | une **commande historisée** et une **facture** |
+| Si ça tourne mal | rien | signalement, effet sur la note publique, **suspension automatique** |
+| Preuve en cas de recours externe | aucune | identité, montant, date, échanges |
+
+**Mesurée contre cette référence, la promesse n'a pas faibli : elle a changé de
+nature.** Elle était une garantie ; elle devient une **vérifiabilité**. C'est
+plus faible qu'un séquestre, et **incomparablement plus fort qu'un numéro de
+téléphone.**
+
+## Ce qui ne change pas — et c'est l'essentiel
+
+| | |
+|---|---|
+| **L'archétype** | **Le Gardien**. Il ne garde plus l'argent, **il tient le registre**. Toujours un tiers, jamais un commerçant |
+| **Le Zag** | *« Nous vendons ce que tout le monde cache »* — **la lame change, pas le geste** : on met en première ligne **l'identité du vendeur** au lieu de la détention des fonds |
+| **La signature** | **« Je prends. Je reçois. »** — elle n'a jamais parlé de séquestre |
+| **Le ton** | Neutre, précis, factuel sur l'argent. **Le vouvoiement reste** : celui qui tient un registre ne tutoie pas |
+| **Le soulagement, jamais l'enthousiasme** *(`D-20`)* | Inchangé. *« Vous savez à qui vous payez »* est une phrase de soulagement |
+
+## Ce que ça retire au projet
+
+`A-03` — *« faire qualifier par un juriste le régime d'un tiers non agréé
+conservant des fonds d'acheteurs »* — était désigné comme **le principal risque
+du projet** *(loi 2016-056, art. 79-80)*.
+
+**JP ne conservant plus aucun fonds, ce risque disparaît.** C'est la
+contrepartie réelle, et elle est considérable : le produit devient
+**juridiquement beaucoup plus simple à exploiter**.
+
+## Ce que ça coûte, et qu'il faut dire
+
+**L'acheteuse n'a plus de recours interne.** JP ne rembourse pas, n'arbitre pas,
+et ne produit plus de preuve de remise. Son recours est **externe** — et JP
+fournit les pièces.
+
+**Cela doit être écrit dans les conditions d'utilisation, des deux côtés**, et
+**dit aux premières boutiques et aux premières acheteuses** — pas découvert par
+elles. Une marque qui a fait de l'honnêteté sur l'argent son actif ne peut pas
+commencer par une omission sur l'argent.
+
+---
+
 # 14. Ce qui reste à trancher
 
 ## 14.1 Les trois actions bloquantes
@@ -805,7 +898,7 @@ marks and no emoji in anything involving money.
 |---|---|---|---|
 | **A-01** | **Observer 10 à 20 directs malgaches** et compter les mots-clés réellement tapés — « je prends » · « alaiko » · un numéro · un émoji | **Toute la marque repose sur une source de 2013 qui décrit la vente par post photo, pas par direct.** Si les directs de 2026 utilisent autre chose, le socle du nom s'effondre | 2 soirées |
 | **A-02** | **Recherche d'antériorité OMAPI** sur « JP », classes **35 / 38 / 42** *(pas 36 dans un premier temps)* | Le registre n'est pas consultable en ligne. **On ne dépose pas une identité sur un nom non libéré** | ≈ 180 000 Ar |
-| **A-03** | **Faire qualifier par un juriste malgache** le régime d'un tiers non agréé conservant des fonds d'acheteurs *(loi 2016-056, art. 79-80)* | **Principal risque du projet**, et la formulation publique de la promesse en dépend | Consultation |
+| ~~**A-03**~~ | ✅ **SANS OBJET** — **JP ne conserve plus aucun fonds** *(`D-21`, `DP-07`)*. L'exposition qui rendait cette action bloquante a disparu avec le mécanisme. **C'est la contrepartie la plus concrète de la refonte.** Ancienne rédaction : faire qualifier le régime d'un tiers non agréé conservant des fonds d'acheteurs *(loi 2016-056, art. 79-80)* | **Principal risque du projet**, et la formulation publique de la promesse en dépend | Consultation |
 
 ## 14.2 Les décisions ouvertes
 

@@ -36,7 +36,7 @@ Le backlog présente la fidélisation avant les promotions. **L'ordre est invers
 | F7.7 | Cagnotte | P3 | S | moyen |
 | F7.10 | Accès anticipé à une collection | P2 | C | cadre |
 | F7.11 | Partage vers WhatsApp et Facebook | P1 | M | complet |
-| F7.12 | Parrainage vendeur et acheteur | P1 | M | complet |
+| F7.12 | Parrainage boutique et acheteur | P1 | M | complet |
 | F7.13 | Liste d'envies | P2 | C | cadre |
 | F7.14 | Message privé ⚠️ | P2 | S | cadre |
 
@@ -44,7 +44,7 @@ Le backlog présente la fidélisation avant les promotions. **L'ordre est invers
 
 # Sous-domaine 1 — Abonnements
 
-## F7.1 — Suivre / ne plus suivre un vendeur ou une créatrice
+## F7.1 — Suivre / ne plus suivre une boutique ou une créatrice
 
 `P1 · M · complet` — **Bloque** F7.15, F7.17, F7.23, F20.6 · **Règles** R-Q1 · **Story** US-SOCIAL-01
 
@@ -52,13 +52,13 @@ Le backlog présente la fidélisation avant les promotions. **L'ordre est invers
 
 **Un seul appui, aucune confirmation** *(R-Q1)*. Depuis une vitrine, une fiche, un direct, un clip ou une story. Action non symétrique, sans obligation, sans demande à accepter — sauf compte privé *(F19.10)*.
 
-**L'abonnement est l'actif que le vendeur construit sur JP.** C'est aussi le seul canal qui rend les promotions et les événements possibles sans acheter de publicité. Une fonctionnalité en apparence triviale, structurellement centrale.
+**L'abonnement est l'actif que la boutique construit sur JP.** C'est aussi le seul canal qui rend les promotions et les événements possibles sans acheter de publicité. Une fonctionnalité en apparence triviale, structurellement centrale.
 
 - **A non connectée** : l'appui déclenche l'inscription, et **l'abonnement est posé après connexion** — pas perdu en route.
 - **Hors ligne** : l'état s'affiche localement et se synchronise à la reconnexion, **sans double abonnement** *(US-SOCIAL-01 CA4)*.
-- **Vendeur suspendu** *(F6.8)* : bouton indisponible, état expliqué.
+- **Boutique suspendu** *(F6.8)* : bouton indisponible, état expliqué.
 
-**Technique.** Compteurs `nb_abonnes` **dénormalisés** sur `profil_vendeur` et `profil_createur`, maintenus par déclencheur. Compter 200 000 lignes à chaque affichage de vitrine est exclu *(C1, C2)*.
+**Technique.** Compteurs `nb_abonnes` **dénormalisés** sur `boutique` et `profil_createur`, maintenus par déclencheur. Compter 200 000 lignes à chaque affichage de vitrine est exclu *(C1, C2)*.
 
 L'idempotence est portée par la **clé primaire composite** `(suiveur_id, suivi_id)` : un double appui, ou une synchronisation hors ligne rejouée, ne crée jamais deux lignes.
 
@@ -83,7 +83,7 @@ Migration `..._f7_1_abonnement` :
 model Abonnement {
   suiveurId          String
   suiviId            String
-  type               TypeSuivi          // vendeur | createur
+  type               TypeSuivi          // boutique | createur
   notificationsPromo Boolean  @default(true)   // R-Q6
   creeLe             DateTime @default(now())
   @@id([suiveurId, suiviId])
@@ -119,7 +119,7 @@ pour suivre Miora" with a primary "Continuer" button and a muted line
 
 Émet `abonnement.cree` / `abonnement.supprime` *(PLAN_SOCLE §6)*, consommés par la notification *(F7.16)* et le fil *(F7.17)*.
 
-**Tests** : double appui → une seule ligne ; désabonnement puis réabonnement ; compteur exact après 1 000 opérations concurrentes ; réconciliation corrigeant un compteur volontairement faussé ; vendeur suspendu → 409 ; utilisateur supprimé → ligne retirée et compteur à jour *(US-SOCIAL-04 CA4)*.
+**Tests** : double appui → une seule ligne ; désabonnement puis réabonnement ; compteur exact après 1 000 opérations concurrentes ; réconciliation corrigeant un compteur volontairement faussé ; boutique suspendue → 409 ; utilisateur supprimé → ligne retirée et compteur à jour *(US-SOCIAL-04 CA4)*.
 
 ### 6. Frontend
 
@@ -127,7 +127,7 @@ pour suivre Miora" with a primary "Continuer" button and a muted line
 
 ```issues
 feature: F7.1
-titre: Suivre / ne plus suivre un vendeur ou une créatrice
+titre: Suivre / ne plus suivre une boutique ou une créatrice
 epic: "07"
 phase: P1
 prio: M
@@ -147,9 +147,9 @@ depend: []
 
 - **A** : « Moi → Abonnements », triable par activité récente. Sur chaque ligne, **couper les notifications de promotion sans se désabonner** *(R-Q6)* — c'est le réglage qui évite le désabonnement pur et simple.
 - **A** : sur chaque vitrine, le **nombre d'abonnés est public** *(R-Q2)*. C'est un signal de confiance au même titre que le score, et il ne coûte rien à produire.
-- **V / C** : liste des abonnés avec prénom, photo, date. **Jamais l'adresse électronique ni le numéro** *(R-Q3)*. Tableau de bord : compteur et **progression sur 30 jours** — l'indicateur que le vendeur regarde le plus souvent.
+- **V / C** : liste des abonnés avec prénom, photo, date. **Jamais l'adresse électronique ni le numéro** *(R-Q3)*. Tableau de bord : compteur et **progression sur 30 jours** — l'indicateur que la boutique regarde le plus souvent.
 
-**Décision.** Le réglage de notification est **par vendeur**, pas global. Un réglage global forcerait l'acheteuse à choisir entre tout recevoir et tout couper, et elle choisirait de tout couper.
+**Décision.** Le réglage de notification est **par boutique**, pas global. Un réglage global forcerait l'acheteuse à choisir entre tout recevoir et tout couper, et elle choisirait de tout couper.
 
 ### 2. Structure de code
 
@@ -157,7 +157,7 @@ depend: []
 apps/api/src/modules/fidelite/abonnements.ts   + projections des deux listes
 apps/mobile/src/features/abonnements/
 ├─ ecrans/EcranMesAbonnements.tsx
-├─ ecrans/EcranMesAbonnes.tsx                  côté vendeur
+├─ ecrans/EcranMesAbonnes.tsx                  côté boutique
 ├─ composants/LigneAbonnement.tsx              avec interrupteur de promos
 └─ hooks/{useMesAbonnements,useMesAbonnes}.ts
 apps/mobile/src/features/tableau-bord/composants/CarteAbonnes.tsx
@@ -165,7 +165,7 @@ apps/mobile/src/features/tableau-bord/composants/CarteAbonnes.tsx
 
 ### 3. Base de données
 
-Aucune table nouvelle. `abonnement.notificationsPromo` existe depuis `F7.1`. Pour la progression sur 30 jours, une vue matérialisée ou un agrégat quotidien `statistique_abonnes (vendeur_id, jour, nb_abonnes, nouveaux, perdus)` — recompter chaque jour sur toute la table serait coûteux au pic.
+Aucune table nouvelle. `abonnement.notificationsPromo` existe depuis `F7.1`. Pour la progression sur 30 jours, une vue matérialisée ou un agrégat quotidien `statistique_abonnes (boutique_id, jour, nb_abonnes, nouveaux, perdus)` — recompter chaque jour sur toute la table serait coûteux au pic.
 
 ### 4. Design
 
@@ -193,13 +193,13 @@ gold "Cliente Or" chip. No email, no phone number anywhere on this screen.
 
 ### 5. Backend
 
-`GET /moi/abonnements` (curseur, tri) · `PATCH /moi/abonnements/:suiviId` `{ notificationsPromo }` · `GET /vendeurs/:id/abonnes` — **réservé au vendeur concerné**, projection sans coordonnées.
+`GET /moi/abonnements` (curseur, tri) · `PATCH /moi/abonnements/:suiviId` `{ notificationsPromo }` · `GET /boutiques/:id/abonnes` — **réservé à la boutique concernée**, projection sans coordonnées.
 
-**Tests** : la réponse `abonnes` **ne contient jamais** `email` ni `telephone` (assertion sur les clés de l'objet, pas sur les valeurs) ; un autre vendeur reçoit 403 ; compteur public exact ; progression 30 jours correcte ; réglage de promo par vendeur, indépendant des autres.
+**Tests** : la réponse `abonnes` **ne contient jamais** `email` ni `telephone` (assertion sur les clés de l'objet, pas sur les valeurs) ; une autre boutique reçoit 403 ; compteur public exact ; progression 30 jours correcte ; réglage de promo par boutique, indépendant des autres.
 
 ### 6. Frontend
 
-Listes recyclées, pagination par curseur. La carte d'abonnés est en tête du tableau de bord vendeur.
+Listes recyclées, pagination par curseur. La carte d'abonnés est en tête du tableau de bord boutique.
 
 ```issues
 feature: F7.15
@@ -223,7 +223,7 @@ depend: [F7.1]
 
 Le fil « Abonnements » contient donc : directs en cours et à venir, **nouveaux articles**, promotions en cours, événements des comptes suivis *(R-Q5)*.
 
-**Regroupement obligatoire** : les nouveautés d'un même vendeur publiées le même jour forment **une seule carte** (« 12 nouveautés chez Miora »). Douze cartes d'un même vendeur noient le fil et donnent envie de se désabonner.
+**Regroupement obligatoire** : les nouveautés d'un même boutique publiées le même jour forment **une seule carte** (« 12 nouveautés chez Miora »). Douze cartes d'un même boutique noient le fil et donnent envie de se désabonner.
 
 **Chaque carte mène à un article achetable.** Aucune carte purement informative — c'est la règle d'or de l'épique 14, appliquée ici.
 
@@ -246,13 +246,13 @@ apps/mobile/src/features/fil/
 Aucune table nouvelle, mais **les index qui rendent l'agrégation tenable** :
 
 ```sql
-CREATE INDEX article_vendeur_publie ON article (vendeur_id, cree_le DESC)
+CREATE INDEX article_boutique_publie ON article (boutique_id, cree_le DESC)
   WHERE statut = 'en_ligne';
-CREATE INDEX promotion_vendeur_active ON promotion (vendeur_id, debut_le DESC)
+CREATE INDEX promotion_boutique_active ON promotion (boutique_id, debut_le DESC)
   WHERE statut = 'active';
 ```
 
-**Décision — pas de table de fil précalculé en V1.** Un fil matérialisé (fan-out à l'écriture) est la bonne réponse à grande échelle, mais il ajoute une source de vérité à maintenir et à réparer. Avec les index ci-dessus et une pagination par curseur, l'agrégation à la lecture tient largement le volume de lancement. Le point de bascule à surveiller : un vendeur suivi par 50 000 personnes qui publie 100 articles d'un coup.
+**Décision — pas de table de fil précalculé en V1.** Un fil matérialisé (fan-out à l'écriture) est la bonne réponse à grande échelle, mais il ajoute une source de vérité à maintenir et à réparer. Avec les index ci-dessus et une pagination par curseur, l'agrégation à la lecture tient largement le volume de lancement. Le point de bascule à surveiller : une boutique suivi par 50 000 personnes qui publie 100 articles d'un coup.
 
 ### 4. Design
 
@@ -278,9 +278,9 @@ Tab bar at the top: "Pour toi · Abonnements" with "Abonnements" active.
 
 ### 5. Backend
 
-`GET /fil/abonnements?curseur=` — agrégation, regroupement par vendeur et par jour, ordonnancement : directs en cours d'abord, puis à venir, puis promotions, puis nouveautés, puis événements.
+`GET /fil/abonnements?curseur=` — agrégation, regroupement par boutique et par jour, ordonnancement : directs en cours d'abord, puis à venir, puis promotions, puis nouveautés, puis événements.
 
-**Tests** : les quatre types de sources présents ; 12 articles d'un même vendeur le même jour → **une** carte ; ordonnancement respecté ; aucune carte sans article achetable ; état vide → suggestions marquées ; mode économie de données → images basse définition, pas de lecture automatique ; performance de l'agrégation sur un utilisateur suivant 200 comptes.
+**Tests** : les quatre types de sources présents ; 12 articles d'un même boutique le même jour → **une** carte ; ordonnancement respecté ; aucune carte sans article achetable ; état vide → suggestions marquées ; mode économie de données → images basse définition, pas de lecture automatique ; performance de l'agrégation sur un utilisateur suivant 200 comptes.
 
 ### 6. Frontend
 
@@ -306,7 +306,7 @@ depend: [F7.1, F14.18]
 
 **Structure** — `modules/contenu/filAccueil.ts` · `features/fil/ecrans/EcranAccueil.tsx`.
 
-**Base de données** — `direct (id, vendeur_id, titre, affiche_url, statut, debut_prevu_le, debut_le, fin_le, nb_spectateurs)`, index `(statut, debut_prevu_le)`.
+**Base de données** — `direct (id, boutique_id, titre, affiche_url, statut, debut_prevu_le, debut_le, fin_le, nb_spectateurs)`, index `(statut, debut_prevu_le)`.
 
 **Backend** — `GET /directs/en-cours`, `GET /directs/a-venir`. Le compteur de spectateurs vient de Redis, l'existence du direct vient de la base.
 
@@ -339,11 +339,11 @@ depend: []
 **La règle** : une seule remise par ligne de commande, **la plus favorable à l'acheteur**, jamais l'addition. Exception unique et documentée : une remise sur les articles **et** une livraison offerte, qui portent sur des assiettes distinctes.
 
 **Pourquoi pas de cumul** — trois raisons, chacune suffisante :
-1. le vendeur ne peut plus prévoir sa marge, et une marge imprévisible fait fuir le vendeur avant la commission ;
+1. la boutique ne peut plus prévoir sa marge, et une marge imprévisible fait fuir la boutique avant la commission ;
 2. le calcul devient inexplicable à l'acheteuse, donc suspect ;
 3. l'ordre d'application change le résultat (−20 % puis −5 000 Ar ≠ −5 000 Ar puis −20 %), ce qui produit des écarts irréconciliables entre l'écran et la facture.
 
-**Ce que porte concrètement ce mini-plan** : la fonction pure de calcul, sa table de cas, la contrainte de structure en base, et l'avertissement au vendeur en cas de chevauchement.
+**Ce que porte concrètement ce mini-plan** : la fonction pure de calcul, sa table de cas, la contrainte de structure en base, et l'avertissement à la boutique en cas de chevauchement.
 
 **La garantie structurelle** *(voir F3.15 §3)* : `ligne_commande.promotion_id` est une **colonne scalaire**. Le cumul est impossible par construction, pas seulement interdit par convention.
 
@@ -374,7 +374,7 @@ Une remise supérieure au prix est refusée par la base : dernier filet contre u
 
 Pas d'écran propre. Deux éléments d'interface :
 - **côté acheteuse**, la ligne de remise nommée et la phrase d'explication *(prompt en [F3.15](EP03-commande.md#f315--application-dune-promotion-et-dun-rang-client-au-panier-))* ;
-- **côté vendeur**, l'avertissement de chevauchement.
+- **côté boutique**, l'avertissement de chevauchement.
 
 **Prompt Stitch** — préambule commun, puis :
 
@@ -421,9 +421,9 @@ depend: []
 
 ### 1. Conception
 
-**Parcours vendeur, cinq choix et un résumé.** Type (pourcentage / montant fixe / livraison offerte) → valeur → période (immédiate ou programmée) → périmètre (boutique / catégorie / sélection) → cible (tous / abonnés / palier / clientes nommées) → **résumé qui annonce l'effet** → lancer.
+**Parcours boutique, cinq choix et un résumé.** Type (pourcentage / montant fixe / livraison offerte) → valeur → période (immédiate ou programmée) → périmètre (boutique / catégorie / sélection) → cible (tous / abonnés / palier / clientes nommées) → **résumé qui annonce l'effet** → lancer.
 
-**Le garde-fou qui décide de l'adoption** *(R-U10)* : avant validation, afficher **le net qui restera au vendeur** sur un article représentatif — *« Robe 50 000 Ar → 40 000 Ar, commission 2 000 Ar, vous recevez 38 000 Ar. »* Un vendeur qui découvre sa marge après coup ne refait pas de promotion. C'est exactement le mécanisme de `F10.1` sur la commission, appliqué à la remise.
+**Le garde-fou qui décide de l'adoption** *(R-U10)* : avant validation, afficher **le net qui restera à la boutique** sur un article représentatif — *« Robe 50 000 Ar → 40 000 Ar, commission 2 000 Ar, vous recevez 38 000 Ar. »* Une boutique qui découvre sa marge après coup ne refait pas de promotion. C'est exactement le mécanisme de `F10.1` sur la commission, appliqué à la remise.
 
 **Trois règles de propreté** :
 - le prix affiché est le prix payé, partout *(R-U2, RB7)* ;
@@ -438,11 +438,11 @@ depend: []
 
 ```
 apps/api/src/modules/promotion/
-├─ routes.ts        GET/POST/PATCH/DELETE /vendeur/promotions
+├─ routes.ts        GET/POST/PATCH/DELETE /boutique/promotions
 ├─ service.ts       creer() · activer() · terminer() · annuler()
 ├─ machine.ts       brouillon → programmee → active → terminee | annulee
 ├─ repository.ts
-├─ apercu.ts        ← le net vendeur sur un article représentatif (R-U10)
+├─ apercu.ts        ← le net boutique sur un article représentatif (R-U10)
 └─ *.test.ts
 apps/api/src/jobs/promotionsProgrammees.ts     bascule par date, idempotente
 apps/mobile/src/features/promotions/
@@ -468,7 +468,7 @@ Les deux index partiels sont ce qui rend la tâche de bascule bon marché : elle
 
 ### 4. Design
 
-Création en un écran à sections dépliantes plutôt qu'un assistant à cinq pas — un vendeur qui lance une promotion sait déjà ce qu'il veut, cinq écrans le ralentissent.
+Création en un écran à sections dépliantes plutôt qu'un assistant à cinq pas — une boutique qui lance une promotion sait déjà ce qu'elle veut, cinq écrans le ralentissent.
 
 **Prompt Stitch** — préambule commun, puis :
 
@@ -512,11 +512,11 @@ stats "48 ventes · 320 000 Ar". A floating action button "+" at the bottom righ
 
 | Route | Notes |
 |---|---|
-| `POST /vendeur/promotions` | validation, détection de chevauchement *(F7.26)*, calcul de l'aperçu de marge |
-| `GET /vendeur/promotions` | groupées par statut |
-| `PATCH /vendeur/promotions/:id` | **refusé si `statut = active`**, sauf champ `notifier_abonnes` |
-| `DELETE /vendeur/promotions/:id` | annulation ; les commandes passées ne changent pas |
-| `GET /vendeur/promotions/:id/stats` | notifiés, ouvertures, ventes *(F7.23)* |
+| `POST /boutique/promotions` | validation, détection de chevauchement *(F7.26)*, calcul de l'aperçu de marge |
+| `GET /boutique/promotions` | groupées par statut |
+| `PATCH /boutique/promotions/:id` | **refusé si `statut = active`**, sauf champ `notifier_abonnes` |
+| `DELETE /boutique/promotions/:id` | annulation ; les commandes passées ne changent pas |
+| `GET /boutique/promotions/:id/stats` | notifiés, ouvertures, ventes *(F7.23)* |
 
 Travail `promotionsProgrammees` : bascule `programmee → active` et `active → terminee`, **idempotent** — après un incident, une promotion en retard démarre, mais **jamais deux fois** *(R-U3)*.
 
@@ -550,9 +550,9 @@ depend: [F7.26, F1.9]
 - **V** : nombre d'abonnés notifiés, ouvertures, **ventes générées**. Sans ce retour, il ne sait pas si ça marche, donc il en abuse.
 
 **Les plafonds, et pourquoi ils sont non négociables** *(R-U4)* :
-- **une notification de promotion par vendeur et par 24 h** ;
+- **une notification de promotion par boutique et par 24 h** ;
 - au-delà de **3 promotions** d'abonnements différents le même jour → **regroupement** en un seul message (« 4 boutiques que vous suivez sont en promotion ») ;
-- réglage par vendeur côté acheteuse *(R-Q6)* ;
+- réglage par boutique côté acheteuse *(R-Q6)* ;
 - budget partagé avec les notifications d'événement *(R-W9)*.
 
 Une acheteuse qui suit 15 boutiques et reçoit 15 messages coupe **toutes** les notifications. Elle perd alors « votre colis est arrivé au relais » et son code de retrait — c'est-à-dire les deux seules notifications dont la logistique de JP dépend réellement. Le plafond protège le canal, pas la politesse.
@@ -619,12 +619,12 @@ moyenne sur 5 promotions : 2,8 %".
 
 ### 5. Backend
 
-Au passage `programmee → active`, si `notifier_abonnes` et `notifiee_le is null` : travail de fan-out par lots de 500, appliquant pour chaque abonné, **dans cet ordre** : réglage `notificationsPromo` → plafond par vendeur/24 h → seuil de regroupement → envoi ou mise en digest. Puis `notifiee_le` est posé.
+Au passage `programmee → active`, si `notifier_abonnes` et `notifiee_le is null` : travail de fan-out par lots de 500, appliquant pour chaque abonné, **dans cet ordre** : réglage `notificationsPromo` → plafond par boutique/24 h → seuil de regroupement → envoi ou mise en digest. Puis `notifiee_le` est posé.
 
-`GET /vendeur/promotions/:id/stats` — entonnoir notifiés → ouvertures → visites → ventes.
+`GET /boutique/promotions/:id/stats` — entonnoir notifiés → ouvertures → visites → ventes.
 
 **Tests** — les plus révélateurs de l'épique :
-- deux promotions du même vendeur en 24 h → **une seule** notification, et le vendeur en est averti avant de valider ;
+- deux promotions de la même boutique en 24 h → **une seule** notification, et la boutique en est avertie avant de valider ;
 - une acheteuse suivant 5 boutiques toutes en promotion le même jour → **un seul** message groupé ;
 - réglage coupé → aucune notification, abonnement conservé ;
 - double exécution du travail → un seul envoi *(idempotence par `notifiee_le`)* ;
@@ -654,7 +654,7 @@ depend: [F7.22, F7.1, F7.3]
 
 **Conception** — le module de notification, transverse. Types : direct démarré, promotion, retour en stock *(F7.4)*, colis arrivé, code de retrait, réservation qui expire, nouvel abonné, événement.
 
-**Réglage fin obligatoire** : sans lui, une acheteuse qui suit 15 vendeurs désinstalle en une semaine. Les notifications de direct sont **regroupées en une par soirée**.
+**Réglage fin obligatoire** : sans lui, une acheteuse qui suit 15 boutiques désinstalle en une semaine. Les notifications de direct sont **regroupées en une par soirée**.
 
 **Repli SMS obligatoire** *(N…, R-L6)* pour les notifications critiques : colis arrivé, code de retrait. Le push ne suffit pas sur des téléphones bas de gamme et des connexions intermittentes.
 
@@ -708,7 +708,7 @@ apps/mobile/src/features/vitrine/composants/CartePromoVerrouillee.tsx
 
 ### 3. Base de données
 
-Aucune table nouvelle : `promotion.cible = 'palier'` et `promotion.palier_min_id` existent depuis `F7.22`. Index `(vendeur_id, score DESC)` sur `rang_client` *(F7.18)* pour évaluer l'éligibilité sans balayage.
+Aucune table nouvelle : `promotion.cible = 'palier'` et `promotion.palier_min_id` existent depuis `F7.22`. Index `(boutique_id, score DESC)` sur `rang_client` *(F7.18)* pour évaluer l'éligibilité sans balayage.
 
 ### 4. Design
 
@@ -738,7 +738,7 @@ bénéficieront aussi."
 
 ### 5. Backend
 
-Aucun endpoint nouveau : `POST /vendeur/promotions` avec `cible: 'palier'`. `GET /promotions/mes-offres` *(F7.25)* renvoie les promotions éligibles **et** les verrouillées, avec la progression.
+Aucun endpoint nouveau : `POST /boutique/promotions` avec `cible: 'palier'`. `GET /promotions/mes-offres` *(F7.25)* renvoie les promotions éligibles **et** les verrouillées, avec la progression.
 
 **Tests** : Bronze → non appliquée ; Or → appliquée ; **VIP → appliquée** (palier supérieur) ; perte de palier entre réservation et paiement → remise retirée, commande maintenue ; tentative d'utiliser l'identifiant d'une promotion réservée sans y avoir droit → refus + anomalie journalisée ; la promotion verrouillée est bien renvoyée avec sa progression et **sans** possibilité de l'appliquer.
 
@@ -770,7 +770,7 @@ depend: [F7.18, F7.6, F7.22]
 
 **Base de données** — `promotion_beneficiaire (promotion_id, utilisateur_id, code_personnel UQ, utilise_le, commande_id)`.
 
-**Backend** — `POST /vendeur/promotions/:id/codes` `{ utilisateurIds }` (génération en lot depuis une sélection multiple), consommation dans la transaction de commande, restitution à l'annulation.
+**Backend** — `POST /boutique/promotions/:id/codes` `{ utilisateurIds }` (génération en lot depuis une sélection multiple), consommation dans la transaction de commande, restitution à l'annulation.
 
 **Design** — action depuis la fiche cliente et depuis la sélection multiple de la liste. Prompt Stitch : *seller sheet "Envoyer un code à Hanta" with a segmented control "Pourcentage · Montant", a value field, an expiry date field defaulting to "+30 jours", an optional short message field with placeholder "Merci pour votre fidélité", a preview card showing the notification Hanta will receive, and a primary button "Envoyer le code".*
 
@@ -852,20 +852,20 @@ depend: [F7.22]
 
 | Composante | Source | Intention |
 |---|---|---|
-| **Volume** | montant cumulé confirmé chez ce vendeur | qui dépense |
+| **Volume** | montant cumulé confirmé chez cette boutique | qui dépense |
 | **Fréquence** | nombre de commandes confirmées | qui revient |
 | **Récence** | date de la dernière commande, avec décote | qui est encore active |
 | **Fiabilité** | annulations, litiges perdus, retours systématiques | qui coûte cher |
 
 **Trois règles non négociables.**
 
-1. **Par vendeur, jamais global** *(R-R1)*. Un vendeur n'a aucune raison de connaître les dépenses de sa cliente chez ses concurrents. Exigence de vie privée. **La garantie est structurelle** : il n'existe volontairement aucun index ni aucune vue permettant d'agréger un client tous vendeurs confondus. L'absence de chemin d'accès est la garantie ; un contrôle d'autorisation seul se contourne par une nouvelle requête.
+1. **Par boutique, jamais global** *(R-R1)*. Une boutique n'a aucune raison de connaître les dépenses de sa cliente chez ses concurrents. Exigence de vie privée. **La garantie est structurelle** : il n'existe volontairement aucun index ni aucune vue permettant d'agréger un client tous boutiques confondues. L'absence de chemin d'accès est la garantie ; un contrôle d'autorisation seul se contourne par une nouvelle requête.
 2. **Seules les commandes confirmées comptent** *(R-R2)*. Une commande payée puis remboursée ne fabrique pas de VIP.
-3. **Explicable en une phrase** *(R-R3)*, au vendeur comme à la cliente. Un rang opaque produit le même rejet qu'un score de confiance opaque.
+3. **Explicable en une phrase** *(R-R3)*, à la boutique comme à la cliente. Un rang opaque produit le même rejet qu'un score de confiance opaque.
 
 **Décote de récence** — demi-vie paramétrable (`demi_vie_recence_j`, hyp. 180 jours) : le poids d'une commande décroît de moitié tous les six mois. Une cliente inactive depuis un an ne reste pas VIP indéfiniment. La perte de palier est **annoncée avant** qu'elle survienne *(R-R10, F7.19)*.
 
-**Performance** *(US-FID-01 CA6)* — le recalcul est **asynchrone** et ne ralentit **jamais** la confirmation de commande. 10 000 confirmations pendant un direct ne doivent pas mettre la file d'attente à genoux : le travail est groupé par vendeur, avec fenêtre de regroupement.
+**Performance** *(US-FID-01 CA6)* — le recalcul est **asynchrone** et ne ralentit **jamais** la confirmation de commande. 10 000 confirmations pendant un direct ne doivent pas mettre la file d'attente à genoux : le travail est groupé par boutique, avec fenêtre de regroupement.
 
 **L'obligation de phase 1** *(R-R11)* — la table `vente_confirmee_journal` est écrite **dès le lancement**, dans la transaction de confirmation, même si le moteur n'est activé qu'en phase 2. Sans elle, il faudra reconstituer l'historique à la main, ou repartir de zéro en effaçant la fidélité des premières clientes — les plus fidèles, précisément.
 
@@ -890,14 +890,14 @@ Migration `..._f7_18_rang_client` — `vente_confirmee_journal`, `rang_client` (
 
 ```sql
 CREATE UNIQUE INDEX vcj_commande ON vente_confirmee_journal (commande_id);
-CREATE INDEX vcj_couple ON vente_confirmee_journal (vendeur_id, utilisateur_id, confirme_le);
-CREATE INDEX rang_classement ON rang_client (vendeur_id, score DESC);
-CREATE INDEX rang_inactivite ON rang_client (vendeur_id, derniere_commande_le);
+CREATE INDEX vcj_couple ON vente_confirmee_journal (boutique_id, utilisateur_id, confirme_le);
+CREATE INDEX rang_classement ON rang_client (boutique_id, score DESC);
+CREATE INDEX rang_inactivite ON rang_client (boutique_id, derniere_commande_le);
 ```
 
 **L'unicité sur `commande_id` est ce qui rend le rattrapage idempotent** *(US-FID-06 CA3)* : le relancer dix fois donne le même résultat.
 
-**Et ce qui n'existe pas, volontairement** : aucun index sur `(utilisateur_id)` seul dans `vente_confirmee_journal`, aucune vue agrégeant un client tous vendeurs confondus. À documenter dans la migration, pour qu'un futur développeur cherchant à « optimiser » comprenne que l'absence est intentionnelle.
+**Et ce qui n'existe pas, volontairement** : aucun index sur `(utilisateur_id)` seul dans `vente_confirmee_journal`, aucune vue agrégeant un client tous boutiques confondues. À documenter dans la migration, pour qu'un futur développeur cherchant à « optimiser » comprenne que l'absence est intentionnelle.
 
 ### 4. Design
 
@@ -915,7 +915,7 @@ l'an dernier compte moins qu'une commande de ce mois", "Sans incident — les
 annulations répétées font baisser le rang"; then a highlighted single-sentence
 summary in a bordered card: "Plus vous commandez, souvent et récemment, plus
 votre rang monte."; then a muted privacy line with a lock icon: "Votre rang est
-calculé pour chaque boutique séparément. Une vendeuse ne voit jamais vos achats
+calculé pour chaque boutique séparément. Une boutique ne voit jamais vos achats
 chez les autres."; a full-width button "J'ai compris".
 ```
 
@@ -927,7 +927,7 @@ Aucun endpoint public : le moteur est interne. Consommateur de `commande.confirm
 - Commande confirmée → score recalculé ; commande remboursée → **exclue** *(R-R2)*.
 - Décote de récence : deux clientes au même montant, l'une active, l'autre inactive depuis un an → scores différents dans le bon sens.
 - Pénalité de fiabilité sur annulations et litiges perdus.
-- **Étanchéité par vendeur** *(R-R1)* : une cliente ayant acheté chez deux vendeurs a deux lignes indépendantes ; la réponse d'API du vendeur A ne contient **rien** du vendeur B.
+- **Étanchéité par boutique** *(R-R1)* : une cliente ayant acheté chez deux boutiques a deux lignes indépendantes ; la réponse d'API de la boutique A ne contient **rien** de la boutique B.
 - **Rattrapage idempotent** : lancé trois fois sur 5 000 commandes → scores identiques.
 - **Performance** : 10 000 confirmations en 60 s → la confirmation reste sous son budget de latence, le recalcul se fait en différé.
 - Le journal est écrit dans la **même transaction** que la confirmation : un échec de recalcul ne perd jamais la vente.
@@ -956,20 +956,20 @@ depend: [F3.7]
 
 Quatre paliers par défaut — **Bronze / Argent / Or / VIP** — renommables, supprimables, avec seuils en montant cumulé **et/ou** en nombre de commandes, et un avantage en texte libre.
 
-**La fidélisation est désactivable** *(R-R4)*. Un vendeur qui n'en veut pas n'en a pas, et **la liste de ses clientes reste utilisable** — c'est-à-dire que `F7.5` ne dépend pas de `F7.6`. Beaucoup de vendeurs voudront la liste sans le programme.
+**La fidélisation est désactivable** *(R-R4)*. Une boutique qui n'en veut pas n'en a pas, et **la liste de ses clientes reste utilisable** — c'est-à-dire que `F7.5` ne dépend pas de `F7.6`. Beaucoup de boutiques voudront la liste sans le programme.
 
 **Deux garde-fous.**
 - Seuils **strictement croissants** avec le rang : contrôle à la sauvegarde de l'ensemble, pas palier par palier *(US-FID-02 CA3)*.
 - Une modification de seuils **ne retire jamais un avantage déjà consommé** *(R-R5)*. Le recalcul peut faire redescendre une cliente, il ne reprend pas une remise dont elle a bénéficié.
 
-**Avantage en texte libre — décision assumée.** Le vendeur écrit son avantage (« 5 % sur tout », « livraison offerte », « accès anticipé »). JP ne le garantit pas et l'indique clairement à la cliente : *« avantage accordé par la boutique »* *(US-FID-02 CA6)*. L'alternative — une liste fermée d'avantages techniquement appliqués — serait plus propre mais couvrirait mal les usages réels, et retarderait la fonctionnalité de plusieurs semaines. L'avantage **réellement appliqué au panier** passe par une promotion ciblée *(F7.24)*, qui est le mécanisme garanti.
+**Avantage en texte libre — décision assumée.** La boutique écrit son avantage (« 5 % sur tout », « livraison offerte », « accès anticipé »). JP ne le garantit pas et l'indique clairement à la cliente : *« avantage accordé par la boutique »* *(US-FID-02 CA6)*. L'alternative — une liste fermée d'avantages techniquement appliqués — serait plus propre mais couvrirait mal les usages réels, et retarderait la fonctionnalité de plusieurs semaines. L'avantage **réellement appliqué au panier** passe par une promotion ciblée *(F7.24)*, qui est le mécanisme garanti.
 
 ### 2. Structure de code
 
 ```
 apps/api/src/modules/fidelite/
 ├─ paliers.ts        CRUD en bloc, validation de la cohérence d'ensemble
-├─ routes.ts         GET/PUT /vendeur/paliers
+├─ routes.ts         GET/PUT /boutique/paliers
 └─ paliers.test.ts
 apps/mobile/src/features/fidelite/
 ├─ ecrans/EcranPaliers.tsx
@@ -980,7 +980,7 @@ apps/mobile/src/features/fidelite/
 
 ### 3. Base de données
 
-Migration `..._f7_6_paliers` — `palier_fidelite` (CDC §3.7), `profil_vendeur.fidelite_activee`. Seed des quatre paliers par défaut à l'activation.
+Migration `..._f7_6_paliers` — `palier_fidelite` (CDC §3.7), `boutique.fidelite_activee`. Seed des quatre paliers par défaut à l'activation.
 
 ### 4. Design
 
@@ -1010,13 +1010,13 @@ doit être supérieur à celui de « Argent »".
 
 ### 5. Backend
 
-`GET /vendeur/paliers` (avec le nombre de clientes par palier) · `PUT /vendeur/paliers` (remplacement de l'ensemble, validation globale, recalcul des attributions) · `POST /vendeur/fidelite/activer` et `/desactiver`.
+`GET /boutique/paliers` (avec le nombre de clientes par palier) · `PUT /boutique/paliers` (remplacement de l'ensemble, validation globale, recalcul des attributions) · `POST /boutique/fidelite/activer` et `/desactiver`.
 
 **Tests** : seuils décroissants → refus avec le palier fautif nommé ; seuils modifiés → réattribution, **aucun avantage consommé reprisée** ; désactivation → paliers invisibles côté cliente, **données conservées**, liste des clientes toujours utilisable ; suppression d'un palier occupé → réattribution au palier inférieur.
 
 ### 6. Frontend
 
-Cartes réordonnables, compteur de clientes en direct par palier — c'est ce qui permet au vendeur de calibrer ses seuils au lieu de les inventer.
+Cartes réordonnables, compteur de clientes en direct par palier — c'est ce qui permet à la boutique de calibrer ses seuils au lieu de les inventer.
 
 ```issues
 feature: F7.6
@@ -1036,7 +1036,7 @@ depend: [F7.18]
 
 ### 1. Conception
 
-**Ce que le vendeur veut, c'est savoir à qui faire un geste.** Pas un tableau de bord analytique : une liste de noms, ordonnée, avec une action à côté de chaque ligne.
+**Ce que la boutique veut, c'est savoir à qui faire un geste.** Pas un tableau de bord analytique : une liste de noms, ordonnée, avec une action à côté de chaque ligne.
 
 - **Liste** : ordonnée par rang. Par ligne — prénom, photo, palier, montant cumulé, nombre de commandes, date de la dernière. Tri par montant, fréquence, récence. Filtres par palier et « inactives depuis X ».
 - **Fiche cliente** : historique des commandes, tailles achetées, articles préférés, litiges éventuels, **note privée** jamais visible de la cliente.
@@ -1044,9 +1044,9 @@ depend: [F7.18]
 
 **État de démarrage** *(R-R6)* — moins de 5 clientes : la liste s'affiche, mais **sans palmarès**. Un classement à trois lignes est ridicule et décrédibilise la fonctionnalité. Le message explique que les paliers s'activeront quand il y aura de quoi classer.
 
-**L'employé** *(R-R8)* : lecture seule et **montants masqués**, si le vendeur l'autorise. Fara prépare les colis, elle n'a pas à connaître le chiffre d'affaires par cliente.
+**L'employé** *(R-R8)* : lecture seule et **montants masqués**, si la boutique l'autorise. Fara prépare les colis, elle n'a pas à connaître le chiffre d'affaires par cliente.
 
-**Cliente ayant supprimé son compte** *(US-FID-03 CA5)* : ligne **anonymisée**, historique agrégé conservé pour la comptabilité du vendeur *(F0.11)*.
+**Cliente ayant supprimé son compte** *(US-FID-03 CA5)* : ligne **anonymisée**, historique agrégé conservé pour la comptabilité de la boutique *(F0.11)*.
 
 ### 2. Structure de code
 
@@ -1054,7 +1054,7 @@ depend: [F7.18]
 apps/api/src/modules/fidelite/
 ├─ clients.ts       liste paginée, tri, filtres, projection selon permission
 ├─ ficheClient.ts   historique, tailles, préférés, litiges, note
-├─ routes.ts        GET /vendeur/clients · /:uid · PUT /:uid/note
+├─ routes.ts        GET /boutique/clients · /:uid · PUT /:uid/note
 └─ clients.test.ts
 apps/mobile/src/features/clientes/
 ├─ ecrans/{EcranMesClientes,EcranFicheCliente}.tsx
@@ -1064,9 +1064,9 @@ apps/mobile/src/features/clientes/
 
 ### 3. Base de données
 
-Migration `..._f7_5_note_client` — table `note_client` (CDC §3.7), avec unicité `(vendeur_id, utilisateur_id)`.
+Migration `..._f7_5_note_client` — table `note_client` (CDC §3.7), avec unicité `(boutique_id, utilisateur_id)`.
 
-Les projections de liste s'appuient sur `rang_client` et `IDX(vendeur_id, score DESC)` — pas d'agrégation à la volée sur `vente_confirmee_journal`, qui serait lente au pic.
+Les projections de liste s'appuient sur `rang_client` et `IDX(boutique_id, score DESC)` — pas d'agrégation à la volée sur `vente_confirmee_journal`, qui serait lente au pic.
 
 ### 4. Design
 
@@ -1107,11 +1107,11 @@ and no action bar at all.
 
 ### 5. Backend
 
-`GET /vendeur/clients?tri=&palier=&inactifDepuisJ=&curseur=` · `GET /vendeur/clients/:uid` · `PUT /vendeur/clients/:uid/note`.
+`GET /boutique/clients?tri=&palier=&inactifDepuisJ=&curseur=` · `GET /boutique/clients/:uid` · `PUT /boutique/clients/:uid/note`.
 
 **Projection selon la permission** : pour un employé, les champs de montant sont **absents de la réponse**, pas masqués côté client *(R-R8)*. Un masquage à l'affichage laisse les montants dans la réponse réseau.
 
-**Tests** : tri et filtres corrects ; pagination par curseur stable sous insertion ; **employé → aucun champ de montant dans la réponse** (assertion sur les clés) ; autre vendeur → 403 ; moins de 5 clientes → pas de palmarès ; note privée jamais renvoyée à la cliente ; cliente supprimée → ligne anonymisée, agrégats conservés ; sélection multiple → création de promotion ciblée pré-remplie.
+**Tests** : tri et filtres corrects ; pagination par curseur stable sous insertion ; **employé → aucun champ de montant dans la réponse** (assertion sur les clés) ; autre boutique → 403 ; moins de 5 clientes → pas de palmarès ; note privée jamais renvoyée à la cliente ; cliente supprimée → ligne anonymisée, agrégats conservés ; sélection multiple → création de promotion ciblée pré-remplie.
 
 ### 6. Frontend
 
@@ -1119,7 +1119,7 @@ Liste recyclée, sélection multiple par appui long, barre d'action en bas. Fich
 
 ```issues
 feature: F7.5
-titre: Écran Mes clientes, CRM léger vendeur
+titre: Écran Mes clientes, CRM léger boutique
 epic: "07"
 phase: P2
 prio: S
@@ -1136,13 +1136,13 @@ depend: [F7.18]
 ### 1. Conception
 
 - **A** : sur la vitrine d'une boutique où elle a acheté — *« Vous êtes cliente Or chez Miora »* — et **la progression vers le suivant** : *« Encore 2 commandes pour devenir VIP »*, avec l'avantage à la clé.
-- **A** : écran « Mes avantages » rassemblant ses paliers chez tous les vendeurs.
+- **A** : écran « Mes avantages » rassemblant ses paliers chez tous les boutiques.
 
 **La règle qui rend l'ensemble honnête** *(R-R9)* : l'avantage annoncé **doit être réellement appliqué** au panier. Un palier sans effet est une manipulation, contraire aux principes de conception. C'est pourquoi l'avantage garanti passe par une promotion ciblée *(F7.24)* et non par le texte libre du palier.
 
 **Perte de palier annoncée avant** *(R-R10)* : *« Votre statut Or expire dans 3 semaines — une commande le prolonge »*. Découvrir qu'on a perdu son statut sans avertissement est vécu comme une trahison, pour un mécanisme censé récompenser.
 
-**Discrétion** *(US-FID-05 CA4)* : l'acheteuse peut refuser d'apparaître dans les classements publics *(F17.5)* ; son rang reste visible du vendeur, pas des autres acheteuses.
+**Discrétion** *(US-FID-05 CA4)* : l'acheteuse peut refuser d'apparaître dans les classements publics *(F17.5)* ; son rang reste visible de la boutique, pas des autres acheteuses.
 
 ### 2. Structure de code
 
@@ -1187,11 +1187,11 @@ boutiques où vous achetez, mais pas par les autres clientes."
 
 ### 5. Backend
 
-`GET /moi/avantages` — pour chaque vendeur où la cliente a un rang : palier, avantage, progression, date d'expiration prévisible.
-`GET /vendeurs/:id/vitrine` inclut `monPalier` si l'appelante en a un.
+`GET /moi/avantages` — pour chaque boutique où la cliente a un rang : palier, avantage, progression, date d'expiration prévisible.
+`GET /boutiques/:id/vitrine` inclut `monPalier` si l'appelante en a un.
 Travail `alerteExpirationPalier` : une notification, **trois semaines avant**, une seule fois.
 
-**Tests** : progression exacte (montant et commandes) ; avantage affiché = avantage appliqué au panier *(R-R9, test croisé avec F7.24)* ; alerte d'expiration une seule fois ; réglage de discrétion respecté ; aucune donnée d'autres vendeurs dans la réponse *(R-R1)*.
+**Tests** : progression exacte (montant et commandes) ; avantage affiché = avantage appliqué au panier *(R-R9, test croisé avec F7.24)* ; alerte d'expiration une seule fois ; réglage de discrétion respecté ; aucune donnée d'autres boutiques dans la réponse *(R-R1)*.
 
 ### 6. Frontend
 
@@ -1243,15 +1243,15 @@ depend: [F0.10]
 
 ---
 
-## F7.12 — Parrainage vendeur et parrainage acheteur
+## F7.12 — Parrainage boutique et parrainage acheteur
 
 `P1 · M · complet`
 
 **Conception** — deux parrainages distincts.
-- **Vendeur** : lien personnel ; si le filleul réalise sa première vente, le parrain obtient un avantage (commission réduite un mois, mise en avant offerte).
+- **Boutique** : lien personnel ; si le filleul réalise sa première vente, le parrain obtient un avantage (commission réduite un mois, mise en avant offerte).
 - **Acheteur** : le filleul obtient une réduction sur sa première commande, le parrain un crédit **à la livraison** de cette commande — pas à l'inscription, sinon on paie des inscriptions creuses.
 
-**OP** suit le coût d'acquisition par parrainage contre acquisition payante.
+**Le tableau de bord** *(`F11.7`)* suit le coût d'acquisition par parrainage contre acquisition payante.
 
 **Base de données** — `parrainage (code UQ, parrain_id, filleul_id, type, statut(en_attente|valide|expire), evenement_declencheur, recompense_versee_le)`.
 
@@ -1263,7 +1263,7 @@ depend: [F0.10]
 
 ```issues
 feature: F7.12
-titre: Parrainage vendeur et parrainage acheteur
+titre: Parrainage boutique et parrainage acheteur
 epic: "07"
 phase: P1
 prio: M
@@ -1327,7 +1327,7 @@ depend: [F7.1, F7.3]
 
 **Conception** — un pourcentage de chaque achat crédité, utilisable sur la commande suivante. Alimentée aussi par l'unboxing *(F17.13)* et le parrainage *(F7.12)*.
 
-**Un crédit n'est pas une remise** *(F3.6)* : il est payé par JP, pas par le vendeur. Écriture financière distincte, assiette distincte, et il **ne concourt pas** à la règle de non-cumul.
+**Un crédit n'est pas une remise** *(F3.6)* : il est payé par JP, pas par la boutique. Écriture financière distincte, assiette distincte, et il **ne concourt pas** à la règle de non-cumul.
 
 **Base de données** — `cagnotte (utilisateur_id PK, solde)`, `mouvement_cagnotte (type, montant, reference)`. Solde **dérivé des mouvements**, jamais saisi.
 
@@ -1389,7 +1389,7 @@ depend: [F16.9]
 
 ---
 
-## F7.14 — Message privé acheteur ↔ vendeur ⚠️
+## F7.14 — Message privé acheteur ↔ boutique ⚠️
 
 `P2 · S · cadre` — **décision ouverte n° 7**
 
@@ -1403,7 +1403,7 @@ depend: [F16.9]
 
 ```issues
 feature: F7.14
-titre: Message privé acheteur vendeur
+titre: Message privé acheteur boutique
 epic: "07"
 phase: P2
 prio: S

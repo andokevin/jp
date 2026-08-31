@@ -149,10 +149,25 @@
 | MVola SA est EME depuis 2018, puis banque *(agrément n°005/2021-CSBF)* | ✔ |
 
 **Ce qui n'a pas pu être vérifié `[?]`** : le régime exact applicable à un tiers
-**non agréé** qui conserverait des fonds d'acheteurs pour le compte de vendeurs.
+**non agréé** qui conserverait des fonds d'acheteurs pour le compte de boutiques.
 Les PDF officiels et l'Instruction n°002/2017-CSBF sont inaccessibles.
 
-> ### Décision de marque `D-02` — la formulation de la promesse est un sujet juridique
+> ### Décision de marque `D-02` — ✅ **résolue autrement que prévu, par `D-21`**
+>
+> **Ce paragraphe est conservé parce qu'il a vu juste.** Il avait identifié que
+> la phrase centrale exposait juridiquement, et recommandait un registre de
+> repli — *« la boutique n'est payée qu'à votre confirmation »*.
+>
+> **`DP-07` supprime le séquestre : les deux registres deviennent inutilisables**
+> — le premier était risqué, le second est devenu faux. **Le registre retenu est
+> le troisième**, la **vérifiabilité** : *« Vous savez à qui vous payez »*
+> *(`D-21`)*.
+>
+> **Et l'exposition juridique disparaît entièrement** : JP ne conservant plus
+> aucun fonds, la question du tiers non agréé ne se pose plus. L'action
+> bloquante `A-03` devient sans objet.
+>
+> *Analyse d'origine, conservée :*
 >
 > Notre phrase centrale est aujourd'hui : *« Votre argent est gardé par JP. »*
 >
@@ -168,7 +183,7 @@ Les PDF officiels et l'Instruction n°002/2017-CSBF sont inaccessibles.
 > | Registre | Formulation | Ce qu'elle affirme |
 > |---|---|---|
 > | **Détention** *(risqué)* | « JP garde votre argent » | JP détient des fonds → périmètre EME |
-> | **Condition de versement** *(sûr)* | **« Le vendeur n'est payé qu'à votre confirmation »** | JP décrit **quand** le paiement est libéré, pas qui le détient |
+> | **Condition de versement** *(sûr)* | **« La boutique n'est payée qu'à votre confirmation »** | JP décrit **quand** le paiement est libéré, pas qui le détient |
 >
 > **Recommandation : construire toute la communication publique sur le second
 > registre**, qui dit exactement la même chose à l'acheteuse, produit le même
@@ -202,16 +217,16 @@ retrouvée ni comme adoptée ni comme retirée**.
 ## 3.1 Le geste « je prends » est attesté
 
 > « Les clients confirment leur désir d'achat en mettant **« je prends »** ou
-> **« j'achète »** en commentaire […] le vendeur et l'acheteur se conviennent
+> **« j'achète »** en commentaire […] la boutique et l'acheteur se conviennent
 > d'une date et d'un endroit, souvent en centre-ville, pour la livraison […] le
 > paiement se fait par Mobile Payment. »
 >
 > — *Madagascar : le shopping se passe sur Facebook*, Mondoblog / RFI, 2013
 > [source](https://ariniaina.mondoblog.org/2013/02/01/madagascar-le-shopping-se-passe-sur-facebook/) `[V]`
 
-Le même texte nomme le problème du vendeur, **treize ans avant notre deck** :
+Le même texte nomme le problème de la boutique, **treize ans avant notre deck** :
 
-> « Le problème des vendeurs réside surtout dans **les clients poseurs de
+> « Le problème des boutiques réside surtout dans **les clients poseurs de
 > lapins**. » `[V]`
 
 > **Ce que ça vaut.** Le nom de la marque repose sur un **rituel transactionnel
@@ -355,7 +370,7 @@ l'inverse.**
 
 | Mot | Sens | Verdict | Usage |
 |---|---|---|---|
-| **azo antoka** | « qui peut être garanti » → fiable, sûr | ✅ **Le meilleur** | **Badge vendeur vérifié : « Mpivarotra azo antoka »** |
+| **azo antoka** | « qui peut être garanti » → fiable, sûr | ✅ **Le meilleur** | **Badge boutique vérifiée : « Mpivarotra azo antoka »** |
 | **antoka** | caution, garantie, aval — *désigner une chose en substitution en cas de **perte*** | ✅ Sûr | Le nom de la garantie acheteur |
 | **marina** / **fahamarinana** | vrai, juste, *« qui ne trompe pas, qui ne ment pas »* | ✅ Excellent | Authenticité produit, charte. *manamarina* = certifier |
 | **fitokisana** | confiance *(nom)* — halo historique : préparation protectrice de **ceux qui partent commercer en zone dangereuse**| ✅ Sûr | Nom du programme de confiance |
@@ -366,7 +381,7 @@ l'inverse.**
 | **vola** | argent | ❌ **Préempté** | Collision frontale avec **MVola** |
 
 > **Décision `D-05`.** Trois conséquences immédiates :
-> - le badge vendeur vérifié se dit **« Mpivarotra azo antoka »** — le mot porte
+> - le badge boutique vérifiée se dit **« Mpivarotra azo antoka »** — le mot porte
 >   déjà la sémantique assurantielle (caution, aval, compensation en cas de
 >   perte) que nous voulons installer ;
 > - **aucun nom de produit, de bouton ou de programme ne contient `toky` sous
@@ -447,7 +462,7 @@ officiels.**
 | 3 | **« ji-pé » ≈ *jipo* / *zipo* — « jupe »** en malgache, avec toute une famille dérivée | `[V]` — **collision heureuse pour Mode et Beauté, parasite hors textile** |
 | 4 | En malgache, **‹ j › se prononce /dz/** — un locuteur peu francophone dira **« dzi-pé »** | `[V]` |
 | 5 | **JP = code ISO 3166 du Japon**, `.jp` = ccTLD japonais | `[V]` — sur une place de marché d'articles importés, « JP » sera lu « Japon » par une partie du public et par les moteurs |
-| 6 | **« JP » est le diminutif de Jean-Pierre / Jean-Paul** dans toute l'aire francophone | `[P]` — la marque risque d'être personnifiée comme **un homme**, sur un produit dont les acheteuses et vendeuses sont majoritairement des femmes |
+| 6 | **« JP » est le diminutif de Jean-Pierre / Jean-Paul** dans toute l'aire francophone | `[P]` — la marque risque d'être personnifiée comme **un homme**, sur un produit dont les acheteuses et boutiques sont majoritairement des femmes |
 | 7 | JPMorgan défend « J.P. Morgan » — **523 dépôts**, politique de poursuite explicite | `[V]` — risque **faible** sur « JP » sans points, **réel en classe 36** *(services financiers)* |
 | 8 | Dépôt OMAPI Antananarivo : **≈ 180 000 Ar pour 3 classes** | `[V]` — [omapi.mg](http://www.omapi.mg/marque.html) |
 | 9 | **Aucune antériorité « JP » à Madagascar trouvée** — mais le registre OMAPI **n'est pas interrogeable en ligne** | `[?]` |
@@ -500,7 +515,7 @@ démonter en rendez-vous.
 
 1. **Prévalence chiffrée des arnaques à la vente en ligne** — aucune. C'est
    précisément ce que nos quatre mesures fondatrices produiront.
-2. **Le régime juridique exact du séquestre par un tiers non agréé** — textes
+2. ~~**Le régime juridique du séquestre par un tiers non agréé**~~ — ✅ **sans objet** *(`D-21`, `DP-07`)*. Ancienne rédaction : textes
    inaccessibles. `A-03`.
 3. **Le statut final de la taxe de 0,5 %** sur le mobile money — ni adoptée ni
    retirée dans les sources.

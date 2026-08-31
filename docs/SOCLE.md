@@ -80,7 +80,7 @@ ici se propage partout, d'où le soin.
 
 **L'arrondi est nommé par son bénéficiaire.** Il n'existe pas de fonction
 « appliquer un pourcentage ». Il y a `commissionSur` qui arrondit vers le bas —
-l'ariary contesté reste au vendeur — et `remiseSur` qui arrondit vers le haut —
+l'ariary contesté reste à la boutique — et `remiseSur` qui arrondit vers le haut —
 il va à l'acheteuse. Jamais vers JP. Une fonction neutre obligerait chaque
 appelant à trancher, et un appelant sur dix trancherait mal.
 
@@ -251,13 +251,13 @@ projeter  décide CE QUI SORT   → retire des champs
 
 Une garde de route dit qui entre. Elle **ne dit pas** ce qu'il voit. Une
 employée `VE` a le droit d'ouvrir une commande, pas d'y voir la marge du
-vendeur *(R-R8)*.
+boutique *(R-R8)*.
 
 Le test qui justifie l'existence du second outil :
 
 ```ts
 // L'employé PASSE la garde de lecture…
-expect(() => garde(employe, 'vendeur', 'employe_vendeur')).not.toThrow();
+expect(() => garde(employe, 'boutique', 'employe_boutique')).not.toThrow();
 // …et c'est la projection, ELLE SEULE, qui retire l'argent.
 expect(projeterCommande(employe, { montantTotal: 1 }).montantTotal).toBeUndefined();
 ```
@@ -331,7 +331,7 @@ est une liste de choses à comprendre, pas un déchet.
 ### La chose à comprendre
 
 **Une reconnexion ne perd rien.** Une coupure de dix secondes en plein direct
-fait disparaître des annonces de stock — et la vendeuse le voit à l'écran,
+fait disparaître des annonces de stock — et la boutique le voit à l'écran,
 devant ses clientes.
 
 Numéro de séquence par canal. Le client annonce le dernier reçu, le serveur
@@ -442,7 +442,7 @@ lui.
 
 | Fichier | Lignes | Rôle |
 |---|---|---|
-| `apps/admin/src/index.ts` | 87 | client API · tableau paginé · les 8 écrans de l'épique 11 |
+| `apps/admin/src/index.ts` | 87 | client API · tableau paginé · ⚠️ **écrit pour les 8 écrans de l'ancienne épique 11 — `DP-05` n'en garde qu'un**, le tableau de bord du pilote *(`F11.7`)* |
 | **`apps/web/src/index.ts`** | 64 | **les métadonnées d'aperçu** |
 | `apps/web/src/index.test.ts` | 49 · 4 tests | |
 | `apps/*/vite.config.ts` | 16 | `127.0.0.1` · avertissement au-delà de 300 ko |

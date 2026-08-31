@@ -1,11 +1,15 @@
 /**
- * Module livraison — Colis, points relais, tournées, codes de retrait
+ * Module livraison — Expédition, statuts partagés, fil de remise
  *
  * Règles : R-L · Dépend de : aucun
  *
- * Le statut est partagé des deux côtés, toujours *(R-L4)*. L'application
- * de terrain fonctionne hors ligne et se réconcilie : un livreur dans
- * une ruelle sans réseau ne doit pas être empêché de travailler.
+ * **JP n'opère aucune logistique** *(DP-04)*. La boutique fait parvenir le
+ * colis par le moyen de son choix ; ce module n'enregistre que ce qu'elle
+ * déclare et ce que l'acheteur confirme. Le statut est partagé des deux
+ * côtés, toujours *(R-L3)*.
+ *
+ * ⚠️ `EXPEDIEE` est une déclaration que personne ne vérifie *(R-L9)* :
+ * aucun tiers neutre ne constate la remise.
  *
  * **La façade du module.** Les autres modules importent d'ici, jamais un
  * fichier interne. Le dépôt et les routes ne sortent pas.

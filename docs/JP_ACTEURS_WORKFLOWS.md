@@ -19,127 +19,140 @@
 
 # PARTIE I — LES ACTEURS
 
+> **Amont normatif** : [`JP_DECISIONS_PRODUIT.md`](JP_DECISIONS_PRODUIT.md).
+> Six acteurs ont été retirés du produit *(`DP-01`)* : vendeur particulier,
+> employé du vendeur, livreur, point relais, modérateur JP, opérateur JP.
+
 ## 1. Les acteurs humains
 
 | Code | Acteur | Ce qu'il vient chercher | Application |
 |---|---|---|---|
 | **AN** | **Visiteur non inscrit** | Regarder sans s'engager, comprendre à qui il a affaire | mobile · web public |
-| **A** | **Acheteur** | Ne pas perdre son argent, trouver sa taille | mobile |
-| **P** | **Vendeur particulier** | Vendre trois vêtements sans monter un commerce | mobile |
-| **V** | **Vendeur professionnel** | Ne plus perdre de ventes, être pris au sérieux | mobile *(studio)* |
-| **VE** | **Employé du vendeur** | Voir les commandes à préparer **sans toucher aux finances** | mobile *(studio restreint)* |
+| **A** | **Acheteur** | Savoir à qui il paie, trouver sa taille | mobile |
+| **B** | **Boutique** | Ne plus perdre de ventes, être prise au sérieux | mobile *(studio)* |
 | **C** | **Créatrice** | Gagner de l'argent **sans capital et sans stock** | mobile *(studio créatrice)* |
-| **D** | **Donateur / diaspora** | Offrir un objet précis, vérifié, livré, **avec une preuve** | **web, sans compte** |
-| **L** | **Livreur** | Une tournée claire, une preuve de remise | app terrain |
-| **PR** | **Point relais** | Recevoir, stocker, remettre contre code, être payé | app terrain |
-| **MO** | **Modérateur JP** | Protéger les créatrices, vite | back-office |
-| **OP** | **Opérateur JP** | Traiter vite, avec des preuves | back-office |
-| **PM** | **Partenaire marque** | Des campagnes mesurables | back-office *(phase 3)* |
+| **D** | **Donateur / diaspora** | Offrir un objet précis à quelqu'un de nommé | **web** *(⚠️ `PO-9`)* |
+| **PM** | **Partenaire marque** | Des campagnes mesurables | espace partenaire *(phase 3)* |
+
+> **« Boutique » remplace « vendeur »** *(`DP-03`)*. Le mot désigne à la fois
+> l'acteur et sa vitrine. Le verbe *vendre* et le nom *vente* sont conservés :
+> ce sont des actions, pas des acteurs.
 
 ## 2. Les acteurs système
 
 | Code | Acteur | Rôle |
 |---|---|---|
-| **SYS** | Plateforme JP | Exécute les règles, les minuteurs, les échéances, les calculs |
+| **SYS** | Plateforme JP | Exécute les règles, les minuteurs, les échéances, les calculs — **et depuis `DP-05`, les vérifications, les sanctions et le traitement des signalements** |
 | **PSP** | Prestataire de paiement | MVola, Orange Money, Airtel Money, agrégateur carte |
 | **VID** | Service vidéo | Ingest, transcodage, diffusion, enregistrement |
 | **NOT** | Service de notification | Poussée, SMS, courriel |
 
-## 3. Comment les rôles s'enchaînent
+> **`SYS` a hérité de deux acteurs humains.** Ce qui était instruit par le
+> modérateur et l'opérateur est désormais exécuté par des règles *(`DP-05`)*.
+> Ce n'est pas un détail de nommage : cela veut dire qu'**aucune décision de la
+> plateforme n'est explicable par un humain**, et que chaque règle automatique
+> doit donc être motivée par écrit au moment où elle s'applique.
+
+## 3. Il n'y a pas d'enchaînement de rôles
 
 ```
-AN  ──▶  A  ──┬──▶  P  ──▶  V
-              ├──▶  C  ──▶  V
-              └──▶  D
+                    ┌──▶  A   Acheteur    ── n'a aucun chemin vers la vente
+Inscription ────────┼──▶  B   Boutique    ── peut acheter (commodité, DP-02)
+                    └──▶  C   Créatrice   ── peut acheter (commodité, DP-02)
 
-Personnel JP  ──┬──▶  MO
-                └──▶  OP
-
-Terrain  ──┬──▶  L
-           └──▶  PR
+Sans inscription ──────▶  AN  Visiteur
+                          D   Donateur
 ```
 
-**Les rôles se cumulent sur un même compte** — une même personne peut acheter,
-vendre et créer. **Mais les portefeuilles restent séparés** : sinon elle ne sait
-plus d'où vient son argent.
+**Un compte a un type, et un seul, choisi à l'inscription. Il n'en change
+jamais** *(`DP-02`)*. Il n'existe aucun écran de bascule, aucune montée en
+grade, **aucune procédure de support** pour changer de type.
+
+**L'ancien modèle est explicitement abandonné.** Ce document affirmait
+auparavant que « les rôles se cumulent sur un même compte » et que seuls les
+portefeuilles restaient séparés. Cette phrase est fausse depuis `DP-02`.
+
+> ### Pourquoi une boutique peut acheter
+>
+> Le cas visé est le patron qui veut acheter sur JP sans se créer un second
+> compte. **Ce n'est pas un cumul de rôles :** le parcours est exactement le
+> parcours acheteur, il n'ouvre aucun droit, et une boutique **ne peut pas
+> acheter chez elle-même**. Ventes et achats restent deux historiques distincts.
 
 ---
 
-# PARTIE II — LES RÔLES ET LEURS DROITS
+# PARTIE II — LES TYPES DE COMPTE ET LEURS DROITS
 
-## 4. Ce que chaque rôle peut détenir et encaisser
+## 4. Ce que chaque type peut détenir et encaisser
 
-| Rôle | Détenir du stock | **Encaisser** | Vérification exigée |
+| Type de compte | Détenir du stock | **Encaisser** | Vérification exigée |
 |---|:---:|:---:|---|
 | Visiteur | non | non | aucune |
 | **Acheteur** | non | non | **adresse électronique** |
-| **Vendeur particulier** | oui *(pièces uniques)* | **oui** | **aucune pour publier · identité + mobile money pour encaisser** |
-| **Vendeur professionnel** | **oui** | **oui** | **identité + mobile money** |
-| **Employé de vendeur** | non | **non** | adresse électronique + invitation |
-| **Créatrice** | non | **oui** *(commissions)* | **identité + mobile money** |
-| **Livreur** | non | espèces uniquement | contrat + identité |
-| **Point relais** | non | espèces uniquement | contrat |
-| **Modérateur** | — | — | interne |
-| **Opérateur** | — | — | interne |
+| **Boutique** | **oui** | **oui** | **identité + mobile money** |
+| **Créatrice** | non | **oui** *(commissions versées par la boutique)* | **identité + mobile money** |
 
-> ### La règle fondamentale
+> ### La règle fondamentale — elle survit à `DP-07`
 >
-> **Aucun rôle ne peut percevoir d'argent avant vérification de son identité
+> **Aucun compte ne peut percevoir d'argent avant vérification de son identité
 > **et** de la titularité de son compte mobile money.** *(B1.2)*
 >
-> **Le vendeur particulier ne fait pas exception** : il publie sans
-> vérification, **il n'encaisse pas sans elle** *(R-H5, R-H10)*. C'est ce qui
-> permet à quelqu'un de vendre trois vêtements en trois minutes, tout en
-> rendant impossible de disparaître avec l'argent d'une inconnue.
+> Elle change de portée, pas de nature. Avant, elle protégeait un **retrait**
+> depuis un portefeuille tenu par JP. Depuis `DP-07`, **JP ne tient plus
+> d'argent** : l'encaissement arrive directement sur le compte mobile money.
+> La vérification n'est donc plus un verrou sur la sortie d'argent — **c'est un
+> verrou sur la mise en vente**. Une boutique non vérifiée ne peut pas publier,
+> parce qu'après la vente il sera trop tard pour vérifier quoi que ce soit.
 >
-> **Traduction en base** : `profil_vendeur.statut_verification` est le verrou,
-> et `profil_vendeur.msisdn_mobile_money` est la **seule** destination possible
-> d'un `retrait`.
+> **Traduction en base** : `boutique.statut_verification` est le verrou, et
+> `boutique.msisdn_mobile_money` est la **seule** destination possible d'un
+> crédit *(`DP-16`)*.
 
 ## 5. La matrice des droits
 
-| Action | AN | A | V | VE | C | MO | OP |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Consulter contenu et catalogue | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
-| Regarder un direct | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
-| « Je prends » / commander | — | ✔ | ✔ | ✔ | ✔ | — | — |
-| Publier un contenu | — | ✔ ¹ | ✔ | — | ✔ | — | — |
-| Créer / modifier un article | — | — | ✔ | ✔ | — | — | — |
-| Déposer une annonce de particulier | — | ✔ ⁴ | ✔ | — | ✔ | — | — |
-| **Modifier un prix** | — | — | ✔ | **—** ² | — | — | — |
-| Diffuser en direct | — | — | ✔ | ⚙ ² | — | — | — |
-| Modérer son propre chat | — | — | ✔ | ✔ | ✔ | — | — |
-| Préparer / expédier | — | — | ✔ | ✔ | — | — | — |
-| **Voir le portefeuille** | — | — | ✔ | **—** | ✔ | — | ✔ |
-| **Retirer de l'argent** | — | — | ✔ | **—** | ✔ | — | — |
-| Sélectionner des articles d'autrui | — | — | — | — | ✔ | — | — |
-| Ouvrir une précommande | — | — | ✔ | — | ✔ | — | — |
-| Ouvrir un litige | — | ✔ | ✔ | — | — | — | — |
-| **Arbitrer un litige** | — | — | — | — | — | — | ✔ |
-| Traiter un signalement | — | — | — | — | — | ✔ | ✔ |
-| **Vérifier une identité** | — | — | — | — | — | — | ✔ |
-| **Modifier les paramètres économiques** | — | — | — | — | — | — | ✔ ³ |
-| Suivre un vendeur ou une créatrice | — | ✔ | ✔ | ✔ | ✔ | — | — |
-| **Voir la liste de ses clients** | — | — | ✔ | ⚙ ² ⁵ | — | — | ✔ |
-| **Définir des paliers de fidélité** | — | — | ✔ | **—** | — | — | — |
-| **Créer / modifier une promotion** | — | — | ✔ | **—** ⁶ | — | — | — |
-| Envoyer un code promotionnel nominatif | — | — | ✔ | **—** | — | — | — |
-| Créer un événement JP | — | — | — | — | — | — | ✔ |
-| Créer un événement de boutique | — | — | ✔ | **—** | ✔ | — | — |
-| Candidater à un événement | — | — | ✔ | — | ✔ | — | — |
-| Valider une candidature | — | — | — | — | — | — | ✔ |
+| Action | AN | A | B | C |
+|---|:---:|:---:|:---:|:---:|
+| Consulter contenu et catalogue | ✔ | ✔ | ✔ | ✔ |
+| Regarder un direct | ✔ | ✔ | ✔ | ✔ |
+| Ouvrir la liste des articles d'un direct *(`DP-06`)* | ✔ | ✔ | ✔ | ✔ |
+| « Je prends » / commander | — | ✔ | ✔ | ✔ |
+| Publier un contenu | — | ✔ ¹ | ✔ | ✔ |
+| Créer / modifier un article | — | — | ✔ | — |
+| **Modifier un prix** | — | — | ✔ | — |
+| Diffuser en direct | — | — | ✔ | — |
+| Modérer son propre chat | — | — | ✔ | ✔ |
+| Préparer / expédier | — | — | ✔ | — |
+| Sélectionner des articles d'autrui | — | — | — | ✔ |
+| **Partager un lien d'affiliation** *(`DP-09`)* | — | — | — | ✔ |
+| Ouvrir une précommande ⚠️ *(`PO-8`)* | — | — | ✔ | ✔ |
+| Signaler un problème sur une commande | — | ✔ | ✔ | — |
+| Suivre une boutique ou une créatrice | — | ✔ | ✔ | ✔ |
+| **Voir la liste de ses clientes** | — | — | ✔ | — |
+| **Définir des paliers de fidélité** | — | — | ✔ | — |
+| **Créer / modifier une promotion** | — | — | ✔ | — |
+| Envoyer un code promotionnel nominatif | — | — | ✔ | — |
+| Créer un événement de boutique | — | — | ✔ | ✔ |
+| Candidater à un événement | — | — | ✔ | ✔ |
+| Valider une candidature **à son propre événement** | — | — | ✔ | ✔ |
+| **Gérer son abonnement** *(`DP-08`)* | — | — | ✔ | — |
 
-¹ uniquement sur des articles réellement achetés · ² selon la permission accordée
-par le vendeur *(F10.4)* · ³ **avec double validation et journalisation** ·
-⁴ un acheteur peut déposer une annonce **sans devenir vendeur professionnel**
-*(R-H5)* · ⁵ **en lecture seule et sans les montants** *(R-R8)* · ⁶ **jamais** :
-une promotion engage le prix, donc la marge, exactement comme un prix
+¹ uniquement sur des articles réellement achetés *(unboxing)*
 
-> ### Les quatre interdits absolus de l'employé
+> ### Neuf droits ont disparu de cette matrice
 >
-> `membre_equipe.permissions` ne peut **jamais** accorder : **le portefeuille ·
-> le retrait · les prix · les promotions.** Ce ne sont pas des permissions
-> désactivées par défaut, ce sont des permissions **qui n'existent pas**.
+> | Droit retiré | Pourquoi |
+> |---|---|
+> | Déposer une annonce de particulier | `DP-01` — l'acteur `P` n'existe plus |
+> | **Voir le portefeuille** · **Retirer de l'argent** | `DP-07` — il n'y a plus de portefeuille ni de retrait |
+> | **Arbitrer un litige** · Traiter un signalement | `DP-05` — repris par `SYS` |
+> | **Vérifier une identité** | `DP-05` — vérification automatisée |
+> | **Modifier les paramètres économiques** | `DP-05` — c'est de l'exploitation interne, plus un droit d'acteur produit |
+> | Créer un événement JP | `DP-05` — seuls subsistent les événements de boutique |
+> | Valider la candidature d'un tiers | `DP-05` — l'organisateur valide, il n'y a plus d'arbitre |
+>
+> **Et le bloc « les quatre interdits absolus de l'employé » est supprimé** avec
+> l'acteur `VE` *(`DP-01`)*. La table `membre_equipe` et l'attribut
+> `membre_equipe.permissions` n'ont plus d'objet.
 
 ---
 
@@ -152,85 +165,88 @@ une promotion engage le prix, donc la marge, exactement comme un prix
 inscription)* · consulter une page publique *(vitrine, article, cadeau,
 événement, replay, mur des colis ouverts)* · regarder un direct
 
-### A · Acheteur — 14 cas
-`UC-02` se connecter · `UC-03` récupérer son compte · `UC-11` déposer une annonce
-· `UC-12` acheter hors direct · `UC-13` remplir un panier · `UC-21` acheter en
-direct · `UC-30` payer · `UC-31` confirmer la réception · `UC-50` ouvrir un
-litige · `UC-60` suivre une boutique · `UC-61` publier un unboxing · `UC-80`
-demander un panier en cadeau · `UC-90` signaler · `UC-92` publier un contenu
+### A · Acheteur — 13 cas
+`UC-02` se connecter · `UC-03` récupérer son compte · `UC-12` acheter hors direct
+· `UC-13` remplir un panier · `UC-21` acheter en direct · `UC-30` payer ·
+`UC-31` confirmer la réception · `UC-43` convenir du point de remise · `UC-50`
+signaler un problème · `UC-60` suivre une boutique · `UC-61` publier un unboxing
+· `UC-80` demander un article en cadeau · `UC-90` signaler · `UC-92` publier un
+contenu
 
-### P · Vendeur particulier — 3 cas
-`UC-11` déposer une annonce · `UC-40` préparer et expédier · `UC-52` se faire
-vérifier *(déclenché **après** la première vente)*
+### B · Boutique — 13 cas
+`UC-10` publier un article · `UC-20` diffuser un direct · `UC-33` gérer son
+abonnement · `UC-40` préparer et expédier · `UC-43` convenir du point de remise ·
+`UC-50` signaler un problème · `UC-52` se faire vérifier · `UC-62` consulter ses
+clientes · `UC-70` lancer une promotion · `UC-71` promo VIP · `UC-72` créer un
+événement de boutique · `UC-73` participer à un événement · `UC-92` publier un
+contenu
 
-### V · Vendeur professionnel — 11 cas
-`UC-10` publier un article · `UC-20` diffuser un direct · `UC-32` retirer son
-argent · `UC-40` préparer et expédier · `UC-50` ouvrir un litige · `UC-62`
-consulter ses clientes · `UC-70` lancer une promotion · `UC-71` promo VIP ·
-`UC-73` participer à un événement · `UC-92` publier un contenu · `UC-52` se faire
-vérifier
+### C · Créatrice — 7 cas
+`UC-52` se faire vérifier · `UC-61` publier un unboxing · `UC-63` partager un
+lien d'affiliation · `UC-72` créer un événement · `UC-73` participer à un
+événement · `UC-90` signaler · `UC-92` publier un contenu
 
-### VE · Employé — 2 cas
-`UC-10` publier un article *(sans toucher au prix)* · `UC-40` préparer et
-expédier
+### D · Donateur / diaspora — 1 cas
+`UC-81` offrir un article à un compte JP nommé *(`DP-10`)*
 
-### C · Créatrice — 6 cas
-`UC-61` publier un unboxing · `UC-73` participer à un événement · `UC-92` publier
-un contenu · `UC-90` signaler · `UC-32` retirer ses commissions · ouvrir une
-précommande *(F15.8)*
+### PM · Partenaire marque — phase 3
+Hors périmètre V1 *(`PO-2`)*.
 
-### D · Donateur / diaspora — 1 cas, **sans compte**
-`UC-81` offrir un panier depuis l'étranger
-
-### L · Livreur — 1 cas
-`UC-41` livrer un colis à domicile
-
-### PR · Point relais — 1 cas
-`UC-42` recevoir et remettre un colis
-
-### MO · Modérateur — 1 cas
-`UC-91` traiter un signalement
-
-### OP · Opérateur — 4 cas
-`UC-51` arbitrer un litige · `UC-52` vérifier une identité · `UC-72` créer un
-événement · `UC-03` instruire une récupération de compte
+> ### Six cas d'utilisation sont supprimés
+>
+> | Cas | Pourquoi |
+> |---|---|
+> | `UC-11` Déposer une annonce | `DP-01` — l'acteur `P` n'existe plus |
+> | `UC-32` Retirer son argent | `DP-07` — l'argent arrive directement |
+> | `UC-41` Livrer à domicile · `UC-42` Remettre au relais | `DP-04` — JP n'opère plus de logistique |
+> | `UC-51` Arbitrer un litige | `DP-05` + `DP-07` — plus d'arbitre, plus d'argent à trancher |
+> | `UC-91` Traiter un signalement | `DP-05` — exécuté par `SYS` |
+>
+> **Les numéros libérés ne sont pas réattribués.** `UC-11` restera un trou :
+> ces codes sont cités dans `JP_CAS_UTILISATION.md`, `JP_BACKLOG.md` et
+> `JP_USER_STORIES.md`, et un décalage silencieux y serait indétectable.
+>
+> **Trois cas sont neufs** : `UC-33` gérer son abonnement *(`DP-08`)*, `UC-43`
+> convenir du point de remise *(`DP-10`)*, `UC-63` partager un lien
+> d'affiliation *(`DP-09`)*.
 
 ## 7. La matrice complète
 
-| UC | Intitulé | AN | A | P | V | VE | C | D | L | PR | MO | OP |
-|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| UC-01 | Créer un compte | **●** | | | | | | | | | | |
-| UC-02 | Se connecter | | **●** | ○ | ○ | ○ | ○ | | ○ | ○ | ○ | ○ |
-| UC-03 | Récupérer un compte | | **●** | | | | | | | | | ○ |
-| UC-10 | Publier un article | | | | **●** | ○ | | | | | | |
-| UC-11 | Déposer une annonce | | **●** | ● | | | ○ | | | | | |
-| UC-12 | Acheter hors direct | ○ | **●** | | | | | | | | | |
-| UC-13 | Remplir un panier | | **●** | | | | | | | | | |
-| UC-20 | Diffuser un direct | | | | **●** | ⚙ | | | | | | |
-| UC-21 | Acheter en direct | ○ | **●** | | | | | | | | | |
-| UC-30 | Payer une commande | | **●** | | | | | ○ | | | | |
-| UC-31 | Confirmer la réception | | **●** | | | | | | | | | |
-| UC-32 | Retirer son argent | | | ○ | **●** | | ● | | | | | |
-| UC-40 | Préparer et expédier | | | ● | **●** | ● | | | | | | |
-| UC-41 | Livrer à domicile | | | | | | | | **●** | | | |
-| UC-42 | Remettre au relais | | ○ | | | | | | ○ | **●** | | |
-| UC-50 | Ouvrir un litige | | **●** | | ● | | | | | | | |
-| UC-51 | Arbitrer un litige | | | | | | | | | | | **●** |
-| UC-52 | Vérifier une identité | | | ○ | ○ | | ○ | | | | | **●** |
-| UC-60 | Suivre une boutique | | **●** | | ○ | | ○ | | | | | |
-| UC-61 | Publier un unboxing | | **●** | | | | ● | | | | | |
-| UC-62 | Consulter ses clientes | | | | **●** | ⚙ | | | | | | ○ |
-| UC-70 | Lancer une promotion | | | | **●** | | | | | | | |
-| UC-71 | Promo VIP | | | | **●** | | | | | | | |
-| UC-72 | Créer un événement | | | | ● | | ● | | | | | **●** |
-| UC-73 | Participer à un événement | | | | **●** | | ● | | | | | ○ |
-| UC-80 | Demander un panier cadeau | | **●** | | | | | | | | | |
-| UC-81 | Offrir un panier | | ○ | | | | | **●** | | | | |
-| UC-90 | Signaler | | **●** | | ● | | ● | | | | | |
-| UC-91 | Traiter un signalement | | | | | | | | | | **●** | ○ |
-| UC-92 | Publier un contenu | | ● | | ● | | **●** | | | | | |
+| UC | Intitulé | AN | A | B | C | D |
+|---|---|:-:|:-:|:-:|:-:|:-:|
+| UC-01 | Créer un compte | **●** | | | | |
+| UC-02 | Se connecter | | **●** | ○ | ○ | |
+| UC-03 | Récupérer un compte | | **●** | ○ | ○ | |
+| UC-10 | Publier un article | | | **●** | | |
+| UC-12 | Acheter hors direct | ○ | **●** | ○ | ○ | |
+| UC-13 | Remplir un panier | | **●** | ○ | ○ | |
+| UC-20 | Diffuser un direct | | | **●** | | |
+| UC-21 | Acheter en direct | ○ | **●** | ○ | ○ | |
+| UC-30 | Payer une commande | | **●** | | | ○ |
+| UC-31 | Confirmer la réception | | **●** | | | |
+| UC-33 | **Gérer son abonnement** | | | **●** | | |
+| UC-40 | Préparer et expédier | | | **●** | | |
+| UC-43 | **Convenir du point de remise** | | **●** | **●** | | |
+| UC-50 | Signaler un problème sur une commande | | **●** | ● | | |
+| UC-52 | Se faire vérifier | | | **●** | **●** | |
+| UC-60 | Suivre une boutique | | **●** | ○ | ○ | |
+| UC-61 | Publier un unboxing | | **●** | | ● | |
+| UC-62 | Consulter ses clientes | | | **●** | | |
+| UC-63 | **Partager un lien d'affiliation** | | | ○ | **●** | |
+| UC-70 | Lancer une promotion | | | **●** | | |
+| UC-71 | Promo VIP | | | **●** | | |
+| UC-72 | Créer un événement de boutique | | | **●** | ● | |
+| UC-73 | Participer à un événement | | | **●** | ● | |
+| UC-80 | Demander un article en cadeau | | **●** | | | |
+| UC-81 | Offrir un article | | ○ | | | **●** |
+| UC-90 | Signaler | | **●** | ● | ● | |
+| UC-92 | Publier un contenu | | ● | ● | **●** | |
 
-**●** acteur principal · ○ acteur secondaire · ⚙ selon la permission accordée
+**●** acteur principal · ○ acteur secondaire
+
+> **Les colonnes `P`, `VE`, `L`, `PR`, `MO` et `OP` ont disparu** *(`DP-01`)*.
+> Les colonnes `○` de `B` et `C` sur les cas d'achat sont nouvelles : elles
+> matérialisent `DP-02` — une boutique et une créatrice **peuvent acheter**.
 
 ---
 
@@ -300,33 +316,41 @@ existant **sans créer de doublon**.
 ---
 
 ### UC-03 · Récupérer un compte inaccessible
-`A` + `OP` · *F0.3 · R-C13, R-C14*
+`A` + `SYS` · *F0.3 · R-C13 · `DP-05`, `DP-07`*
 
-**Le seul parcours du produit où un humain de JP décide.**
+> **Ce parcours était « le seul du produit où un humain de JP décide ».**
+> Depuis `DP-05`, il n'y en a plus aucun.
 
 1. `A` déclare ne plus avoir accès à son adresse.
 2. `SYS` présente un formulaire : prénom, dernière commande, montant
    approximatif, numéro de téléphone de livraison.
-3. `SYS` enregistre la demande, attribue **un numéro de dossier dicible au
-   téléphone**, et **gèle les retraits** si le compte porte un solde *(R-C14)*.
-   → **`demande_recuperation`**, `portefeuille.retraits_geles`
+3. `SYS` enregistre la demande et attribue **un numéro de dossier dicible au
+   téléphone**. → **`demande_recuperation`**
 4. `SYS` répond **202 dans tous les cas**, même si l'adresse est inconnue.
-5. `OP` ouvre le dossier et **compare les déclarations à l'historique réel** du
-   compte visé.
-6. `OP` valide ; `SYS` envoie un code à la nouvelle adresse. → `code_otp`
-7. `A` vérifie la nouvelle adresse ; `SYS` réattribue le compte, **dégèle les
-   retraits**, journalise.
-   → `utilisateur.email`, `portefeuille`, **`journal_audit`**
+5. **`SYS`** compare les déclarations à l'historique réel du compte visé et
+   décide **sur seuil de concordance**, avec **le détail des points concordants
+   journalisé**. → **`journal_audit`**
+6. Concordance suffisante : `SYS` envoie un code à la nouvelle adresse.
+   → `code_otp`
+7. `A` vérifie la nouvelle adresse ; `SYS` réattribue le compte et journalise.
+   → `utilisateur.email`, **`journal_audit`**
 
 **Postconditions** — le compte a changé d'identifiant, **la décision est tracée
 et motivée**.
 
----
+> **`R-C14` est sans objet** : elle gelait les retraits d'un compte porteur d'un
+> solde pendant l'instruction. **Il n'y a plus ni solde ni retrait** *(`DP-07`)*.
+>
+> ⚠️ **Le risque de `DP-05` est ici à son maximum.** Une usurpation réussie
+> donne accès à un compte ; un refus à tort enferme dehors quelqu'un de
+> légitime, **et il n'y a personne à qui faire appel**. Le seuil de concordance
+> et la liste des points comparés doivent être écrits et versionnés, pas laissés
+> à un réglage.
 
 ## Paquetage 2 — Catalogue et vente
 
 ### UC-10 · Publier un article
-`V` *(ou `VE` sans le prix)* · *F1.1 à F1.5 · R-G1, R-H4*
+`B` · *F1.1 à F1.5 · R-G1, R-H4 · `DP-01`*
 
 1. `V` choisit 1 à 8 photos et les recadre.
 2. `V` saisit nom, prix, catégorie. **L'univers est choisi ici, et il sera
@@ -350,30 +374,6 @@ et motivée**.
 
 ---
 
-### UC-11 · Déposer une annonce de particulier
-`A` → `P` · *F1.14, F1.15 · R-H5, R-H10*
-
-> **Le parcours qui rend la vérification acceptable : on ne la demande qu'une
-> fois qu'il y a de l'argent à recevoir.**
-
-1. `A` choisit « Vendre un article que je ne porte plus ».
-2. `SYS` crée un profil vendeur de type `particulier`, **sans exiger de nom de
-   boutique**. → **`profil_vendeur`** *(`type_vendeur = particulier`)*
-3. `A` remplit **quatre champs** et publie.
-4. `SYS` met l'article en ligne : **stock 1, pièce unique**.
-   → `article` *(`piece_unique = true`)*, `variante` *(`quantite_stock = 1`)*
-5. Une acheteuse commande et paie. `SYS` **séquestre les fonds**. → `sequestre`
-6. `SYS` notifie `P` : *« Vous avez été payée — vérifiez votre identité pour
-   recevoir 38 000 Ar. »*
-7. `P` effectue la vérification *(`UC-52`)*. `OP` valide.
-8. `SYS` débloque l'encaissement ; les fonds suivent le parcours normal
-   *(`UC-31`)*. → `profil_vendeur.statut_verification`
-
-**Postconditions** — un particulier a vendu **sans monter un commerce**, et
-**personne n'a pu disparaître avec l'argent**.
-
----
-
 ### UC-12 · Acheter un article hors direct
 `A` / `AN` · *F1.16 à F1.20 · R-A3, R-H1, R-H3, RB7*
 
@@ -381,9 +381,9 @@ et motivée**.
    lien partagé**.
 2. `SYS` affiche : photos, prix, **tailles disponibles — les épuisées barrées,
    pas masquées** *(R-A3)*, état, **mesures comparées à son profil**, **délai
-   d'expédition annoncé** *(F5.9)*, badge du vendeur, **et la carte Garantie
+   d'expédition annoncé** *(F5.9)*, badge de la boutique, **et la carte Garantie
    JP**.
-   → lit `article`, `variante`, `profil_vendeur`, `profil_acheteur`
+   → lit `article`, `variante`, `boutique`, `profil_acheteur`
 3. `A` appuie sur **« Je prends »**.
 4. `SYS` ouvre la feuille d'achat : taille présélectionnée depuis son profil,
    quantité, livraison au dernier choix mémorisé, **et le total avec frais
@@ -410,18 +410,18 @@ et motivée**.
 
 > **Rappel de modélisation : il n'existe pas de table `panier`.** Une ligne de
 > panier **est** une réservation active *(D7)*. Le panier est la **projection**
-> des réservations de l'utilisateur, groupées par vendeur.
+> des réservations de l'utilisateur, groupées par boutique.
 
-1. `A` ajoute plusieurs articles, **de vendeurs différents**.
-2. `SYS` **regroupe par vendeur** : les frais de livraison et l'expédition sont
-   par vendeur. **Le panier ne se scinde jamais par univers** *(R-Y7)* — la même
-   vendeuse tient souvent le vêtement et le cosmétique.
+1. `A` ajoute plusieurs articles, **de boutiques différentes**.
+2. `SYS` **regroupe par boutique** : les frais de livraison et l'expédition sont
+   par boutique. **Le panier ne se scinde jamais par univers** *(R-Y7)* — la même
+   boutique tient souvent le vêtement et le cosmétique.
 3. `SYS` calcule les remises éligibles et **n'en retient qu'une par ligne, la
    plus favorable** *(R-U7)*.
 4. `SYS` affiche le récapitulatif : sous-total, **remise nommée**, frais par
-   vendeur, total.
-5. `SYS` propose *« Regrouper au même point relais et économiser X Ar »*.
-6. `A` paie **une seule fois** *(`UC-30`)*.
+   boutique, total.
+5. `A` paie — **un seul paiement pour tout le panier** *(`R-P4`, `DP-16`)*, quel
+   que soit le nombre de boutiques. JP reverse ensuite à chacune.
 
 ---
 
@@ -440,7 +440,7 @@ et motivée**.
    → **`direct_article.a_lecran_le`**
 5. `SYS` diffuse le bandeau : prix, tailles, **stock restant réel** *(R-S2,
    RB9)* — jamais un compteur gonflé.
-6. Les acheteuses achètent *(`UC-21`)* ; `SYS` alimente **le panneau vendeur en
+6. Les acheteuses achètent *(`UC-21`)* ; `SYS` alimente **le panneà la boutique en
    temps réel** — le chiffre d'affaires qui monte pendant qu'il parle.
 7. `V` arrête. `SYS` clôt le direct, **produit le bilan** et récupère
    l'enregistrement. → `direct_bilan`
@@ -465,7 +465,7 @@ Identique à `UC-12` étapes 3 à 6, avec **trois différences** :
 |---|---|
 | **La vidéo reste visible** au-dessus de la feuille d'achat | On ne quitte jamais le direct |
 | **La durée de réservation est courte** *(R-H3)* | L'urgence est réelle, pas simulée |
-| **Le vendeur voit la commande tomber avec le prénom** | C'est ce qui rend le direct vivant |
+| **La boutique voit la commande tomber avec le prénom** | C'est ce qui rend le direct vivant |
 
 **Le cas qui décide de tout — deux acheteuses sur la dernière pièce :**
 
@@ -493,237 +493,215 @@ panier et évite cinq paiements mobile money d'affilée.**
 ## Paquetage 4 — Paiement et argent
 
 ### UC-30 · Payer une commande en mobile money ★
-`A` + `PSP` · *F4.1 à F4.11 · R-M2, R-G1, RB2, RB10*
+`A` + `PSP` · *F4.1, F4.14, F4.10, F4.11 · R-M1 à R-M7, R-M9, R-M10 · RB2, RB10, RB11 · `DP-07`, `DP-15`, `DP-16`*
 
-1. `A` choisit son opérateur — **le sien est présélectionné**.
-2. `SYS` crée un paiement avec une **clé d'idempotence** *(R-M2)*, **suspend le
-   minuteur de réservation**, appelle `PSP`.
-   → **`paiement`**, `reservation.suspendu_depuis`, `cle_idempotence`
-3. `PSP` envoie une demande de validation sur le téléphone de `A`.
-4. `SYS` affiche un écran d'attente **animé**, avec le temps écoulé et **la
+> **Le client paie, le vendeur reçoit son argent, JP ne récupère que sa
+> commission** *(`DP-16`)*. **Un débit, une confirmation, deux ou trois crédits.**
+> **JP ne détient aucun fonds** *(`R-M9`)*.
+
+1. `SYS` calcule les parts : **le net de la boutique**, **la commission JP** si
+   elle est en mode commission *(`DP-15`)*, **la part créatrice** si la vente est
+   affiliée. → lit `commande.mode_remuneration`, `commande.taux_commission_pour_mille`
+2. `SYS` annonce **le nombre de confirmations attendues** *(`R-M6`)* — **1** en
+   éclatement atomique *(`R-M10`)*.
+3. `A` choisit son opérateur — **le sien est présélectionné**.
+4. `SYS` crée le paiement avec une **clé d'idempotence** *(R-M2)* et **suspend le
+   minuteur de réservation**.
+   → **`paiement`** *(1 à 3 lignes)*, `reservation.suspendu_depuis`, `cle_idempotence`
+5. `PSP` envoie une demande de validation sur le téléphone de `A`.
+6. `SYS` affiche un écran d'attente **animé**, avec le temps écoulé et **la
    mention que la réservation est en pause** — sinon l'acheteuse croit perdre sa
    pièce.
-5. `A` saisit son code sur son téléphone.
-6. `PSP` confirme, **par rappel asynchrone et/ou par réponse synchrone** — les
-   deux chemins doivent converger sans double effet.
-7. **`[T]`** `SYS`, **en une seule transaction** : consomme la réservation,
-   passe la commande en `PAYEE`, **crée le séquestre**, écrit les écritures
-   financières, prélève la commission.
+7. `A` saisit son code. `PSP` confirme, **par rappel asynchrone et/ou par réponse
+   synchrone** — les deux chemins doivent converger sans double effet.
+8. **`[T]`** `SYS`, **en une seule transaction** : consomme la réservation, passe
+   la commande en `PAYEE`, journalise chaque crédit.
    → `reservation.statut = consommee` · `variante` · **`commande`** ·
-   **`sequestre`** · **`ecriture_financiere`** · `portefeuille.solde_en_attente`
-8. `SYS` émet la facture, notifie `A`, et notifie `V` **avec le montant net,
-   commission affichée** *(R-G1)*.
+   **`ecriture_financiere`**
+9. `SYS` émet la facture, notifie `A` et notifie `B` **avec le net reçu**.
    → **`facture`**, `notification`
 
-**Postconditions** — les fonds sont **retenus**, la facture existe des deux
-côtés, **le vendeur sait exactement ce qu'il recevra**.
+**Postconditions** — la commande est `PAYEE`, la facture existe des deux côtés,
+**les crédits sont partis directement aux bénéficiaires**. **JP ne détient aucun
+fonds.**
+
+**Le nombre de crédits** : **1** *(boutique en abonnement)* · **2** *(boutique en
+commission)* · **3** *(commission + vente affiliée)*.
 
 | Échec | Traitement |
 |---|---|
 | Solde insuffisant | **Le motif réel** — « le paiement a échoué » ne dit pas s'il faut recharger ou réessayer |
 | Aucune réponse de `PSP` | Le paiement passe en `EXPIRE` ; **la réservation reprend son minuteur là où il s'était arrêté** |
+| **Éclatement atomique refusé** | Tout ou rien : **la commande n'est pas créée**. Rien n'a bougé |
+| **En repli — patte pivot échouée** | **La commande n'est pas créée, aucune autre patte n'est émise** *(`R-M4`)* |
+| **En repli — patte secondaire échouée** | **L'acheteuse ne voit rien** : elle a payé, la commande existe, l'expédition suit. La patte est **rejouée après interrogation** *(`R-M5`, `R-M7`)* |
 | **Rejeu de la même clé** | **Le résultat initial est renvoyé, sans nouveau prélèvement** *(RB10)* |
 | Même clé, requête différente | Refus — `empreinte_requete` protège contre le pire cas |
 
+> ### ⚠️ `PO-11` — la question la plus importante du projet
+>
+> *« Un encaissement unique peut-il être réparti automatiquement vers plusieurs
+> comptes bénéficiaires, en une seule opération, avec un seul code de
+> confirmation pour le payeur ? »*
+>
+> Elle décide du nombre de confirmations vues par l'acheteuse. **Et si aucun
+> bénéficiaire tiers n'est possible, l'argent devra transiter par JP — avec
+> l'exposition juridique que `DP-07` avait supprimée.**
+
 ---
 
-### UC-31 · Confirmer la réception et libérer les fonds ★
-`A` · *F4.5, F6.1 · R-E1, R-E6, R-R11*
+### UC-31 · Confirmer la réception ★
+`A` · *F4.5, F6.1 · R-R11 · `DP-04`, `DP-07`*
 
-> **C'est ici que la promesse du produit se réalise.**
+> **La confirmation ne libère plus d'argent** — la boutique a été payée au
+> moment du paiement *(`DP-07`)*. Elle **clôt la commande et alimente la
+> réputation**, qui est désormais la seule protection de l'acheteuse.
 
 1. `SYS` notifie `A` : *« Avez-vous bien reçu ? »*
 2. `A` répond **« Oui, tout va bien »**.
-3. **`[T]`** `SYS` libère le séquestre, écrit les écritures inverses, et fait
-   passer le montant **du solde « Gardé pour la cliente » au solde « À vous —
-   retirable »** *(R-E6)*.
-   → **`sequestre`** *(`statut = libere`, `motif_liberation = confirmation`)* ·
-   **`ecriture_financiere`** · `portefeuille` · `commande.statut = CONFIRMEE`
+3. **`[T]`** `SYS` clôt la commande et enregistre la réception.
+   → `commande.statut = CONFIRMEE` · **`ecriture_financiere`** *(journal)*
 4. `SYS` invite `A` à laisser un avis et **fait entrer l'article dans son
    dressing**. → `piece_dressing`
-5. `SYS` écrit au **journal des ventes confirmées** *(R-R11)*, qui alimentera le
-   rang client. → **`vente_confirmee_journal`**
+5. `SYS` écrit au **journal des ventes confirmées** *(R-R11)*, qui alimente le
+   rang client **et le score de confiance de la boutique** *(`DP-07`)*.
+   → **`vente_confirmee_journal`**, `score_confiance`
 
 > **L'étape 5 doit exister dès la phase 1**, même si la fidélité n'est activée
 > qu'en phase 2. Sans elle, il faudra reconstituer l'historique à la main — ou
 > **effacer la fidélité des premières clientes, qui sont précisément les plus
 > fidèles.**
 
-**Trois autres chemins de libération** — tous tracés par
-`sequestre.motif_liberation` :
+**Deux autres chemins de clôture** :
 
 | Motif | Déclencheur |
 |---|---|
 | `unboxing` | `A` a filmé l'ouverture *(`UC-61`)* — la confirmation est **implicite** |
-| `automatique` | Délai écoulé sans réponse ni litige **(délai à trancher — voir §8)** |
-| `arbitrage` | `OP` a tranché *(`UC-51`)* |
+| `automatique` | Délai écoulé sans réponse ni signalement *(délai à trancher — voir §8)* |
 
----
-
-### UC-32 · Retirer son argent
-`V` / `C` · *F4.9, F4.10 · R-E6, R-C14*
-
-1. `V` ouvre « Mon argent » et voit **deux soldes distincts** :
-   **« Gardé pour la cliente »** et **« À vous — retirable »** *(R-E6)*.
-   → lit `portefeuille`
-2. `V` saisit un montant et confirme.
-3. `SYS` vérifie **le solde, la destination et l'absence de gel**, puis exécute
-   le virement **avec une clé d'idempotence**.
-   → **`retrait`**, `profil_vendeur.msisdn_mobile_money`
-4. `SYS` écrit les écritures et émet un reçu. → **`ecriture_financiere`**
-
-> **La destination ne peut être que le numéro mobile money vérifié.** Elle n'est
-> pas saisissable au moment du retrait.
+> ### Ce que la confirmation ne fait plus
 >
-> **La distinction entre les deux soldes doit être limpide** — sinon la vendeuse
-> croit qu'on la vole.
-
----
+> Elle ne déclenche **aucun mouvement d'argent**. Une commande jamais confirmée
+> ne coûte donc rien à personne — **sauf à la réputation de la boutique**, seule
+> sanction disponible *(`DP-04`, `DP-05`)*. C'est aussi pourquoi l'étape 5 cesse
+> d'être un confort de fidélité pour devenir **le mécanisme de protection
+> lui-même**.
 
 ## Paquetage 5 — Livraison
 
 ### UC-40 · Préparer et expédier une commande
-`V` / `VE` · *F5.1, F5.2 · R-H2*
+`B` · *F5.1, F5.2 · R-H2 · `DP-04`*
 
-1. `V` ouvre « À préparer » : **une file unique**, triée par échéance, **avec un
+1. `B` ouvre « À préparer » : **une file unique**, triée par échéance, **avec un
    marqueur d'origine** *(R-H2)*.
    → lit `commande`, `ligne_commande`
-2. `V` ouvre le bordereau : articles, tailles, mode de livraison, destinataire,
-   **montant à encaisser si espèces**, note de l'acheteuse.
-3. `V` prépare le colis et marque « Prêt ».
-   → **`colis`** *(`A_PREPARER` → `PRET`)*, **`evenement_livraison`**
+2. `B` ouvre le bordereau : articles, tailles, destinataire, **point de remise
+   convenu** *(`UC-43`)*, note de l'acheteuse.
+3. `B` prépare le colis et marque « Expédiée ».
+   → **`expedition`** *(`EN_PREPARATION` → `EXPEDIEE`)*, **`evenement_livraison`**
 4. `SYS` met le statut à jour **des deux côtés** et notifie `A`.
+5. `B` marque « Livrée » à la remise ; `A` confirme *(`UC-31`)*.
 
+> **JP n'opère aucune logistique** *(`DP-04`)*. La boutique choisit son moyen —
+> son coursier, un transporteur, une remise en main propre. **JP ne fournit que
+> la frise de statuts**, et c'est la boutique qui la fait avancer.
+>
 > **Une file unique, pas deux.** Deux files — « direct » et « catalogue » —
-> signifieraient deux logistiques à tenir, **et le vendeur en oublierait une**.
-
----
-
-### UC-41 · Livrer un colis à domicile ★
-`L` · *F5.5, F5.6 · R-L6*
-
-1. `L` ouvre sa tournée : **enlèvements d'abord, puis remises, dans l'ordre**.
-   → lit `tournee`, `tournee_point`
-2. `L` arrive chez le vendeur et enlève les colis **en une seule validation**
-   *(F5.6)* — pas un balayage par colis.
-   → `colis.statut = ENLEVE`, `evenement_livraison`
-3. `L` arrive chez l'acheteuse et appuie sur « Arrivé ».
-4. `L` produit **la preuve de remise** : photo du colis ou code de l'acheteuse.
-   → `colis.preuve_remise_url`
-5. Si paiement à la livraison, `L` saisit **le montant encaissé**.
-   → `colis.montant_encaisse`, `collecte_especes`
-6. `SYS` **enregistre localement, puis synchronise** : colis `REMIS`, événement
-   **horodaté et attribué**, notification à `A` et à `V`, ouverture de la
-   fenêtre de confirmation.
-   → `colis`, **`evenement_livraison.auteur_id`**, `notification`
-
-> **L'enregistrement local d'abord n'est pas un confort.** Un livreur sans
-> réseau doit pouvoir remettre un colis. La synchronisation vient après.
+> signifieraient deux logistiques à tenir, **et la boutique en oublierait une**.
 >
-> **`montant_encaisse` est distinct de `montant_a_encaisser` : l'écart est
-> signalé, jamais absorbé silencieusement** *(F11.5)*.
-
----
-
-### UC-42 · Recevoir et remettre un colis au point relais ★
-`PR` · *F5.3, F5.4 · R-L6*
-
-1. `PR` reçoit les colis du livreur **en une seule validation**.
-   → `colis.statut = AU_RELAIS`, `point_relais.nb_colis_en_stock`
-2. `SYS` génère un code à 6 chiffres, **le hache**, et l'envoie à `A` **par
-   notification ET par SMS**.
-   → **`colis.code_retrait`** *(haché)*, `notification`, `notification_sms`
-3. `A` se présente **quand elle veut** et donne le code.
-4. `PR` saisit le code ; `SYS` vérifie, **marque le code consommé**, passe le
-   colis à `REMIS`.
-   → `colis`, `evenement_livraison`
-5. `SYS` notifie `A` et `V`, et ouvre la fenêtre de confirmation *(`UC-31`)*.
-
-> **Le SMS est ici non négociable.** Une acheteuse arrivée au relais **sans
-> réseau et sans son code repart sans son colis, alors qu'elle a payé.**
+> ### Le point faible assumé
 >
-> **Le code est haché comme un mot de passe.** Les six chiffres ne sont en clair
-> que dans la notification et le SMS.
-
-| Échec | Traitement |
-|---|---|
-| Garde dépassée | `RETOUR_VENDEUR` après `point_relais.delai_garde_jours` |
-| Relais saturé | `nb_colis_en_stock >= capacite_max` → le relais n'est plus proposé |
+> **La déclaration d'expédition n'est vérifiée par personne.** Aucun tiers neutre
+> ne constate la remise *(`DP-04`)*. Une boutique qui marque « Expédiée » sans
+> expédier n'est arrêtée que par le signalement de l'acheteuse *(`UC-50`)* et par
+> l'effet de ce signalement sur son score.
 
 ---
+
+### UC-43 · Convenir du point de remise
+`A` + `B` · *`DP-04`, `DP-10`*
+
+1. `SYS` ouvre un fil entre `A` et `B` à la création de la commande.
+2. `A` et `B` conviennent du lieu et du moment de la remise.
+   → **`fil_remise`** ⚠️ *(schéma à écrire)*
+3. `B` enregistre le point convenu ; il apparaît sur le bordereau *(`UC-40`)*.
+
+> **Dans le cas du cadeau** *(`UC-81`)*, l'échange a lieu entre **la boutique et
+> le bénéficiaire** — jamais le donateur, qui ne voit jamais l'adresse *(RB8)*.
+>
+> **Et c'est ce fil qui retient l'article** : le paiement du cadeau n'a lieu
+> qu'après l'accord *(`DP-10`)*, donc la réservation doit tenir **bien plus de
+> 30 minutes** ⚠️ *(`PO-10`)*.
 
 ## Paquetage 6 — Confiance
 
-### UC-50 · Ouvrir un litige ★
-`A` *(ou `V`)* · *F6.3 · RB4*
+### UC-50 · Signaler un problème sur une commande ★
+`A` *(ou `B`)* · *F6.3 · `DP-05`, `DP-07`*
 
-> **On parle à JP, jamais au vendeur en face.** La confrontation directe est
+> **On parle à JP, jamais à la boutique en face.** La confrontation directe est
 > socialement coûteuse ici — c'est pour cela que les gens abandonnent au lieu de
 > réclamer, et c'est ce qui rend le vrai chiffre invisible.
+>
+> **Mais JP ne tranche plus** *(`DP-05`)* **et ne détient plus l'argent**
+> *(`DP-07`)*. Le signalement ne rend rien : **il compte.**
 
 1. `A` ouvre sa commande et choisit **« Il y a un problème »**.
 2. `A` choisit un motif — **filtré par univers** *(R-Y…)* — ajoute des photos et
    une description.
-3. **`[T]`** `SYS` ouvre le dossier, **bloque les fonds**, **suspend la
-   libération automatique**, attribue un numéro.
-   → **`litige`**, **`sequestre`** *(la libération est gelée)*
-4. `SYS` notifie `V`, qui voit le motif et les photos, et répond **dans le même
+3. **`[T]`** `SYS` ouvre le dossier, attribue un numéro, et **l'inscrit
+   immédiatement au compteur de la boutique**.
+   → **`signalement_commande`**, `score_confiance`
+4. `SYS` notifie `B`, qui voit le motif et les photos et répond **dans le même
    fil**. → `message_litige`
-5. `V` propose une solution : renvoi, remboursement partiel, geste commercial.
-6. `A` accepte : **le dossier se clôt sans arbitrage** et la solution est
-   exécutée. → `litige.statut = clos`, `retour` ou `remboursement`
+5. `B` propose une solution : renvoi, remboursement de sa propre initiative,
+   geste commercial. **`SYS` n'exécute aucun mouvement d'argent** — c'est la
+   boutique qui rembourse, depuis son compte, si elle le décide.
+6. `A` confirme que c'est réglé : le dossier se clôt et **le compteur est
+   décrémenté**. → `signalement_commande.statut = resolu`
 
-**Si `A` refuse ou si `V` ne répond pas** → escalade en `arbitrage` *(`UC-51`)*.
+**Si le dossier reste ouvert**, il **pèse durablement sur le score de la
+boutique**, et au-delà d'un seuil `SYS` **suspend automatiquement sa mise en
+vente** *(`DP-05`, F6.8)*. **Il n'y a pas d'escalade vers un arbitre : il n'y en
+a plus.**
 
----
+> ### Ce que l'acheteuse doit savoir avant de payer
+>
+> **JP ne rembourse pas.** Cette phrase doit être lisible à l'écran de paiement,
+> exactement là où figurait l'ancienne phrase de séquestre *(`DP-07`)*. La
+> protection est **en amont** — boutique vérifiée, historique visible, avis —
+> **jamais en aval.**
 
-### UC-51 · Arbitrer un litige ★
-`OP` · *F6.4 · RB4*
+### UC-52 · Se faire vérifier
+`B` / `C` + `PSP` · *F0.6, F0.7 · R-V2, R-V5, N3.1 · `DP-05`*
 
-1. `OP` ouvre la file, **triée par âge, urgences en tête**.
-2. `OP` **s'attribue le dossier — affectation exclusive**, pour éviter le double
-   traitement. → `litige.affecte_a_id`
-3. `SYS` présente le dossier **assemblé** : commande, facture, photos, historique
-   de livraison **avec l'auteur de chaque transition**, échanges, historique des
-   deux parties.
-4. `OP` tranche **et rédige un motif — obligatoire, refusé par la base sinon**.
-   → **`litige.decision_texte`** + `decide_par_id`
-5. `SYS` exécute : remboursement total, partiel, ou libération des fonds au
-   vendeur. → `remboursement` ou `sequestre`, `ecriture_financiere`
-6. `SYS` notifie **les deux parties avec la décision écrite**, archive, et met à
-   jour les scores. → `notification`, `score_confiance`, `journal_audit`
+> **Il n'y a plus de file humaine** *(`DP-05`)*. La vérification est exécutée par
+> `SYS` et le prestataire.
 
-```sql
-CHECK (statut <> 'resolu'
-   OR (decision_texte IS NOT NULL AND decide_par_id IS NOT NULL))
-```
-
-> **La clôture silencieuse est impossible — par contrainte de base, pas par
-> convention d'équipe.**
-
----
-
-### UC-52 · Vérifier l'identité d'un vendeur
-`OP` · *F0.6, F0.7 · R-V2, R-V5, N3.1*
-
-1. `OP` ouvre la file de vérification, **triée par ancienneté, avec le délai
-   d'engagement affiché**.
-2. `OP` compare **pièce, selfie et titulaire du compte mobile money** *(R-V2)* —
-   **chaque point à cocher explicitement**, jamais une validation globale.
-   → lit `document_identite` *(déchiffré à la lecture)*
-3. `SYS` **journalise l'accès aux documents, nominativement** *(R-V5, N3.1)*.
+1. `B` dépose sa pièce d'identité et son selfie.
+   → **`document_identite`** *(chiffré)*
+2. `SYS` transmet au prestataire, qui compare **pièce, selfie et titulaire du
+   compte mobile money** *(R-V2)* — **les trois points séparément**, jamais une
+   validation globale.
+3. `SYS` **journalise tout accès aux documents** *(R-V5, N3.1)*.
    → **`journal_audit`**
-4. `OP` valide. `SYS` **débloque l'encaissement** et attribue le badge.
-   → `profil_vendeur.statut_verification`, `profil_vendeur` badge
+4. `SYS` décide, **motif écrit obligatoire**, et débloque **la mise en vente**.
+   → `boutique.statut_verification`, badge
 
-> **L'étape 3 n'est pas une formalité.** Consulter la carte d'identité de
-> quelqu'un doit laisser une trace nominative — c'est ce qui protège les
-> vendeuses de l'équipe elle-même.
+**En cas de refus** — motif écrit, **pièces manquantes nommées**, possibilité de
+recommencer.
 
-**En cas de refus** — motif écrit, et **possibilité de recommencer** avec les
-pièces manquantes nommées.
-
----
+> **Ce que la vérification débloque a changé.** Elle ouvrait l'encaissement ;
+> elle ouvre désormais **la mise en vente** *(`DP-07`)*. Puisque l'argent part
+> directement chez la boutique au moment du paiement, il serait trop tard pour
+> vérifier quoi que ce soit après la vente.
+>
+> **La journalisation reste obligatoire même sans lecteur humain.** Elle ne
+> protège plus des employés de JP — il n'y en a plus — mais elle reste la seule
+> preuve de ce que la plateforme a consulté, et quand.
+>
+> ⚠️ **`DP-05` a un coût ici.** Une vérification refusée à tort n'a plus personne
+> à qui être contestée. Le motif écrit devient la **seule** voie de correction :
+> il doit être actionnable, jamais « document non conforme ».
 
 ## Paquetage 7 — Social et fidélité
 
@@ -734,14 +712,14 @@ pièces manquantes nommées.
    ou une story — **un seul appui, aucune confirmation** *(R-Q1)*.
    → **`abonnement`**
 2. `SYS` met à jour le compteur public *(dénormalisé, R-Q2)*.
-   → `profil_vendeur.nb_abonnes`
+   → `boutique.nb_abonnes`
 3. Le fil « Abonnements » contient désormais **les directs, les nouveautés
    catalogue, les promotions et les événements** de cette boutique *(R-Q5)*.
 4. `A` peut **couper les notifications de promotion de cette boutique sans se
    désabonner** *(R-Q6)*. → `abonnement.notifications_promo`
 
 > **L'étape 4 protège les notifications utiles.** Un utilisateur qui coupe tout
-> parce qu'un vendeur est bavard nous fait perdre *« colis arrivé »* et *« code
+> parce qu'une boutique est bavard nous fait perdre *« colis arrivé »* et *« code
 > de retrait »*.
 
 ---
@@ -756,13 +734,13 @@ pièces manquantes nommées.
 2. `A` enregistre une vidéo de 30 s ; **l'article de sa commande est attaché
    automatiquement** *(R-K2)* — elle n'a rien à sélectionner.
 3. `A` indique **si l'article taille bien** et met une note.
-4. **`[T]`** `SYS`, **en une transaction** : confirme la réception *(donc
-   **libère le séquestre**)*, crée le contenu **avec l'article attaché**,
-   crédite la cagnotte.
-   → **`sequestre`** *(`motif_liberation = unboxing`)* · **`contenu`** ·
+4. **`[T]`** `SYS`, **en une transaction** : confirme la réception *(elle vaut
+   `UC-31` — mais ne déclenche **aucun** mouvement d'argent, `DP-07`)*, crée le
+   contenu **avec l'article attaché**, crédite la cagnotte.
+   → `commande.statut = CONFIRMEE` *(`motif = unboxing`)* · **`contenu`** ·
    **`contenu_article`** · **`mouvement_cagnotte`**
 5. `SYS`, **en asynchrone idempotent** : crée l'avis vérifié, notifie le
-   vendeur, fait entrer l'article au dressing.
+   boutique, fait entrer l'article au dressing.
    → `avis`, `notification`, `piece_dressing`
 
 **Les cinq résultats d'un seul geste :**
@@ -771,7 +749,7 @@ pièces manquantes nommées.
 |---|---|
 | Elle filme | Du contenu gratuit pour le fil |
 | Elle publie | **La preuve publique que JP livre pour de vrai** |
-| Elle valide la réception | **Les fonds sont libérés vers la vendeuse** |
+| Elle valide la réception | **Les fonds sont libérés vers la boutique** |
 | Elle dit si ça taille | Un avis vérifié |
 | Elle poste | Du crédit dans sa cagnotte |
 
@@ -802,18 +780,18 @@ pièces manquantes nommées.
 
 > ### La garantie la plus fragile du produit
 >
-> **Le rang est par vendeur, et rien ne permet de le contourner** *(R-R1, D5)*.
+> **Le rang est par boutique, et rien ne permet de le contourner** *(R-R1, D5)*.
 >
 > Il n'existe **volontairement aucun** index sur `utilisateur_id` seul dans
 > `vente_confirmee_journal`, et **aucune vue** agrégeant une cliente tous
-> vendeurs confondus. **Un contrôle d'autorisation se contourne par une nouvelle
+> boutiques confondues. **Un contrôle d'autorisation se contourne par une nouvelle
 > requête ; l'absence de chemin d'accès ne se contourne pas.**
 >
 > **Cette absence doit être documentée dans la migration**, sinon quelqu'un
 > ajoutera l'index « pour optimiser ».
 
-**`VE` peut voir cet écran si le vendeur l'y autorise — en lecture seule et
-sans les montants** *(R-R8)*.
+> **`R-R8` est supprimée** avec l'acteur `VE` *(`DP-01`)* : il n'y a plus de
+> délégation d'accès à cet écran.
 
 ---
 
@@ -848,14 +826,14 @@ sans les montants** *(R-R8)*.
 1. `V` choisit type, valeur, période, périmètre et cible.
 2. `SYS` détecte un éventuel **chevauchement** avec une promotion existante et
    rappelle **la règle de non-cumul** *(R-U7)*.
-3. `SYS` affiche **le net qui restera au vendeur** sur un article représentatif,
+3. `SYS` affiche **le net qui restera à la boutique** sur un article représentatif,
    **commission déduite** *(R-U10)*.
 4. `SYS` annonce **le nombre d'abonnés qui seront notifiés**, avec un
    interrupteur pour ne pas notifier.
 5. `V` lance. `SYS` active la promotion, applique les prix barrés, déclenche le
    fan-out. → **`promotion`**, `promotion_article`
 6. `NOT` applique, **pour chaque abonné** : réglage individuel, **plafond par
-   vendeur et par 24 h**, seuil de regroupement *(R-U4)*.
+   boutique et par 24 h**, seuil de regroupement *(R-U4)*.
    → `notification`, **`notification_compteur`**
 7. `SYS` marque **`notifiee_le` — verrou d'idempotence** : après un incident du
    planificateur, la promotion démarre en retard mais **ne renotifie jamais**
@@ -885,12 +863,15 @@ sans les montants** *(R-R8)*.
 ---
 
 ### UC-72 · Créer un événement thématique
-`OP` *(portée JP)* ou `V` / `C` *(portée boutique)* · *F20.x · R-W4, R-W6 à R-W9*
+`B` / `C` · *F20.x · R-W4, R-W6 à R-W9 · `DP-05`*
 
-1. `OP` renseigne nom, thème, dates, visuel, **couleur d'accent**, mot-dièse,
+> **L'événement de portée JP disparaît** avec l'opérateur *(`DP-05`)*. Il ne
+> reste que les événements de boutique, créés par leur organisateur.
+
+1. `B` renseigne nom, thème, dates, visuel, **couleur d'accent**, mot-dièse,
    présentation, règles de participation.
 2. `SYS` génère un `slug` unique et enregistre en `brouillon`. → **`evenement`**
-3. `OP` **annonce** l'événement — **action humaine, volontairement**.
+3. `B` **annonce** l'événement — **action humaine, volontairement**.
 4. `SYS` le rend visible dans le calendrier avec un compte à rebours et un
    bouton « Me prévenir ». → `evenement_rappel`
 5. À la date de début, `SYS` passe en `en_cours` **et refuse automatiquement les
@@ -913,7 +894,7 @@ sans les montants** *(R-R8)*.
 1. `V` voit les événements ouverts dans son studio.
 2. `V` candidate en choisissant **les articles et la promotion qu'il engage**.
    → **`evenement_participation`** *(`candidate`)*
-3. `OP` examine et accepte. → `evenement_participation` *(`acceptee`)*
+3. **L'organisateur** examine et accepte. → `evenement_participation` *(`acceptee`)*
 4. `V` rattache ses éléments : articles, promotion, clips avec le mot-dièse,
    direct programmé. → **`evenement_element`** *(polymorphe)*
 5. À l'ouverture, les éléments apparaissent sur **la page publique, accessible
@@ -938,39 +919,40 @@ sans les montants** *(R-R8)*.
 
 ---
 
-### UC-81 · Offrir un panier depuis l'étranger ★
-`D` — **sans compte, sans application** · *F16.x · RB7, RB8*
+### UC-81 · Offrir un article à un compte JP nommé ★
+`D` · *F16.x · RB7, RB8 · `DP-10`*
 
 > **Le premier canal de JP qui ne dépend pas du pouvoir d'achat local.**
 
-1. `D` ouvre le lien **dans son navigateur, sans installer l'application**.
+1. `D` ouvre le lien **dans son navigateur**.
 2. `SYS` détecte le pays, affiche le montant **en Ariary et une conversion
    indicative**, propose **la carte en premier**, et **annonce les frais de
    conversion à l'avance** *(RB7)*. → lit `taux_change`
-3. `SYS` affiche les articles, le total, les frais, **le badge de vendeur
-   vérifié**, et le mode de livraison **agrégé — sans quartier, sans repère,
-   sans nom de relais, sans téléphone** *(RB8)*.
-4. `D` laisse un message et paie.
+3. `D` **désigne le compte JP du bénéficiaire** *(`DP-10`)*.
+4. `SYS` affiche les articles, le total, les frais et **le badge de boutique
+   vérifiée** — **aucune information de livraison, d'aucune sorte** *(RB8)*.
+5. **Le bénéficiaire et la boutique conviennent du point de remise** *(`UC-43`)*.
+   `D` n'y participe pas et n'en voit rien.
+6. **L'accord constaté, `D` confirme le paiement.** L'argent va directement à la
+   boutique — directement sur son mobile money *(`DP-07`, `DP-16`)*.
    → **`paiement`** *(`payeur_utilisateur_id`, `payeur_pays`,
-   `montant_devise_origine`)*
-5. `SYS` crée la commande, **séquestre les fonds**, notifie `A` : *« Naina vous
-   a offert votre panier »* avec le message.
-   → `commande.donateur_ref`, **`sequestre`**
-6. La commande suit **le parcours normal** *(`UC-40` à `UC-42`)*.
-7. `D` suit la livraison **depuis son lien, sans compte**, et **voit la preuve de
-   remise**.
-8. À la réception, `A` publie son remerciement *(`UC-61`)* — **du contenu, donc
-   de l'acquisition. La boucle se referme.**
+   `montant_devise_origine`)*, `commande.donateur_ref`
+7. La commande suit le parcours normal *(`UC-40`)*.
+8. À la réception, le bénéficiaire publie son remerciement *(`UC-61`)* — **du
+   contenu, donc de l'acquisition. La boucle se referme.**
 
-> **L'étape 3 est la règle la plus importante de ce parcours.** Le donateur paie,
-> il ne surveille pas. **Il ne doit jamais voir où habite la destinataire.**
+> **L'invariant `RB8` est devenu structurel.** Il fallait auparavant cacher
+> activement l'adresse au donateur ; désormais **il ne la manipule jamais** —
+> elle se négocie entre deux personnes dont il ne fait pas partie *(`DP-10`)*.
 >
-> **Et l'étape 2 doit tenir une discipline** : envoyer de l'argent à Madagascar
-> est **déjà gratuit et instantané** *(Taptap Send, 0 €, dépôt MVola en moins de
-> 5 minutes)*. **Nous ne vendons ni le prix ni la vitesse — nous vendons de
-> savoir ce que l'argent devient.**
-
----
+> **Deux choses ont disparu** : la **preuve de remise** *(`DP-04`)* et le suivi
+> de livraison côté donateur. Ce qui reste est l'essentiel, et c'est la moitié
+> qui portait la valeur : *« envoyer de l'argent à Madagascar est déjà gratuit et
+> instantané — nous ne vendons ni le prix ni la vitesse, nous vendons de savoir
+> ce que l'argent devient. »* Il choisit l'objet, et il voit la boutique vérifiée.
+>
+> ⚠️ **Le bénéficiaire doit avoir un compte JP** *(`DP-10`)*, et `D` doit pouvoir
+> revenir confirmer après l'accord — ce qui suppose une session *(`PO-9`)*.
 
 ## Paquetage 10 — Modération
 
@@ -985,27 +967,17 @@ sans les montants** *(R-R8)*.
 > **Le geste doit être identique partout** — c'est pourquoi `FeuilleSignalement`
 > est un composant partagé, présent à six emplacements.
 
----
-
-### UC-91 · Traiter un signalement
-`MO` · *F19.x · R-X4*
-
-1. `MO` traite la file **par priorité, urgences en tête**.
-   → IDX(`niveau`, `statut`, `cree_le`)
-2. `MO` **s'attribue le dossier — affectation exclusive**.
-3. `SYS` présente le contenu, **l'historique de l'auteur et ses signalements
-   antérieurs, côte à côte** — un incident isolé et un comportement répété ne se
-   traitent pas pareil.
-4. `MO` retire, avertit, suspend ou classe — **avec un motif obligatoire**.
-   → **`sanction`** *(`motif_texte` obligatoire)*, `contenu.statut`
-5. `SYS` notifie **les deux parties** avec la décision écrite.
-
-> **Un signalement de menace traité comme le reste est un échec du produit, pas
-> un retard.**
+> ### Qui traite, désormais
 >
-> **Toute sanction est contestable, et la contestation est instruite par une
-> autre personne que celle qui a sanctionné.**
-> → `sanction.resultat_contestation`
+> **`SYS`**, et personne d'autre *(`DP-05`)* : filtre automatique *(F19.1)*,
+> comptage, sanction graduée automatique *(F6.8, F19.9)*. Le parcours `UC-91`
+> — la file de modération humaine — **est supprimé**.
+>
+> ⚠️ **La contestation disparaît avec l'instructeur.** L'ancienne règle voulait
+> qu'une sanction soit instruite en recours *« par une autre personne que celle
+> qui a sanctionné »*. Il n'y a plus de personne. Une sanction automatique ne
+> peut donc être levée que par **une nouvelle évaluation automatique** — ce qui
+> impose que chaque sanction soit **recalculable**, jamais un état figé.
 
 ---
 
@@ -1014,16 +986,21 @@ sans les montants** *(R-R8)*.
 Les décisions que le déroulé des parcours ne suffit pas à trancher, et qui
 doivent l'être **avant** le développement du parcours concerné.
 
+> **Amont** : [`JP_DECISIONS_PRODUIT.md`](JP_DECISIONS_PRODUIT.md). Les points
+> `PO-x` cités ici y sont tenus à jour — c'est là qu'ils se ferment, pas ici.
+
 | # | Question | Parcours bloqué | Élément de décision |
 |---|---|---|---|
-| **1** | **Quel délai de libération automatique des fonds ?** | `UC-31` | Deux précédents : **Poshmark libère à J+3** après livraison sans litige ; **Shopee garde une fenêtre de litige de 15 jours**. Les deux ne sont pas contradictoires |
-| **2** | **Le paiement à la livraison est-il ouvert, et à quelles conditions ?** | `UC-30`, `UC-41` | **Sans séquestre, la protection du vendeur disparaît.** À mesurer dès le premier jour : le taux de refus à la livraison décidera du maintien de l'option |
-| **3** | **Quelle durée de réservation, par origine ?** | `UC-12`, `UC-21` | Paramétrable *(`parametre`)*, avec **bornes min/max codées** — une durée à 0 s doit être impossible à saisir |
-| **4** | **Quand les fonds d'une précommande sont-ils libérés à la créatrice ?** | `F15.8` | `precommande.avance_liberee`. **Le remboursement automatique si le seuil n'est pas atteint est non négociable** *(RB3)* : sans lui, la précommande reproduirait l'arnaque que JP combat |
-| **5** | **Le libellé de la migration 17** — *une clarification, pas une décision* | `UC-13`, `UC-70` | Son intitulé se lit comme la création d'une **table** `remise_ligne`, ce qui donne à croire que `D4` est contredit. C'est une **colonne** `int DEFAULT 0` de `ligne_commande`. Écrire « colonne `remise_ligne` + `CHECK` » lèverait l'ambiguïté. **La garantie de non-cumul tient sans réserve** |
-| **6** | **Qui supporte la commission d'affiliation ?** | `UC-92`, `F15.5` | Le vendeur, JP, ou partagée — change le calcul de `ligne_commande.commission_createur` |
-| **7** | **Quel crédit pour un unboxing ?** | `UC-61` | `mouvement_cagnotte`. Trop bas : personne ne filme. Trop haut : on achète du contenu plus cher que de la publicité |
-| **8** | **Le schéma de `panier_cadeau` et de `demande_verification`** | `UC-80`, `UC-81`, `UC-52` | **Deux tables citées dans les migrations sans définition de colonnes** |
+| **1** | **Quel délai de confirmation automatique ?** | `UC-31` | La question survit à `DP-07`, mais elle a changé d'enjeu : elle ne libère plus d'argent, elle **clôt la commande et fige le score**. Un délai trop court efface les problèmes tardifs ; trop long, il laisse des commandes en suspens pour toujours |
+| **2** | ~~Le paiement à la livraison~~ | — | **Sans objet** *(`DP-04`)* — il n'y a plus ni livreur ni relais pour encaisser des espèces |
+| **3** | **Quelle durée de réservation, par origine ?** | `UC-12`, `UC-21`, **`UC-43`** | Paramétrable *(`parametre`)*, avec **bornes min/max codées**. ⚠️ **Le cadeau ajoute un cas extrême** : l'article doit tenir pendant la négociation du point de remise, entre deux fuseaux horaires *(`PO-10`)* |
+| **4** | 🔴 **La précommande groupée est-elle encore possible ?** | `F15.8` | `R-N8` exige un **remboursement automatique et intégral** si le seuil n'est pas atteint — **critère de recette bloquant `B4.3`**. Sans séquestre, JP ne peut rembourser un argent qu'il n'a jamais tenu *(`PO-8`)*. Piste retenue à trancher : **n'encaisser qu'à l'atteinte du seuil** |
+| **5** | **Le libellé de la migration 17** — *une clarification, pas une décision* | `UC-13`, `UC-70` | Son intitulé se lit comme la création d'une **table** `remise_ligne`. C'est une **colonne** `int DEFAULT 0` de `ligne_commande`. **La garantie de non-cumul tient sans réserve** |
+| **6** | ~~Qui supporte la commission d'affiliation ?~~ | — | **Tranché** *(`DP-09`)* — **la boutique**, sur son prix, taux connu de la créatrice avant qu'elle attache l'article. `R-N4` est morte avec la commission JP *(`DP-08`)* |
+| **7** | **Quel crédit pour un unboxing ?** | `UC-61` | `mouvement_cagnotte`. Trop bas : personne ne filme. Trop haut : on achète du contenu plus cher que de la publicité. ⚠️ **L'enjeu a monté d'un cran** : l'unboxing alimente la réputation, devenue **la seule protection de l'acheteuse** *(`DP-07`)* |
+| **8** | **Trois schémas de tables cités sans colonnes** | `UC-80`, `UC-81`, `UC-52`, **`UC-43`** | `panier_cadeau` · `demande_verification` · **`fil_remise`** *(neuf, `DP-10`)* |
+| **9** | 🔴 **Le prestataire honore-t-il une clé d'idempotence sur une requête rejouée ?** | `UC-30` | `R-M5` **rejoue délibérément** les requêtes secondaires échouées. Sans idempotence honorée par l'opérateur, une relance paie la créatrice deux fois *(`PO-11`)* |
+| **10** | **Quel seuil de signalements suspend une boutique ?** | `UC-50` | C'est désormais **la seule sanction du produit** *(`DP-04`, `DP-05`)*. Trop bas, une boutique honnête est coupée par deux clientes mécontentes ; trop haut, la protection est décorative |
 
 ---
 

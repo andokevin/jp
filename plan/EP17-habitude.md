@@ -39,7 +39,7 @@
 
 **V** : voit dans quels looks ses articles sont associés — signal de style précieux, et gratuit.
 
-**Le dressing est aussi la porte d'entrée du dépôt d'annonce** *(F1.17)* : une pièce du dressing se met en vente **sans re-photographier**. C'est le raccourci qui rend le vendeur particulier crédible, et il n'existe que grâce au dressing.
+⚠️ **Le dressing était la porte d'entrée du dépôt d'annonce** *(`F1.17`, supprimée par `DP-01`)*. **Cette porte se ferme** : une pièce du dressing ne peut plus être remise en vente sans compte boutique *(`DP-02`)*. Ancienne rédaction : une pièce du dressing se met en vente **sans re-photographier**. C'est le raccourci qui rend le vendeur particulier crédible, et il n'existe que grâce au dressing.
 
 **Alimentation automatique** : consommateur de `commande.confirmee` *(PLAN_SOCLE §6)*. L'entrée au dressing ne doit **jamais** bloquer la confirmation — asynchrone et idempotent.
 
@@ -76,7 +76,7 @@ look_piece
   PK(look_id, piece_id)
 ```
 
-Une pièce issue d'un achat conserve `article_id` : c'est ce qui rend l'article **achetable** quand le look est publié, et c'est ce qui rattache la vente au vendeur d'origine.
+Une pièce issue d'un achat conserve `article_id` : c'est ce qui rend l'article **achetable** quand le look est publié, et c'est ce qui rattache la vente à la boutique d'origine.
 
 ### 4. Design
 
@@ -161,13 +161,13 @@ depend: [F17.10, F14.6]
 apps/api/src/modules/direct/rendezVous.ts
 apps/api/src/jobs/rappelsRendezVous.ts
 apps/mobile/src/features/vitrine/composants/CarteRendezVous.tsx
-apps/mobile/src/features/direct-vendeur/ecrans/EcranRendezVous.tsx
+apps/mobile/src/features/direct-boutique/ecrans/EcranRendezVous.tsx
 ```
 
 ### 3. Base de données
 ```
 rendez_vous
-  id PK · proprietaire_id FK · type(vendeur|createur)
+  id PK · proprietaire_id FK · type(boutique|createur)
   jour_semaine int · heure time · fuseau
   titre null · actif bool · cree_le
   UQ(proprietaire_id, jour_semaine, heure)
@@ -192,7 +192,7 @@ par rendez-vous — nous ne surchargeons pas vos abonnés."
 ```
 
 ### 5. Backend
-`GET/POST/PATCH /vendeur/rendez-vous` · inclus dans la projection de vitrine *(F1.19)* et dans le calendrier *(F20.9)* · travail de rappel.
+`GET/POST/PATCH /boutique/rendez-vous` · inclus dans la projection de vitrine *(F1.19)* et dans le calendrier *(F20.9)* · travail de rappel.
 
 **Tests** : rappel envoyé une seule fois par occurrence ; plafonds respectés ; rendez-vous inactif → aucun rappel ; affiché sur la vitrine et dans l'état vide du calendrier ; fuseau correct.
 

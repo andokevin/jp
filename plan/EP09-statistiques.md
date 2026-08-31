@@ -1,9 +1,9 @@
-# EP09 — Statistiques vendeur
+# EP09 — Statistiques boutique
 
 > 7 fonctionnalités · vague 3 · module `exploitation`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit détaillé : [EP00-identite.md](EP00-identite.md).
 
-**Le principe de l'épique** : on ne montre pas au vendeur ce qu'il a fait, on lui montre **ce qu'il doit décider**. L'information la plus actionnable, et la plus demandée par les vendeurs réels : **quelles tailles racheter**.
+**Le principe de l'épique** : on ne montre pas à la boutique ce qu'elle a fait, on lui montre **ce qu'il doit décider**. L'information la plus actionnable, et la plus demandée par les boutiques réels : **quelles tailles racheter**.
 
 **Ce qui différencie ces écrans d'un tableau de bord ordinaire** : chaque chiffre est accompagné de l'action qu'il suggère. Un chiffre d'affaires sans comparaison ni suite n'est qu'un compteur.
 
@@ -25,11 +25,11 @@
 
 ### 1. Conception
 
-Chiffre d'affaires, nombre de commandes, panier moyen, commissions, articles les plus vendus, **tailles qui partent en premier**, ventilation **par origine** *(R-H2)*.
+Chiffre d'affaires, nombre de commandes, panier moyen, **parts versées aux créatrices** *(`DP-09`)*, articles les plus vendus, **tailles qui partent en premier**, ventilation **par origine** *(R-H2)*.
 
-**L'information la plus actionnable, et il faut qu'elle soit la plus visible** : quelles tailles racheter. Un vendeur qui importe des vêtements décide chaque mois de son assortiment ; c'est la seule décision où le produit peut lui faire gagner de l'argent directement.
+**L'information la plus actionnable, et il faut qu'elle soit la plus visible** : quelles tailles racheter. Une boutique qui importe des vêtements décide chaque mois de son assortiment ; c'est la seule décision où le produit peut lui faire gagner de l'argent directement.
 
-**L'employé** *(VE)* : accès en lecture seule, **sans les montants**, si le vendeur le décide *(F10.4, R-R8)*. Même règle que pour la liste de clientes : la projection **omet** les champs de montant, elle ne les masque pas.
+~~**L'employé**~~ ❌ **supprimé** *(`DP-01`)*. Ancienne rédaction : accès en lecture seule, **sans les montants**, si la boutique le décide *(F10.4, R-R8)*. Même règle que pour la liste de clientes : la projection **omet** les champs de montant, elle ne les masque pas.
 
 **Ventilation par origine** : elle répond à la question stratégique du produit — la vente hors direct tient-elle sa promesse ? *(F1.19, F11.7)*
 
@@ -46,10 +46,10 @@ apps/mobile/src/features/tableau-bord/
 
 ### 3. Base de données
 ```
-agregat_vendeur
-  vendeur_id FK · jour · origine
-  ca int · nb_commandes int · panier_moyen int · commissions int
-  PK(vendeur_id, jour, origine)
+agregat_boutique
+  boutique_id FK · jour · origine
+  ca int · nb_commandes int · panier_moyen int · parts_createur int
+  PK(boutique_id, jour, origine)
 ```
 Agrégats **quotidiens précalculés** : sur un pic de direct, recalculer à chaque ouverture du tableau de bord serait coûteux et inutile.
 
@@ -60,7 +60,7 @@ Screen — "Mes ventes" (seller dashboard).
 Vertical order: a period selector "Aujourd'hui · 7 jours · 30 jours" with
 "7 jours" active; a hero card with the largest figure on the screen "1 240 000 Ar"
 labelled "Chiffre d'affaires" and a green delta "+18 % vs semaine précédente";
-a three-stat row "24 commandes · panier moyen 51 600 Ar · commissions 62 000 Ar";
+a three-stat row "24 commandes · panier moyen 51 600 Ar · parts créatrices 62 000 Ar";
 a simple bar chart of the seven days; then a highlighted, bordered card titled
 "À racheter en priorité" — the most important block of the screen — listing three
 rows with a garment thumbnail, the size in bold, and the fact: "Robe wax · taille
@@ -74,7 +74,7 @@ Produce an employee variant where every amount is replaced by a grey padlock chi
 ```
 
 ### 5. Backend
-`GET /vendeur/statistiques?periode=` — projection **selon la permission** de l'appelant.
+`GET /boutique/statistiques?periode=` — projection **selon la permission** de l'appelant.
 
 **Tests** : agrégats exacts sur un jeu de référence ; ventilation par origine correcte ; tailles les plus demandées incluant les **demandes sans stock** *(F7.4)* ; **employé → aucun champ de montant dans la réponse** (assertion sur les clés) ; agrégation quotidienne idempotente.
 
@@ -99,11 +99,11 @@ depend: [F3.7, F4.9]
 
 **Conception** — reprend le bilan de fin de direct *(F2.15)* et l'inscrit dans une **série** : comparaison entre directs, évolution du taux de conversion, du pic d'audience, du panier moyen.
 
-**Le chiffre le plus utile n'est pas le chiffre d'affaires du soir, c'est sa tendance** : un vendeur qui voit ses cinq derniers directs alignés comprend ce qui marche.
+**Le chiffre le plus utile n'est pas le chiffre d'affaires du soir, c'est sa tendance** : une boutique qui voit ses cinq derniers directs alignés comprend ce qui marche.
 
 **Base de données** — `direct_bilan` *(F2.15)*, requêtes par série.
 
-**Backend** — `GET /vendeur/directs/performance?periode=`.
+**Backend** — `GET /boutique/directs/performance?periode=`.
 
 **Design** — Prompt Stitch : *a list of past lives, each row showing the date, duration, viewers, revenue and a conversion chip, with a small sparkline at the top showing the revenue trend across the last 10 lives, and a "Comparer" mode allowing two lives to be shown side by side with their key figures.*
 
@@ -131,7 +131,7 @@ depend: [F2.15]
 
 **Base de données** — `statistique_article (article_id, jour, vues, paniers, ventes, expirees, messages)`.
 
-**Backend** — `GET /vendeur/articles/:id/performance`.
+**Backend** — `GET /boutique/articles/:id/performance`.
 
 **Design** — Prompt Stitch : *per-article performance sheet with a funnel (vues → paniers → ventes) as three bars with conversion rates, then two diagnostic cards: an amber one "12 messages, 0 vente — votre prix est peut-être trop haut" with a "Modifier le prix" link, and a grey one "5 réservations expirées — vos clientes n'ont pas fini de payer".*
 
@@ -155,11 +155,11 @@ depend: [F9.1]
 
 **Conception** — l'entonnoir du direct, aligné sur les mesures fondatrices *(F11.7)* : spectateurs → feuille ouverte → « Je prends » → paiement lancé → paiement confirmé. Chaque étage nomme la **perte** et non seulement le passage.
 
-**Le chiffre qui compte pour le vendeur** : où il perd des acheteuses. Un entonnoir qui n'indique pas la marche la plus haute ne sert à rien.
+**Le chiffre qui compte pour la boutique** : où elle perd des acheteuses. Un entonnoir qui n'indique pas la marche la plus haute ne sert à rien.
 
 **Base de données** — depuis `evenement_usage` *(F11.7)*.
 
-**Backend** — `GET /vendeur/entonnoir?periode=&directId=`.
+**Backend** — `GET /boutique/entonnoir?periode=&directId=`.
 
 **Design** — Prompt Stitch : *funnel visualisation with five decreasing bars, each labelled with a count and, in red under the bar, the loss ("−72 % ici") ; the largest drop-off step is highlighted with a bordered callout card naming a likely cause and an action, e.g. "La plupart abandonnent au paiement — proposez le paiement à la réception".*
 
@@ -181,7 +181,7 @@ depend: [F11.7]
 
 `P2 · C` / `P3 · C` · `cadre`
 
-**F9.5 — Export des ventes** : tableur (CSV) par période, avec commissions et remises, pour la comptabilité du vendeur. À rapprocher de l'export de factures *(F4.11)* : un seul point d'export plutôt que deux.
+**F9.5 — Export des ventes** : tableur (CSV) par période, avec **parts créatrices** *(`DP-09`)* et remises, pour la comptabilité de la boutique. À rapprocher de l'export de factures *(F4.11)* : un seul point d'export plutôt que deux.
 
 **F9.6 — Comparaison avec la période précédente** : déjà présente sur les cartes de `F9.1` ; cette fonctionnalité l'étend à tous les écrans de statistiques. **Une comparaison sans période équivalente comparable est trompeuse** — un mois avec un événement *(F20.8)* ne se compare pas à un mois ordinaire, et il faut le signaler.
 

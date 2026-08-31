@@ -2,40 +2,81 @@
 
 > 10 fonctionnalités · vague 2 · module `commande` + `apps/web`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit détaillé : [EP00-identite.md](EP00-identite.md).
+> **Amont** : [`JP_DECISIONS_PRODUIT.md`](../docs/JP_DECISIONS_PRODUIT.md) — `DP-10`.
 
 > **Le canal qui ne dépend pas du pouvoir d'achat local.** Il donne enfin un usage réel au paiement par carte *(F4.2)*.
 
-**Pourquoi c'est stratégique** : le panier d'un cadeau est structurellement plus élevé que le panier ordinaire, et le donateur n'a pas la contrainte de pouvoir d'achat locale — **le plafond de panier saute**. À mesurer dès le pilote *(F11.7)*.
+**Pourquoi c'est stratégique** : le panier d'un cadeau est structurellement plus élevé que le panier ordinaire, et le donateur n'a pas la contrainte de pouvoir d'achat locale — **le plafond de panier saute**.
 
-**Et ce qui manque à un transfert d'argent classique** : celui qui envoie de l'argent à sa famille ne sait jamais ce qui en est fait. Ici, il choisit l'objet, il voit la vendeuse vérifiée, il suit la livraison et il obtient une preuve de remise. C'est la proposition de valeur entière de cette épique, et elle tient dans cette phrase.
+> ### Ce que `DP-04` et `DP-07` retirent à cette épique
+>
+> La proposition de valeur tenait en une phrase : *« celui qui envoie de l'argent
+> à sa famille ne sait jamais ce qui en est fait ; ici, il choisit l'objet, il
+> voit la boutique vérifiée, **il suit la livraison et il obtient une preuve de
+> remise** »*.
+>
+> **La seconde moitié tombe.** Il n'y a plus de preuve de remise *(`DP-04`)*, ni
+> de suivi de livraison côté donateur *(`DP-10`)*.
+>
+> **La première moitié tient entièrement, et c'est elle qui portait la valeur** :
+> envoyer de l'argent à Madagascar est **déjà gratuit et instantané** *(Taptap
+> Send, 0 €, dépôt MVola en moins de 5 minutes)*. **Nous ne vendons ni le prix ni
+> la vitesse — nous vendons de savoir ce que l'argent devient.** Il choisit
+> l'objet, et il voit la boutique vérifiée.
 
-**Règle absolue** : **l'adresse de livraison n'est jamais visible du donateur** *(RB8, R-L8)*. Il paie, il ne voit pas où ça va.
+**Le parcours est réécrit** *(`DP-10`)* :
+
+1. Le donateur choisit l'article et **désigne le compte JP du bénéficiaire**.
+2. **Le bénéficiaire et la boutique conviennent du point de remise** *(`F5.11`)*. Le donateur n'y participe pas et n'en voit rien.
+3. **L'accord constaté, le donateur confirme le paiement.** L'argent va **directement** sur le mobile money de la boutique *(`DP-07`, `DP-16`)*.
+
+> ### `RB8` devient structurel
+>
+> **L'adresse de livraison n'est jamais visible du donateur** *(RB8, R-L8, R-G1)*.
+> Il fallait la lui **cacher activement** ; désormais **il ne la manipule
+> jamais** — elle se négocie entre deux personnes dont il ne fait pas partie.
+> L'invariant n'est plus une précaution d'affichage, il est **une propriété du
+> parcours**.
+
+> ### ⚠️ Deux conséquences à traiter
+>
+> - **Le bénéficiaire doit avoir un compte JP** *(`R-G5`)*. On n'offre plus à
+>   quelqu'un qui n'est pas sur la plateforme — restriction réelle du canal, **et
+>   levier d'acquisition** : recevoir un cadeau devient une raison de s'inscrire.
+> - **Le paiement vient après la négociation**, donc l'article doit être tenu
+>   pendant tout l'échange. **30 minutes ne suffisent pas entre deux fuseaux
+>   horaires** *(`R-G7`, `PO-10`)*.
+> - Le donateur était défini **« web, sans compte »**. Désigner un bénéficiaire
+>   puis revenir confirmer suppose une session *(`PO-9`)* — compte léger, ou lien
+>   signé envoyé par courriel.
 
 | ID | Fonctionnalité | Phase | Prio | Détail |
 |---|---|---|---|---|
 | F16.1 | Panier partageable par lien | P1 | S | complet |
 | F16.2 | « Demander en cadeau » | P1 | S | complet |
-| F16.3 | Paiement d'un panier par un tiers | P1 | S | complet |
+| F16.3 | Paiement d'un panier par un tiers, **après accord de remise** | P1 | S | complet |
 | F16.4 | Paiement par carte depuis l'étranger | P1 | S | complet |
 | F16.10 | Affichage de la conversion de devise | P1 | S | moyen |
 | F16.5 | Message joint au cadeau | P1 | C | moyen |
-| F16.6 | Notification de révélation et remerciement | P1 | C | moyen |
 | F16.7 | Liste d'envies publique | P2 | S | moyen |
 | F16.9 | Offrir directement un article | P2 | S | moyen |
 | F16.8 | Cagnotte collective | P2 | C | cadre |
+| ~~F16.6~~ | ~~Notification de révélation adossée à la preuve de remise~~ ❌ *(`DP-04`)* — **la preuve n'existe plus**. Le remerciement subsiste par l'unboxing *(`F14.7`)* | — | — | — |
 
 ---
 
 ## F16.1 / F16.2 / F16.3 — Le parcours cadeau
 
-`P1 · S · complet` — **Règles** R-L8, RB8 · **Dépend de** F3.1, F4.2
+`P1 · S · complet` — **Règles** R-L8, R-G1, R-G5, R-G7, RB8 · **Décision** `DP-10` · **Dépend de** F3.1, F4.2, **F5.11**
 
 ### 1. Conception
 
 - **A** : compose son panier → **« Demander en cadeau »** → un lien → elle l'envoie sur WhatsApp ou Messenger à son frère, son copain, sa mère.
-- **D (donateur)** : ouvre le lien **sans avoir l'application** → voit les articles, les photos, le prix total, les frais de livraison, **la vendeuse vérifiée** *(F0.7)* → paie par carte ou mobile money → laisse un message *(F16.5)*.
+- **D (donateur)** : ouvre le lien **sans avoir l'application** → voit les articles, les photos, le prix total, les frais de livraison, **la boutique vérifiée** *(F0.7)* → paie par carte ou mobile money → laisse un message *(F16.5)*.
+- **D** : **désigne le compte JP du bénéficiaire** *(`R-G5`)*, puis **attend l'accord sur le point de remise avant de confirmer le paiement** *(`DP-10`)*.
+- **Bénéficiaire + B** : conviennent du lieu et du moment dans le fil de remise *(`F5.11`)*. **`accord_le` débloque le paiement.**
 - **A** : notifiée *« Naina vous a offert votre panier »* → la commande suit le parcours normal → à la réception, elle publie son remerciement *(F14.7)* → **le remerciement est du contenu, donc de l'acquisition. La boucle se referme.**
-- **D** : suit la livraison **depuis son lien, sans compte**, et voit la preuve de remise.
+- **D** : ⚠️ **ne suit plus la livraison et ne voit aucune preuve de remise** *(`DP-04`, `DP-10`)*. Il est notifié de la confirmation de réception, rien de plus.
 
 **La règle de confidentialité, et sa conséquence technique** *(RB8)* : le donateur voit les articles, le total, les frais et le mode de livraison **agrégé** (« point relais » ou « à domicile »), mais **jamais** le quartier, le repère, le nom du relais ni le numéro de téléphone. Cela signifie une **projection dédiée** pour la page cadeau, pas un filtrage à l'affichage — un champ absent de la réponse ne peut pas fuir.
 
@@ -91,17 +132,25 @@ with images, names, sizes and prices; a seller card with the shop name, the blue
 "Boutique vérifiée" badge and the line "Identité et compte Mobile Money vérifiés
 par JP"; a totals block "Articles 118 000 Ar · Livraison 17 000 Ar · Total
 135 000 Ar" and, directly beneath, a converted line "≈ 28,90 €" with a muted
-"taux indicatif"; a delivery row showing ONLY "Livraison en point relais à
-Antananarivo" with no address, no relay name, no phone number; an optional
+"taux indicatif"; NO delivery row at all — the donor sees nothing about where
+it goes (RB8, DP-10); instead a muted line "Hanta et la boutique conviennent
+entre elles du lieu de remise."; an optional
 message field "Un mot pour Hanta ?"; a payment method row with card first, then
 mobile money; a fees disclosure line "Frais de conversion : 0,80 € — inclus dans
 le total affiché"; a full-width primary button "Offrir 28,90 €".
-Add a trust footer: "JP garde votre argent jusqu'à la livraison confirmée."
+Add an HONEST footer: "Boutique vérifiée par JP. Elle est vérifiée
+par JP : identité et compte Mobile Money contrôlés." — never a claim that JP
+holds the money (DP-07, RB12).
 
-Screen 3 — donor tracking page (web, no account): a timeline of the delivery with
-timestamps, and at the end a proof-of-delivery block showing the parcel photo and
-"Remis le 16 août à 14 h 20" — but no address anywhere; plus a thank-you card
-appearing once the recipient has published her unboxing, with a play button.
+Screen 3 — donor confirmation gate (web). Before the pay button becomes active,
+a waiting card: "Hanta et la boutique se mettent d'accord sur la remise" with a
+muted spinner, then, once agreed, it turns into "C'est convenu — vous pouvez
+offrir" WITHOUT revealing the place. Only then the pay button activates (DP-10).
+
+Screen 4 — donor page after payment: a single confirmation line "Hanta a reçu
+votre cadeau le 16 août", no timeline, no proof photo, no address; plus a
+thank-you card appearing once the recipient has published her unboxing, with a
+play button. That card is the ONLY thing the donor gets back — it must be good.
 ```
 
 ### 5. Backend
@@ -110,16 +159,18 @@ appearing once the recipient has published her unboxing, with a play button.
 
 **Tests — RB8 en premier :**
 - La réponse de `GET /cadeau/:jeton` **ne contient aucun champ d'adresse** : assertion sur les clés de l'objet, récursive, y compris dans les objets imbriqués.
-- Idem pour la page de suivi et pour la preuve de remise.
+- Idem pour la page du donateur **et pour le fil de remise** : `403` sur `GET /commandes/:id/fil-remise` avec un jeton de donateur *(`R-G1`)*.
+- **Le paiement est refusé tant que `fil_remise.accord_le` est nul** *(`DP-10`)*.
 - Lien expiré, lien révoqué → page d'état explicite, pas d'erreur brute.
-- Paiement du donateur → commande normale, séquestre créé, parcours identique.
+- Paiement du donateur → commande normale, **éclaté vers la boutique et JP** *(`DP-16`)*, parcours identique.
+- **Bénéficiaire sans compte JP → parcours refusé avec une invitation à s'inscrire** *(`R-G5`)*.
 - Panier modifié par l'acheteuse après création du lien → **le lien reflète le panier figé**, pas le panier courant (sinon le donateur paie autre chose que ce qu'il a vu).
 - Double paiement du même lien → un seul encaissement *(idempotence)*.
 - Notification à l'acheteuse à la place du paiement.
 
 ### 6. Frontend
 
-`apps/web` rend la page cadeau **côté serveur** : c'est un lien partagé sur WhatsApp, l'aperçu et le temps de premier affichage décident de la conversion. La carte de vendeur vérifié est visible **avant** le bouton de paiement.
+`apps/web` rend la page cadeau **côté serveur** : c'est un lien partagé sur WhatsApp, l'aperçu et le temps de premier affichage décident de la conversion. La carte de boutique vérifiée est visible **avant** le bouton de paiement.
 
 ```issues
 feature: F16.1
@@ -222,7 +273,7 @@ depend: [F16.4]
 
 **Design** — Prompt Stitch : *gift reveal screen for the recipient — a warm illustration, title "Naina vous a offert votre panier !", a quoted message card in a handwriting-like frame "Bon anniversaire ma sœur, profite bien 🎁", the order summary, and two buttons "Suivre ma commande" and "Envoyer un merci"; plus the donor's notification card "Hanta a reçu votre cadeau" with a video thumbnail and a play button.*
 
-**Tests** : message transmis et filtré ; notification de révélation à l'encaissement ; remerciement notifié au donateur **sans compte** (par le lien) ; message vide accepté.
+**Tests** : message transmis et filtré ; **la notification de révélation ne s'adosse plus à une preuve de remise** *(`DP-04`)* mais à la confirmation de réception *(`UC-31`)* ; remerciement notifié au donateur **sans compte** (par le lien) ; message vide accepté.
 
 ```issues
 feature: F16.5

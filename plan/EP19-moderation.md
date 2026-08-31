@@ -18,9 +18,10 @@
 | F19.4 | Blocage d'un utilisateur | P1 | M | complet |
 | F19.5 | Vérification d'âge | P1 | M | complet |
 | F19.6 | Retrait de contenu avec notification motivée | P1 | M | complet |
-| F19.7 | File de modération dans le back-office | P1 | M | complet |
+| F19.7 | ♻️ **Vérification a posteriori des décisions automatiques** *(`DP-13`)* | P1 | M | complet |
+| F19.13 | 🆕 **Classification du signalement par IA** *(`DP-13`)* | P1 | M | complet |
 | F19.8 | Protection contre la republication de contenu volé | P1 | S | complet |
-| F19.9 | Sanctions graduées et voie de recours | P1 | S | moyen |
+| F19.9 | **Sanctions graduées, automatiques** ⚠️ *(`DP-05`)* — **sans voie de recours** | P1 | **M** | moyen |
 | F19.11 | Filtre de mots personnalisé | P2 | S | moyen |
 | F19.10 | Compte privé / audience restreinte | P2 | C | cadre |
 
@@ -57,7 +58,7 @@ apps/mobile/src/features/publication/composants/ReglagesCommentaires.tsx
 apps/mobile/src/features/reglages/ecrans/EcranMotsBloques.tsx
 ```
 
-`filtrage.ts` est appelé par **tous** les points d'écriture de texte public : commentaires *(F14.15)*, chat de direct *(F2.10)*, questions d'article *(F1.20)*, réponses de vendeur *(F6.9)*, messages de cadeau *(F16.5)*. Un point d'écriture qui l'oublierait serait une faille — une règle de lint recense les appels.
+`filtrage.ts` est appelé par **tous** les points d'écriture de texte public : commentaires *(F14.15)*, chat de direct *(F2.10)*, questions d'article *(F1.20)*, réponses de boutique *(F6.9)*, messages de cadeau *(F16.5)*. Un point d'écriture qui l'oublierait serait une faille — une règle de lint recense les appels.
 
 ### 3. Base de données
 
@@ -242,90 +243,6 @@ depend: [F19.3]
 
 ---
 
-## F19.7 — File de modération dans le back-office
-
-`P1 · M · complet` — **Règles** R-X4, R-X6 · **⚠️ décision n° 13 : budget et organisation**
-
-### 1. Conception
-
-**MO** traite la file **par priorité** → voit le contenu, l'historique de l'auteur, les signalements antérieurs → retire, avertit, suspend, ou classe → **décision motivée notifiée** à l'auteur **et au signalant** *(R-X6)*.
-
-**Ce qui rend la file utilisable** : l'urgence en tête, l'âge visible, l'engagement de délai affiché, le regroupement des signalements portant sur la même cible, et l'historique de l'auteur à côté du contenu. Un modérateur qui doit naviguer pour savoir si l'auteur a déjà été signalé traite trois fois moins de dossiers.
-
-**Action spécifique aux directs** *(F11.2)* : couper une diffusion en cours, disponible en quelques secondes. C'est la seule action du back-office qui doit être quasi instantanée.
-
-**⚠️ La décision qui conditionne tout** *(n° 13)* : **le budget et l'organisation de la modération** — combien de modérateurs, quels délais d'engagement, quelle couverture horaire. Ce n'est pas une question technique, c'est **une ligne de coût d'exploitation permanente**. Un engagement de 2 h sur les urgences suppose une couverture horaire réelle, y compris le samedi soir, qui est précisément le moment des directs.
-
-**Conséquence de conception** : les délais d'engagement sont **paramétrables** *(R-O1)* et affichés dans l'application. On n'annonce pas 2 h si l'organisation en permet 12.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/moderation/
-├─ file.ts              ordre, regroupement, affectation exclusive
-├─ decisions.ts         retrait, avertissement, sanction, classement
-├─ dossierAuteur.ts     historique, signalements antérieurs, sanctions
-└─ file.test.ts
-apps/admin/src/pages/moderation/{File,Dossier,Historique}.tsx
-```
-
-### 3. Base de données
-
-`signalement` avec `traite_par_id`, `decision`, `traite_le`. Affectation exclusive pour éviter le double traitement :
-
-```sql
-ALTER TABLE signalement ADD COLUMN affecte_a_id uuid NULL;
-ALTER TABLE signalement ADD COLUMN affecte_le timestamptz NULL;
-CREATE INDEX signalement_affectation ON signalement (affecte_a_id)
-  WHERE statut = 'en_cours';
-```
-
-### 4. Design
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen — admin moderation queue and review panel (desktop, dense).
-Left: the queue. A pinned red section header "Urgences (2)" with rows showing the
-reason, the elapsed time with a red chip "il y a 8 min · engagement 2 h", a content
-thumbnail, and a report count chip "3 signalements" when grouped; then a neutral
-section "File normale (47)" sorted by age. Each row shows an assignment avatar when
-someone is already handling it.
-Right: the review panel for the selected report. Top: the reported media or comment
-displayed in full, with the report reason and the reporter's optional details in a
-quoted block. Middle: an author dossier card — avatar, name, account age, "3
-signalements antérieurs · 1 avertissement", a small history list, and the author's
-verification status. Bottom: an action bar with four buttons — neutral "Classer
-sans suite", amber "Retirer le contenu", orange "Avertir l'auteur", red
-"Suspendre le compte" — each opening a required reasoning field with quick-pick
-motives; plus a distinct red button "Couper le direct" that appears only for live
-content, with a confirmation modal.
-A footer line on every decision form: "Votre décision sera notifiée à l'auteur et
-à la personne qui a signalé."
-```
-
-### 5. Backend
-
-`GET /admin/signalements?niveau=&statut=` · `POST /admin/signalements/:id/affectation` · `POST /admin/signalements/:id/decision` `{ decision, motif }` — **motif obligatoire** · `POST /admin/directs/:id/couper`.
-
-**Tests** : urgence en tête ; affectation **exclusive** (un second modérateur reçoit un conflit) ; signalements groupés par cible ; décision sans motif refusée ; **notification à l'auteur et au signalant** ; coupure d'un direct effective en moins de 5 s ; historique de l'auteur complet ; délai d'engagement lu depuis les paramètres.
-
-### 6. Frontend
-
-Dossier de l'auteur **à côté** du contenu, pas dans un autre écran. Actions avec motif obligatoire et motifs pré-remplis — un modérateur qui traite 80 dossiers par jour ne rédige pas 80 textes libres.
-
-```issues
-feature: F19.7
-titre: File de modération dans le back-office
-epic: "19"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F19.3]
-```
-
----
-
 ## F19.5 — Vérification d'âge à l'inscription
 
 `P1 · M · complet` — **Règles** R-V6 · **Recette RB6** · **point non négociable**
@@ -336,7 +253,7 @@ Déclaration d'âge à l'inscription ; pour **publier du contenu vidéo**, la v�
 
 **Aucune publication vidéo par un mineur** *(RB6)*. Point non négociable, juridiquement et moralement.
 
-**Distinction à tenir** : un mineur **peut acheter** (avec l'accord implicite de ses parents, comme dans n'importe quel commerce), il ne peut **pas se filmer publiquement** ni devenir vendeur ou créatrice. Interdire l'achat serait excessif et inapplicable ; autoriser la publication serait grave.
+**Distinction à tenir** : un mineur **peut acheter** (avec l'accord implicite de ses parents, comme dans n'importe quel commerce), il ne peut **pas se filmer publiquement** ni devenir boutique ou créatrice. Interdire l'achat serait excessif et inapplicable ; autoriser la publication serait grave.
 
 **La déclaration d'âge est déclarative, la vérification est documentaire.** Le contrôle bloquant s'appuie sur la pièce d'identité, jamais sur la déclaration — c'est la seule façon de tenir `RB6`.
 
@@ -372,9 +289,9 @@ normalement.", and a single button "J'ai compris". No shaming, no error red.
 ```
 
 ### 5. Backend
-Contrôle à la publication de tout contenu vidéo et au passage en rôle vendeur ou créatrice.
+Contrôle à la publication de tout contenu vidéo et au passage en rôle boutique ou créatrice.
 
-**Tests — RB6** : compte déclaré mineur → publication vidéo **refusée** sur les trois types ; compte vérifié dont la pièce indique un mineur → publication refusée **même si la déclaration disait majeur** ; achat autorisé pour un mineur ; passage en vendeur ou créatrice refusé ; contrainte de base rejetant une insertion fautive.
+**Tests — RB6** : compte déclaré mineur → publication vidéo **refusée** sur les trois types ; compte vérifié dont la pièce indique un mineur → publication refusée **même si la déclaration disait majeur** ; achat autorisé pour un mineur ; passage en boutique ou créatrice refusé ; contrainte de base rejetant une insertion fautive.
 
 ### 6. Frontend
 Message **non punitif** : le mineur n'a rien fait de mal, il utilise l'application autrement.
@@ -464,7 +381,7 @@ Le retrait **conserve** le contenu en base (`statut = retire`) : il est la pièc
 
 **Effets en cascade à traiter** : un contenu retiré qui avait déclenché un crédit d'unboxing *(F17.13)* → crédit repris par écriture inverse ; un contenu retiré qui portait un avis *(F6.1)* → l'avis est-il retiré aussi ? **Décision : non**, l'avis reste s'il est fondé sur un achat réel ; seul le média est retiré.
 
-**Backend** — `POST /admin/contenus/:id/retrait` `{ motif, regle }`, notification, reprise de crédit si applicable.
+**Backend** — le retrait est **exécuté par `SYS`** *(`DP-05`)* : `retirerContenu(contenuId, { motif, regle })` appelé par le filtre ou le compteur de signalements, jamais par une route d'administration. Notification, reprise de crédit si applicable.
 
 **Design** — Prompt Stitch : *author notification for a removed content — a card with a neutral shield icon, title "Votre vidéo a été retirée", a quoted rule line "Règle enfreinte : contenu sans article attaché", the moderator's written reason, the content thumbnail dimmed, and two buttons "J'ai compris" and "Contester cette décision"; plus a muted line "Votre crédit de 2 000 Ar a été retiré" when applicable.*
 
@@ -488,7 +405,7 @@ depend: [F19.7]
 
 ### 1. Conception
 
-**C** signale qu'un contenu est le sien → **MO** compare, retire le contenu republié, sanctionne le récidiviste. **Empreinte automatique** sur les vidéos publiées pour détecter les republications.
+**C** signale qu'un contenu est le sien → **`SYS`** compare les empreintes *(`DP-05`)*, retire le contenu republié, sanctionne le récidiviste. **Empreinte automatique** sur les vidéos publiées pour détecter les republications.
 
 **Pourquoi dès la V1** : reprendre la vidéo d'une autre pour vendre le même article est **le premier abus qui apparaîtra**, et c'est celui qui fait fuir les créatrices sérieuses. Une créatrice dont le travail est repris sans recours ne produit plus.
 
@@ -546,32 +463,55 @@ depend: [F14.2, F19.7]
 
 ---
 
-## F19.9 — Sanctions graduées et voie de recours
+## F19.9 — Sanctions graduées, automatiques
 
-`P1 · S · moyen` — **Règles** R-X6
+`P1 · M · moyen` — **Règles** R-X5, R-X6 · **Recette RB4** · **Décision** `DP-05`
 
-**Conception** — échelle graduée : **avertissement, retrait, restriction de publication, suspension, exclusion**. Chaque sanction est écrite, motivée, horodatée.
+**Conception** — cinq niveaux : avertissement, retrait, restriction de publication, suspension, exclusion. **Appliqués par `SYS`** *(`DP-05`)*. Chaque sanction est **écrite, motivée, horodatée et notifiée** *(`R-X5`, `R-X6`, `RB4`)*.
 
-**C / V peut contester.** **Une modération sans recours est vécue comme arbitraire et fait partir les meilleurs profils** — y compris ceux sanctionnés par erreur, qui sont précisément ceux qu'on ne veut pas perdre.
+> ### ⚠️ La voie de recours est supprimée, et c'est le coût le plus élevé de `DP-05`
+>
+> Cette fonctionnalité portait deux exigences qui **ne peuvent plus être
+> tenues** :
+>
+> - *« C / B peut contester. Une modération sans recours est vécue comme
+>   arbitraire et fait partir les meilleurs profils. »*
+> - *« Le recours doit être instruit par une personne différente de celle qui a
+>   sanctionné. »*
+>
+> **Il n'y a plus de personne — ni pour sanctionner, ni pour instruire.**
+>
+> **La seule atténuation possible** : une sanction automatique ne peut être levée
+> que par **une nouvelle évaluation automatique**. Elle doit donc être
+> **recalculable**, jamais un état figé — et la condition qui l'a déclenchée doit
+> être **réparable par la personne sanctionnée**. *« Réparer, pas plaider. »*
+>
+> **Ce qui reste dû à la personne sanctionnée** : un motif qui nomme **le fait**
+> reproché, **la règle** appliquée, et **ce qu'il faut faire** pour que la
+> sanction tombe. Un motif du type « contenu non conforme » est inacceptable ici
+> — il rend la réparation impossible, donc la sanction définitive.
 
-**Le recours doit être instruit par une personne différente** de celle qui a sanctionné. Sinon ce n'est pas un recours, c'est une confirmation.
+**Base de données** — `sanction` *(CDC §3.10)* avec `motif_texte` **obligatoire**, `condition_levee` *(json — ce qui doit changer)*, `recalculee_le`. *(`conteste` et `resultat_contestation` sont supprimés — `DP-05`.)*
 
-**Base de données** — `sanction` (CDC §3.10) avec `conteste bool` et `resultat_contestation`.
+```sql
+ALTER TABLE sanction ADD CONSTRAINT sanction_motivee
+  CHECK (motif_texte IS NOT NULL AND length(motif_texte) > 0);
+```
 
-**Backend** — `POST /admin/sanctions`, `POST /sanctions/:id/contestation`, `POST /admin/contestations/:id/decision` (avec contrôle que le décideur diffère du sanctionnant).
+**Backend** — le travail `evalueSanctions` écrit et **relève** les sanctions à chaque passage ; `GET /mes-sanctions` expose motif et condition de levée à la personne concernée. *(Plus de `POST /admin/sanctions` ni de `/contestation` — `DP-05`.)*
 
-**Design** — Prompt Stitch : *sanction notice to the author with the graduated scale shown as five steps and the current one highlighted, the written reason, the duration, and a "Contester" button; plus the appeal form with a text field and a line "Votre recours sera examiné par une autre personne que celle qui a pris la décision."; plus the admin appeals queue.*
+**Design** — Prompt Stitch : *sanction notice to the author showing the graduated scale with the current level highlighted, the written reason, and — most importantly — a "Ce qu'il faut faire pour que ça s'arrête" section with concrete steps. No "Contester" button: there is nobody to appeal to. Instead a muted line "La sanction est réévaluée automatiquement chaque jour."*
 
-**Tests** : les cinq niveaux ; recours ouvrable une fois ; **décideur du recours différent du sanctionnant** (refus sinon) ; sanction levée → effets annulés ; sanction à durée → expiration automatique ; historique complet.
+**Tests** : les cinq niveaux ; **sanction sans motif → refusée par la base** ; **la condition de levée remplie → sanction levée au passage suivant, sans intervention** ; le motif nomme le fait, la règle et l'action réparatrice.
 
 ```issues
 feature: F19.9
-titre: Sanctions graduées et voie de recours
+titre: Sanctions graduées automatiques, motif actionnable et levée par réévaluation
 epic: "19"
 phase: P1
-prio: S
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F19.7]
+prio: M
+etapes: [conception, bdd, backend, frontend]
+depend: [F19.6]
 ```
 
 ---
@@ -584,7 +524,7 @@ depend: [F19.7]
 
 **Impact base de données** — `utilisateur.compte_prive bool`, `abonnement.statut(accepte|en_attente)`.
 
-**Point d'attention, et c'est pourquoi c'est en phase 2** : un compte privé est incompatible avec la vente. Un vendeur ou une créatrice ne peut pas être privé — sinon son catalogue n'est pas découvrable et la règle d'or de l'épique 14 s'effondre. La fonctionnalité ne concerne donc que les **comptes acheteurs** qui publient des unboxings et des looks, et ce cas doit être explicite avant de coder.
+**Point d'attention, et c'est pourquoi c'est en phase 2** : un compte privé est incompatible avec la vente. Une boutique ou une créatrice ne peut pas être privé — sinon son catalogue n'est pas découvrable et la règle d'or de l'épique 14 s'effondre. La fonctionnalité ne concerne donc que les **comptes acheteurs** qui publient des unboxings et des looks, et ce cas doit être explicite avant de coder.
 
 ```issues
 feature: F19.10
@@ -599,3 +539,163 @@ depend: [F7.1]
 ---
 
 *Vague 2 terminée. Vague 3 : [EP08-decouverte](EP08-decouverte.md) · [EP09-statistiques](EP09-statistiques.md) · [EP10-monetisation](EP10-monetisation.md) · [EP12-assistant](EP12-assistant.md) · [EP18-premium](EP18-premium.md).*
+
+## F19.13 — Classification du signalement par IA 🆕
+
+`P1 · M · complet` — **Règles** R-T8, R-T8bis, R-T8ter · **Décision** `DP-13` · **Bloque** `F6.8`, `F19.7`
+
+### 1. Conception
+
+**L'acheteuse écrit ce qu'elle a vécu.** Elle ne choisit plus dans une liste de motifs — une liste ne colle jamais tout à fait, et **on ne demande pas à quelqu'un d'évaluer la gravité de ce qu'il subit** *(`R-T8bis`)*.
+
+L'IA lit **le récit et les pièces**, attribue un **niveau 1, 2 ou 3** *(`R-T8`)*, **et écrit sa motivation**. Une classification sans motivation est **refusée par la base**.
+
+| Niveau | Effet immédiat |
+|---|---|
+| **1 — ordinaire** | Compte au score. `N` non résolus → suspension ⚠️ *(`PO-12`)* |
+| **2 — grave** | **Suspension immédiate de la mise en vente** |
+| **3 — urgence** | **Suspension immédiate et totale**, direct coupé |
+
+> ### ⚠️ Une IA se manipule par le texte
+>
+> Un récit rédigé pour déclencher un niveau 3 serait **une arme entre
+> concurrentes**. `R-T8ter` — **la preuve exigée aux niveaux 2 et 3** — devient
+> la contre-mesure principale, pas un garde-fou secondaire : **un texte se
+> rédige, une photo non.**
+>
+> Sans la preuve attendue, un signalement classé 2 ou 3 **retombe au niveau 1**.
+> La classification de l'IA est alors conservée et signalée à la vérification
+> *(`F19.7`)* — c'est un signal de tentative, pas un simple rejet.
+
+**Ce que l'IA ne fait pas** : elle ne décide pas de la sanction. Elle attribue un **niveau** ; l'effet du niveau est **une règle**, écrite dans `R-T8`. Changer l'effet est une décision de l'Admin *(`F11.6`)*, jamais du modèle.
+
+### 2. Structure de code
+
+```
+apps/api/src/modules/confiance/
+├─ classification.ts       appel du modèle, garde-fous, niveau + motivation
+├─ classification.test.ts  ← jeux de récits de référence, par niveau
+└─ preuve.ts               R-T8ter : le niveau retombe sans la pièce attendue
+```
+
+### 3. Base de données
+
+`signalement_commande` gagne `recit` *(texte libre)*, **`niveau`** *(1|2|3)*, **`niveau_motivation`** *(texte, obligatoire)*, `classifie_le`, `modele_version`, **`preuve_suffisante`** *(bool)*.
+
+```sql
+ALTER TABLE signalement_commande ADD CONSTRAINT classification_motivee
+  CHECK (niveau IS NULL OR (niveau_motivation IS NOT NULL AND length(niveau_motivation) > 0));
+```
+
+**`modele_version` n'est pas décoratif** : quand la classification dérive *(`R-T8sexies`)*, savoir quelle version a produit quelle décision est la seule façon de dater la dérive.
+
+### 4. Design
+
+```
+Screen — report form (buyer). No motif list at all: a single large multiline
+field with the placeholder "Racontez ce qui s'est passé" and a photo area with
+a helper "Une photo aide beaucoup — sans elle, certains problèmes ne peuvent
+pas être traités en urgence." A muted footer: "JP ne rembourse pas. Votre
+signalement est enregistré et compte dans la note publique de la boutique."
+```
+
+### 5. Backend
+
+`POST /commandes/:id/signalement` `{ recit, photos[] }` → classification synchrone, effet appliqué, notification aux deux parties.
+
+**Tests** : un jeu de **récits de référence** avec le niveau attendu, rejoué à chaque changement de modèle ; **classification sans motivation → refusée par la base** ; **niveau 2 sans photo → retombe au niveau 1 et est signalé** ; le niveau attribué déclenche l'effet exact de `R-T8`, sans exception.
+
+### 6. Frontend
+
+Le récit est un champ libre, jamais une liste. La motivation de l'IA est **montrée aux deux parties** : une décision qu'on ne peut pas lire est une décision qu'on ne peut pas contester.
+
+```issues
+feature: F19.13
+titre: Classification du signalement par IA, niveau et motivation
+epic: "19"
+phase: P1
+prio: M
+etapes: [conception, squelette, bdd, design, backend, frontend]
+depend: [F6.3]
+```
+
+---
+
+## F19.7 — Vérification a posteriori des décisions automatiques ♻️
+
+`P1 · M · complet` — **Règles** R-T8quater, R-T8quinquies, R-T8sexies, R-X6 · **Décision** `DP-13`
+
+### 1. Conception
+
+**Ce n'est plus une file de modération où l'on décide. C'est une file de contrôle où l'on confirme ou l'on infirme.**
+
+La sanction est **déjà appliquée** quand l'Admin la voit *(`R-T8quater`)* : elle n'a attendu ni horaire de bureau, ni disponibilité. **L'Admin ne prononce pas, il vérifie.**
+
+> ### C'est la voie de recours que `DP-05` avait supprimée
+>
+> `R-X6` notait, et le constat tenait : *« une modération sans recours est vécue
+> comme arbitraire et fait partir les meilleurs profils »*.
+>
+> **Cette vérification est meilleure que l'ancienne contestation** : elle est
+> **systématique**. La personne sanctionnée n'a **rien à demander** — et donc
+> rien à savoir, rien à rédiger, rien à oser.
+
+**Ce que l'Admin voit** : le récit, les pièces, **le niveau attribué et la motivation de l'IA**, l'historique de la boutique, et l'effet appliqué. **Deux boutons : confirmer, infirmer.** Infirmer **lève la sanction et corrige le score**.
+
+**Le délai est un engagement** *(`R-T8quinquies`)* : le temps qu'une boutique honnête reste coupée **est le préjudice**. La file est triée par **effet le plus lourd d'abord**, pas par ancienneté.
+
+### 2. Structure de code
+
+```
+apps/api/src/modules/confiance/
+├─ verification.ts        confirmer() · infirmer() → lève la sanction, corrige le score
+└─ verification.test.ts
+apps/admin/src/pages/verifications/{File,Dossier}.tsx
+```
+
+### 3. Base de données
+
+`signalement_commande` gagne `verifie_par_id`, `verifie_le`, **`infirme`** *(bool)*, `motif_infirmation`.
+
+```sql
+CREATE INDEX verification_a_faire ON signalement_commande (niveau DESC, classifie_le)
+  WHERE verifie_le IS NULL;
+```
+
+**Index partiel sur ce qui reste à vérifier** : la file doit rester bon marché à balayer quand la table grossit.
+
+### 4. Design
+
+```
+Screen — verification queue (desktop). Sorted by SEVERITY first, then age.
+Each row: shop name, level chip (1/2/3 colour-coded), the effect already
+applied ("Vente gelée depuis 2 h 14"), and the AI's one-line motivation.
+The detail panel shows the buyer's account, the photos, the AI motivation in
+full with its model version, the shop's history — and exactly two buttons:
+"Confirmer" and "Infirmer". Choosing "Infirmer" requires a written reason and
+shows what it will undo: "La vente sera rétablie, le score corrigé."
+A header stat: "Taux d'infirmation sur 30 jours : 4 %" (R-T8sexies).
+```
+
+### 5. Backend
+
+`GET /admin/verifications` · `POST /admin/verifications/:id/confirmation` · `POST /admin/verifications/:id/infirmation` `{ motif }` — **motif obligatoire**.
+
+**Tests** : infirmer **lève la sanction et recalcule le score** ; confirmer laisse l'état inchangé et horodate ; **une infirmation sans motif est refusée** ; la file est triée par niveau puis par âge ; le taux d'infirmation est exact sur un jeu de référence.
+
+### 6. Frontend
+
+**La motivation de l'IA est affichée en entier**, jamais résumée. Un vérificateur qui ne lit que le niveau ne vérifie rien — il tamponne.
+
+```issues
+feature: F19.7
+titre: Vérification a posteriori des décisions automatiques
+epic: "19"
+phase: P1
+prio: M
+etapes: [conception, squelette, bdd, design, backend, frontend]
+depend: [F19.13, F11.7]
+```
+
+---
+

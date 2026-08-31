@@ -4,18 +4,18 @@
 > issues GitHub. Ne le modifiez pas à la main — un tableau d'avancement tenu
 > à la main ment au bout de trois jours.
 >
-> Dernière génération : 2026-08-21
+> Dernière génération : 2026-08-31
 
 ## Projet en cours
 
 **JP** — marketplace mode pour Madagascar. Commerce en direct, vente hors
-direct, couche sociale. La promesse : **l'argent de l'acheteuse est gardé par
-JP jusqu'à ce qu'elle confirme avoir reçu.**
+direct, couche sociale. La promesse : **vous savez à qui vous payez** —
+boutique vérifiée, transaction historisée, traçabilité *(DP-07, D-21)*.
 
 ## Objectif
 
 Terminer la **vague 0 — le socle** (`S1` → `S10`), qui ne livre aucune
-fonctionnalité visible mais que les 266 fonctionnalités supposent en place.
+fonctionnalité visible mais que les 257 fonctionnalités supposent en place.
 Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 ## Le socle
@@ -30,7 +30,7 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 | `S6` | Temps réel — WebSocket, canaux, resynchronisation | `●●●●` | **fait** | #1304–#1307 |
 | `S7` | Design system — jetons, primitives, les quatre états | `●●●●●` | **fait** | #1308–#1312 |
 | `S8` | Coquille Expo — navigation, session, hors ligne | `●●●●○` | 4/5 | #1313–#1317 |
-| `S9` | Coquilles Vite — back-office et pages publiques | `●●●` | **fait** | #1318–#1320 |
+| `S9` | Coquilles Vite — tableau de bord interne et pages publiques | `●●●` | **fait** | #1318–#1320 |
 | `S10` | Observabilité — journaux, métriques, alertes | `●●●●` | **fait** | #1321–#1324 |
 
 **44 / 45** issues de socle fermées.
@@ -39,14 +39,15 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 | | |
 |---|---|
-| Tranche 1 — première vente réelle | 0 / 302 |
+| Tranche 1 — première vente réelle | 0 / 231 |
+| *dont annulées par la refonte produit* | 71 |
 | Prochaine issue | **#1317** — S8.5 Mesure du poids de l'APK et de la mémoire en intégration continue |
 
 ## Ce que le dépôt contient
 
 | | |
 |---|---|
-| Fichiers TypeScript écrits | 189 |
+| Fichiers TypeScript écrits | 188 |
 | Tests | 225 |
 | Migrations appliquées | 4 |
 

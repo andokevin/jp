@@ -18,11 +18,11 @@
 
 ## 1.1 La situation observée
 
-Chaque soir, à Antananarivo et dans les grandes villes de Madagascar, des vendeuses et des vendeurs présentent leurs articles en direct sur les réseaux sociaux. Les acheteurs regardent, commentent, réservent en écrivant « je prends », puis négocient le reste en message privé.
+Chaque soir, à Antananarivo et dans les grandes villes de Madagascar, des boutiques et des boutiques présentent leurs articles en direct sur les réseaux sociaux. Les acheteurs regardent, commentent, réservent en écrivant « je prends », puis négocient le reste en message privé.
 
 L'usage existe déjà, il est massif, et il fonctionne malgré l'outil. **Le besoin n'est pas de créer un marché, il est d'équiper un marché existant.**
 
-En parallèle, une seconde population s'est formée : des créatrices de contenu qui filment leurs tenues, cumulent une audience réelle, et font gratuitement la promotion de vendeurs qui ne les rémunèrent pas. Elles n'ont pas les moyens d'acheter du stock, donc elles ne vendent pas.
+En parallèle, une seconde population s'est formée : des créatrices de contenu qui filment leurs tenues, cumulent une audience réelle, et font gratuitement la promotion de boutiques qui ne les rémunèrent pas. Elles n'ont pas les moyens d'acheter du stock, donc elles ne vendent pas.
 
 ## 1.2 Ce qui manque
 
@@ -40,7 +40,7 @@ Vertical **mode, beauté et chaussures**, à l'exclusion de toute autre catégor
 
 **Côté acheteur.** Un paiement envoyé par mobile money vers un numéro personnel, puis plus de nouvelles. Aucun recours, aucune preuve exploitable, aucun arbitre. Une capture d'écran ne vaut rien.
 
-**Côté vendeur.** Des articles réservés en commentaire puis jamais payés. Le stock est immobilisé, invendable pendant des jours, pour une commande fantôme.
+**Côté boutique.** Des articles réservés en commentaire puis jamais payés. Le stock est immobilisé, invendable pendant des jours, pour une commande fantôme.
 
 **Au milieu, rien.** Pas de contrat, pas de trace, pas d'arbitrage.
 
@@ -52,9 +52,9 @@ Sans facture, sans historique, sans suivi de livraison, sans avis vérifié, l'a
 
 ## 2.3 Problème n° 3 — Le travail administratif après la vente
 
-Après le direct, le vendeur relit des centaines de commentaires pour retrouver qui a dit « je prends » et dans quel ordre, ouvre un message privé par client, recopie tout à la main, puis relance ceux qui ne répondent plus. L'essentiel du travail arrive après la vente, et la relance est du travail non payé sur une vente qui n'aura peut-être jamais lieu.
+Après le direct, la boutique relit des centaines de commentaires pour retrouver qui a dit « je prends » et dans quel ordre, ouvre un message privé par client, recopie tout à la main, puis relance ceux qui ne répondent plus. L'essentiel du travail arrive après la vente, et la relance est du travail non payé sur une vente qui n'aura peut-être jamais lieu.
 
-*Ce problème est réel, mais il est classé en troisième position : c'est la plainte la plus fréquente des vendeurs, ce n'est pas leur perte la plus lourde. Voir `JP_POSITIONNEMENT.md`, section 2.*
+*Ce problème est réel, mais il est classé en troisième position : c'est la plainte la plus fréquente des boutiques, ce n'est pas leur perte la plus lourde. Voir `JP_POSITIONNEMENT.md`, section 2.*
 
 ## 2.4 Problème n° 4 — La créatrice sans capital
 
@@ -85,11 +85,11 @@ Permettre à une vente qui se conclut aujourd'hui dans un commentaire de se conc
 | Acteur | Le besoin |
 |---|---|
 | **Acheteur** | Acheter sans risquer de perdre son argent, chez quelqu'un qu'il ne connaît pas, et pouvoir se retourner si quelque chose ne va pas. |
-| **Vendeur** | Ne plus perdre les ventes annoncées et jamais payées, ne plus immobiliser de stock pour rien, atteindre des acheteurs qui ne le connaissent pas, et supprimer la saisie manuelle. |
+| **Boutique** | Ne plus perdre les ventes annoncées et jamais payées, ne plus immobiliser de stock pour rien, atteindre des acheteurs qui ne le connaissent pas, et supprimer la saisie manuelle. |
 | **Créatrice** | Tirer un revenu de son audience **sans avancer d'argent et sans porter de stock**. |
 | **Donateur / diaspora** | Offrir un objet précis à un proche, avec la preuve qu'il a bien été livré. |
 | **Livreur et point relais** | Une tournée claire, une preuve de remise, un décompte des espèces encaissées. |
-| **Exploitant de la plateforme** | Vérifier les vendeurs, arbitrer les litiges avec des preuves, protéger les personnes, et mesurer ce qui se passe réellement. |
+| **Exploitant de la plateforme** | Vérifier les boutiques, arbitrer les litiges avec des preuves, protéger les personnes, et mesurer ce qui se passe réellement. |
 | **Marque** | Atteindre une audience mode qualifiée par des campagnes dont l'effet sur les ventes est mesurable. |
 
 ## 3.3 Le principe directeur du produit
@@ -108,11 +108,11 @@ Ce principe est une exigence de conception, pas une orientation marketing. Toute
 
 **Le socle commerce**
 - Inscription et authentification par téléphone, en français et en malgache
-- Vérification d'identité des vendeurs et des créatrices avant toute perception d'argent
+- Vérification d'identité des boutiques et des créatrices avant toute perception d'argent
 - Catalogue avec variantes de taille et de couleur, et stock par variante
 - Diffusion en direct depuis un téléphone, avec prise de commande intégrée
 - Réservation temporaire du stock pendant le paiement
-- Panier multi-articles et multi-vendeurs
+- Panier multi-articles et multi-boutiques
 - Paiement mobile money et carte, avec conservation des fonds jusqu'à confirmation de réception
 - Facturation automatique
 - Livraison à domicile et retrait en point relais, avec suivi partagé
@@ -146,7 +146,7 @@ Ce principe est une exigence de conception, pas une orientation marketing. Toute
 
 ## 4.3 Hors périmètre du projet
 
-- L'approvisionnement des vendeurs
+- L'approvisionnement des boutiques
 - Le transport longue distance et l'import
 - L'émission de monnaie électronique — JP s'appuie sur des prestataires agréés et ne devient pas établissement de paiement
 
@@ -157,7 +157,7 @@ Ce principe est une exigence de conception, pas une orientation marketing. Toute
 | Acteur | Rôle | Interne / externe |
 |---|---|---|
 | Acheteur | Consulte, commande, paie, reçoit, note, publie | Utilisateur |
-| Vendeur | Détient le stock, diffuse en direct, expédie | Utilisateur |
+| Boutique | Détient le stock, diffuse en direct, expédie | Utilisateur |
 | Employé du vendeur | Prépare et modère, **sans accès à l'argent** | Utilisateur |
 | Créatrice | Produit du contenu, recommande, ne détient pas de stock | Utilisateur |
 | Donateur | Paie le panier d'un tiers, éventuellement depuis l'étranger | Utilisateur, souvent sans compte |
@@ -178,24 +178,24 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 
 | Réf. | Besoin | Fonctionnalités |
 |---|---|---|
-| **B1.1** | Un acheteur doit pouvoir acheter chez un vendeur qu'il ne connaît pas sans risquer de perdre son argent. | F4.4, F4.5, F4.6 |
-| **B1.2** | Aucun vendeur ne doit pouvoir percevoir d'argent avant que son identité et son compte mobile money n'aient été vérifiés. | F0.6, F0.7 |
+| **B1.1** | Un acheteur doit pouvoir acheter chez une boutique qu'il ne connaît pas sans risquer de perdre son argent. | F4.4, F4.5, F4.6 |
+| **B1.2** | Aucun boutique ne doit pouvoir percevoir d'argent avant que son identité et son compte mobile money n'aient été vérifiés. | F0.6, F0.7 |
 | **B1.3** | Chaque transaction doit produire une preuve datée, conservée et consultable par les deux parties. | F4.11, F6.6 |
-| **B1.4** | Un acheteur mécontent doit pouvoir signaler un problème **sans avoir à affronter directement le vendeur**, et obtenir une décision motivée. | F6.3, F6.4, F6.5 |
-| **B1.5** | Le comportement passé d'un vendeur doit être visible avant l'achat. | F6.1, F6.2 |
+| **B1.4** | Un acheteur mécontent doit pouvoir signaler un problème **sans avoir à affronter directement la boutique**, et obtenir une décision motivée. | F6.3, F6.4, F6.5 |
+| **B1.5** | Le comportement passé d'une boutique doit être visible avant l'achat. | F6.1, F6.2 |
 | **B1.6** | Seule une personne ayant réellement payé peut noter. | F6.1 |
-| **B1.7** | Un vendeur ne doit plus immobiliser de stock pour une commande non payée. | F1.10, F3.10, F2.7 |
+| **B1.7** | Une boutique ne doit plus immobiliser de stock pour une commande non payée. | F1.10, F3.10, F2.7 |
 
 ## 6.2 Vente en direct
 
 | Réf. | Besoin | Fonctionnalités |
 |---|---|---|
-| **B2.1** | Un vendeur doit pouvoir diffuser en direct depuis son téléphone, sans matériel ni compétence particulière. | F2.3, F2.13 |
+| **B2.1** | Une boutique doit pouvoir diffuser en direct depuis son téléphone, sans matériel ni compétence particulière. | F2.3, F2.13 |
 | **B2.2** | Un acheteur doit pouvoir commander pendant le direct **sans écrire un mot et sans quitter la vidéo**. | F2.6, F2.8 |
 | **B2.3** | Le prix et le stock restant doivent être visibles à l'écran et à jour en temps réel. | F2.5 |
 | **B2.4** | Deux acheteurs ne doivent jamais pouvoir acheter le même dernier article. | F1.10, F2.7 |
 | **B2.5** | Une coupure de réseau ne doit faire perdre ni le direct, ni une réservation en cours. | F2.13 |
-| **B2.6** | Le vendeur doit voir ses ventes tomber en temps réel pendant qu'il présente. | F2.14, F2.15 |
+| **B2.6** | La boutique doit voir ses ventes tomber en temps réel pendant qu'elle présente. | F2.14, F2.15 |
 | **B2.7** | Un direct terminé doit rester achetable. | F2.16 *(phase 2)* |
 
 ## 6.3 Contenu et découverte
@@ -218,7 +218,7 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 | **B4.2** | Une créatrice doit pouvoir vendre un article **avant** de l'avoir acheté, sans faire peser ce risque sur l'acheteur. | **F15.8** |
 | **B4.3** | Si une précommande n'atteint pas son seuil, tous les acheteurs doivent être remboursés automatiquement et intégralement. | F15.8, **exigence bloquante** |
 | **B4.4** | Une créatrice doit connaître non pas ses vues, mais **ce qu'elle a fait gagner**. | F15.6 |
-| **B4.5** | Un vendeur doit pouvoir refuser que ses articles soient affiliés. | F15.4 |
+| **B4.5** | Une boutique doit pouvoir refuser que ses articles soient affiliés. | F15.4 |
 | **B4.6** | Une vente doit être attribuée sans ambiguïté à la créatrice qui l'a générée. | F15.4 |
 
 ## 6.5 Paiement et argent
@@ -229,7 +229,7 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 | **B5.2** | Une part de la demande refusant le prépaiement doit rester accessible. | F4.3 ⚠️ |
 | **B5.3** | Le montant total, frais de livraison compris, doit être connu **avant** l'engagement, jamais découvert à la fin. | F2.8, F3.2 |
 | **B5.4** | Un tiers doit pouvoir payer le panier d'une autre personne, y compris depuis l'étranger et sans compte. | F16.1 à F16.4 |
-| **B5.5** | Le vendeur doit voir clairement ce qui lui est dû, ce qui est encore retenu, et pouvoir retirer ce qui est disponible. | F4.8 |
+| **B5.5** | La boutique doit voir clairement ce qui lui est dû, ce qui est encore retenu, et pouvoir retirer ce qui est disponible. | F4.8 |
 | **B5.6** | Une commission doit être connue avant la vente, jamais découverte après. | F10.1 |
 | **B5.7** | Un paiement interrompu ne doit ni prélever deux fois, ni perdre la commande. | F4.10 |
 
@@ -241,7 +241,7 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 | **B6.2** | Le retrait en point relais doit être possible **sans communiquer d'adresse personnelle**. | F5.3, F5.4 |
 | **B6.3** | Les deux parties doivent suivre l'acheminement avec la même information. | F5.2 |
 | **B6.4** | La remise doit produire une preuve opposable. | F5.4, F5.5 |
-| **B6.5** | Un vendeur doit pouvoir remettre plusieurs commandes en un seul trajet. | F5.6 |
+| **B6.5** | Une boutique doit pouvoir remettre plusieurs commandes en un seul trajet. | F5.6 |
 | **B6.6** | Un article qui ne va pas à la taille doit pouvoir être échangé ou retourné. | F5.8 *(phase 2)* |
 
 ## 6.7 Protection des personnes
@@ -259,7 +259,7 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 
 | Réf. | Besoin | Fonctionnalités |
 |---|---|---|
-| **B8.1** | L'exploitant doit pouvoir vérifier un vendeur, arbitrer un litige et modérer un contenu depuis un outil dédié. | F11.1, F11.3, F19.7 |
+| **B8.1** | L'exploitant doit pouvoir vérifier une boutique, arbitrer un litige et modérer un contenu depuis un outil dédié. | F11.1, F11.3, F19.7 |
 | **B8.2** | Les flux financiers doivent être rapprochés quotidiennement, y compris les espèces. | F11.5 |
 | **B8.3** | Les paramètres économiques doivent être modifiables sans nouvelle livraison logicielle. | F11.6 |
 | **B8.4** | Les indicateurs du pilote doivent être mesurés **dès le premier direct**. | **F11.7** |
@@ -285,7 +285,7 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 |---|---|
 | **N2.1** | Du clic sur « Je prends » au paiement confirmé : **moins de 30 secondes** dans le cas nominal. *Objectif produit, à valider.* |
 | **N2.2** | Le stock affiché en direct doit refléter la réalité en quasi-temps réel ; **la survente doit être impossible**, y compris en cas d'appuis simultanés. |
-| **N2.3** | La latence du direct doit rester compatible avec une interaction : le vendeur doit pouvoir répondre à ce qui vient de se passer. |
+| **N2.3** | La latence du direct doit rester compatible avec une interaction : la boutique doit pouvoir répondre à ce qui vient de se passer. |
 | **N2.4** | Le fil doit rester fluide pendant le défilement, y compris sur un appareil modeste. |
 | **N2.5** | Le système doit absorber les pics de charge du soir, quand plusieurs directs ont lieu simultanément. |
 
@@ -379,14 +379,14 @@ Toutes les valeurs ci-dessous sont **des questions ouvertes, pas des objectifs c
 | Question | Pourquoi elle est déterminante |
 |---|---|
 | Quelle part d'acheteurs refuse le prépaiement ? | Conditionne la décision sur le paiement à la livraison, la plus lourde du projet |
-| À partir de quel taux de commission un vendeur cherche-t-il à contourner la plateforme ? | Conditionne tout le modèle économique |
+| À partir de quel taux de commission une boutique cherche-t-elle à contourner la plateforme ? | Conditionne tout le modèle économique |
 | Quelle durée de réservation optimise conversion et rotation du stock ? | Conditionne le cœur technique du direct |
 | Quelle proportion d'acheteurs publie un unboxing ? | Détermine si le moteur d'acquisition gratuite s'amorce |
 | Que convertit un clip, comparé à un direct ? | Détermine si le contenu vend ou s'il ne fait que divertir |
 | Combien coûte une cliente amenée par une créatrice, comparé à la publicité payante ? | Justifie ou invalide l'investissement dans la couche sociale |
 | Le panier d'une commande-cadeau est-il significativement plus élevé ? | Détermine si la diaspora est un axe stratégique ou une fonctionnalité |
 | Quelle est la répartition domicile / point relais, et son effet sur l'abandon ? | Conditionne l'économie du petit panier |
-| Un vendeur vérifié inconnu convertit-il autant qu'un vendeur recommandé par une amie ? | **Valide ou invalide la thèse centrale du projet** |
+| Une boutique vérifiée inconnue convertit-elle autant qu'une boutique recommandée par une amie ? | **Valide ou invalide la thèse centrale du projet** |
 
 ---
 
@@ -396,7 +396,7 @@ Toutes les valeurs ci-dessous sont **des questions ouvertes, pas des objectifs c
 
 | Hypothèse | Si elle est fausse |
 |---|---|
-| Les vendeurs adopteront un outil qui supprime une corvée existante plutôt que d'en créer une nouvelle | L'acquisition de vendeurs devient le poste dominant, bien au-delà du prévu |
+| Les boutiques adopteront un outil qui supprime une corvée existante plutôt que d'en créer une nouvelle | L'acquisition de boutiques devient le poste dominant, bien au-delà du prévu |
 | La protection de l'argent suffit à faire acheter chez un inconnu | Le panier reste plafonné et la croissance dépend uniquement du bouche-à-oreille |
 | Des créatrices accepteront d'être rémunérées à la commission | La couche sociale reste vide et l'acquisition redevient payante |
 | Le point relais fera baisser assez le coût pour rendre le petit panier viable | Le modèle ne fonctionne que sur les paniers élevés, marché beaucoup plus étroit |
@@ -421,7 +421,7 @@ Toutes les valeurs ci-dessous sont **des questions ouvertes, pas des objectifs c
 
 # 11. Ce qui reste à trancher avant le développement
 
-Ces points ne peuvent pas être décidés par l'équipe technique. Ils doivent l'être par le commanditaire, avec les vendeurs pilotes et les partenaires.
+Ces points ne peuvent pas être décidés par l'équipe technique. Ils doivent l'être par le commanditaire, avec les boutiques pilotes et les partenaires.
 
 1. **Le paiement à la livraison est-il ouvert, et à quelles conditions ?**
 2. **La précommande : quand les fonds sont-ils libérés à la créatrice, et sous quel délai maximal d'expédition ?**

@@ -26,10 +26,9 @@ jp/
 │  │     ├─ modules/            17 domaines, mêmes 6 fichiers chacun
 │  │     ├─ jobs/               BullMQ — 6 files
 │  │     └─ temps-reel/         WebSocket — 3 canaux, resynchronisation
-│  ├─ mobile/                   React Native · acheteuse, vendeuse, créatrice
+│  ├─ mobile/                   React Native · acheteuse, boutique, créatrice
 │  │  └─ src/{features,navigation,noyau,design}/
-│  ├─ terrain/                  React Native · livreur et point relais
-│  ├─ admin/                    React + Vite · back-office JP
+│  ├─ admin/                    React + Vite · tableau de bord interne (DP-05)
 │  └─ web/                      React + Vite · vitrines, rendu serveur
 ├─ packages/
 │  ├─ contracts/                Zod — source unique du contrat API
@@ -74,7 +73,7 @@ apps/api/src/modules/<domaine>/
 | `livraison` | colis, relais, codes de retrait | statut partagé des deux côtés, toujours |
 | `contenu` | clips, stories, unboxing | **RB5** — aucun contenu sans article |
 | `createur` | affiliation, précommandes | **RB3** — remboursement automatique |
-| `fidelite` | rang client, paliers | **par vendeur, jamais global** |
+| `fidelite` | rang client, paliers | **par boutique, jamais global** |
 | `promotion` | promotions, codes, éligibilité | éligibilité vérifiée au calcul du panier |
 | `evenement` | événements thématiques | annonce humaine, bascules par les dates |
 | `litige` | signalement, arbitrage, avis | **RB4** — décision motivée, contrainte en base |
@@ -123,11 +122,11 @@ Les trois cas qui doivent passer sont là exprès : sans eux, une règle trop la
 ```mermaid
 flowchart TD
   subgraph clients[" "]
-    MOB[mobile] & TER[terrain] & ADM[admin] & WEB[web]
+    MOB[mobile] & ADM[admin] & WEB[web]
   end
-  CTR[contracts] --> MOB & TER & ADM & WEB
-  UI[ui] --> MOB & TER & ADM & WEB
-  MOB & TER & ADM & WEB --> API[api]
+  CTR[contracts] --> MOB & ADM & WEB
+  UI[ui] --> MOB & ADM & WEB
+  MOB & ADM & WEB --> API[api]
 
   subgraph api2["apps/api"]
     PLAT[plateforme] --> CMD[commande]
@@ -162,9 +161,9 @@ Trois choses à lire dans ce graphe :
 
 ## Les conventions transverses
 
-**Nommage** — français pour le domaine, anglais pour la technique. `reservation` et non `booking`, `sequestre` et non `escrow`. Un développeur qui lit `R-S6` doit retrouver le mot dans le code.
+**Nommage** — français pour le domaine, anglais pour la technique. `reservation` et non `booking`, `expedition` et non `shipment`, `signalement_commande` et non `dispute`. Un développeur qui lit `R-S6` doit retrouver le mot dans le code.
 
-**Montants** — `@jp/money` uniquement. Entiers en Ariary. L'arrondi est nommé par son bénéficiaire : `commissionSur` arrondit vers le bas, `remiseSur` vers le haut, jamais vers JP.
+**Montants** — `@jp/money` uniquement. Entiers en Ariary. L'arrondi est nommé par son bénéficiaire : `partCreateurSur` arrondit vers le bas, `remiseSur` vers le haut, jamais vers JP.
 
 **Erreurs** — code stable en majuscules, message traduit mg/fr, action possible indiquée. Jamais de message générique.
 

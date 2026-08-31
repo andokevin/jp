@@ -9,7 +9,7 @@
 > **Conséquence directe pour JP** : dans toute notre communication, ce n'est
 > jamais JP qui accomplit quelque chose. C'est Hanta qui achète sans se faire
 > avoir, Miora qui vend vraiment, Ony qui gagne sans capital. JP tient l'argent
-> et arbitre. C'est tout. C'est déjà énorme.
+> **et tient le registre** *(`D-21`)*. C'est tout. C'est déjà énorme.
 
 ---
 
@@ -24,12 +24,12 @@ même écran, une même affiche, un même rendez-vous.
 | # | Héros | Quand ce script est utilisé | Statut |
 |---|---|---|---|
 | **1** | **Hanta — l'acheteuse** | Toute communication grand public, l'application, les réseaux, la presse | **Script principal** |
-| 2 | **Miora — la vendeuse** | Recrutement vendeur, terrain, parrainage, studio vendeur | Secondaire |
+| 2 | **Miora — la boutique** | Recrutement boutique, terrain, parrainage, studio boutique | Secondaire |
 | 3 | **Ony — la créatrice** | Recrutement créatrices, amorçage du contenu | Secondaire |
 | 4 | **Naina — la diaspora** | Canal cadeau, ciblage France, paiement par carte | Tactique |
 
 **Le script principal est celui de l'acheteuse.** Raison : c'est son doute qui
-plafonne le marché. La vendeuse et la créatrice ne sont bloquées que parce que
+plafonne le marché. La boutique et la créatrice ne sont bloquées que parce que
 l'acheteuse hésite. Régler le problème de l'acheteuse débloque les trois.
 
 *(L'investisseur n'est pas un héros de BrandScript. On ne lui vend pas une
@@ -85,8 +85,8 @@ d'autre que chez JP.
 **Formule à utiliser telle quelle :** *« Un numéro. Un virement. Et l'espoir. »*
 
 **Ce que le vilain n'est pas** : ce n'est pas « l'arnaqueur » *(trop humain, et
-la plupart des vendeurs sont honnêtes — accuser la profession nous coupe des
-vendeurs)*, ce n'est pas « Facebook » *(nous vivons de Facebook, c'est là que
+la plupart des boutiques sont honnêtes — accuser la profession nous coupe des
+boutiques)*, ce n'est pas « Facebook » *(nous vivons de Facebook, c'est là que
 sont nos utilisateurs)*, ce n'est pas « le désordre » *(trop abstrait)*.
 
 ### Le problème externe — ce qui se passe pour de vrai
@@ -109,7 +109,7 @@ sœur, à ses collègues. Beaucoup n'achètent pas **pour ne pas avoir à racont
 ça**. Et celles qui se font avoir ne réclament pas : **elles disparaissent.**
 
 **Conséquence de conception, pas seulement de discours** : le litige se signale
-**à JP, jamais au vendeur en face**. La confrontation directe est socialement
+**à JP, jamais à la boutique en face**. La confrontation directe est socialement
 coûteuse ici. C'est ce qui fera remonter les vrais chiffres.
 
 ### Le problème philosophique — ce qui est injuste
@@ -136,7 +136,7 @@ Phrases utilisables telles quelles :
 
 - *« On sait ce que c'est d'envoyer 50 000 Ar et de ne plus jamais avoir de
   nouvelles. »*
-- *« Vous n'avez pas à demander à une amie si le vendeur est sérieux. »*
+- *« Vous n'avez pas à demander à une amie si la boutique est sérieuse. »*
 - *« Vous n'avez rien fait de mal. Le problème, c'est qu'il n'y avait personne
   au milieu. »*
 
@@ -157,7 +157,7 @@ d'autorité, toutes mécaniques :
 |---|---|---|
 | **Le mécanisme lui-même** | Nous ne demandons pas la confiance : nous supprimons le besoin d'en avoir | Jour 1 |
 | **Le mur des colis ouverts** | Des vraies clientes, des vrais colis, en vidéo, consultable **sans compte** | Jour 1 *(à condition d'amorcer)* |
-| **Le vendeur vérifié** | Identité et compte mobile money contrôlés **avant** la première vente | Jour 1 |
+| **La boutique vérifiée** | Identité et compte mobile money contrôlés **avant** la première vente | Jour 1 |
 | **Les quatre mesures fondatrices** | Nous sommes les seuls à savoir ce qui se passe réellement sur ce marché | Après le pilote |
 
 > **Décision de marque.** Le mur des colis ouverts *(fil d'unboxings, sans
@@ -176,7 +176,7 @@ confiance, un mensonge découvert détruit tout, d'un coup.
 
 > **1. Appuyez sur « Je prends ».**
 > **2. Payez dans JP — pas sur un numéro.**
-> **3. Confirmez quand vous avez reçu. C'est là que le vendeur est payé.**
+> **3. Confirmez quand vous avez reçu. C'est là que la boutique est payée.**
 
 L'étape 2 porte tout le produit. L'étape 3 est celle que personne d'autre n'a.
 
@@ -191,14 +191,19 @@ il est affiché, il ne change pas.
 
 > ## La garantie JP
 >
-> 1. **Votre argent est gardé par JP** jusqu'à ce que vous confirmiez avoir reçu.
+> 1. **Vous savez à qui vous payez** : identité et compte Mobile Money vérifiés *(`D-21`)*.
 > 2. **Le prix affiché est le prix payé.** Aucun frais découvert à la fin.
-> 3. **En cas de problème, vous parlez à JP** — jamais au vendeur en face.
+> 3. **En cas de problème, vous ne discutez jamais en face à face** — vous signalez, et cela compte dans la note publique de la boutique.
 > 4. **Ce qui est affiché est vrai.** S'il reste 3 articles, il en reste 3.
 > 5. **Vous n'êtes jamais obligée de vous filmer.** Un appui suffit à confirmer.
 
 Cinq lignes. Elles sont toutes **déjà des exigences du cahier des charges**
-*(R-E1, N6.1, N6.2, RB7, RB9)* — donc tenables, donc dicibles.
+*(R-E1, R-E2, R-T8, N6.1, N6.2, RB7, RB9)* — donc tenables, donc dicibles.
+
+> **Les cinq lignes survivent à `DP-07`, et c'est le meilleur test de la marque.**
+> Aucune ne parlait de séquestre. **Seule la première change de contenu** — elle
+> disait *« votre argent est gardé »*, elle dit *« vous savez à qui vous payez »*
+> *(`D-21`)*. Les quatre autres sont intactes.
 
 > **Décision de marque.** « La garantie JP » devient un **objet de produit** :
 > un composant partagé, affiché **avant** le paiement et pas seulement après.
@@ -245,7 +250,7 @@ fait fuir.
 
 Ce qu'elle risque si rien ne change :
 
-- elle continue de n'acheter que chez les deux ou trois vendeuses que son
+- elle continue de n'acheter que chez les deux ou trois boutiques que son
   entourage connaît, donc **elle paie plus cher et choisit moins** ;
 - elle passe à côté de ce qu'elle a vu hier soir, parce qu'elle n'a pas osé ;
 - ou elle ose, et **elle perd 50 000 Ar — et doit l'avouer.**
@@ -258,13 +263,13 @@ et l'espoir. »*
 ### Le succès externe — ce qui se passe
 
 Elle reçoit son colis. Elle a une facture, un suivi, un code de retrait. Elle
-achète chez cinq vendeuses au lieu de deux.
+achète chez cinq boutiques au lieu de deux.
 
 ### Le succès interne — ce qu'elle ressent
 
 > **Elle achète sans avoir à demander à personne.**
 
-Plus de message à une amie pour savoir si le vendeur est sérieux. Plus de calcul
+Plus de message à une amie pour savoir si la boutique est sérieuse. Plus de calcul
 de risque avant chaque commande. **Le soulagement, pas l'excitation** — c'est le
 registre émotionnel de JP.
 
@@ -275,8 +280,8 @@ C'est le cœur de StoryBrand, et le plus souvent oublié.
 | | Avant | Après |
 |---|---|---|
 | **Identité** | Une acheteuse prudente, limitée à ce que son entourage connaît | **Une acheteuse qui ose, et dont on suit les trouvailles** |
-| **Son rôle dans son groupe** | Celle qui demande « tu connais ce vendeur ? » | **Celle à qui on demande « tu l'as trouvé où ? »** |
-| **Sa peur** | Se faire avoir, et devoir le raconter | Aucune : l'argent est gardé, il y a une trace |
+| **Son rôle dans son groupe** | Celle qui demande « tu connais cette boutique ? » | **Celle à qui on demande « tu l'as trouvé où ? »** |
+| **Sa peur** | Se faire avoir, et devoir le raconter | Réduite : **elle sait à qui elle paie, et il y a une trace** *(`D-21`)*. ⚠️ **Pas « aucune »** — JP ne rembourse pas, et la marque ne doit pas laisser croire le contraire |
 
 **Cette bascule de statut est l'aspiration à viser.** Ce n'est pas « acheter
 tranquille » — c'est **devenir la référence de son groupe**. Dans une culture où
@@ -295,23 +300,23 @@ La phrase à dire quand on nous demande « c'est quoi JP ? ». Structure
 StoryBrand : problème → solution → résultat.
 
 > **« À Madagascar, acheter en direct veut dire envoyer de l'argent à un
-> inconnu et espérer. Sur JP, votre argent est gardé jusqu'à ce que vous
-> confirmiez avoir reçu. Vous pouvez enfin acheter chez quelqu'un que vous ne
-> connaissez pas. »**
+> numéro de téléphone et espérer. Sur JP, **vous savez à qui vous payez** :
+> identité vérifiée, historique visible, et une trace de chaque commande. Vous
+> pouvez enfin acheter chez quelqu'un que vous ne connaissez pas. »**
 
 Trois phrases. Aucun mot de jargon. Aucun superlatif. Testable auprès de
 n'importe qui : si la personne ne peut pas le répéter, on le raccourcit.
 
 **Version courte, 12 mots** *(pour un profil, une bio, une signature)* :
 
-> **« Votre argent est gardé jusqu'à ce que vous confirmiez avoir reçu. »**
+> **« Vous savez à qui vous payez, et il en reste une trace. »**
 
 ---
 ---
 
-# BrandScript 2 — Miora, la vendeuse
+# BrandScript 2 — Miora, la boutique
 
-**Usage : recrutement terrain, parrainage entre vendeuses, studio vendeur.**
+**Usage : recrutement terrain, parrainage entre boutiques, studio boutique.**
 Ce script ne sort **jamais** dans la communication grand public.
 
 | Élément | Contenu |
@@ -330,9 +335,9 @@ Ce script ne sort **jamais** dans la communication grand public.
 | **L'échec** | Rester au cahier. Plafonner au cercle de ses connaissances. Geler du capital dans des réservations fantômes. |
 | **Le succès externe** | Plus de ventes conclues, zéro saisie, ses ventes tombent pendant qu'elle présente. |
 | **Le succès interne** | **Elle dort.** Et elle est prise au sérieux. |
-| **La transformation** | De **« quelqu'un qui vend sur Facebook »** à **« vendeuse vérifiée »**. C'est une promotion sociale, pas un statut de conformité. Le badge et le score public sont des **objets de fierté** — à concevoir comme tels *(partageables hors de l'application)*. |
+| **La transformation** | De **« quelqu'un qui vend sur Facebook »** à **« boutique vérifiée »**. C'est une promotion sociale, pas un statut de conformité. Le badge et le score public sont des **objets de fierté** — à concevoir comme tels *(partageables hors de l'application)*. |
 
-**One-liner vendeuse :**
+**One-liner boutique :**
 
 > **« La moitié des "je prends" ne paient jamais, et vous le découvrez le
 > lendemain. Sur JP, un "je prends" est une commande déjà payée. Vous ne vendez
@@ -349,7 +354,7 @@ Ce script ne sort **jamais** dans la communication grand public.
 |---|---|
 | **Le personnage** | Ony, 22 ans, étudiante. 8 000 abonnés. Elle sait faire une vidéo. **Elle veut gagner de l'argent avec ce qu'elle fait déjà.** |
 | **Le vilain** | **L'avance.** Le stock qu'il faudrait acheter d'avance, sans savoir s'il partira. Ce n'est ni le talent ni les abonnés qui lui manquent — **c'est le capital.** |
-| **Problème externe** | Elle fait gratuitement la promotion de vendeurs qui ne la paient pas. Elle n'a pas 2 millions d'Ariary à immobiliser. |
+| **Problème externe** | Elle fait gratuitement la promotion de boutiques qui ne la paient pas. Elle n'a pas 2 millions d'Ariary à immobiliser. |
 | **Problème interne** | Le sentiment d'être utilisée. Une audience réelle, une valeur économique nulle. |
 | **Problème philosophique** | **Une audience réelle ne devrait pas rester sans valeur parce qu'on n'a pas de capital de départ.** |
 | **Le guide — empathie** | *« Vous faites déjà le travail. Vous ne devriez pas être la seule à ne pas être payée. »* |
@@ -391,7 +396,7 @@ ne dépend pas du pouvoir d'achat local.**
 **One-liner diaspora :**
 
 > **« Vous envoyez de l'argent sans jamais savoir ce qu'il devient. Sur JP, vous
-> offrez un objet précis, chez un vendeur vérifié, et vous voyez la preuve de
+> offrez un objet précis, chez une boutique vérifiée, et vous voyez la preuve de
 > remise. »**
 
 ---
@@ -402,7 +407,7 @@ ne dépend pas du pouvoir d'achat local.**
 |---|---|---|---|
 | 1 | Faire de la marque le héros | « JP révolutionne le commerce à Madagascar » | ✗ |
 | 2 | Vendre le produit, pas la transformation | « Une application de vente en direct avec paiement sécurisé » | ✗ |
-| 3 | Mélanger les héros | Une affiche qui parle à l'acheteuse **et** à la vendeuse | ✗ |
+| 3 | Mélanger les héros | Une affiche qui parle à l'acheteuse **et** à la boutique | ✗ |
 | 4 | Un plan à plus de trois étapes | « Inscrivez-vous, vérifiez votre email, complétez votre profil, ajoutez… » | ✗ |
 | 5 | Un appel à l'action mou | « En savoir plus », « Découvrir » | ✗ |
 | 6 | Parler en interne, pas en client | « plateforme », « écosystème », « digitalisation », « expérience utilisateur » | ✗ |

@@ -5,7 +5,7 @@
 
 **Le cœur historique du produit.** Tout tient dans un parcours de moins de 30 secondes : voir, appuyer sur « Je prends », payer.
 
-**Le point d'architecture de cette épique** — le direct **n'a pas son propre chemin d'achat**. Il réutilise `F1.10` (réservation) et la feuille `features/achat/` partagée avec le catalogue *(F1.15)*. Ce qui est propre au direct : la diffusion vidéo, l'article à l'écran, le bandeau temps réel, le chat, le panneau vendeur, le bilan.
+**Le point d'architecture de cette épique** — le direct **n'a pas son propre chemin d'achat**. Il réutilise `F1.10` (réservation) et la feuille `features/achat/` partagée avec le catalogue *(F1.15)*. Ce qui est propre au direct : la diffusion vidéo, l'article à l'écran, le bandeau temps réel, le chat, le panneau boutique, le bilan.
 
 **Le risque technique majeur du projet est ici** : la vidéo *(CDC §7)*. Décision J0 — service géré, derrière une **interface interne** dès le premier jour, pour pouvoir internaliser plus tard sans réécrire l'application.
 
@@ -14,8 +14,9 @@
 | F2.1 | Planifier un direct | P1 | S | moyen |
 | F2.2 | Notification aux abonnés | P2 | M | moyen |
 | F2.3 | Démarrer / arrêter un direct | P1 | M | complet |
-| F2.4 | Article « à l'écran maintenant » | P1 | M | complet |
-| F2.5 | Bandeau prix + stock temps réel | P1 | M | complet |
+| F2.4 | Article « à l'écran maintenant » — **facultatif** *(`DP-06`)* | P1 | M | complet |
+| F2.5 | Bandeau prix + stock temps réel — **conditionnel** *(`DP-06`)* | P1 | M | complet |
+| **F2.22** | 🆕 **Liste des articles du direct, côté acheteur** *(`DP-06`)* | P1 | M | complet |
 | F2.6 | **Le bouton « Je prends »** | P1 | M | complet |
 | F2.7 | File d'ordre d'arrivée | P1 | M | complet |
 | F2.8 | Feuille rapide quantité / taille / livraison | P1 | M | complet |
@@ -24,7 +25,7 @@
 | F2.11 | Modération du chat | P1 | S | moyen |
 | F2.12 | Compteur de spectateurs et réactions | P1 | C | cadre |
 | F2.13 | Qualité adaptative et reprise après coupure | P1 | M | complet |
-| F2.14 | Panneau vendeur en direct | P1 | M | complet |
+| F2.14 | Panneau boutique en direct | P1 | M | complet |
 | F2.15 | Bilan de fin de direct | P1 | S | moyen |
 | F2.16 | Replay achetable | P2 | S | moyen |
 | F2.17 | Direct à deux | P3 | W | cadre |
@@ -42,7 +43,7 @@
 ### 1. Conception
 « Passer en direct » → titre → sélection des articles préparés pour la soirée → vérification de la connexion → compte à rebours 3-2-1 → en ligne. Notification aux abonnés *(F2.2)*.
 
-**L'écran de vérification de connexion n'est pas un ornement** : diffuser depuis un réseau insuffisant produit un direct inregardable, et la vendeuse ne le découvre qu'aux commentaires. Mesure du débit montant avant démarrage, avec un avertissement explicite et la possibilité de passer en qualité réduite.
+**L'écran de vérification de connexion n'est pas un ornement** : diffuser depuis un réseau insuffisant produit un direct inregardable, et la boutique ne le découvre qu'aux commentaires. Mesure du débit montant avant démarrage, avec un avertissement explicite et la possibilité de passer en qualité réduite.
 
 **Interface vidéo interne** *(CDC §7.2)* : `PrestataireVideo` avec `creerIngest()`, `obtenirLectureUrl()`, `arreterIngest()`, `obtenirEnregistrement()`. Aucun appel direct au prestataire ailleurs dans le code.
 
@@ -52,7 +53,7 @@ apps/api/src/modules/direct/
 ├─ routes.ts · service.ts · repository.ts · machine.ts
 ├─ video/PrestataireVideo.ts        ← interface, seule dépendance publique
 ├─ video/prestataireGere.ts         implémentation V1
-apps/mobile/src/features/direct-vendeur/
+apps/mobile/src/features/direct-boutique/
 ├─ ecrans/{EcranPreparation,EcranVerificationReseau,EcranDiffusion}.tsx
 └─ hooks/{useDiffusion,useQualiteReseau}.ts
 ```
@@ -60,7 +61,7 @@ apps/mobile/src/features/direct-vendeur/
 ### 3. Base de données
 ```
 direct
-  id PK · vendeur_id FK · titre · affiche_url
+  id PK · boutique_id FK · titre · affiche_url
   statut(planifie|en_cours|en_pause|termine|annule)
   debut_prevu_le · debut_le null · fin_le null
   ingest_ref · lecture_url · enregistrement_url null
@@ -101,7 +102,7 @@ buttons (articles drawer, mute, camera flip, pin). A bottom sheet handle labelle
 ### 5. Backend
 `POST /directs` (planifier) · `POST /directs/:id/demarrer` → identifiants d'ingest · `POST /directs/:id/arreter` → bilan *(F2.15)* · `WS /directs/:id/flux`.
 
-**Tests** : machine à états complète ; démarrage sans article préparé autorisé (le vendeur peut créer en direct, `F1.1`) ; arrêt → bilan généré, enregistrement récupéré ; deux démarrages concurrents → un seul direct actif par vendeur ; le prestataire vidéo est **mocké** dans tous les tests, aucun appel réseau.
+**Tests** : machine à états complète ; démarrage sans article préparé autorisé (la boutique peut créer en direct, `F1.1`) ; arrêt → bilan généré, enregistrement récupéré ; deux démarrages concurrents → un seul direct actif par boutique ; le prestataire vidéo est **mocké** dans tous les tests, aucun appel réseau.
 
 ### 6. Frontend
 Mesure du débit montant, sélection d'articles réordonnable, compte à rebours. Reprise d'un direct interrompu *(F2.13)*.
@@ -118,65 +119,114 @@ depend: [F1.1]
 
 ---
 
-## F2.4 / F2.5 — Article à l'écran et bandeau temps réel
+## F2.4 / F2.5 / F2.22 — Le direct est d'abord une vidéo
 
-`P1 · M · complet` — **Règles** R-D4, R-S2 · **Bloque** F2.6, F2.16
+`P1 · M · complet` — **Règles** R-D5, R-D6, R-D7, R-D8, R-D9, R-D10, R-S2 · **Décision** `DP-06` · **Bloque** F2.6, F2.16
 
 ### 1. Conception
-- **V** : tiroir latéral des articles préparés → appui → l'article devient « à l'écran ». Modification du prix **en un appui** (négociation en direct).
-- **A** : bandeau en bas — miniature, nom, **prix**, **taille disponible**, **« il en reste 3 »**, bouton « Je prends ». Le compteur décroît en direct quand d'autres achètent : **c'est le moteur de conversion.**
+
+**L'acheteur qui ouvre un direct voit la boutique en plein écran, comme sur les réseaux sociaux qu'il utilise déjà. Rien ne recouvre le visage.**
+
+L'ancienne spécification supposait qu'**un article était toujours présenté**. **C'est cette hypothèse qui tombe** *(`DP-06`)*.
+
+| | |
+|---|---|
+| **1. La vidéo occupe l'écran** | 9:16, plein cadre. **État par défaut et le plus fréquent.** |
+| **2. Présenter un article est facultatif** *(`R-D8`)* | La boutique peut épingler un article et parler dessus — **ou ne rien présenter du tout et simplement discuter**. Quand aucun article n'est à l'écran, **aucun bandeau ne s'affiche**. |
+| **3. Un bouton à trois tirets** ☰ *(`R-D9`)* | Discret, sur le côté. Il ouvre **la liste de tous les articles en vente pendant ce direct**, pas seulement celui qui est présenté. |
+| **4. Deux gestes, et deux seulement** *(`R-D10`)* | Depuis la liste comme depuis le bandeau : **« Je prends »**, ou **ouvrir la fiche détaillée**. |
+
+- **B** : tiroir latéral des articles préparés → appui → l'article devient « à l'écran ». **Un second appui le retire** — c'est le geste qui manquait. Modification du prix **en un appui** *(négociation en direct)*.
+- **A** : bandeau en bas **quand il y a un article à l'écran** — miniature, nom, **prix**, **taille disponible**, **« il en reste 3 »**, bouton « Je prends ». Le compteur décroît en direct quand d'autres achètent : **c'est le moteur de conversion.**
 
 **Le compteur doit être vrai** *(RB9)*. Il vaut `quantite_stock − quantite_reservee` *(R-S2)*, diffusé par le serveur à chaque changement. **Le client n'extrapole jamais** et resynchronise à la reconnexion *(CDC §5.4)*.
 
 **Modification de prix en direct** : elle crée une nouvelle version de prix, elle **ne change pas** le prix des réservations déjà posées ni des commandes passées *(R-U9)*.
 
+> ### Pourquoi le bandeau devient conditionnel
+>
+> Une boutique qui présente en continu épuise son catalogue en vingt minutes,
+> puis n'a plus de raison de rester à l'antenne. **Un direct où l'on parle,
+> répond aux questions et montre sans vendre est un direct plus long, donc plus
+> d'audience** — c'est exactement ce que font les boutiques sur Facebook
+> aujourd'hui, et le produit doit le permettre au lieu de le contrarier.
+>
+> Le bouton ☰ récupère ce que le bandeau perd : **le catalogue reste accessible à
+> tout moment**, sans dépendre de ce que la boutique montre à l'instant présent.
+
 ### 2. Structure de code
+
 ```
 apps/api/src/modules/direct/
-├─ articleALecran.ts     bascule, horodatage a_lecran_le
+├─ articleALecran.ts     bascule ET retrait, horodatage a_lecran_le
+├─ articlesDuDirect.ts   la liste côté acheteur (F2.22)
 └─ diffusion.ts          publication des événements de canal
 apps/api/src/temps-reel/canaux/direct.ts
-apps/mobile/src/features/direct-vendeur/composants/TiroirArticles.tsx
-apps/mobile/src/features/direct/composants/BandeauArticle.tsx
+apps/mobile/src/features/direct-boutique/composants/TiroirArticles.tsx
+apps/mobile/src/features/direct/composants/BandeauArticle.tsx     conditionnel
+apps/mobile/src/features/direct/composants/BoutonListe.tsx        ☰
+apps/mobile/src/features/direct/composants/FeuilleArticles.tsx    F2.22
 ```
 
 ### 3. Base de données
-`direct.article_a_lecran_id`, `direct_article.a_lecran_le`. Compteur de stock diffusé depuis Redis, **autorité en base** *(F1.10)*.
+
+`direct.article_a_lecran_id` — **nullable, et c'est le point** : `NULL` est un état normal et fréquent, pas une erreur. `direct_article.a_lecran_le`. Compteur de stock diffusé depuis Redis, **autorité en base** *(F1.10)*.
 
 ### 4. Design
-**Prompt Stitch** — préambule commun, puis :
-```
-Screen 1 — buyer live view with the product banner.
-A 9:16 live video fills the screen. Pinned at the bottom, above the safe area, a
-product banner card: a small square thumbnail on the left; centered, the product
-name "Robe wax bleue" on one line and below it the price "50 000 Ar" in bold
-beside a size chip row "M L"; on the right, a stock counter "il en reste 3" in
-amber; and under the whole card a full-width primary button "Je prends".
-Above the banner, a slim chat overlay of three semi-transparent messages.
-Produce a second frame where the counter reads "il en reste 1" in red, and a
-third where it reads "Épuisé" with the button replaced by an outline button
-"Prévenez-moi".
 
-Screen 2 — seller article drawer, dragged up over the live feed.
+**Prompt Stitch** — préambule commun, puis :
+
+```
+Screen 1 — buyer live view, DEFAULT STATE.
+A 9:16 live video fills the entire screen, nothing covering the seller's face.
+Only three light overlays: a small live badge and viewer count top-left, a slim
+chat overlay of three semi-transparent messages at the bottom-left, and on the
+RIGHT EDGE a small circular button with a three-line hamburger icon (☰) and a
+tiny counter badge "12". No product banner at all — this is the most common state.
+
+Screen 2 — same view WITH a product on screen.
+Identical, plus a product banner card pinned at the bottom above the safe area:
+a small square thumbnail on the left; centered, the product name "Robe wax bleue"
+on one line and below it the price "50 000 Ar" in bold beside a size chip row
+"M L"; on the right, a stock counter "il en reste 3" in amber; and under the whole
+card a full-width primary button "Je prends". The banner must never rise high
+enough to cover the seller's face.
+Produce a variant where the counter reads "il en reste 1" in red, and one where
+it reads "Épuisé" with the button replaced by an outline button "Prévenez-moi".
+
+Screen 3 — the ☰ sheet: all items on sale during this live.
+A bottom sheet at 80% height over the still-playing video, titled "12 articles
+en vente" with a small "Pendant ce direct" subtitle. Rows: thumbnail, name,
+price, size chips, stock "3", and TWO actions on the right — a compact primary
+"Je prends" and a chevron opening the full product page. The item currently on
+screen sits FIRST, pinned, with an accent border and a small "À l'écran" tag.
+Sold-out rows are dimmed and moved to the bottom.
+
+Screen 4 — seller article drawer, dragged up over the live feed.
 A sheet listing the 8 prepared articles as rows: thumbnail, name, price with a
 small pencil icon for inline editing, stock "3", and on the right a large
 "À l'écran" toggle button; the currently on-screen row is highlighted with an
-accent border and its button reads "À l'écran ✓". At the top of the sheet, a
+accent border and its button reads "À l'écran ✓" — tapping it again REMOVES the
+item from screen and hides the buyer banner. At the top of the sheet, a
 "+ Créer un article" row (F1.1 express). Editing a price opens a tiny inline
 numeric pad with a warning line "Les réservations en cours gardent l'ancien prix".
 ```
 
 ### 5. Backend
-`POST /directs/:id/article-a-lecran` `{ articleId }` · `PATCH /articles/:id/prix` (autorisé au vendeur seulement). Diffusion sur le canal : `article_a_lecran`, `stock_change`, `prix_change`.
 
-**Tests** : bascule d'article → `a_lecran_le` horodaté ; diffusion reçue par les clients connectés ; compteur = stock − réservé ; modification de prix → réservations en cours inchangées ; employé sans permission → 403.
+`POST /directs/:id/article-a-lecran` `{ articleId | null }` — **`null` retire l'article** · `PATCH /articles/:id/prix` *(autorisé à la boutique seulement)* · **`GET /directs/:id/articles`** — la liste côté acheteur, avec stock temps réel *(F2.22)*.
+
+Diffusion sur le canal : `article_a_lecran` *(y compris `null`)*, `stock_change`, `prix_change`.
+
+**Tests** : bascule d'article → `a_lecran_le` horodaté ; **retrait → `article_a_lecran_id = NULL` et le bandeau disparaît chez tous les spectateurs** ; **un direct sans aucun article à l'écran reste parfaitement fonctionnel** ; diffusion reçue par les clients connectés ; compteur = stock − réservé ; modification de prix → réservations en cours inchangées ; **la liste ☰ est accessible même sans article à l'écran** ; un visiteur non inscrit peut ouvrir la liste et le détail.
 
 ### 6. Frontend
-Bandeau qui ne masque jamais le visage de la vendeuse (marge basse). Compteur animé sobrement. Resynchronisation à la reconnexion WebSocket, **jamais d'extrapolation locale**.
+
+**Le bandeau ne masque jamais le visage de la boutique** (marge basse) — et **il n'existe pas quand rien n'est présenté**. Compteur animé sobrement. Bouton ☰ toujours visible, avec le nombre d'articles. Resynchronisation à la reconnexion WebSocket, **jamais d'extrapolation locale**.
 
 ```issues
 feature: F2.4
-titre: Sélectionner l'article à l'écran maintenant
+titre: Sélectionner et retirer l'article à l'écran
 epic: "02"
 phase: P1
 prio: M
@@ -185,12 +235,21 @@ depend: [F2.3]
 ```
 ```issues
 feature: F2.5
-titre: Bandeau prix et stock restant en temps réel
+titre: Bandeau prix et stock restant, conditionnel à un article présenté
 epic: "02"
 phase: P1
 prio: M
 etapes: [conception, design, backend, frontend]
 depend: [F2.4, F1.10]
+```
+```issues
+feature: F2.22
+titre: Liste des articles en vente pendant le direct, côté acheteur
+epic: "02"
+phase: P1
+prio: M
+etapes: [conception, design, backend, frontend]
+depend: [F2.3, F1.10]
 ```
 
 ---
@@ -337,7 +396,7 @@ apps/api/src/modules/direct/
 ├─ reprise.ts        pause, fenêtre de 2 min, reprise ou clôture
 └─ machine.ts        + état EN_PAUSE
 apps/api/src/modules/stock/service.ts    suspension groupée des réservations
-apps/mobile/src/features/direct-vendeur/hooks/useRepriseDiffusion.ts
+apps/mobile/src/features/direct-boutique/hooks/useRepriseDiffusion.ts
 ```
 
 ### 3. Base de données
@@ -377,17 +436,17 @@ depend: [F2.3, F1.10]
 
 ---
 
-## F2.14 — Panneau vendeur en direct
+## F2.14 — Panneau boutique en direct
 
 `P1 · M · complet`
 
 ### 1. Conception
 Un tiroir avec, en temps réel : spectateurs, réservations en cours, commandes payées, **chiffre d'affaires de la soirée qui monte**.
 
-**Le chiffre qui monte est la fonctionnalité de rétention numéro 1 côté vendeur.** Ce n'est pas de la décoration : c'est ce qui fait revenir la vendeuse le lendemain soir.
+**Le chiffre qui monte est la fonctionnalité de rétention numéro 1 côté boutique.** Ce n'est pas de la décoration : c'est ce qui fait revenir la boutique le lendemain soir.
 
 ### 2. Structure de code
-`modules/direct/panneau.ts` (agrégats temps réel) · `apps/mobile/src/features/direct-vendeur/composants/PanneauVendeur.tsx`.
+`modules/direct/panneau.ts` (agrégats temps réel) · `apps/mobile/src/features/direct-boutique/composants/PanneauVendeur.tsx`.
 
 ### 3. Base de données
 Aucune table : agrégats calculés depuis `reservation` et `commande` du direct, diffusés sur le canal.
@@ -416,7 +475,7 @@ Tiroir à trois hauteurs (fermé, poignée, ouvert). Le chiffre d'affaires reste
 
 ```issues
 feature: F2.14
-titre: Panneau vendeur en direct
+titre: Panneau boutique en direct
 epic: "02"
 phase: P1
 prio: M
@@ -458,9 +517,9 @@ depend: [F2.3]
 
 `P1 · S · moyen` — **Règles** R-D6, R-X1
 
-**Conception** — chat pour poser une question (matière, longueur, autre couleur). Le vendeur masque un message, bloque un utilisateur, épingle une info. **Liste de mots interdits automatique** *(R-X1)*.
+**Conception** — chat pour poser une question (matière, longueur, autre couleur). La boutique masque un message, bloque un utilisateur, épingle une info. **Liste de mots interdits automatique** *(R-X1)*.
 
-**L'employé peut modérer le chat pendant que la vendeuse parle** *(F10.4)* — rôle réel dans les directs actuels, à supporter dès la phase 1.
+**L'employé peut modérer le chat pendant que la boutique parle** *(F10.4)* — rôle réel dans les directs actuels, à supporter dès la phase 1.
 
 **Base de données** — `message_direct (id, direct_id, auteur_id, texte, statut(publie|masque), epingle bool, cree_le)`, index `(direct_id, cree_le)`. Rétention limitée : le chat d'un direct terminé n'a pas besoin d'être conservé indéfiniment, sauf pièce de litige *(R-X9)*.
 
@@ -504,7 +563,7 @@ depend: [F2.10]
 
 `P1 · S` / `P2 · M` — `moyen`
 
-**Conception** — planification (date, heure, titre, affiche), notification aux abonnés **avant** et **au démarrage**. Les notifications de direct sont **regroupées en une par soirée** *(F7.3)* : une acheteuse suivant cinq vendeuses qui diffusent le même soir reçoit un message, pas cinq.
+**Conception** — planification (date, heure, titre, affiche), notification aux abonnés **avant** et **au démarrage**. Les notifications de direct sont **regroupées en une par soirée** *(F7.3)* : une acheteuse suivant cinq boutiques qui diffusent le même soir reçoit un message, pas cinq.
 
 **Base de données** — `direct.debut_prevu_le`, `direct.affiche_url`, `direct.notifie_le`.
 
@@ -539,7 +598,7 @@ depend: [F2.1, F7.23]
 
 `P2 · S · moyen` — **le différenciateur le plus fort de la phase 2**
 
-**Conception** — le direct terminé est enregistré ; les articles sont **automatiquement repérés à la minute** où ils ont été mis à l'écran — donnée déjà produite par `F2.4`, **aucune saisie manuelle**. Le vendeur peut corriger un marqueur.
+**Conception** — le direct terminé est enregistré ; les articles sont **automatiquement repérés à la minute** où ils ont été mis à l'écran — donnée déjà produite par `F2.4`, **aucune saisie manuelle**. La boutique peut corriger un marqueur.
 
 - **A** : frise sous la vidéo → appui sur un article → saut à la minute → « Je prends » fonctionne exactement comme en direct, sur le stock restant.
 - **AN** : arrive sur un replay partagé plusieurs jours après — **le direct ne meurt plus à minuit.**

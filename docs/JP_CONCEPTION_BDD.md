@@ -46,15 +46,15 @@ REVOKE UPDATE, DELETE ON ecriture_financiere FROM app_role;
 REVOKE UPDATE, DELETE ON journal_audit FROM app_role;
 ```
 
-Les soldes de `portefeuille` sont **dérivés du journal**, jamais saisis. Un test recalcule les soldes par relecture et compare.
+**Il n'y a plus de solde à dériver** *(`DP-07`)* : JP ne détient aucun fonds. `ecriture_financiere` cesse d'être un grand livre pour devenir **un journal de traçabilité** — il atteste que tel montant est parti de tel payeur vers tel bénéficiaire, à telle date. C'est la pièce que JP fournit quand le recours de l'acheteuse est externe. Un test relit le journal et compare.
 
 ### D4 — Une seule remise par ligne, garantie par la structure
 
 `ligne_commande.promotion_id` est une **colonne scalaire**, pas une table de liaison. Le cumul de remises est donc **impossible par construction**, pas seulement interdit par convention *(R-U7)*. Une table `ligne_promotion` aurait rendu le cumul possible par erreur.
 
-### D5 — Le rang client est par vendeur, et l'absence de chemin d'accès est la garantie
+### D5 — Le rang client est par boutique, et l'absence de chemin d'accès est la garantie
 
-`rang_client` porte `UNIQUE(vendeur_id, utilisateur_id)`. Il n'existe **volontairement aucun** index sur `utilisateur_id` seul dans `vente_confirmee_journal`, et **aucune vue** agrégeant un client tous vendeurs confondus *(R-R1)*.
+`rang_client` porte `UNIQUE(boutique_id, utilisateur_id)`. Il n'existe **volontairement aucun** index sur `utilisateur_id` seul dans `vente_confirmee_journal`, et **aucune vue** agrégeant un client tous boutiques confondues *(R-R1)*.
 
 Un contrôle d'autorisation se contourne par une nouvelle requête ; **l'absence de chemin d'accès ne se contourne pas**. Cette absence est documentée dans la migration, pour qu'un futur développeur cherchant à « optimiser » comprenne qu'elle est intentionnelle.
 
@@ -64,7 +64,7 @@ Un contrôle d'autorisation se contourne par une nouvelle requête ; **l'absence
 
 ### D7 — Le panier n'existe pas comme table
 
-Une ligne de panier **est** une réservation active *(F1.16)*. Une table `panier` créerait une **seconde source de vérité** sur ce qui est réservé, donc un risque de survente. Le panier est la projection des réservations de l'utilisateur, groupées par vendeur.
+Une ligne de panier **est** une réservation active *(F1.16)*. Une table `panier` créerait une **seconde source de vérité** sur ce qui est réservé, donc un risque de survente. Le panier est la projection des réservations de l'utilisateur, groupées par boutique.
 
 ### D8 — Ce qui est dénormalisé, et pourquoi
 
@@ -72,11 +72,11 @@ Cinq dénormalisations assumées, chacune avec son mécanisme de maintien et sa 
 
 | Colonne | Raison | Maintien |
 |---|---|---|
-| `profil_vendeur.nb_abonnes` | compter 200 000 lignes à chaque vitrine est exclu *(C1, C2)* | déclencheur + réconciliation quotidienne |
-| `profil_vendeur.delai_expedition_moyen` | affiché avant achat *(F5.9)* | tâche quotidienne |
+| `boutique.nb_abonnes` | compter 200 000 lignes à chaque vitrine est exclu *(C1, C2)* | déclencheur + réconciliation quotidienne |
+| `boutique.delai_expedition_moyen` | affiché avant achat *(F5.9)* | tâche quotidienne |
 | `article.a_mesures` | tri par pertinence *(R-H4)* | déclencheur |
 | `statistique_contenu.*` | entonnoir affiché sans agrégation à la volée | agrégation asynchrone |
-| `point_relais.nb_colis_en_stock` | saturation du relais *(F11.4)* | déclencheur |
+| `boutique.ventes_du_mois` · `boutique.directs_du_mois` | quotas d'abonnement *(`R-B4`)* | déclencheur + remise à zéro au cycle |
 
 Toute dénormalisation doit être **recalculable** : un compteur qu'on ne sait pas réparer est une dette.
 
@@ -87,7 +87,7 @@ Toute dénormalisation doit être **recalculable** : un compteur qu'on ne sait p
 **Décision du 20/08/2026.** JP est une place de marché **par univers** : `JP Mode`
 et `JP Beauté` ouverts, `JP Tech` déclaré et fermé. **Trois, et pas d'autre.**
 
-**Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche article, le mode de livraison, les motifs de litige recevables, le taux de commission et la vérification exigée du vendeur.
+**Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.** Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche article, le mode de livraison, les motifs de litige recevables, le taux de commission et la vérification exigée de la boutique.
 
 Le taux suffit à le démontrer : un revendeur de téléphones gagne ~5 % sur un appareil ; lui en prendre 8 rendrait `JP Tech` vide.
 
@@ -174,14 +174,12 @@ flowchart TB
 ```mermaid
 erDiagram
     UTILISATEUR ||--o| PROFIL_ACHETEUR : "a"
-    UTILISATEUR ||--o| PROFIL_VENDEUR : "a"
+    UTILISATEUR ||--o| BOUTIQUE : "a"
     UTILISATEUR ||--o| PROFIL_CREATEUR : "a"
     UTILISATEUR ||--o{ IDENTITE_EXTERNE : "rattache"
     UTILISATEUR ||--o{ SESSION : "ouvre"
     UTILISATEUR ||--o{ DOCUMENT_IDENTITE : "fournit"
     UTILISATEUR ||--o{ ADRESSE : "enregistre"
-    PROFIL_VENDEUR ||--o{ MEMBRE_EQUIPE : "invite"
-    UTILISATEUR ||--o{ MEMBRE_EQUIPE : "est membre de"
     UTILISATEUR ||--o{ DEMANDE_RECUPERATION : "demande"
     UTILISATEUR ||--o{ DEMANDE_CHANGEMENT_EMAIL : "demande"
 
@@ -215,10 +213,10 @@ erDiagram
         string sujet_externe "UK(fournisseur, sujet) · stable (R-C12)"
         bool email_verifie
     }
-    PROFIL_VENDEUR {
+    BOUTIQUE {
         uuid id PK
         uuid utilisateur_id FK "UK"
-        enum type_vendeur "boutique | particulier (R-H5)"
+        enum type_boutique "boutique | particulier (R-H5)"
         string nom_boutique "NULL si particulier"
         string slug UK
         enum statut_verification
@@ -252,13 +250,6 @@ erDiagram
         bool badge_verifie
         int nb_abonnes
         int nb_ventes_generees
-    }
-    MEMBRE_EQUIPE {
-        uuid id PK
-        uuid vendeur_id FK
-        uuid utilisateur_id FK
-        json permissions "jamais : portefeuille, retrait, prix, promotion"
-        timestamp revoque_le "UK partiel si NULL"
     }
     DOCUMENT_IDENTITE {
         uuid id PK
@@ -314,7 +305,7 @@ erDiagram
 
 ```mermaid
 erDiagram
-    PROFIL_VENDEUR ||--o{ ARTICLE : "publie"
+    BOUTIQUE ||--o{ ARTICLE : "publie"
     CATEGORIE ||--o{ ARTICLE : "classe"
     CATEGORIE ||--o{ CATEGORIE : "parent"
     ARTICLE ||--|{ VARIANTE : "décline"
@@ -326,7 +317,7 @@ erDiagram
 
     ARTICLE {
         uuid id PK
-        uuid vendeur_id FK "IDX(vendeur_id, statut)"
+        uuid boutique_id FK "IDX(boutique_id, statut)"
         string nom
         string description
         uuid categorie_id FK
@@ -411,13 +402,9 @@ erDiagram
 erDiagram
     UTILISATEUR ||--o{ COMMANDE : "passe"
     COMMANDE ||--|{ LIGNE_COMMANDE : "contient"
-    COMMANDE ||--o{ PAIEMENT : "réglée par"
-    COMMANDE ||--o| SEQUESTRE : "protégée par"
+    COMMANDE ||--|{ PAIEMENT : "1..3 crédits éclatés (DP-16)"
     COMMANDE ||--o| FACTURE : "génère"
-    PAIEMENT ||--o{ REMBOURSEMENT : "peut être"
-    SEQUESTRE ||--o{ ECRITURE_FINANCIERE : "produit"
-    PORTEFEUILLE ||--o{ ECRITURE_FINANCIERE : "alimenté par"
-    PORTEFEUILLE ||--o{ RETRAIT : "sort par"
+    PAIEMENT ||--o{ ECRITURE_FINANCIERE : "trace"
     PROMOTION ||--o{ LIGNE_COMMANDE : "remise"
     VARIANTE ||--o{ LIGNE_COMMANDE : "vendue"
 
@@ -447,19 +434,25 @@ erDiagram
         uuid id PK
         uuid commande_id FK
         uuid variante_id FK
-        uuid vendeur_id FK
+        uuid boutique_id FK
         int quantite
         int prix_unitaire "FIGÉ à la commande"
         int remise_ligne "CHECK <= prix * quantite"
         uuid promotion_id FK "SCALAIRE — interdit le cumul (D4)"
-        int commission_jp
-        int commission_createur
-        uuid bareme_id FK "barème historisé"
+        int part_createur "figée à la commande (DP-09)"
+        int taux_commission_pour_mille "figé (R-G3, DP-15)"
+        enum mode_remuneration "abonnement | commission — figé (R-B5)"
     }
     PAIEMENT {
         uuid id PK
-        uuid commande_id FK
-        enum moyen "mvola | orange | airtel | carte | especes"
+        uuid commande_id FK "IDX(commande_id, rang)"
+        enum rang "pivot | secondaire (R-M4, R-M5)"
+        enum beneficiaire_type "boutique | jp (commission) | createur"
+        uuid beneficiaire_id FK
+        string msisdn_destination "figé, jamais saisissable"
+        int nb_rejeux "IDX partiel WHERE secondaire ET ECHOUE"
+        timestamp prochain_rejeu_le
+        enum moyen "mvola | orange | airtel | carte"
         int montant "CHECK > 0"
         enum statut "INITIE | EN_ATTENTE_OPERATEUR | CONFIRME | ECHOUE | EXPIRE"
         string reference_externe
@@ -471,40 +464,15 @@ erDiagram
         string devise_origine
         numeric taux_indicatif
     }
-    SEQUESTRE {
-        uuid id PK
-        uuid commande_id FK
-        int montant_retenu "CHECK > 0"
-        enum statut "retenu | libere | rembourse | partiel"
-        timestamp liberable_le "IDX partiel WHERE retenu"
-        timestamp libere_le
-        enum motif_liberation "confirmation | unboxing | automatique | arbitrage"
-    }
     ECRITURE_FINANCIERE {
         uuid id PK
         enum type
         string reference
         int montant
         enum sens "debit | credit"
-        enum compte "sequestre | portefeuille_vendeur | portefeuille_createur | commission_jp | especes | cagnotte"
+        enum compte "boutique | createur | cagnotte | commission_jp | abonnement_jp"
         uuid titulaire_id "IDX(titulaire_id, compte, cree_le)"
         timestamp cree_le
-    }
-    PORTEFEUILLE {
-        uuid id PK
-        uuid titulaire_id FK
-        enum type "vendeur | createur"
-        int solde_en_attente "dérivé du journal (R-E6)"
-        int solde_disponible "dérivé du journal"
-        bool retraits_geles "R-C14"
-    }
-    RETRAIT {
-        uuid id PK
-        uuid portefeuille_id FK
-        int montant
-        string msisdn_destination "= numéro vérifié uniquement"
-        enum statut
-        string cle_idempotence UK
     }
     FACTURE {
         uuid id PK
@@ -513,15 +481,27 @@ erDiagram
         string url_pdf
         timestamp emise_le "inaltérable (R-F1)"
     }
-    REMBOURSEMENT {
-        uuid id PK
-        uuid paiement_id FK
-        int montant
-        string motif
-        string cle_idempotence UK
-        enum statut
-    }
 ```
+
+> ### Ce que `DP-07` et `DP-16` font à ce domaine
+>
+> **Quatre tables disparaissent** *(`DP-07`)* : `sequestre`, `portefeuille`,
+> `retrait`, `remboursement`. **JP ne détient aucun fonds** — ni pendant, ni
+> après. Il n'y a ni solde à tenir, ni libération, ni remboursement.
+>
+> **Et une cardinalité change** *(`DP-16`)* : `COMMANDE ||--|{ PAIEMENT`. **Un
+> débit de l'acheteuse produit 1 à 3 crédits** — la boutique, la commission JP,
+> la créatrice.
+>
+> | Situation | Crédits |
+> |---|---|
+> | Boutique en **abonnement**, vente simple | **1** |
+> | Boutique en **commission**, vente simple | **2** |
+> | Boutique en **commission**, vente affiliée | **3** |
+>
+> **L'acheteuse ne voit rien de tout cela** : un débit, une confirmation, à
+> condition que le prestataire éclate de façon atomique *(`R-M10`, `PO-11`)*.
+> Sinon, `rang` porte l'ordre d'émission et `R-M4` la sécurité.
 
 **`ecriture_financiere` est le cœur de la conformité** *(C4)*. `append only`, appliqué par révocation de droits *(D3)*. Les soldes de `portefeuille` en sont **dérivés** : un test recalcule les soldes par relecture du journal sur 10 000 écritures et compare.
 
@@ -533,77 +513,44 @@ erDiagram
 
 # 6. Domaine Livraison
 
+> **JP n'opère aucune logistique** *(`DP-04`)*. Ce domaine n'enregistre plus le
+> trajet d'un colis dans un réseau — il enregistre **ce que la boutique déclare**
+> et **ce que l'acheteur confirme**. **De 10 tables, il en reste 5.**
+
 ```mermaid
 erDiagram
-    COMMANDE ||--|{ COLIS : "expédiée en"
-    COLIS ||--o{ EVENEMENT_LIVRAISON : "historique partagé"
-    POINT_RELAIS ||--o{ COLIS : "stocke"
-    LIVREUR ||--o{ COLIS : "transporte"
-    LIVREUR ||--o{ TOURNEE : "effectue"
-    TOURNEE ||--|{ TOURNEE_POINT : "ordonne"
-    COLIS ||--o| RETOUR : "peut faire l'objet de"
+    COMMANDE ||--o| EXPEDITION : "expédiée par"
+    COMMANDE ||--o| FIL_REMISE : "remise négociée dans"
+    EXPEDITION ||--o{ EVENEMENT_LIVRAISON : "historise"
+    BOUTIQUE ||--o{ TARIF_LIVRAISON : "fixe"
     ZONE_LIVRAISON ||--o{ TARIF_LIVRAISON : "tarifie"
-    LIVREUR ||--o{ COLLECTE_ESPECES : "doit"
-    POINT_RELAIS ||--o{ COLLECTE_ESPECES : "doit"
+    UTILISATEUR ||--o{ ADRESSE : "enregistre"
 
-    COLIS {
+    EXPEDITION {
         uuid id PK
         uuid commande_id FK
-        uuid vendeur_id FK
-        enum statut "A_PREPARER → PRET → ENLEVE → EN_LIVRAISON → REMIS"
-        uuid livreur_id FK
-        uuid relais_id FK
-        string code_retrait "HACHÉ · usage unique (R-L6)"
-        timestamp garde_jusqu_au
-        string preuve_remise_url
-        int montant_a_encaisser "paiement à la livraison"
-        int montant_encaisse
+        uuid boutique_id FK
+        enum statut "EN_PREPARATION → EXPEDIEE → LIVREE → CONFIRMEE (R-L3)"
+        string moyen_declare "coursier | transporteur | main propre — non vérifié"
         bool telephone_verifie "figé à la création"
         int nb_tentatives
         string motif_echec
     }
     EVENEMENT_LIVRAISON {
         uuid id PK
-        uuid colis_id FK "IDX(colis_id, horodatage)"
+        uuid expedition_id FK "IDX(expedition_id, horodatage)"
         enum statut
-        uuid auteur_id "QUI a fait avancer le colis"
+        uuid auteur_id "QUI a fait avancer"
         timestamp horodatage
         string commentaire
     }
-    POINT_RELAIS {
+    FIL_REMISE {
         uuid id PK
-        string nom
-        string quartier
-        numeric latitude
-        numeric longitude
-        json horaires
-        string photo_devanture
-        int delai_garde_jours
-        int capacite_max
-        int nb_colis_en_stock "dénormalisé (F11.4)"
-        enum statut "actif | inactif"
-    }
-    LIVREUR {
-        uuid id PK
-        uuid utilisateur_id FK
-        string vehicule
-        uuid zone_id FK
-        enum statut
-    }
-    TOURNEE {
-        uuid id PK
-        uuid livreur_id FK
-        date date
-        enum statut
-    }
-    TOURNEE_POINT {
-        uuid id PK
-        uuid tournee_id FK
-        int ordre
-        enum type "enlevement | remise"
-        uuid colis_id FK
-        timestamp arrive_le
-        timestamp termine_le
+        uuid commande_id FK "UK"
+        json participants "acheteur ou bénéficiaire + boutique — JAMAIS le donateur (RB8)"
+        string point_convenu
+        timestamp moment_convenu
+        timestamp accord_le "débloque le paiement du cadeau (DP-10)"
     }
     ZONE_LIVRAISON {
         uuid id PK
@@ -612,35 +559,38 @@ erDiagram
         int delai_transport_j
     }
     TARIF_LIVRAISON {
+        uuid boutique_id PK "le tarif est fixé par la boutique (DP-04)"
         uuid zone_id PK
-        enum mode PK
         int montant
     }
-    RETOUR {
+    ADRESSE {
         uuid id PK
-        uuid commande_id FK
-        enum motif
-        enum type "echange | remboursement"
-        uuid variante_echange_id FK
-        enum statut
-        enum frais_a_charge_de "vendeur | acheteur"
-    }
-    COLLECTE_ESPECES {
-        uuid id PK
-        uuid porteur_id FK
-        enum porteur_type "livreur | relais"
-        int montant_du
-        int montant_reverse
-        date periode_debut
-        date periode_fin
+        uuid utilisateur_id FK
+        string libelle
+        string quartier
+        string reperes "PAS de code postal (R-L2)"
+        string telephone_destinataire
     }
 ```
 
-**`evenement_livraison` porte l'auteur de chaque transition.** Savoir *qui* a fait avancer le colis réduit les contestations et rend l'arbitrage possible *(UC-51)*.
+**`evenement_livraison` porte l'auteur de chaque transition.** Savoir *qui* a fait avancer réduisait les contestations et rendait l'arbitrage possible. **L'arbitrage a disparu** *(`DP-05`)* — **la trace reste**, et c'est elle qu'on fournit quand le recours est externe *(`DP-07`)*.
 
-**`colis.code_retrait` est haché**, comme un OTP. Les six chiffres ne sont en clair que dans la notification et le SMS.
+**`fil_remise` rend `RB8` structurel.** Il fallait cacher activement l'adresse au donateur ; désormais **il ne la manipule jamais**, elle se négocie entre deux personnes dont il ne fait pas partie *(`DP-10`)*.
 
-**`colis.montant_encaisse` distinct de `montant_a_encaisser`** : l'écart est **signalé**, jamais absorbé silencieusement *(F11.5)*.
+> ### Cinq tables et huit colonnes disparaissent
+>
+> **Tables** : `point_relais`, `livreur`, `tournee`, `tournee_point`,
+> `collecte_especes`, `retour` *(`DP-04`)*.
+>
+> **Colonnes de `colis`** devenu `expedition` : `livreur_id`, `relais_id`,
+> `code_retrait`, `garde_jusqu_au`, **`preuve_remise_url`**,
+> `montant_a_encaisser`, `montant_encaisse`, et les états `ENLEVE` /
+> `EN_LIVRAISON`.
+>
+> ⚠️ **`preuve_remise_url` est la perte la plus lourde de toute la refonte.**
+> Aucun tiers neutre ne constate la remise *(`R-L9`)*. En cas de désaccord :
+> **ni preuve, ni arbitre** *(`DP-05`)*, **ni argent retenu** *(`DP-07`)*. Le
+> signalement pèse sur la réputation, et c'est tout *(`R-T8`)*.
 
 ---
 
@@ -657,7 +607,7 @@ erDiagram
     HASHTAG ||--o{ CONTENU_HASHTAG : "rassemble"
     COMMANDE ||--o| CONTENU : "source d'unboxing (R-K2)"
     UTILISATEUR ||--o{ ABONNEMENT : "suit"
-    PROFIL_VENDEUR ||--o{ DIRECT : "diffuse"
+    BOUTIQUE ||--o{ DIRECT : "diffuse"
     DIRECT ||--o{ DIRECT_ARTICLE : "prépare"
     DIRECT ||--o{ MESSAGE_DIRECT : "chat"
     DIRECT ||--o| DIRECT_BILAN : "conclut"
@@ -711,12 +661,12 @@ erDiagram
     ABONNEMENT {
         uuid suiveur_id PK
         uuid suivi_id PK "IDX(suivi_id, cree_le)"
-        enum type "vendeur | createur"
-        bool notifications_promo "réglage par vendeur (R-Q6)"
+        enum type "boutique | createur"
+        bool notifications_promo "réglage par boutique (R-Q6)"
     }
     DIRECT {
         uuid id PK
-        uuid vendeur_id FK
+        uuid boutique_id FK
         string titre
         string affiche_url
         enum statut "planifie | en_cours | en_pause | termine"
@@ -811,13 +761,13 @@ CREATE CONSTRAINT TRIGGER contenu_doit_avoir_article
 
 ```mermaid
 erDiagram
-    PROFIL_VENDEUR ||--o{ PALIER_FIDELITE : "définit"
-    PROFIL_VENDEUR ||--o{ RANG_CLIENT : "classe"
+    BOUTIQUE ||--o{ PALIER_FIDELITE : "définit"
+    BOUTIQUE ||--o{ RANG_CLIENT : "classe"
     UTILISATEUR ||--o{ RANG_CLIENT : "est classé"
     PALIER_FIDELITE ||--o{ RANG_CLIENT : "attribue"
-    PROFIL_VENDEUR ||--o{ NOTE_CLIENT : "annote"
+    BOUTIQUE ||--o{ NOTE_CLIENT : "annote"
     COMMANDE ||--o| VENTE_CONFIRMEE_JOURNAL : "journalise (R-R11)"
-    PROFIL_VENDEUR ||--o{ PROMOTION : "lance"
+    BOUTIQUE ||--o{ PROMOTION : "lance"
     PROMOTION ||--o{ PROMOTION_ARTICLE : "cible"
     PROMOTION ||--o{ PROMOTION_BENEFICIAIRE : "nomme"
     PALIER_FIDELITE ||--o{ PROMOTION : "réserve à"
@@ -834,19 +784,19 @@ erDiagram
 
     PALIER_FIDELITE {
         uuid id PK
-        uuid vendeur_id FK
+        uuid boutique_id FK
         string nom
-        int rang_ordre "UK(vendeur_id, rang_ordre)"
+        int rang_ordre "UK(boutique_id, rang_ordre)"
         int seuil_montant
         int seuil_commandes
         string avantage_texte
     }
     RANG_CLIENT {
         uuid id PK
-        uuid vendeur_id FK "UK(vendeur_id, utilisateur_id)"
+        uuid boutique_id FK "UK(boutique_id, utilisateur_id)"
         uuid utilisateur_id FK
         uuid palier_id FK
-        int score "IDX(vendeur_id, score DESC)"
+        int score "IDX(boutique_id, score DESC)"
         int montant_cumule
         int nb_commandes
         timestamp derniere_commande_le "IDX pour « inactives depuis »"
@@ -856,20 +806,20 @@ erDiagram
     }
     VENTE_CONFIRMEE_JOURNAL {
         uuid id PK
-        uuid vendeur_id FK
+        uuid boutique_id FK
         uuid utilisateur_id FK
         uuid commande_id FK "UK → rattrapage idempotent"
         int montant_confirme
         timestamp confirme_le
     }
     NOTE_CLIENT {
-        uuid vendeur_id PK
+        uuid boutique_id PK
         uuid utilisateur_id PK
         string texte "jamais visible du client"
     }
     PROMOTION {
         uuid id PK
-        uuid vendeur_id FK "IDX(vendeur_id, statut, debut_le)"
+        uuid boutique_id FK "IDX(boutique_id, statut, debut_le)"
         uuid evenement_id FK
         enum type "pourcentage | montant | livraison_offerte"
         int valeur "CHECK > 0"
@@ -899,7 +849,7 @@ erDiagram
     }
     EVENEMENT {
         uuid id PK
-        enum portee "jp | vendeur (R-W8)"
+        enum portee "jp | boutique (R-W8)"
         uuid proprietaire_id FK "NULL si portee=jp"
         string nom
         string theme
@@ -916,7 +866,7 @@ erDiagram
         uuid id PK
         uuid evenement_id FK "UK(evenement_id, participant_id)"
         uuid participant_id FK
-        enum role "vendeur | createur"
+        enum role "boutique | createur"
         enum statut "candidate | acceptee | refusee | refusee_sans_reponse"
         string motif_refus
         uuid decide_par_id
@@ -996,18 +946,16 @@ erDiagram
     UTILISATEUR ||--o{ BLOCAGE : "bloque"
     UTILISATEUR ||--o{ MOT_BLOQUE_PERSONNEL : "définit"
     CONTENU ||--o{ REPUBLICATION_SUSPECTEE : "suspectée"
-    PROFIL_VENDEUR ||--o| SCORE_CONFIANCE : "noté par"
+    BOUTIQUE ||--o| SCORE_CONFIANCE : "noté par"
 
     LITIGE {
         uuid id PK
         uuid commande_id FK "IDX(commande_id)"
         uuid ouvert_par_id FK
         enum motif "non_recu | abime | non_conforme | mauvaise_taille | autre"
-        enum statut "ouvert | en_discussion | arbitrage | resolu | clos"
-        string decision_texte "CHECK obligatoire si resolu (RB4)"
-        uuid decide_par_id
-        timestamp decide_le
-        uuid affecte_a_id "affectation exclusive"
+        enum statut "ouvert | en_discussion | resolu"
+        bool compte_dans_le_score "CHECK = (statut <> 'resolu') — TOUTE la sanction (R-T8)"
+        timestamp resolu_le"
     }
     MESSAGE_LITIGE {
         uuid id PK
@@ -1020,7 +968,7 @@ erDiagram
         uuid id PK
         uuid commande_id FK "UK — un seul avis par commande"
         uuid auteur_id FK
-        uuid vendeur_id FK "IDX(vendeur_id, cree_le)"
+        uuid boutique_id FK "IDX(boutique_id, cree_le)"
         uuid article_id FK
         int note "CHECK 1..5"
         string texte
@@ -1031,7 +979,7 @@ erDiagram
         string reponse_texte "une seule fois (F6.9)"
     }
     SCORE_CONFIANCE {
-        uuid vendeur_id PK
+        uuid boutique_id PK
         numeric score
         int nb_ventes_honorees
         int delai_expedition_reel_h
@@ -1102,15 +1050,14 @@ ALTER TABLE litige ADD CONSTRAINT decision_motivee
 | `journal_audit` | toutes les actions du back-office | **append only** *(D3)* |
 | `evenement_usage` | événements d'usage bruts | rétention 90 j, puis agrégés |
 | `agregat_quotidien` | les 4 mesures fondatrices *(F11.7)* | précalculé |
-| `agregat_vendeur` | statistiques vendeur par jour et par origine | précalculé |
+| `agregat_boutique` | statistiques boutique par jour et par origine | précalculé |
 | `notification` | toutes les notifications émises | rétention 180 j |
 | `notification_compteur` | **les plafonds** *(R-U4, R-W9)* | PK(utilisateur, émetteur, type, jour) |
 | `preference_notification` | réglages par type | critiques non désactivables |
 | `notification_sms` | envois SMS et **leur coût** | ligne de dépense à suivre |
-| `reconciliation` / `ecart` | rapprochement quotidien *(R-O3)* | écart résolu par écriture inverse |
-| `bareme_commission` | taux **en pour mille**, historisé | une commande garde son taux |
+| `reconciliation` / `ecart` | rapprochement **encaissements opérateurs ↔ commandes** *(R-O3)* | écart résolu par écriture inverse |
 | `mise_en_avant` | emplacements payés | mention « Sponsorisé » obligatoire |
-| `abonnement_vendeur` | paliers d'abonnement | palier gratuit fonctionnel |
+| **`abonnement_boutique`** | **le modèle économique** *(`DP-08`)* | `palier`, `quota_ventes`, `quota_directs`, `montant`, `echeance_le`. Palier gratuit fonctionnel *(`R-B3`)* ⚠️ montants non arrêtés *(`PO-6`)* |
 | `adhesion_club` | JP Club acheteuse | livraison offerte au-dessus du seuil |
 | `lien_partage` | liens courts et attribution | canal d'acquisition principal |
 | `taux_change` | conversion indicative | jamais un taux périmé sans mention |
@@ -1134,13 +1081,13 @@ stateDiagram-v2
         PAYEE --> EN_ATTENTE_SEUIL : précommande
         EN_ATTENTE_SEUIL --> EN_PREPARATION : seuil atteint
         EN_ATTENTE_SEUIL --> REMBOURSEE : date limite (RB3)
-        PAYEE --> EN_PREPARATION : le vendeur accepte
+        PAYEE --> EN_PREPARATION : la boutique accepte
         PAYEE --> REMBOURSEE : annulation acheteuse
-        EN_PREPARATION --> REMBOURSEE : refus vendeur
+        EN_PREPARATION --> REMBOURSEE : refus boutique
         EN_PREPARATION --> EXPEDIEE : remise au transport
         EXPEDIEE --> LIVREE : remise faite
         LIVREE --> CONFIRMEE : confirmation, unboxing ou délai
-        LIVREE --> REMBOURSEE : arbitrage
+        LIVREE --> CONFIRMEE : JP ne rembourse pas (DP-07)
         CONFIRMEE --> [*]
     }
 ```
@@ -1222,25 +1169,25 @@ L'ordre suit les dépendances de clés étrangères. Chaque migration est nommé
 | 1 | `socle` | extensions (`pg_trgm`, `earthdistance`), rôles, `REVOKE` sur les journaux | tout |
 | 2 | `f0_1_auth_email_otp` | `utilisateur`, `code_otp`, `session` | tout |
 | 3 | `f0_13_identite_externe` | `identite_externe` | — |
-| 4 | `f0_4_profils` | `profil_acheteur`, `profil_vendeur`, `profil_createur`, `membre_equipe` | catalogue |
+| 4 | `f0_4_profils` | `profil_acheteur`, `boutique`, `profil_createur`, `membre_equipe` | catalogue |
 | 5 | `f0_6_verification` | `document_identite`, `demande_verification` | encaissement |
 | 5b | **`univers`** | `univers` — 5 lignes, 2 ouvertes ✅ **appliquée** | **articles, commande, litige** |
 | 6 | `f1_4_categories` | `categorie` | articles |
 | 7 | `f1_1_article_variante` | `article` *(+ `univers_cle` immuable, `attributs jsonb`, `peremption_le` générée)*, `variante`, `mouvement_stock` | **stock** |
 | 8 | `f1_10_reservation` | `reservation` + les deux `CHECK` + index partiel | **RB1** |
-| 9 | `f3_3_livraison_zones` | `adresse`, `zone_livraison`, `tarif_livraison`, `point_relais` | frais |
-| 10 | `f3_7_commande` | `commande` *(+ `univers_cle`, `taux_commission_pour_mille` figés)*, `ligne_commande` | paiement |
-| 11 | `f4_1_paiement` | `paiement` + `cle_idempotence` | **RB10** |
-| 12 | `f4_4_sequestre` | `sequestre`, `ecriture_financiere`, `portefeuille`, `retrait` | **RB2** |
+| 9 | `f3_3_livraison_zones` | `adresse`, `zone_livraison`, `tarif_livraison` *(PK boutique + zone)* | frais |
+| 10 | `f3_7_commande` | `commande` *(+ `univers_cle` figé)*, `ligne_commande` *(+ `part_createur` figée)* | paiement |
+| 11 | `f4_1_paiement` | `paiement` *(+ `rang`, `beneficiaire_*`, `msisdn_destination`, rejeu)* + `cle_idempotence` | **RB10**, **RB11** |
+| 12 | `f4_4_journal` | `ecriture_financiere` + `REVOKE` *(journal de traçabilité, `DP-07`)* | **RB2** |
 | 13 | `f4_11_facture` | `facture`, séquence de numérotation | — |
-| 14 | `f5_2_colis` | `colis`, `evenement_livraison` | livraison |
-| 15 | `f5_5_tournee` | `livreur`, `tournee`, `tournee_point`, `collecte_especes` | app terrain |
+| 14 | `f5_2_expedition` | `expedition`, `evenement_livraison`, **`fil_remise`** *(`DP-04`, `DP-10`)* | livraison |
+| 15 | ~~`f5_5_tournee`~~ | ❌ **supprimée** *(`DP-04`)* — plus d'application terrain | — |
 | 16 | `f7_1_abonnement` | `abonnement` + déclencheurs de compteur | fil, promos |
 | 17 | `f7_26_remise_ligne` | `remise_ligne`, `promotion_id` scalaire + `CHECK` | **R-U7** |
 | 18 | `f7_22_promotion` | `promotion`, `promotion_article`, `promotion_beneficiaire` | promos |
 | 19 | `f7_23_notifications` | `notification`, `notification_compteur`, `preference_notification` | plafonds |
-| 20 | `f10_1_bareme` | `bareme_commission` historisé | commission |
-| 21 | `f6_3_litige` | `litige` *(+ `univers_cle`, `prioritaire`)*, `message_litige` + `CHECK decision_motivee` | **RB4** |
+| 20 | `f10_3_abonnement` | **`abonnement_boutique`** *(`DP-08`)* | le modèle économique |
+| 21 | `f6_3_signalement` | `signalement_commande` *(+ `univers_cle`, `compte_dans_le_score`)*, `message_litige` + `CHECK compteur_coherent` | **RB4**, `R-T8` |
 | 22 | `f19_1_moderation` | `signalement`, `sanction`, `blocage`, `mot_bloque_personnel` | modération |
 | 23 | `f14_5_contenu` | `contenu`, `contenu_article` + **déclencheur différé** | **RB5** |
 | 24 | `f2_3_direct` | `direct`, `direct_article`, `message_direct`, `direct_bilan` | direct |
@@ -1277,7 +1224,7 @@ Les huit garanties structurelles, indépendantes du code applicatif. Ce sont ell
 | 8 | Pas de contenu publié sans article | **déclencheur de contrainte différé** |
 | 9 | Pas d'unboxing sans commande source | `CHECK (type <> 'unboxing' OR commande_source_id IS NOT NULL)` |
 | 10 | Pas de publication vidéo par un mineur | `CHECK (type NOT IN (...) OR auteur_majeur)` |
-| 11 | Pas de rang client global | **absence** d'index et de vue inter-vendeurs |
+| 11 | Pas de rang client global | **absence** d'index et de vue inter-boutiques |
 | 12 | Pas de double usage d'un code personnel | `UNIQUE(code_personnel)` + contrôle transactionnel |
 | 13 | **Pas de changement d'univers après coup** | **déclencheur** sur `article.univers_cle` *(R-Y1)* |
 | 14 | **Pas de commission rétroactive** | `commande.taux_commission_pour_mille` **figé** à la création *(R-Y3)* |

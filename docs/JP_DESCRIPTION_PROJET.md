@@ -16,11 +16,11 @@
 
 # 1. En une page
 
-**Le constat.** Chaque soir, à Madagascar, des vendeuses présentent leurs articles en direct sur les réseaux sociaux. Les acheteurs sont là, ils regardent, ils écrivent « je prends » en commentaire. Ce qui manque n'est pas la demande — c'est l'outil. Un réseau social sait faire parler ; il ne sait ni encaisser, ni facturer, ni livrer, ni arbitrer.
+**Le constat.** Chaque soir, à Madagascar, des boutiques présentent leurs articles en direct sur les réseaux sociaux. Les acheteurs sont là, ils regardent, ils écrivent « je prends » en commentaire. Ce qui manque n'est pas la demande — c'est l'outil. Un réseau social sait faire parler ; il ne sait ni encaisser, ni facturer, ni livrer, ni arbitrer.
 
-**Le problème.** Le risque de la transaction est intégralement porté par les personnes. L'acheteuse envoie de l'argent à un numéro personnel et espère. La vendeuse immobilise du stock pour des commandes qui ne seront jamais payées. Au milieu : aucune preuve, aucun recours, aucun arbitre.
+**Le problème.** Le risque de la transaction est intégralement porté par les personnes. L'acheteuse envoie de l'argent à un numéro personnel et espère. La boutique immobilise du stock pour des commandes qui ne seront jamais payées. Au milieu : aucune preuve, aucun recours, aucun arbitre.
 
-**La solution.** On remplace le commentaire par un bouton. Une action, une quantité, un paiement, une facture. L'argent ne circule plus de main à main : il transite par la plateforme et n'est versé à la vendeuse qu'une fois la réception confirmée.
+**La solution.** On remplace le commentaire par un bouton. Une action, une quantité, un paiement, une facture. L'argent ne circule plus de main à main : il transite par la plateforme et n'est versé à la boutique qu'une fois la réception confirmée.
 
 **L'extension.** Le direct dure une heure ; le reste du temps, l'application doit rester vivante. Stories et vidéos courtes, chacune rattachée à des articles achetables, transforment le catalogue en fil de contenu. Et l'unboxing — l'acheteuse qui filme l'ouverture de son colis — confirme la réception, produit un avis vérifié, et prouve publiquement que JP livre pour de vrai.
 
@@ -28,7 +28,7 @@
 
 **Ce que nous vendons.** Ni la rapidité, ni le temps, ni le confort : **la certitude**. Le risque change de camp.
 
-**Ce que nous cherchons.** Un budget de lancement — l'essentiel en acquisition et en amorçage de contenu. Des partenaires paiement, livraison et points de retrait. Des vendeurs pilotes déjà actifs en direct.
+**Ce que nous cherchons.** Un budget de lancement — l'essentiel en acquisition et en amorçage de contenu. Des partenaires paiement, livraison et points de retrait. Des boutiques pilotes déjà actifs en direct.
 
 ---
 
@@ -36,7 +36,7 @@
 
 > **Rendre possible, entre deux personnes qui ne se connaissent pas, une transaction que ni l'une ni l'autre ne peut regretter.**
 
-À Madagascar, le commerce fonctionne à la relation. On achète chez quelqu'un qu'une amie a recommandé, parce que c'est la seule garantie disponible. Cette garantie est solide mais elle ne passe pas à l'échelle : elle limite chaque vendeur au cercle de ses connaissances, et chaque acheteuse à ce que son entourage connaît déjà.
+À Madagascar, le commerce fonctionne à la relation. On achète chez quelqu'un qu'une amie a recommandé, parce que c'est la seule garantie disponible. Cette garantie est solide mais elle ne passe pas à l'échelle : elle limite chaque boutique au cercle de ses connaissances, et chaque acheteuse à ce que son entourage connaît déjà.
 
 JP remplace cette garantie relationnelle par une **garantie mécanique** — identité vérifiée, argent conservé, preuve écrite, arbitrage — qui, elle, passe à l'échelle. C'est cela le produit. Le reste est de la logistique.
 
@@ -52,7 +52,7 @@ Son blocage n'est pas la friction, c'est la peur. Envoyer le prix d'une robe en 
 
 Ce que JP lui vend, ce n'est donc pas de la commodité : **c'est le droit d'essayer quelqu'un qu'elle ne connaît pas sans risquer son argent ni sa dignité.**
 
-## 3.2 Au vendeur : « les ventes que tu perds déjà »
+## 3.2 À la boutique : « les ventes que tu perds déjà »
 
 Pas du temps gagné — de l'argent récupéré. Trois pertes concrètes qu'il subit sans les compter :
 
@@ -60,11 +60,11 @@ Pas du temps gagné — de l'argent récupéré. Trois pertes concrètes qu'il s
 2. le stock gelé par des réservations fantômes ;
 3. les acheteuses qui regardent tous les soirs et n'achètent jamais, parce qu'elles ne le connaissent pas.
 
-Le badge « vendeur vérifié » lui ouvre un public qu'il n'a pas aujourd'hui. C'est son argument de croissance, et c'est ce qui justifie la commission.
+Le badge « boutique vérifiée » lui ouvre un public qu'elle n'a pas aujourd'hui. C'est son argument de croissance, et c'est ce qui justifie la commission.
 
 ## 3.3 À la créatrice : « tu n'as pas besoin d'acheter le stock »
 
-Elle a une audience, elle sait faire une vidéo, et elle fait déjà gratuitement la promotion de vendeurs qui ne la paient pas. Ce qui lui manque n'est ni le talent ni les abonnés : **c'est le capital.**
+Elle a une audience, elle sait faire une vidéo, et elle fait déjà gratuitement la promotion de boutiques qui ne la paient pas. Ce qui lui manque n'est ni le talent ni les abonnés : **c'est le capital.**
 
 JP lui donne un revenu sans avancer d'argent et sans porter de stock — par l'affiliation, et par la précommande groupée.
 
@@ -76,7 +76,7 @@ JP lui donne un revenu sans avancer d'argent et sans porter de stock — par l'a
 
 ### Pilier 1 — Le direct, qui crée l'envie
 
-Le vendeur diffuse depuis son téléphone. Le prix et le stock restant s'affichent à l'écran, en temps réel. L'acheteuse appuie sur **« Je prends »** sans écrire un mot et sans quitter la vidéo : quantité, taille, livraison, paiement — objectif sous 30 secondes. L'article est réservé quelques minutes le temps du paiement, ce qui rend la survente impossible. La facture part automatiquement. Le vendeur voit ses ventes tomber pendant qu'il présente.
+La boutique diffuse depuis son téléphone. Le prix et le stock restant s'affichent à l'écran, en temps réel. L'acheteuse appuie sur **« Je prends »** sans écrire un mot et sans quitter la vidéo : quantité, taille, livraison, paiement — objectif sous 30 secondes. L'article est réservé quelques minutes le temps du paiement, ce qui rend la survente impossible. La facture part automatiquement. La boutique voit ses ventes tomber pendant qu'elle présente.
 
 ### Pilier 2 — Le contenu, qui fait vivre le catalogue
 
@@ -84,13 +84,13 @@ Un direct dure une heure ; il reste 23 heures. Stories, vidéos verticales court
 
 **Avec une règle qui ne souffre pas d'exception : aucun contenu sans article achetable attaché.** JP n'est pas un réseau social auquel on ajoute une boutique — c'est **une boutique dont le catalogue est fait de vidéos**.
 
-Le geste central de ce pilier est **l'unboxing**. L'acheteuse filme l'ouverture de son colis. Une seule action produit cinq résultats : elle confirme la réception, ce qui libère les fonds vers la vendeuse ; elle produit un avis vérifié ; elle alimente le fil ; elle gagne du crédit ; et elle prouve publiquement que JP livre vraiment. C'est le pendant social exact du bouton « Je prends ».
+Le geste central de ce pilier est **l'unboxing**. L'acheteuse filme l'ouverture de son colis. Une seule action produit cinq résultats : elle confirme la réception, ce qui libère les fonds vers la boutique ; elle produit un avis vérifié ; elle alimente le fil ; elle gagne du crédit ; et elle prouve publiquement que JP livre vraiment. C'est le pendant social exact du bouton « Je prends ».
 
 ### Pilier 3 — La confiance, qui rend les deux autres possibles
 
-- **Vendeur vérifié** — identité et compte mobile money contrôlés avant la première vente.
+- **Boutique vérifié** — identité et compte mobile money contrôlés avant la première vente.
 - **L'argent ne circule plus de main à main** — il transite par la plateforme, jamais vers un numéro personnel inconnu.
-- **Fonds libérés à la confirmation** — le vendeur est payé quand l'acheteuse a reçu.
+- **Fonds libérés à la confirmation** — la boutique est payée quand l'acheteuse a reçu.
 - **Facture horodatée**, conservée des deux côtés.
 - **Avis vérifiés** — seul un acheteur ayant réellement payé peut noter.
 - **Litiges arbitrés** — signalés à JP, jamais en face à face, avec une décision motivée et tracée.
@@ -122,7 +122,7 @@ C'est le premier canal de JP **qui ne dépend pas du pouvoir d'achat local**, su
 - **L'achat est visuel et émotionnel.** Une matière, un tombé, une teinte sur une peau : cela se montre. Le direct et la vidéo sont les formats naturels de ce produit.
 - **Le panier se renouvelle.** La fréquence est structurellement plus élevée que sur la plupart des catégories.
 - **Le vertical permet ce qu'un généraliste ne fera jamais** : tailles par marque, morphologies, avis d'acheteuses de la même taille, retours pour cause de taille.
-- **Les vendeurs sont déjà là.** Le vestimentaire domine déjà la vente en direct.
+- **Les boutiques sont déjà là.** Le vestimentaire domine déjà la vente en direct.
 
 ---
 
@@ -141,14 +141,14 @@ C'est le premier canal de JP **qui ne dépend pas du pouvoir d'achat local**, su
 
 # 6. Le modèle économique
 
-> **Nous gagnons quand le vendeur vend.** Le vendeur ne paie rien tant qu'il n'a pas vendu.
+> **Nous gagnons quand la boutique vend.** La boutique ne paie rien tant qu'elle n'a pas vendu.
 
 | Rang | Source | Description | Maturité |
 |---|---|---|---|
 | 1 | **Commission sur les ventes** | Le cœur du modèle. Prélevée au paiement, sans facturation à relancer. Barème par catégorie. | Dès le lancement |
 | 2 | **Commission d'affiliation** | Sur les ventes générées par une créatrice. Adossée à une transaction réelle. | Dès le lancement |
-| 3 | **Mise en avant** | Produit, direct ou contenu sponsorisé dans le fil et la recherche, payé en Ariary par le vendeur. | Phase 2 |
-| 4 | **Abonnement vendeur** | Par paliers : vitrine simple, puis outils avancés, statistiques, plusieurs utilisateurs. | Phase 2 |
+| 3 | **Mise en avant** | Produit, direct ou contenu sponsorisé dans le fil et la recherche, payé en Ariary par la boutique. | Phase 2 |
+| 4 | **Abonnement boutique** | Par paliers : vitrine simple, puis outils avancés, statistiques, plusieurs utilisateurs. | Phase 2 |
 | 5 | **JP Club** | Abonnement acheteuse : livraison offerte au-delà d'un montant, accès anticipé, cagnotte majorée. Revenu récurrent sans coût marginal. | Phase 2 |
 | 6 | **Campagnes de marque** | La marque finance une campagne avec des créatrices ; JP prend une part. Mesurée jusqu'à la vente. | Phase 3 |
 | 7 | **Insights marché** | Tendances de tailles, de couleurs, de prix. Agrégées et anonymisées. Le plus fort à long terme. | Phase 3 |
@@ -162,7 +162,7 @@ La publicité display classique ne rapporte presque rien à l'échelle de Madaga
 
 ## 6.2 Ce que le modèle a de sain
 
-- La commission **aligne nos revenus sur ceux du vendeur** : nous n'avons aucun intérêt à un vendeur qui stagne.
+- La commission **aligne nos revenus sur ceux de la boutique** : nous n'avons aucun intérêt à une boutique qui stagne.
 - L'affiliation **transforme le coût d'acquisition en coût variable**, payé seulement sur une vente réalisée.
 - Le crédit d'unboxing **achète du contenu d'acquisition en crédit d'achat plutôt qu'en argent**.
 
@@ -173,7 +173,7 @@ La publicité display classique ne rapporte presque rien à l'échelle de Madaga
 Ni le code ni la vitesse ne sont défendables. Trois choses le sont, et elles s'accumulent au lieu de se copier :
 
 1. **L'infrastructure de confiance** — identités vérifiées, historique de transactions, scores construits sur des faits. Un concurrent peut copier l'interface en trois mois ; il ne peut pas copier deux ans d'historique.
-2. **Le graphe des relations** — abonnés, créatrices, meilleures clientes, paliers de fidélité. Un vendeur qui a construit sa base ici ne repart pas ; ses clientes non plus.
+2. **Le graphe des relations** — abonnés, créatrices, meilleures clientes, paliers de fidélité. Une boutique qui a construit sa base ici ne repart pas ; ses clientes non plus.
 3. **La donnée verticale** — nous serons les seuls à savoir ce qui se vend réellement dans le vestimentaire à Madagascar, taille par taille, couleur par couleur, prix par prix.
 
 À quoi s'ajoute, côté acheteuse, un coût de sortie croissant : historique de commandes, factures, cagnotte, avis publiés, contenus, et à terme la garde-robe.
@@ -184,7 +184,7 @@ Ni le code ni la vitesse ne sont défendables. Trois choses le sont, et elles s'
 
 ## Phase 1 — Le geste et la preuve *(à financer aujourd'hui)*
 
-**Le socle commerce** : direct avec bouton « Je prends », réservation de stock, panier multi-vendeurs, paiement mobile money, séquestre et libération à la réception, facture automatique, livraison à domicile et en point relais, suivi partagé, litiges arbitrés, vendeurs vérifiés.
+**Le socle commerce** : direct avec bouton « Je prends », réservation de stock, panier multi-boutiques, paiement mobile money, séquestre et libération à la réception, facture automatique, livraison à domicile et en point relais, suivi partagé, litiges arbitrés, boutiques vérifiées.
 
 **Le noyau social** : stories et clips shoppables, fil personnalisé, **unboxing**, profil créatrice, affiliation, précommande groupée, panier offert par un tiers, et **toute la protection des personnes**.
 
@@ -196,11 +196,11 @@ Ni le code ni la vitesse ne sont défendables. Trois choses le sont, et elles s'
 
 ## Phase 2 — La communauté
 
-Replay achetable avec articles repérés à la minute, avis vérifiés et score de confiance publics, abonnés et notifications fines, promotions programmées, paliers de fidélité et cagnotte, guide des tailles par marque, retours pour cause de taille, abonnement vendeur, mise en avant payante, JP Club, dressing virtuel.
+Replay achetable avec articles repérés à la minute, avis vérifiés et score de confiance publics, abonnés et notifications fines, promotions programmées, paliers de fidélité et cagnotte, guide des tailles par marque, retours pour cause de taille, abonnement boutique, mise en avant payante, JP Club, dressing virtuel.
 
 ## Phase 3 — L'échelle
 
-Enchères et ventes flash, direct à deux, assistant du vendeur, espace marque et place de marché des collaborations, insights marché, et — seulement si l'audience le justifie — régie publicitaire.
+Enchères et ventes flash, direct à deux, assistant de la boutique, espace marque et place de marché des collaborations, insights marché, et — seulement si l'audience le justifie — régie publicitaire.
 
 ---
 
@@ -208,13 +208,13 @@ Enchères et ventes flash, direct à deux, assistant du vendeur, espace marque e
 
 **Ce qui n'est pas bloquant.** Construire la plateforme est un travail identifié et cadré. Le risque technique est modéré ; le seul poste réellement incertain est la vidéo.
 
-**Ce qui est bloquant.** Le lancement. Il faut réunir **au même moment** les premiers vendeurs, leurs abonnés, les premières créatrices, les partenaires paiement et livraison — et faire savoir que JP existe. Sans cet argent-là, le produit sort et ne rencontre personne.
+**Ce qui est bloquant.** Le lancement. Il faut réunir **au même moment** les premiers boutiques, leurs abonnés, les premières créatrices, les partenaires paiement et livraison — et faire savoir que JP existe. Sans cet argent-là, le produit sort et ne rencontre personne.
 
 ## 9.1 Postes de dépense, par ordre de poids
 
 | Poste | Contenu | Poids |
 |---|---|---|
-| **Acquisition et animation** | Recrutement et accompagnement des vendeurs pilotes, présence sur les réseaux, partenariats, animation des premiers directs, incitations aux premiers acheteurs | **Dominant** |
+| **Acquisition et animation** | Recrutement et accompagnement des boutiques pilotes, présence sur les réseaux, partenariats, animation des premiers directs, incitations aux premiers acheteurs | **Dominant** |
 | **Amorçage du contenu** | Recrutement et rémunération des premières créatrices avant l'ouverture. Un fil vide est pire que pas de fil. | Élevé |
 | **Développement** | Application, back-office, intégrations | Élevé |
 | **Modération** | Coût humain permanent, dès le premier jour. Non compressible. | Récurrent |
@@ -231,7 +231,7 @@ Le montant se cale avec le plan retenu. Deux scénarios peuvent être chiffrés 
 
 Nous cherchons également :
 - des **partenaires** paiement, livraison et points de retrait ;
-- des **vendeurs pilotes** déjà actifs en direct sur le vestimentaire ;
+- des **boutiques pilotes** déjà actifs en direct sur le vestimentaire ;
 - des **créatrices pilotes** disposées à tester l'affiliation et la précommande.
 
 ---
@@ -242,15 +242,15 @@ Nous cherchons également :
 
 | Rôle | Mission | Phase |
 |---|---|---|
-| Direction produit | Arbitrages, priorités, relation vendeurs pilotes | Permanent |
-| Développement mobile | Application acheteur, vendeur, créatrice | Phase 1 |
+| Direction produit | Arbitrages, priorités, relation boutiques pilotes | Permanent |
+| Développement mobile | Application acheteur, boutique, créatrice | Phase 1 |
 | Développement back-end | Commande, paiement, séquestre, stock, temps réel | Phase 1 |
 | Infrastructure vidéo | Diffusion en direct, enregistrement, transcodage | Phase 1 |
 | Back-office | Outils d'exploitation | Phase 1 |
 | Design | Interface, direction artistique, contenu éditorial | Phase 1 |
 | **Modération** | Traitement des signalements, protection des créatrices | **Dès l'ouverture, permanent** |
-| **Opérations** | Vérification des vendeurs, arbitrage, réconciliation | **Dès l'ouverture, permanent** |
-| Animation et acquisition | Recrutement vendeurs et créatrices, réseaux sociaux | Dès l'ouverture, permanent |
+| **Opérations** | Vérification des boutiques, arbitrage, réconciliation | **Dès l'ouverture, permanent** |
+| Animation et acquisition | Recrutement boutiques et créatrices, réseaux sociaux | Dès l'ouverture, permanent |
 | Logistique | Réseau de points relais, livreurs | Dès l'ouverture |
 
 **Point souvent oublié dans les projets de ce type : la modération et les opérations ne sont pas des coûts de projet, ce sont des coûts d'exploitation permanents.** Ils commencent le jour de l'ouverture et ne s'arrêtent jamais. Un dossier qui ne les budgète pas sous-estime le coût réel de la plateforme.
@@ -262,7 +262,7 @@ Nous cherchons également :
 | **0 — Sécurisation** | Accords paiement et livraison, cadrage juridique, arbitrage des 10 décisions ouvertes | *Sans cette étape, rien ne peut commencer* |
 | **1 — Conception** | Maquettes, parcours, modèle de données, choix techniques | Spécifications validées |
 | **2 — Construction** | Socle commerce, puis noyau social | Version testable |
-| **3 — Pilote fermé** | Quelques vendeurs et créatrices, directs réels, argent réel | Les quatre mesures fondatrices |
+| **3 — Pilote fermé** | Quelques boutiques et créatrices, directs réels, argent réel | Les quatre mesures fondatrices |
 | **4 — Corrections** | Sur la base des mesures, pas des opinions | Version d'ouverture |
 | **5 — Ouverture** | Lancement public, campagne d'acquisition | — |
 
@@ -289,13 +289,13 @@ Jamais mesurées sur ce marché. **Les instrumenter est un objectif du projet en
 
 **Créatrices** — ventes générées par affiliation · taux d'atteinte des seuils de précommande · coût d'acquisition d'une cliente par créatrice, comparé à la publicité payante.
 
-**Confiance** — délai de traitement d'un litige · délai de traitement d'un signalement d'urgence · part des acheteuses achetant chez un vendeur inconnu.
+**Confiance** — délai de traitement d'un litige · délai de traitement d'un signalement d'urgence · part des acheteuses achetant chez une boutique inconnue.
 
-**Économie** — commission effective · coût d'acquisition d'un vendeur, direct contre parrainage · panier d'une commande-cadeau comparé au panier ordinaire.
+**Économie** — commission effective · coût d'acquisition d'une boutique, direct contre parrainage · panier d'une commande-cadeau comparé au panier ordinaire.
 
 ## 11.3 La question qui valide ou invalide le projet
 
-> **Un vendeur vérifié mais inconnu convertit-il autant qu'un vendeur non vérifié recommandé par une amie ?**
+> **Une boutique vérifiée mais inconnue convertit-elle autant qu'une boutique non vérifiée recommandée par une amie ?**
 
 Si oui, la garantie mécanique remplace la garantie relationnelle, et le projet passe à l'échelle. Si non, il faut revoir la thèse. C'est la mesure la plus importante du pilote.
 
@@ -325,7 +325,7 @@ Le dossier ne cache pas ses questions non résolues — c'est précisément ce q
 
 **À caler** — qui supporte la commission d'affiliation, quel délai de libération automatique des fonds, qui paie un retour, quel crédit pour un unboxing, quels moyens de modération, combien de créatrices amorcer avant l'ouverture.
 
-Toutes ces questions se trancheront avec les premiers vendeurs et les premières créatrices, pas dans une feuille de calcul.
+Toutes ces questions se trancheront avec les premiers boutiques et les premières créatrices, pas dans une feuille de calcul.
 
 ---
 

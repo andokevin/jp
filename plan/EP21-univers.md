@@ -17,13 +17,13 @@
 
 **Un univers n'est pas un filtre de catégorie, c'est un jeu de règles.**
 
-Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche article, le mode de livraison, les motifs de litige recevables, le taux de commission et la vérification exigée du vendeur.
+Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la fiche article, le mode de livraison, les motifs de litige recevables, le taux de commission et la vérification exigée de la boutique.
 
 Le taux de commission suffit à le démontrer. Un revendeur de téléphones gagne environ 5 % sur un appareil ; lui en prendre 8 rendrait `JP Tech` **vide**, quel que soit le reste du produit. Un univers avec un taux global n'est pas un univers, c'est une étiquette.
 
 ## Pourquoi l'application fonctionne à l'identique dans les trois
 
-**Les trois partagent la même logistique** : point relais et domicile. Ce qui
+**Les trois partagent la même logistique** : **la boutique livre, JP suit** *(`DP-04`)*. Ce qui
 varie n'est pas le flux, ce sont **trois listes** :
 
 | Ce qui varie | Ce que ça change à l'écran |
@@ -49,19 +49,19 @@ vraie : **une seule application, trois univers, le même fonctionnement.**
 Un univers fermé existe en base, garde ses règles, son accent visuel, et n'apparaît nulle part *(R-Y2)*. L'ouvrir est un `UPDATE`.
 
 **Pourquoi Tech attend.** Le téléphone volé est un vrai problème à Madagascar.
-Tech exige l'IMEI **et** la provenance, donc une vérification vendeur plus
+Tech exige l'IMEI **et** la provenance, donc une vérification boutique plus
 lourde. On ouvre Tech quand ce contrôle sera éprouvé sur de vrais dossiers, pas
 avant — un univers qui laisse passer des appareils volés détruirait la promesse
 de la plateforme entière, pas seulement la sienne.
 
-Mode et Beauté, elles, partagent **la même vendeuse** et le même panier. Deux
+Mode et Beauté, elles, partagent **la même boutique** et le même panier. Deux
 marchés validés, un seul métier à apprendre.
 
 ## Ce que le panier ne fait PAS
 
-**Le panier ne se scinde pas par univers** *(R-Y7)*. Il se scinde par vendeur et par mode de livraison, ce qu'il fait déjà *(F3.1)*.
+**Le panier ne se scinde pas par univers** *(R-Y7)*. Il se scinde par boutique et par mode de livraison, ce qu'il fait déjà *(F3.1)*.
 
-À Madagascar, la même vendeuse tient souvent le vêtement et le cosmétique : la forcer à faire payer deux fois serait absurde.
+À Madagascar, la même boutique tient souvent le vêtement et le cosmétique : la forcer à faire payer deux fois serait absurde.
 
 Et comme **les trois univers partagent la même livraison**, la scission par mode de livraison ne se déclenche jamais aujourd'hui. Elle reste écrite parce qu'elle est la bonne règle : c'est la livraison qui contraint un panier, pas l'univers.
 
@@ -189,7 +189,7 @@ depend: []
 | champs de fiche | **code** | change l'écran de publication |
 | champs obligatoires | **code** | change ce qu'on refuse |
 | motifs de litige | **code** | change l'arbitrage |
-| provenance exigée | **code** | change la vérification vendeur |
+| provenance exigée | **code** | change la vérification boutique |
 
 **Ce partage est la décision de conception de la fonctionnalité.** Ce qui doit bouger pendant le pilote va en base ; ce qui change le produit va dans le code, où il passe par une revue et un test.
 
@@ -241,7 +241,7 @@ motifRecevable(universCle, motif)      // à l'ouverture d'un litige
 champsManquants(universCle, fiche)     // à la publication
 ```
 
-**Tests** : la commission de `tech` est bien inférieure à la moitié de celle de `mode` · `maison` refuse le point relais · un motif hors univers est refusé · un univers inconnu ne permet rien.
+**Tests** : ⚠️ **la commission par univers est supprimée** *(`DP-08`)* — si un univers doit coûter plus cher, cela se joue sur **le palier d'abonnement**, plus sur la vente. Ancienne rédaction : la commission de `tech` est bien inférieure à la moitié de celle de `mode` · `maison` refuse le point relais · un motif hors univers est refusé · un univers inconnu ne permet rien.
 
 ### 6. Frontend
 
@@ -361,7 +361,7 @@ Quatre motifs restent transverses : non reçu, différent de la photo, endommag�
 **Deux règles propres à Beauté, et elles ne sont pas commerciales :**
 
 - **« réaction cutanée » passe en priorité** *(R-Y16)*, comme un signalement d'urgence. Ce n'est pas un litige de commerce, c'est possiblement une urgence médicale ;
-- **un cosmétique entamé ne se retourne pas** *(R-Y17)*, sauf défaut ou contrefaçon. Accepter le retour ferait payer au vendeur le changement d'avis de l'acheteuse — un produit entamé ne se revend pas.
+- **un cosmétique entamé ne se retourne pas** *(R-Y17)*, sauf défaut ou contrefaçon. Accepter le retour ferait payer à la boutique le changement d'avis de l'acheteuse — un produit entamé ne se revend pas.
 
 ### 2. Structure de code
 
@@ -459,11 +459,11 @@ ALTER TABLE commande ADD CONSTRAINT taux_fige_valide
 
 ### 4. Design
 
-Le récapitulatif d'achat et l'écran « Mon argent » du vendeur montrent le taux appliqué, **par univers** si la boutique en a plusieurs.
+Le récapitulatif d'achat et l'écran « Mon argent » de la boutique montrent le taux appliqué, **par univers** si la boutique en a plusieurs.
 
 ### 5. Backend
 
-Au calcul du panier, le taux vient de `univers.commission_pour_mille`. `commissionSur()` et `netVendeur()` de `@jp/money` font le calcul — **arrondi vers le bas, l'ariary contesté reste au vendeur**.
+Au calcul du panier, le taux vient de `univers.commission_pour_mille`. `commissionSur()` et `netVendeur()` de `@jp/money` font le calcul — **arrondi vers le bas, l'ariary contesté reste à la boutique**.
 
 **Tests** : deux commandes de même montant dans deux univers différents produisent deux commissions différentes · changer le taux en base ne modifie pas une commande déjà créée · `netVendeur + commission = montant`, exactement.
 
@@ -527,7 +527,7 @@ depend: [F21.1]
 
 `P1 · S · moyen` — **Règles** R-Y2, R-Y12 · **Dépend de** F21.2, F11.6
 
-Ouvrir un univers est un `UPDATE` d'une ligne — mais **une décision qui engage un recrutement de vendeurs et une promesse publique**. Elle passe donc au journal d'audit, nominativement *(R-Y12)*.
+Ouvrir un univers est un `UPDATE` d'une ligne — mais **une décision qui engage un recrutement de boutiques et une promesse publique**. Elle passe donc au journal d'audit, nominativement *(R-Y12)*.
 
 **Décision ouverte** : simple validation d'un opérateur, ou **double validation** comme les paramètres économiques ? Je penche pour la double validation — c'est du même ordre qu'un changement de taux de commission.
 
@@ -573,7 +573,7 @@ depend: [F21.1]
 
 ### 1. Conception
 
-**Par défaut, une vendeuse n'est visible que dans UN univers** — celui de son
+**Par défaut, une boutique n'est visible que dans UN univers** — celui de son
 premier article *(R-Y19)*. Elle peut en ajouter, en un geste, depuis son studio.
 
 **Ajouter un univers déclenche un avertissement** *(R-Y20)* :
@@ -589,7 +589,7 @@ préférence esthétique.**
 c'est son commerce. Mais lui laisser découvrir la conséquence six mois plus tard,
 quand ses ventes stagnent, serait pire que de la prévenir.
 
-**Ce qui reste unique** : la vérification vendeur, le portefeuille, le score de
+**Ce qui reste unique** : la vérification boutique, le portefeuille, le score de
 confiance, le rang de ses clientes. Elle a **une** boutique, visible dans un ou
 plusieurs univers.
 
@@ -611,11 +611,11 @@ apps/mobile/src/features/identite/             l'écran d'ajout + l'avertissemen
 ### 3. Base de données
 
 ```sql
-CREATE TABLE profil_vendeur_univers (
-  vendeur_id  UUID NOT NULL REFERENCES profil_vendeur(id) ON DELETE CASCADE,
+CREATE TABLE boutique_univers (
+  boutique_id  UUID NOT NULL REFERENCES boutique(id) ON DELETE CASCADE,
   univers_cle TEXT NOT NULL REFERENCES univers(cle),
   ajoute_le   TIMESTAMPTZ(6) NOT NULL DEFAULT now(),
-  PRIMARY KEY (vendeur_id, univers_cle)
+  PRIMARY KEY (boutique_id, univers_cle)
 );
 ```
 
@@ -646,8 +646,8 @@ lit sans bloquer, et le bouton d'action reste en bas, à portée du pouce.
 ### 5. Backend
 
 ```
-GET   /vendeurs/moi/univers        → les univers de la boutique
-PUT   /vendeurs/moi/univers        → ajoute ou retire
+GET   /boutiques/moi/univers        → les univers de la boutique
+PUT   /boutiques/moi/univers        → ajoute ou retire
 POST  /articles                    → refuse si l'univers n'est pas le sien
 ```
 
@@ -665,7 +665,7 @@ sans les supprimer · réactiver les remontre.
 ### 6. Frontend
 
 L'avertissement s'affiche **à chaque ajout**, pas seulement au premier. Une
-vendeuse qui passe de deux à trois univers mérite la même information.
+boutique qui passe de deux à trois univers mérite la même information.
 
 ```issues
 feature: F21.10

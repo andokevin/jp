@@ -1,11 +1,11 @@
-# EP12 — Assistant du vendeur
+# EP12 — Assistant de la boutique
 
 > 5 fonctionnalités · vague 3 · phase 3 · module `assistant`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md).
 
 **Toutes les fonctionnalités de cette épique sont en phase 3 et en priorité `W`.** Elles sont utiles, aucune n'est nécessaire au lancement, et elles supposent un modèle de langue avec un coût par appel — donc une ligne de dépense variable à surveiller.
 
-**Le principe qui gouverne l'épique, et il n'est pas négociable** : **le vendeur garde toujours le dernier mot.** Une fiche publiée sans relecture abîmerait sa réputation, et une réponse automatique fausse dans un direct lui coûterait une vente. L'assistant propose, il ne publie jamais.
+**Le principe qui gouverne l'épique, et il n'est pas négociable** : **la boutique garde toujours le dernier mot.** Une fiche publiée sans relecture abîmerait sa réputation, et une réponse automatique fausse dans un direct lui coûterait une vente. L'assistant propose, il ne publie jamais.
 
 **Deuxième principe** : tout contenu produit automatiquement est **signalé comme tel** à l'acheteuse quand elle le voit — cohérent avec l'étiquetage du contenu sponsorisé *(F18.8)*.
 
@@ -23,9 +23,9 @@
 
 `P3 · W · cadre`
 
-**Conception** — le vendeur photographie un article → l'assistant propose nom, catégorie, matière, description, tailles probables → **elle corrige et valide**.
+**Conception** — la boutique photographie un article → l'assistant propose nom, catégorie, matière, description, tailles probables → **elle corrige et valide**.
 
-**C'est la fonctionnalité la plus utile de l'épique** : la création de fiche est l'étape la plus coûteuse pour le vendeur *(F1.1)*, et celle qu'il abandonne le plus. Un gain de deux minutes par article sur trente articles change son quotidien.
+**C'est la fonctionnalité la plus utile de l'épique** : la création de fiche est l'étape la plus coûteuse pour la boutique *(F1.1)*, et celle qu'il abandonne le plus. Un gain de deux minutes par article sur trente articles change son quotidien.
 
 **Elle garde toujours le dernier mot** : rien n'est publié sans validation, et les champs proposés sont visuellement distingués des champs saisis.
 
@@ -33,7 +33,7 @@
 
 **Endpoints pressentis** — `POST /assistant/fiche` `{ photoUrl }` → suggestions.
 
-**Point de coût** — un appel par article. À plafonner par vendeur et par jour, et à réserver aux paliers d'abonnement si le coût le justifie *(F10.3)*.
+**Point de coût** — un appel par article. À plafonner par boutique et par jour, et à réserver aux paliers d'abonnement si le coût le justifie *(F10.3)*.
 
 ```issues
 feature: F12.1
@@ -51,7 +51,7 @@ depend: [F1.1]
 
 `P3 · W · cadre`
 
-**Conception** — pendant le direct, les questions récurrentes (« c'est combien ? », « taille M dispo ? ») reçoivent une réponse **tirée de la fiche produit**, signalée comme automatique. Le vendeur garde la main sur le reste.
+**Conception** — pendant le direct, les questions récurrentes (« c'est combien ? », « taille M dispo ? ») reçoivent une réponse **tirée de la fiche produit**, signalée comme automatique. La boutique garde la main sur le reste.
 
 **Le périmètre doit rester étroit, et c'est délibéré** : uniquement des questions dont la réponse est **factuelle et présente dans les données** — prix, tailles disponibles, délai d'expédition, mode de livraison. Aucune question de conseil, aucune négociation, aucune promesse.
 
@@ -61,7 +61,7 @@ Une réponse automatique fausse sur un stock ou un prix produit une commande ann
 
 **Impact base de données** — `reponse_automatique (contenu, source_champ, contexte)`, `message_direct.automatique bool`.
 
-**Point d'attention** — l'étiquetage « réponse automatique » est obligatoire côté acheteuse. Une réponse automatique qui se fait passer pour la vendeuse est un mensonge, et il se découvre.
+**Point d'attention** — l'étiquetage « réponse automatique » est obligatoire côté acheteuse. Une réponse automatique qui se fait passer pour la boutique est un mensonge, et il se découvre.
 
 ```issues
 feature: F12.2
@@ -109,7 +109,7 @@ depend: [F2.15, F9.3]
 
 **Deux garde-fous.**
 - **Effectif minimal** avant de suggérer : une fourchette calculée sur trois ventes est du bruit présenté comme un conseil.
-- **Ne jamais imposer.** Le vendeur connaît son coût d'achat, que la plateforme ignore. Une suggestion qui l'amènerait à vendre à perte détruirait la confiance qu'il a dans le produit.
+- **Ne jamais imposer.** La boutique connaît son coût d'achat, que la plateforme ignore. Une suggestion qui l'amènerait à vendre à perte détruirait la confiance qu'il a dans le produit.
 
 **Impact base de données** — agrégats depuis `ligne_commande` des commandes confirmées, par catégorie et par état *(F1.18)*.
 
@@ -131,7 +131,7 @@ depend: [F9.3]
 
 **Conception** — restitution des tendances de marché aux marques partenaires *(F18.6)*.
 
-**Le point à trancher est le même que pour `F10.8`, et il est le seul qui compte** : l'anonymisation doit être **réelle et démontrable**. Des agrégats à faible effectif permettent de réidentifier un vendeur ou une acheteuse. Seuil minimal d'effectif par agrégat, aucune donnée nominative, et une revue explicite avant toute diffusion externe.
+**Le point à trancher est le même que pour `F10.8`, et il est le seul qui compte** : l'anonymisation doit être **réelle et démontrable**. Des agrégats à faible effectif permettent de réidentifier une boutique ou une acheteuse. Seuil minimal d'effectif par agrégat, aucune donnée nominative, et une revue explicite avant toute diffusion externe.
 
 Sur un produit dont l'actif est la confiance, une donnée mal anonymisée revendue est la faute la plus coûteuse imaginable — plus coûteuse qu'une fuite technique, parce qu'elle serait volontaire.
 

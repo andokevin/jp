@@ -1,27 +1,42 @@
-# EP11 — Back-office JP
+# EP11 — Le compte Admin JP
 
-> 11 fonctionnalités · vague 2 · module `exploitation` · application `apps/admin`.
+> 3 fonctionnalités · vague 2 · application `apps/admin`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit détaillé : [EP00-identite.md](EP00-identite.md).
+> **Amont** : [`JP_DECISIONS_PRODUIT.md`](../docs/JP_DECISIONS_PRODUIT.md) — `DP-05`.
 
-**Non décrit dans le deck, mais toutes les promesses du produit reposent dessus.** Le séquestre, l'arbitrage, la vérification, la modération : chaque promesse faite à l'acheteuse est une file de travail pour quelqu'un.
+**Les files de travail humaines sont supprimées** *(`DP-05`)* : vérification, arbitrage, modération et réconciliation sont repris par des règles automatiques, ou n'ont plus d'objet. **Mais un compte d'exploitation subsiste** *(`DP-12`)* — sans lui, personne ne peut fixer un palier d'abonnement ni lire un rapport. **De 11 fonctionnalités, il en reste trois.**
 
-**Le back-office est une application web séparée** *(CDC §2.2)*, pas un écran caché de l'application mobile. Les métiers sont différents : comparer une CIN et un selfie, instruire un litige, réconcilier des espèces — ce sont des tâches d'écran large et de clavier.
-
-**Le principe qui gouverne toute l'épique** : chaque file affiche **l'âge de ses éléments** et fait remonter ce qui approche d'un engagement. Une file sans notion d'ancienneté produit des dossiers oubliés, et un dossier oublié est une promesse rompue.
+> ### La frontière, en une phrase *(`DP-12`)*
+>
+> **L'Admin JP règle les règles ; il n'applique pas les règles.** Il fixe le
+> seuil qui suspend, il ne suspend pas. Il fixe le palier, il ne facture pas.
+>
+> C'est ce qui préserve l'essentiel de `DP-05` : **aucune décision individuelle
+> n'est prise par un humain**, donc aucune ne peut être arbitraire, négociée ou
+> obtenue par relation.
 
 | ID | Fonctionnalité | Phase | Prio | Détail |
 |---|---|---|---|---|
 | F11.7 | **Tableau de bord des 4 mesures fondatrices** | P1 | M | complet |
-| F11.1 | File de vérification des vendeurs | P1 | M | complet |
-| F11.3 | Console d'arbitrage des litiges | P1 | M | complet |
-| F11.5 | Réconciliation paiements et espèces | P1 | M | complet |
-| F11.6 | Paramètres économiques | P1 | M | complet |
-| F11.2 | Modération des contenus | P1 | M | moyen |
-| F11.4 | Gestion du réseau de points relais | P1 | M | moyen |
-| F11.8 | Recherche utilisateur, commande, paiement | P1 | M | moyen |
-| F11.9 | Journal d'audit | P1 | S | moyen |
-| F11.10 | Gestion des livreurs et des tournées | P1 | S | moyen |
-| F11.11 | Notifications de masse | P2 | C | cadre |
+| F11.6 | ♻️ **Paramètres — paliers, quotas, seuils** *(`DP-12`)* | P1 | M | complet |
+| F11.9 | ♻️ **Journal d'audit consultable** *(`DP-12`)* | P1 | S | moyen |
+
+> ### Dix fonctionnalités supprimées
+>
+> | | Motif |
+> |---|---|
+> | `F11.1` | File de vérification — vérification automatisée *(`UC-52`)* |
+> | `F11.2` | Modération des contenus — filtre automatique + signalement *(F19.1)* |
+> | `F11.3` | Console d'arbitrage — plus d'arbitre, et plus d'argent à trancher *(`DP-07`)* |
+> | `F11.4` | Réseau de points relais *(`DP-04`)* |
+> | `F11.5` | Réconciliation des espèces *(`DP-04`)* — il n'y a plus d'espèces |
+> | ~~`F11.6`~~ | ♻️ **rétablie** *(`DP-12`)* — l'Admin configure les paliers, quotas et seuils |
+> | `F11.8` | Recherche utilisateur / commande |
+> | ~~`F11.9`~~ | ♻️ **rétablie** *(`DP-12`)* — un humain qui change un seuil doit laisser une trace nominative |
+> | `F11.10` | Gestion des livreurs et des tournées *(`DP-04`)* |
+> | `F11.11` | Notifications de masse |
+
+> ✅ **Vérification faite** *(`PO-4`)* : **aucune des quatre mesures ne dépend du séquestre.** Elles portent sur la conversion en direct, le temps administratif, l'abandon au paiement et le stock immobilisé — toutes valides telles quelles. Seules **les hypothèses secondaires** changent *(voir §1)*.
 
 ---
 
@@ -42,7 +57,7 @@
 | 3 | **Acheteuses ayant abandonné à l'étape paiement** | `paiement_abandonne` + étape *(CDC §11)* |
 | 4 | **Stock immobilisé par des réservations expirées** | somme des montants des réservations expirées |
 
-**Plus les hypothèses à valider** : taux de conversion, panier moyen, répartition domicile/relais, taux de litige, coût d'acquisition, **part du chiffre d'affaires hors direct** *(R-H2, nouveau)*, **taux de refus au paiement à la livraison** *(F4.3)*, **taux de production d'unboxings** *(F14.7)*.
+**Plus les hypothèses à valider** : taux de conversion, panier moyen, **taux de signalement** *(`R-T8`)*, **abonnements actifs par palier** *(`DP-08`)*, coût d'acquisition, **part du chiffre d'affaires hors direct** *(R-H2, nouveau)*, **taux de refus au paiement à la livraison** *(F4.3)*, **taux de production d'unboxings** *(F14.7)*.
 
 **Le point de conception** : ces mesures ne se calculent pas après coup. Elles supposent que les **événements d'usage soient instrumentés dès le premier jour** *(CDC §11)*. C'est pourquoi cette fonctionnalité est en tête de l'épique : elle définit ce que les autres modules doivent émettre.
 
@@ -127,270 +142,80 @@ depend: []
 
 ---
 
-## F11.5 — Réconciliation des paiements et des encaissements espèces
+## F11.6 — Paramètres : paliers, quotas, seuils ♻️
 
-`P1 · M · complet` — **Règles** R-O3 · **Contrainte C4** · **Recette RB2**
+`P1 · M · complet` — **Règles** R-O1, R-O4 · **Décisions** `DP-08`, `DP-12` · **Bloque** `F10.3`, `F6.8`
 
 ### 1. Conception
 
-**OP** rapproche **quotidiennement** : paiements opérateurs, encours séquestré, retraits vendeurs, commissions, et **espèces collectées par les livreurs et les relais** *(F4.3)*. Les écarts sont signalés.
+**Sans cet écran, personne ne peut ouvrir les inscriptions boutique.** Les paliers d'abonnement, les quotas de ventes et de directs, les seuils de suspension : tout cela est **du réglage, pas du code** *(`R-O1`)*.
 
-**C'est l'exigence la plus lourde de l'épique, et elle n'est pas négociable** : JP conserve l'argent d'autrui *(C4)*. Un écart non détecté aujourd'hui est un trou dans la caisse dans trois mois, et un risque réglementaire.
+| Famille | Paramètres |
+|---|---|
+| **Abonnement** *(`DP-08`)* | Paliers, prix mensuel, quota de ventes, quota de directs ⚠️ *(`PO-6`)* |
+| **Signalement** *(`R-T8`)* | Seuil `N` du niveau 1, motifs par niveau, preuve minimale aux niveaux 2 et 3 ⚠️ *(`PO-12`)* |
+| **Réservation** | Durée en direct, durée hors direct, **durée pendant la négociation d'un cadeau** *(`PO-10`)* |
+| **Clôture** | Délai de confirmation automatique *(`R-E4`)*, fenêtre d'attribution d'affiliation *(`R-N2`)* |
 
-**Trois rapprochements distincts** :
-1. **Opérateurs** — relevé du prestataire contre `paiement` confirmés. Écart typique : un paiement confirmé chez l'opérateur et resté `en_attente` chez JP (webhook perdu).
-2. **Séquestre** — encours théorique (somme du journal) contre encours attendu (commandes payées non confirmées). Écart typique : une libération sans écriture inverse.
-3. **Espèces** — montants encaissés par les porteurs contre montants reversés. Écart typique : un livreur en retard de versement, ou un montant encaissé différent du montant dû.
+> ### 🔒 Double validation, et cette fois elle est indispensable
+>
+> **Proposé par un compte Admin, confirmé par un autre** *(`R-O1`, table
+> `parametre_modification`)*.
+>
+> `DP-05` l'avait retirée faute de deux opérateurs. `DP-12` la rétablit pour une
+> raison plus forte qu'avant : **un compte unique pouvant modifier seul le seuil
+> de suspension couperait toutes les boutiques du pays d'un seul geste.** C'est
+> un point de défaillance unique, et **une cible**.
 
-**Les espèces sont le rapprochement le plus risqué** : il n'y a pas de trace électronique à la source, seulement une saisie humaine. D'où la photo de preuve *(F5.5)* et la comparaison systématique `montant_a_encaisser` contre `montant_encaisse`.
+**Bornes codées, jamais paramétrables** : une durée de réservation à 0 s, un seuil de suspension à 1 signalement de niveau 1, un quota gratuit à 0 vente — tout cela doit être **impossible à saisir**, pas seulement déconseillé.
 
 ### 2. Structure de code
 
 ```
 apps/api/src/modules/exploitation/
-├─ reconciliation.ts        les trois rapprochements
-├─ ecarts.ts                détection, classement, suivi de résolution
-├─ imports/relevesOperateur.ts
-└─ reconciliation.test.ts
-apps/api/src/jobs/reconciliationQuotidienne.ts
-apps/admin/src/pages/finance/{Reconciliation,Ecarts,Especes}.tsx
-```
-
-### 3. Base de données
-
-Migration `..._f11_5_reconciliation` :
-
-```
-reconciliation
-  id PK · jour · type(operateur|sequestre|especes)
-  montant_attendu · montant_constate · ecart
-  statut(equilibree|ecart_detecte|resolue) · executee_le
-
-ecart
-  id PK · reconciliation_id FK · reference · montant · nature
-  statut(ouvert|en_analyse|resolu) · resolution_texte · resolu_par_id
-  IDX(statut, montant DESC)
-```
-
-Un écart n'est **jamais** corrigé en modifiant une écriture *(C4)* : sa résolution produit une écriture inverse et un texte d'explication.
-
-### 4. Design
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen 1 — admin "Réconciliation du jour" (desktop).
-Top: a date selector and a global status banner — green "Équilibrée" or red
-"3 écarts détectés — 47 500 Ar".
-Three reconciliation cards side by side, each with a title ("Opérateurs",
-"Séquestre", "Espèces"), an expected amount, an observed amount, a difference in
-large type (green zero or red value), and a status icon.
-Below, a table of discrepancies with columns Référence, Nature, Montant, Âge,
-Statut, and an action column; rows sorted by amount descending, with red chips on
-items older than 48 h. Nature values read like "Webhook non reçu — paiement
-confirmé chez MVola", "Libération sans écriture inverse", "Espèces non reversées
-— Rado, livreur".
-A right-side panel for the selected discrepancy: the full ledger extract, the
-related order, and a resolution form with a required explanation field and a
-button "Résoudre par écriture inverse".
-
-Screen 2 — "Espèces à collecter" table: rows per courier and relay with Porteur,
-Colis remis, Encaissé, Reversé, Solde dû, Dernier versement, Âge du solde; amber
-rows past 3 days, red past 7; a total row; and a "Enregistrer un versement"
-action per row.
-```
-
-### 5. Backend
-
-`POST /admin/reconciliations/executer` · `GET /admin/reconciliations?jour=` · `GET /admin/ecarts` · `POST /admin/ecarts/:id/resolution`.
-
-Travail quotidien, avec **alerte** si un écart dépasse un seuil ou dure plus de 48 h *(CDC §11)*.
-
-**Tests** : les trois rapprochements sur des jeux équilibrés → écart nul ; webhook manquant simulé → écart détecté et nommé ; libération sans écriture inverse → détectée ; espèces non reversées → solde dû exact ; résolution → **écriture inverse**, jamais de modification ; **réconciliation à 100 %** sur 1 000 commandes tous chemins confondus *(RB2)*.
-
-### 6. Frontend
-
-Tableau dense mais lisible, tri par montant, âge visible. L'écran est consulté chaque matin : la première information doit être « est-ce que c'est équilibré ? », en un coup d'œil.
-
-```issues
-feature: F11.5
-titre: Réconciliation des paiements et des encaissements espèces
-epic: "11"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F4.4, F4.3]
-```
-
----
-
-## F11.1 — File de vérification des vendeurs
-
-`P1 · M · complet` — **Règles** R-V1 à R-V6 · **Voir** F0.6
-
-### 1. Conception
-
-**OP** : file d'attente → compare **CIN / selfie / titulaire du compte mobile money** *(R-V2)* → valide, refuse, ou demande une pièce → notification au vendeur.
-
-**Le refus doit être motivé et indiquer précisément ce qui manque** *(R-V3)*. Un refus vague produit une nouvelle soumission identique, donc deux fois le travail.
-
-**Un délai cible est affiché au vendeur** *(R-V4)* : la file doit donc être dimensionnée et son âge surveillé. Une file de vérification en retard bloque des encaissements, donc des ventes, donc la croissance.
-
-**Accès aux documents journalisé** *(R-V5, N3.1)* : chaque consultation d'une pièce d'identité laisse une trace nominative. C'est une exigence de protection des personnes, et une protection de l'équipe.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/identite/verification.ts    (F0.6)
-apps/api/src/modules/exploitation/fileVerification.ts
-apps/admin/src/pages/verifications/{File,Dossier}.tsx
-```
-
-### 3. Base de données
-
-`demande_verification` *(F0.6)*, index `(statut, cree_le)`. `journal_audit` pour chaque accès document.
-
-### 4. Design
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen — admin KYC review, side-by-side comparison (desktop).
-Left column: the three uploaded documents as large viewable images — CIN recto,
-CIN verso, selfie — each with a zoom control and a "Consulté" audit note.
-Right column: a form-like comparison panel with rows showing the declared values
-and empty check circles for the reviewer to tick: "Nom sur la pièce : RAKOTO
-Miora", "Nom du compte Mobile Money : RAKOTO Miora" with a green "Concordance"
-chip, "Date de naissance : 12/04/1998" with an age line "28 ans — majeure",
-"Adresse d'enlèvement : Analamahitsy", "Nom de boutique : Miora Boutique".
-Bottom action bar: three buttons — green "Valider", amber "Demander une pièce"
-(opening a checklist of what is missing), red "Refuser" (opening a required
-reason field with quick-pick reasons "Photo illisible", "Noms discordants",
-"Pièce expirée", "Mineur").
-A header chip shows the queue age: "Dossier reçu il y a 14 h — engagement 24 h".
-```
-
-### 5. Backend
-
-`GET /admin/verifications?statut=` · `GET /admin/verifications/:id` (journalise l'accès) · `POST /admin/verifications/:id/decision`.
-
-**Tests** : file par ancienneté ; consultation d'un document → entrée d'audit nominative ; refus sans motif → rejeté ; discordance de noms → refus ; mineur → refus définitif *(RB6)* ; validation → encaissement débloqué *(F0.6)* ; demande de pièce → statut intermédiaire et notification.
-
-### 6. Frontend
-
-Comparaison côte à côte, cases à cocher pour forcer l'examen de chaque point. Un écran qui permet de valider en un clic sans regarder produit des validations sans examen.
-
-```issues
-feature: F11.1
-titre: File de vérification des vendeurs
-epic: "11"
-phase: P1
-prio: M
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F0.6]
-```
-
----
-
-## F11.3 — Console d'arbitrage des litiges
-
-`P1 · M · complet` — **Recette RB4** · **Voir** F6.5
-
-**Conception** — file par âge, urgents en tête, **dossier d'instruction assemblé** *(F6.5 §2)* : historique de livraison, preuve de remise, extrait du journal financier, transcription du fil, historique des deux parties. Décision motivée obligatoire, exécution automatique.
-
-**Le dossier assemblé est ce qui rend l'arbitrage possible en quelques minutes** plutôt qu'en une demi-heure de navigation. C'est la différence entre un engagement de 48 h tenable et un engagement décoratif.
-
-**Structure, base de données, design, backend** — mutualisés avec [F6.5](EP06-confiance.md#f63--f64--f65--f66--le-litige-de-louverture-à-la-décision). Ce mini-plan couvre la **console** : file, tri, affectation, suivi des engagements, statistiques de traitement.
-
-**Ajouts propres à la console** : affectation d'un dossier à un opérateur (pour éviter que deux personnes instruisent le même), compteur de dossiers approchant l'engagement, statistiques de délai moyen et de répartition des décisions.
-
-**Tests** : file triée par âge ; affectation exclusive ; alerte à l'approche de l'engagement ; **100 % des dossiers clos avec décision écrite** *(RB4)* ; statistiques de délai exactes.
-
-```issues
-feature: F11.3
-titre: Console d'arbitrage des litiges
-epic: "11"
-phase: P1
-prio: M
-etapes: [conception, design, backend, frontend]
-depend: [F6.5]
-```
-
----
-
-## F11.6 — Paramètres : commissions, frais, durées, délais
-
-`P1 · M · complet` — **Règles** R-O1
-
-### 1. Conception
-
-**Tous les paramètres économiques doivent être modifiables sans nouvelle livraison logicielle** *(R-O1)*, avec **double validation et journalisation**.
-
-Ce n'est pas un confort : le pilote va faire varier la durée de réservation, le taux de commission, le délai de libération. Si chaque essai demande un déploiement, aucun essai n'aura lieu.
-
-**Liste des paramètres** *(CDC §3.11)* — réservation (direct, catalogue), délai d'acceptation vendeur (direct, catalogue), délai de libération automatique, taux de commission par catégorie, crédit d'unboxing, fenêtre d'affiliation, délai de garde relais, plafonds de notification, seuils de bascule particulier, poids du score de rang, TTL et limites de l'OTP, frais de livraison par zone, éligibilité du paiement à la livraison.
-
-**Double validation** : un paramètre économique est proposé par un opérateur et confirmé par un second. Une erreur de saisie sur un taux de commission est une erreur à quatre chiffres.
-
-**Garde-fous par paramètre** : bornes minimale et maximale codées. Une durée de réservation à 0 seconde ou une commission à 90 % doivent être **impossibles à saisir**, pas seulement déconseillées.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/exploitation/
-├─ parametres.ts       lecture avec cache, écriture avec double validation
-├─ bornes.ts           ← min/max par paramètre, refus hors bornes
-├─ routes.ts
+├─ parametres.ts          lecture typée, bornes codées
+├─ modification.ts        proposition → confirmation par un AUTRE compte
 └─ parametres.test.ts
-apps/admin/src/pages/parametres/{Liste,Modification,Historique}.tsx
+apps/admin/src/pages/parametres/{Liste,Modification}.tsx
 ```
-
-Tous les modules lisent les paramètres via `parametres.ts`, **jamais une constante en dur**. Une règle de lint interdit les nombres magiques dans les services concernés.
 
 ### 3. Base de données
 
-`parametre (cle PK, valeur, type, modifie_par_id, modifie_le)` *(CDC §3.11)* plus :
+`parametre` *(clé, valeur, type, borne_min, borne_max)* · `parametre_modification` *(propose_par_id, confirme_par_id, ancienne_valeur, nouvelle_valeur)*.
 
+```sql
+ALTER TABLE parametre_modification ADD CONSTRAINT deux_comptes_distincts
+  CHECK (confirme_par_id IS NULL OR confirme_par_id <> propose_par_id);
 ```
-parametre_modification
-  id PK · cle · ancienne_valeur · nouvelle_valeur
-  propose_par_id · confirme_par_id null · statut(proposee|appliquee|rejetee)
-  motif · cree_le · applique_le null
-```
+
+**C'est la contrainte qui traduit `R-O1` en base** : on ne peut pas confirmer sa propre proposition.
 
 ### 4. Design
 
-**Prompt Stitch** — préambule commun, puis :
-
 ```
-Screen — admin "Paramètres économiques" (desktop).
-A grouped table with sections "Réservation", "Commissions", "Séquestre",
-"Notifications", "Livraison", "Authentification". Each row shows: the parameter
-label in plain language ("Durée de réservation en direct"), the current value
-("5 minutes"), the allowed range in muted text ("entre 2 et 15 minutes"), the last
-change ("modifié le 12 août par Naina"), and an "Modifier" link.
-Clicking Modifier opens a side panel: the current value, a new-value input with
-inline range validation, a required "Motif du changement" field, an impact warning
-card where relevant ("Cette valeur affecte les réservations créées après
-l'enregistrement, pas celles en cours"), and a primary button "Proposer la
-modification" with a muted line "Un second opérateur devra confirmer."
-A separate section at the top shows pending changes awaiting confirmation, each
-with "Confirmer" and "Rejeter" buttons and the name of the proposer.
+Screen — parameters (desktop). A table grouped by family (Abonnement,
+Signalement, Réservation, Clôture): parameter name, current value, min/max
+bounds shown as muted text, last change date and author. Editing opens a panel
+showing OLD value beside NEW value, the coded bounds, and a red line "Cette
+modification devra être confirmée par un autre compte avant de prendre effet."
+Pending changes appear at the top in an amber band with "Proposé par … — en
+attente de confirmation" and, for the other admin, two buttons "Confirmer" and
+"Refuser".
 ```
 
 ### 5. Backend
 
-`GET /admin/parametres` · `POST /admin/parametres/:cle/proposition` · `POST /admin/parametres/modifications/:id/confirmation` · `GET /admin/parametres/:cle/historique`.
+`GET /admin/parametres` · `POST /admin/parametres/:cle/proposition` · `POST /admin/parametres/modifications/:id/confirmation`.
 
-**Tests** : valeur hors bornes → refusée ; modification sans confirmation → non appliquée ; confirmation par le **même** opérateur → refusée ; application → journal d'audit ; cache invalidé immédiatement ; **une modification de durée de réservation n'affecte pas les réservations en cours** *(F1.16)*.
+**Tests** : une valeur hors bornes → refusée ; **une confirmation par le compte qui a proposé → refusée par la base** ; le paramètre ne change qu'à la confirmation ; toute modification écrit au `journal_audit` avec l'ancienne et la nouvelle valeur.
 
 ### 6. Frontend
 
-Libellés en langage clair, bornes affichées, avertissement d'impact. L'historique par paramètre est ce qui permet de comprendre, trois mois plus tard, pourquoi la durée est à 8 minutes.
+La valeur en vigueur et la valeur proposée sont **affichées côte à côte**. Un écran qui ne montre que la nouvelle valeur fait confirmer à l'aveugle.
 
 ```issues
 feature: F11.6
-titre: Paramètres commissions, frais, durées, délais
+titre: Paramètres — paliers, quotas et seuils, avec double validation
 epic: "11"
 phase: P1
 prio: M
@@ -400,162 +225,31 @@ depend: []
 
 ---
 
-## F11.2 — Modération des contenus et des directs
+## F11.9 — Journal d'audit consultable ♻️
 
-`P1 · M · moyen` — **Voir** EP19
+`P1 · S · moyen` — **Règles** R-O4, R-V5 · **Décision** `DP-12`
 
-**Conception** — file de modération, **urgence en tête** *(R-X4)*, contenus retirés, sanctions. Détail complet en `F19.7`.
+**Conception** — la table `journal_audit` existe depuis le socle et est `append only` *(`D3`)*. Ce qui revient, c'est **l'écran qui la lit** : qui a changé quel paramètre, quand, avec l'ancienne et la nouvelle valeur — et **quel accès a été fait aux pièces d'identité** *(`R-V5`)*.
 
-**Spécificité des directs** : un signalement sur un direct en cours demande une intervention **immédiate** — la possibilité de couper une diffusion. C'est la seule action du back-office qui doit être disponible en quelques secondes.
+**Ce que le journal ne contient plus** : les décisions d'arbitrage et les instructions de dossier *(`DP-05`)*. Il ne reste que **la configuration et les accès aux données sensibles** — c'est-à-dire exactement les deux choses qu'un humain fait encore.
 
-**Base de données** — `signalement` *(CDC §3.10)*, index `(niveau, statut, cree_le)`.
+**Base** — aucune table nouvelle. `REVOKE UPDATE, DELETE ON journal_audit`.
 
-**Backend** — `GET /admin/signalements`, `POST /admin/contenus/:id/retrait`, `POST /admin/directs/:id/couper`.
+**Backend** — `GET /admin/journal?depuis=&acteur=&type=` avec pagination par curseur.
 
-**Design** — Prompt Stitch : *admin moderation queue with a red "Urgences (2)" section pinned at the top showing report reason, reporter, content preview and elapsed time with a red chip "il y a 8 min · engagement 2 h"; then the normal queue; a content review panel with the media, the author's history, previous reports, and four action buttons "Laisser", "Retirer", "Avertir", "Suspendre"; plus a distinct red "Couper le direct" button visible only for live content, with a confirmation modal.*
+**Design** — Prompt Stitch : *audit log table with columns Date, Compte, Action, Objet, Ancienne valeur, Nouvelle valeur; rows are never editable and the page states so explicitly: "Ce journal ne peut être ni modifié ni effacé."*
 
-**Tests** : urgence en tête ; coupure d'un direct effective en moins de 5 s ; décision motivée notifiée à l'auteur et au signalant *(R-X6)* ; historique de l'auteur visible.
-
-```issues
-feature: F11.2
-titre: Modération des contenus et des directs
-epic: "11"
-phase: P1
-prio: M
-etapes: [conception, design, backend, frontend]
-depend: [F19.7]
-```
-
----
-
-## F11.4 — Gestion du réseau de points relais
-
-`P1 · M · moyen`
-
-**Conception** — création et gestion des relais : fiche, horaires, photo de devanture, **capacité**, délai de garde, statut actif/inactif, contrat et versements *(F11.5)*.
-
-**La capacité est le paramètre qu'on oublie** : une épicerie ne peut pas stocker 200 colis. Sans plafond, le réseau se bloque physiquement et les colis repartent.
-
-**Base de données** — `point_relais` *(CDC §3.4)* plus `capacite_max`, `nb_colis_en_stock` (dénormalisé).
-
-**Backend** — `GET/POST/PATCH /admin/relais`, désactivation d'un relais **sans** casser les colis en cours (ils restent retirables, il disparaît seulement de la liste de choix).
-
-**Design** — Prompt Stitch : *admin relay management table with columns Nom, Quartier, Colis en stock / capacité (with a fill bar), Horaires, Délai de garde, Solde espèces dû, Statut; a form panel for creating a relay with a photo upload, a map point picker, opening-hours rows per day, and a capacity field with a helper "Au-delà, le relais n'apparaîtra plus dans les choix"; plus a deactivation modal warning "3 colis sont encore en stock — ils resteront retirables".*
-
-**Tests** : relais au-delà de sa capacité absent des choix *(F3.4)* mais toujours opérationnel ; désactivation → absent des choix, colis en cours intacts ; compteur de stock exact.
-
-```issues
-feature: F11.4
-titre: Gestion du réseau de points relais
-epic: "11"
-phase: P1
-prio: M
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F5.3]
-```
-
----
-
-## F11.8 — Recherche d'un utilisateur, d'une commande, d'un paiement
-
-`P1 · M · moyen`
-
-**Conception** — la fonctionnalité la plus utilisée du back-office. Recherche unifiée : numéro de commande, adresse électronique, numéro de téléphone, nom de boutique, référence de paiement, numéro de dossier.
-
-**Accès journalisé** *(N3.4)* : consulter la fiche d'un utilisateur est une consultation de données personnelles.
-
-**Backend** — `GET /admin/recherche?q=` — détection du type de requête, résultats groupés par type.
-
-**Design** — Prompt Stitch : *admin global search with a single prominent search field and a hint row "Numéro de commande, email, téléphone, boutique, référence de paiement"; results grouped in sections with type icons; a result detail panel for a user showing account, orders, wallet, disputes, sanctions and a right-hand "Actions" column, plus a muted footer "Cette consultation est enregistrée".*
-
-**Tests** : chaque type de requête trouve sa cible ; consultation journalisée avec l'opérateur ; aucune donnée sensible (document d'identité) affichée sans accès explicite et journalisé séparément.
-
-```issues
-feature: F11.8
-titre: Recherche d'un utilisateur, d'une commande, d'un paiement
-epic: "11"
-phase: P1
-prio: M
-etapes: [conception, design, backend, frontend]
-depend: []
-```
-
----
-
-## F11.9 — Journal d'audit de toutes les actions du back-office
-
-`P1 · S · moyen` — **Règles** R-O4, N3.4
-
-**Conception** — **append only**, inaltérable : acteur, action, cible, avant/après, adresse IP, horodatage. Consultable et filtrable.
-
-C'est autant une protection de l'équipe qu'un contrôle : en cas de contestation d'une décision, la trace protège l'opérateur qui a bien fait son travail.
-
-**Base de données** — `journal_audit` *(CDC §3.11)*, avec `REVOKE UPDATE, DELETE` comme pour le journal financier.
-
-**Backend** — écriture par intercepteur sur toutes les routes `/admin/*`, jamais appelée à la main (sinon elle sera oubliée). `GET /admin/audit?acteur=&cible=&periode=`.
-
-**Design** — Prompt Stitch : *admin audit log table with columns Horodatage, Acteur, Action, Cible, IP, and an expandable diff view showing before/after values as two columns with changed fields highlighted; filters for actor, action type, target type and date range.*
-
-**Tests** : **toute** route admin produit une entrée (test paramétré sur la liste des routes) ; tentative de modification → rejetée par la base ; diff avant/après correct ; filtres.
+**Tests** : `UPDATE` et `DELETE` **rejetés par la base** ; tout changement de paramètre y figure avec ses deux valeurs ; tout accès à un `document_identite` y figure nominativement.
 
 ```issues
 feature: F11.9
-titre: Journal d'audit des actions du back-office
+titre: Journal d'audit consultable, inaltérable
 epic: "11"
 phase: P1
 prio: S
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: []
+etapes: [conception, design, backend, frontend]
+depend: [F11.6]
 ```
 
 ---
 
-## F11.10 — Gestion des livreurs et des tournées
-
-`P1 · S · moyen`
-
-**Conception** — création des livreurs, affectation de zones, composition et suivi des tournées, soldes d'espèces dus *(F11.5)*, performance (taux d'échec, délai moyen).
-
-**Base de données** — `livreur`, `tournee`, `tournee_point` *(F5.5)*.
-
-**Backend** — `GET/POST /admin/livreurs`, `POST /admin/tournees` (composition manuelle ou automatique par zone), `GET /admin/tournees/:id/suivi`.
-
-**Design** — Prompt Stitch : *admin tours screen with a left list of couriers showing avatar, name, zone, today's progress ring "7/18" and cash balance chip; a main panel showing the selected tour as an ordered list of stops with types, statuses and timestamps; and a composition mode allowing drag-to-reorder stops with an "Optimiser par zone" button.*
-
-**Tests** : composition de tournée ; réaffectation d'un colis ; suivi temps réel ; solde d'espèces par livreur exact ; taux d'échec par livreur.
-
-```issues
-feature: F11.10
-titre: Gestion des livreurs et des tournées
-epic: "11"
-phase: P1
-prio: S
-etapes: [conception, bdd, design, backend, frontend]
-depend: [F5.5]
-```
-
----
-
-## F11.11 — Envoi de notifications de masse
-
-`P2 · C · cadre`
-
-**Conception** — message à un segment (tous, une ville, les vendeurs, les acheteuses inactives). **Soumis aux mêmes plafonds** que le reste *(R-U4)* : le back-office n'a pas le droit de contourner le budget d'attention qu'on impose aux vendeurs.
-
-**Impact base de données** — `campagne_notification (id, segment jsonb, titre, corps, statut, nb_destinataires, envoye_le)`.
-
-**Point d'attention** — une notification de masse mal calibrée peut faire couper les notifications à des milliers de personnes en une soirée, et détruire le canal du code de retrait. Prévoir une **prévisualisation du nombre de destinataires** et une double validation, comme pour les paramètres économiques.
-
-```issues
-feature: F11.11
-titre: Envoi de notifications de masse
-epic: "11"
-phase: P2
-prio: C
-etapes: [conception, bdd, backend, frontend]
-depend: [F7.3]
-```
-
----
-
-*Épique suivante : [EP13-socle](EP13-socle.md).*

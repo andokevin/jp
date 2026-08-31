@@ -3,7 +3,7 @@
 > 20 fonctionnalités · vague 1 · modules `catalogue` et `stock`.
 > Socle : [PLAN_SOCLE.md](PLAN_SOCLE.md) · gabarit de mini-plan détaillé : [EP00-identite.md](EP00-identite.md).
 
-**Ce qui change dans cette épique** — le catalogue devient **vendeur par lui-même** *(R-H1, R-H7)*. Le direct n'est plus la condition d'existence d'une vente, il en est l'accélérateur. Six fonctionnalités nouvelles portent ce basculement : F1.15 à F1.20.
+**Ce qui change dans cette épique** — le catalogue **vend par lui-même** *(R-H1, R-H7)*. Le direct n'est plus la condition d'existence d'une vente, il en est l'accélérateur. Six fonctionnalités nouvelles portent ce basculement : F1.15 à F1.20.
 
 **Et la fonctionnalité la plus critique du produit est ici** : `F1.10`, la réservation temporaire. C'est elle qui rend la survente impossible *(RB1)*. Elle se code une fois, avec ses tests de concurrence, et **tous les canaux de vente l'empruntent** — direct, catalogue, clip, événement. Un second chemin de réservation serait un défaut d'architecture, pas une optimisation.
 
@@ -25,7 +25,7 @@
 | F1.14 | Pièce unique | P1 | S | moyen |
 | F1.15 ★ | Achat immédiat depuis la fiche | P1 | M | complet |
 | F1.16 ★ | Panier catalogue, réservation longue | P1 | M | complet |
-| F1.17 ★ | Dépôt d'annonce par un particulier | P1 | S | complet |
+| ~~F1.17~~ | ~~Dépôt d'annonce par un particulier~~ ❌ *(`DP-01`)* — qui veut vendre crée un compte boutique *(`DP-02`)* | — | — | — |
 | F1.18 ★ | Fiche enrichie : état, mesures, photos | P1 | M | complet |
 | F1.19 ★ | Vitrine « catalogue d'abord » | P1 | M | complet |
 | F1.20 ★ | Questions publiques sur une fiche | P2 | S | moyen |
@@ -56,7 +56,7 @@ Une réservation n'est acceptée que si `disponible >= quantité demandée`, et 
 
 **Deux durées, un seul moteur** *(R-H3)* : `duree_reservation_direct_s` (hyp. 300) et `duree_reservation_catalogue_s` (hyp. 1800). La durée est choisie **à la création** selon l'origine. Ensuite, un seul chemin de code, un seul moteur d'expiration, une seule série de tests.
 
-**Suspension du minuteur** *(R-S5)* : `suspendu_depuis` est posé à l'entrée en attente opérateur de paiement ou lors d'une coupure vendeur ; à la reprise, `expire_le` est repoussé de la durée écoulée. Une réservation ne se perd jamais sur un incident dont l'acheteuse n'est pas responsable.
+**Suspension du minuteur** *(R-S5)* : `suspendu_depuis` est posé à l'entrée en attente opérateur de paiement ou lors d'une coupure boutique ; à la reprise, `expire_le` est repoussé de la durée écoulée. Une réservation ne se perd jamais sur un incident dont l'acheteuse n'est pas responsable.
 
 **Expiration — deux mécanismes complémentaires** *(CDC §5.3)* :
 1. une tâche périodique, toutes les quelques secondes ;
@@ -204,12 +204,12 @@ depend: [F1.2]
 
 ### 1. Conception
 
-**Le point de tout ce mini-plan : il n'y a presque rien à écrire de neuf.** Le « Je prends » du direct *(F2.6)* et celui du catalogue partagent la feuille d'achat, la réservation, le paiement, le séquestre, la livraison et le litige. Ce qui diffère se réduit à trois choses :
+**Le point de tout ce mini-plan : il n'y a presque rien à écrire de neuf.** Le « Je prends » du direct *(F2.6)* et celui du catalogue partagent la feuille d'achat, la réservation, le paiement, la livraison et le signalement. Ce qui diffère se réduit à trois choses :
 
 | Aspect | Direct | Catalogue |
 |---|---|---|
 | Durée de réservation | 5 min | 30 min *(R-H3)* |
-| Délai d'acceptation vendeur | court, il est devant son téléphone | plus long *(R-H8)* |
+| Délai d'acceptation boutique | court, elle est devant son téléphone | plus long *(R-H8)* |
 | Contexte visuel | vidéo qui continue derrière la feuille | fiche article statique |
 
 Tout le reste est mutualisé. Le mini-plan consiste donc surtout à **rendre le parcours d'achat indépendant du direct**, ce qui suppose que la feuille d'achat ne dépende d'aucun état de direct.
@@ -221,7 +221,7 @@ Tout le reste est mutualisé. Le mini-plan consiste donc surtout à **rendre le 
 
 **Cas d'échec dimensionnant** — la dernière pièce part pendant que l'acheteuse choisit sa taille : message immédiat *« Désolé, le dernier vient de partir »* et proposition d'alerte de retour en stock *(F7.4)*. Ce cas doit être traité à l'écran, pas seulement dans l'API.
 
-**Décision.** Le délai d'expiration annoncé *(F5.9)* est affiché **avant** le bouton d'achat. Hors direct, l'acheteuse n'a pas vu le vendeur parler : le délai est la seule information qui lui dit si elle attendra trois jours ou trois semaines.
+**Décision.** Le délai d'expiration annoncé *(F5.9)* est affiché **avant** le bouton d'achat. Hors direct, l'acheteuse n'a pas vu la boutique parler : le délai est la seule information qui lui dit si elle attendra trois jours ou trois semaines.
 
 ### 2. Structure de code
 
@@ -251,7 +251,7 @@ Paramètres : `delai_acceptation_direct_s`, `delai_acceptation_catalogue_s` *(R-
 
 ### 4. Design
 
-Fiche article hors direct — ordre vertical : galerie, prix (et prix barré si promotion, `F1.9`), nom, badge vendeur *(F0.7)*, tailles disponibles (**les épuisées barrées, pas cachées**, `R-A3`), état et mesures *(F1.18)*, délai d'expédition, description, questions *(F1.20)*, autres articles du vendeur. Bouton « Je prends » **fixé en bas**, toujours visible.
+Fiche article hors direct — ordre vertical : galerie, prix (et prix barré si promotion, `F1.9`), nom, badge boutique *(F0.7)*, tailles disponibles (**les épuisées barrées, pas cachées**, `R-A3`), état et mesures *(F1.18)*, délai d'expédition, description, questions *(F1.20)*, autres articles de la boutique. Bouton « Je prends » **fixé en bas**, toujours visible.
 
 **Prompt Stitch** — préambule commun, puis :
 
@@ -288,17 +288,17 @@ pendant que vous choisissiez votre taille.", a full-width primary button
 
 ### 5. Backend
 
-- `GET /articles/:id` — projection complète : article, variantes avec disponible, vendeur et badge, promotion applicable *(F7.22)*, délai d'expédition, mesures, nombre de questions. **Une seule requête** : sur réseau lent, trois appels pour une fiche sont trois occasions d'échouer.
+- `GET /articles/:id` — projection complète : article, variantes avec disponible, boutique et badge, promotion applicable *(F7.22)*, délai d'expédition, mesures, nombre de questions. **Une seule requête** : sur réseau lent, trois appels pour une fiche sont trois occasions d'échouer.
 - `POST /reservations` avec `origine: 'catalogue'` — réutilisé tel quel *(F1.10)*.
 - `POST /panier/valider` puis `POST /commandes/:id/paiement` — inchangés.
-- Le délai d'acceptation vendeur est calculé depuis l'origine à la création de commande ; son dépassement émet une notification et alimente le score de confiance *(F6.2)*.
+- Le délai d'acceptation boutique est calculé depuis l'origine à la création de commande ; son dépassement émet une notification et alimente le score de confiance *(F6.2)*.
 
 **Tests**
-- Achat catalogue de bout en bout : réservation → commande → paiement → séquestre → livraison → confirmation.
+- Achat catalogue de bout en bout : réservation → commande → **paiement direct à la boutique** *(`DP-07`)* → livraison → confirmation.
 - La commande porte `origine = catalogue` et **suit la même machine à états** *(R-H1)*.
 - Pièce unique → quantité non demandée, une seule réservation possible.
 - Course au stock pendant le choix de taille → `STOCK_INSUFFISANT` et rang de file renvoyé.
-- Vendeur non autorisé à encaisser *(F0.6)* → achat refusé avec motif clair.
+- Boutique non autorisé à encaisser *(F0.6)* → achat refusé avec motif clair.
 - Délai d'acceptation catalogue > délai direct, vérifié sur les valeurs de paramètre.
 
 ### 6. Frontend
@@ -307,7 +307,7 @@ pendant que vous choisissiez votre taille.", a full-width primary button
 
 Le total avec frais de livraison est affiché **dans la feuille**, avant le bouton de paiement *(RB7)*. Aucun frais ne peut apparaître après.
 
-`apps/web` sert la fiche pour l'aperçu de lien partagé sur WhatsApp et Facebook *(F7.11)* : titre, image, prix, nom du vendeur.
+`apps/web` sert la fiche pour l'aperçu de lien partagé sur WhatsApp et Facebook *(F7.11)* : titre, image, prix, nom de la boutique.
 
 ```issues
 feature: F1.15
@@ -337,7 +337,7 @@ Même geste que « Je prends », autre issue : l'article est réservé pour la d
 
 ```
 apps/api/src/modules/commande/
-├─ panier.ts        regroupement par vendeur, totaux, frais par vendeur
+├─ panier.ts        regroupement par boutique, totaux, frais par boutique
 └─ routes.ts        GET /panier · POST /panier/lignes · DELETE /panier/lignes/:id
 apps/mobile/src/features/panier/
 ├─ ecrans/EcranPanier.tsx
@@ -347,13 +347,13 @@ apps/mobile/src/features/panier/
 
 ### 3. Base de données
 
-Aucune table nouvelle : une ligne de panier **est** une réservation active. Le panier est une vue des réservations actives de l'utilisateur, groupées par vendeur.
+Aucune table nouvelle : une ligne de panier **est** une réservation active. Le panier est une vue des réservations actives de l'utilisateur, groupées par boutique.
 
 **Décision de modélisation.** Une table `panier` séparée créerait deux sources de vérité sur ce qui est réservé, donc un risque de survente. Le panier n'a pas d'existence propre : il est la projection des réservations.
 
 ### 4. Design
 
-Panier **groupé par vendeur** *(F3.1)*, frais de livraison par vendeur et cumulés — sinon l'acheteuse découvre à la fin qu'elle paie trois livraisons. Proposition « Regrouper au même point relais et économiser X Ar ». Minuteur par ligne, ligne expirée signalée **avant** toute tentative de paiement.
+Panier **groupé par boutique** *(F3.1)*, frais de livraison par boutique et cumulés — sinon l'acheteuse découvre à la fin qu'elle paie trois livraisons. **Le nombre de confirmations de paiement — une par boutique — est annoncé avant l'écran de paiement** *(`DP-11`, `R-M6`)*. Minuteur par ligne, ligne expirée signalée **avant** toute tentative de paiement.
 
 **Prompt Stitch** — préambule commun, puis :
 
@@ -365,7 +365,7 @@ name, size, price, a quantity stepper and a "Réservé 24:12" pill; a group
 footer row "Livraison 5 000 Ar · Point relais"; a second seller group card with
 one item row whose pill is red and reads "Réservation expirée" with a
 "Reprendre" link, and the row content dimmed; a suggestion card with a truck
-icon reading "Regroupez au même point relais et économisez 7 000 Ar" with a
+icon reading "Un seul paiement pour tout le panier" (DP-16, R-M10) with a
 "Regrouper" link; a totals block: "Sous-total 118 000 Ar", "Livraison
 17 000 Ar", "Total 135 000 Ar" in large bold; pinned bottom full-width primary
 button "Payer 135 000 Ar".
@@ -375,10 +375,10 @@ The expired line must be visually obvious before the user reaches the button.
 ### 5. Backend
 
 `POST /panier/lignes` = `POST /reservations` avec `origine: 'catalogue'`.
-`GET /panier` — réservations actives groupées par vendeur, frais par vendeur *(F3.5)*, remises applicables *(F3.15)*, lignes expirées **incluses et marquées** plutôt que silencieusement retirées.
+`GET /panier` — réservations actives groupées par boutique, frais par boutique *(F3.5)*, remises applicables *(F3.15)*, lignes expirées **incluses et marquées** plutôt que silencieusement retirées.
 `POST /panier/valider` — refuse si une ligne est expirée, avec la liste des lignes concernées.
 
-**Tests** : durée 30 min appliquée ; expiration → une **seule** notification *(F17.12)* ; panier multi-vendeurs correctement groupé, frais par vendeur ; paiement au moment exact de l'expiration → jamais d'encaissement sans stock ; modification du paramètre de durée → n'affecte pas les réservations en cours.
+**Tests** : durée 30 min appliquée ; expiration → une **seule** notification *(F17.12)* ; panier multi-boutiques correctement groupé, frais par boutique ; paiement au moment exact de l'expiration → jamais d'encaissement sans stock ; modification du paramètre de durée → n'affecte pas les réservations en cours.
 
 ### 6. Frontend
 
@@ -402,13 +402,13 @@ depend: [F1.10, F1.15, F3.1]
 
 ### 1. Conception
 
-Sans démonstration vidéo, **la fiche porte seule la charge de la confiance**. Elle doit répondre aux questions qu'on posait au vendeur en direct : c'est neuf ? ça taille comment ? il y a un défaut ?
+Sans démonstration vidéo, **la fiche porte seule la charge de la confiance**. Elle doit répondre aux questions qu'on posait à la boutique en direct : c'est neuf ? ça taille comment ? il y a un défaut ?
 
-- **État** : neuf avec étiquette / très bon / bon / correct. Quatre valeurs, pas douze — un vendeur qui hésite entre sept nuances ne remplit pas le champ.
+- **État** : neuf avec étiquette / très bon / bon / correct. Quatre valeurs, pas douze — une boutique qui hésite entre sept nuances ne remplit pas le champ.
 - **Mesures réelles** : épaules, poitrine, taille, longueur. **Sur des vêtements importés, les mesures comptent plus que l'étiquette de taille** : un « M » de deux fournisseurs n'est pas le même vêtement.
 - **Photos** : jusqu'à 8, dont on recommande une de l'étiquette et une des défauts éventuels.
 
-**Décision — on incite, on n'interdit pas** *(R-H4)*. Les mesures sont facultatives ; un article mesuré porte un marqueur et remonte au tri. Rendre les mesures obligatoires ferait abandonner la création de fiche, qui est déjà l'étape la plus coûteuse pour le vendeur.
+**Décision — on incite, on n'interdit pas** *(R-H4)*. Les mesures sont facultatives ; un article mesuré porte un marqueur et remonte au tri. Rendre les mesures obligatoires ferait abandonner la création de fiche, qui est déjà l'étape la plus coûteuse pour la boutique.
 
 **Comparaison au profil.** Les mesures de l'acheteuse *(F0.5)* permettent d'afficher « proche de votre taille » / « plus petit que d'habitude ». C'est ce qui réduit les retours pour cause de taille, première cause de litige dans le vestimentaire *(F5.8)*.
 
@@ -434,7 +434,7 @@ Migration `..._f1_18_fiche_enrichie` : `article.etat_vetement` (énumération, n
 
 ### 4. Design
 
-Saisie côté vendeur : quatre cartes illustrées pour l'état, schéma des points de mesure avec quatre champs. Affichage côté acheteuse : bloc dépliable avec comparaison au profil.
+Saisie côté boutique : quatre cartes illustrées pour l'état, schéma des points de mesure avec quatre champs. Affichage côté acheteuse : bloc dépliable avec comparaison au profil.
 
 **Prompt Stitch** — préambule commun, puis :
 
@@ -489,9 +489,9 @@ depend: [F1.1]
 
 ### 1. Conception
 
-La vitrine est vendeuse en permanence. Le direct est un **état temporaire affiché en surimpression**, jamais une condition d'accès au catalogue *(R-H7)*.
+La vitrine est boutique en permanence. Le direct est un **état temporaire affiché en surimpression**, jamais une condition d'accès au catalogue *(R-H7)*.
 
-Composition hors direct : bandeau boutique (nom, badge, score, abonnés, délai d'expédition moyen), promotions en cours *(F7.22)*, événements auxquels le vendeur participe *(F20.2)*, prochain rendez-vous *(F17.4)*, puis onglets **Articles / Directs / Avis / À propos**.
+Composition hors direct : bandeau boutique (nom, badge, score, abonnés, délai d'expédition moyen), promotions en cours *(F7.22)*, événements auxquels la boutique participe *(F20.2)*, prochain rendez-vous *(F17.4)*, puis onglets **Articles / Directs / Avis / À propos**.
 
 En direct : bandeau « En direct maintenant » en tête, **sans masquer le catalogue**.
 
@@ -514,7 +514,7 @@ apps/web/src/pages/boutique/[slug].tsx    aperçu de lien, partage externe
 
 ### 3. Base de données
 
-Aucune table nouvelle. `profil_vendeur` gagne `slug UQ` (partage d'un lien lisible) et `delai_expedition_moyen` (calculé, déjà prévu au CDC).
+Aucune table nouvelle. `boutique` gagne `slug UQ` (partage d'un lien lisible) et `delai_expedition_moyen` (calculé, déjà prévu au CDC).
 
 ### 4. Design
 
@@ -546,15 +546,15 @@ collection", and two buttons: primary "Suivre la boutique", secondary
 
 ### 5. Backend
 
-`GET /vendeurs/:idOuSlug/vitrine` — une seule réponse portant tout l'en-tête et la première page d'articles. Pagination par curseur sur les onglets. Route **publique** *(F0.10)*.
+`GET /boutiques/:idOuSlug/vitrine` — une seule réponse portant tout l'en-tête et la première page d'articles. Pagination par curseur sur les onglets. Route **publique** *(F0.10)*.
 
-`GET /vendeur/tableau-de-bord` renvoie le chiffre d'affaires **ventilé par origine**.
+`GET /boutique/tableau-de-bord` renvoie le chiffre d'affaires **ventilé par origine**.
 
 **Tests** : vitrine accessible sans compte ; catalogue visible pendant un direct ; état vide utile ; ventilation par origine correcte ; slug unique et stable.
 
 ### 6. Frontend
 
-Onglets avec état conservé, grille recyclée *(C1)*, images en substitut basse définition d'abord. `apps/web` rend la vitrine pour l'aperçu de lien — c'est le canal d'acquisition principal du vendeur *(F7.11)*.
+Onglets avec état conservé, grille recyclée *(C1)*, images en substitut basse définition d'abord. `apps/web` rend la vitrine pour l'aperçu de lien — c'est le canal d'acquisition principal de la boutique *(F7.11)*.
 
 ```issues
 feature: F1.19
@@ -568,88 +568,6 @@ depend: [F1.11, F0.10]
 
 ---
 
-## F1.17 — Dépôt d'annonce par un particulier ★
-
-`P1 · S · complet` — **Dépend de** F0.4, F0.6, F1.14 · **Règles** R-H5, R-H6, R-H10, R-H11 · **Story** US-VENTE-04
-
-### 1. Conception
-
-**Quatre champs : photos, prix, taille, état.** Rien d'autre. Pas de nom de boutique, pas de catégorie obligatoire, pas de KYC. Stock à 1, pièce unique *(F1.14)*.
-
-La vérification *(F0.6)* est exigée **au premier encaissement**, pas avant *(R-H5)*. Demander une CIN et un selfie à quelqu'un qui n'est pas encore sûr de vouloir vendre une robe, c'est le perdre.
-
-**Ce que voit l'acheteuse** *(R-H6)* : un badge « Particulier » distinct, un délai d'expédition, pas de politique de retour commerciale — et **la même protection** : séquestre, litige, arbitrage. C'est précisément ce qui rend l'achat à un inconnu acceptable.
-
-**Cas d'échec dimensionnant** *(R-H10)* : le particulier refuse la vérification alors qu'une commande est payée → **annulation et remboursement intégral** de l'acheteuse, et le compte ne peut plus recevoir de commandes. Le risque est porté par le vendeur qui a refusé, jamais par l'acheteuse.
-
-**Décision ouverte à trancher avant de coder** *(R-H11)* : le seuil de bascule vers le statut professionnel et le barème de commission du particulier. Ils conditionnent l'écran de vérification, donc la structure du parcours.
-
-### 2. Structure de code
-
-```
-apps/api/src/modules/catalogue/annonceParticulier.ts   création en 4 champs
-apps/api/src/modules/identite/roles.ts                 bascule, seuil (F0.4)
-apps/api/src/modules/paiement/service.ts               + blocage d'encaissement
-apps/api/src/jobs/verificationParticulier.ts           relance, annulation (R-H10)
-apps/mobile/src/features/annonce/ecrans/{EcranDepot,EcranVerificationRequise}.tsx
-```
-
-### 3. Base de données
-
-Réutilise `profil_vendeur.type_vendeur = particulier` *(F0.4)*. `article` : `piece_unique = true` par défaut pour un particulier. `commande` : motif d'annulation `verification_refusee`.
-
-### 4. Design
-
-Un seul écran de dépôt, quatre champs, aucun repli à ouvrir. Écran de vérification requise déclenché **par un paiement reçu**, avec le montant en attente affiché — c'est le meilleur argument pour faire la vérification.
-
-**Prompt Stitch** — préambule commun, puis :
-
-```
-Screen 1 — "Vendre un article" (private seller, 4 fields only).
-Vertical order: back arrow, title "Vendre un article"; a photo area showing one
-filled square thumbnail and three dashed "+" placeholders with a caption
-"Ajoutez jusqu'à 5 photos"; a price field with a large "Ar" suffix, placeholder
-"25 000"; a size field rendered as a horizontal chip row "XS S M L XL 38 40 42";
-an "État" row of four selectable chips "Neuf", "Très bon", "Bon", "Correct";
-a muted reassurance card with a shield icon reading "Vous n'avez pas besoin de
-créer une boutique. Nous vous demanderons vos papiers seulement quand vous
-serez payée."; full-width primary button "Publier".
-No shop name field, no category field, no description field.
-
-Screen 2 — "Vérification requise" (triggered by a paid order).
-Vertical order: a green money illustration; title "Vous avez été payée !";
-a large amount card "38 000 Ar en attente" with a line "Commande #1042 — robe
-wax bleue"; body text "Pour recevoir cet argent, nous devons vérifier votre
-identité. Cela prend 5 minutes."; a three-line checklist with icons: "Une photo
-de votre CIN", "Une photo de votre visage", "Votre numéro Mobile Money";
-full-width primary button "Vérifier mon identité"; a small muted line at the
-bottom "Sans vérification, la commande sera remboursée à l'acheteuse sous 5 jours."
-```
-
-### 5. Backend
-
-`POST /articles/annonce-particulier` — 4 champs, crée le profil particulier si absent *(F0.4)*, stock 1, pièce unique.
-Le blocage d'encaissement est contrôlé dans `paiement` **et** `portefeuille`, jamais seulement à l'interface.
-Travail périodique : relance, puis annulation et remboursement intégral au terme du délai *(R-H10)*.
-
-**Tests** : publication sans KYC ni nom ; commande reçue → encaissement bloqué ; vérification faite → fonds libérables ; refus au terme du délai → **remboursement intégral** et compte fermé aux nouvelles commandes ; seuil franchi → invitation unique ; badge « Particulier » présent sur toutes les vues d'article.
-
-### 6. Frontend
-
-Formulaire à quatre champs, mise en vente depuis le dressing *(F17.10)* sans re-photographier. Le message de réassurance sur la vérification différée est affiché **avant** la publication, pas après.
-
-```issues
-feature: F1.17
-titre: Dépôt d'annonce par un particulier
-epic: "01"
-phase: P1
-prio: S
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F0.4, F0.6, F1.14]
-```
-
----
-
 ## F1.1 / F1.2 — Créer un article, variantes et stock par variante
 
 `P1 · M · complet` — **Règles** R-A1 à R-A5 · **Bloque** tout le catalogue
@@ -657,7 +575,7 @@ depend: [F0.4, F0.6, F1.14]
 ### 1. Conception
 1 à 8 photos, recadrage carré, nom, prix, catégorie, puis **grille de variantes** : tailles cochées avec une quantité par taille, couleurs si besoin.
 
-**Le raccourci de création express est obligatoire** *(R-A4)* : trois champs (photo, prix, quantité) utilisables en plein direct, le reste complété après. Sans lui, aucun vendeur ne crée de fiche pendant un direct — et la fiche non créée est une vente perdue.
+**Le raccourci de création express est obligatoire** *(R-A4)* : trois champs (photo, prix, quantité) utilisables en plein direct, le reste complété après. Sans lui, aucun boutique ne crée de fiche pendant un direct — et la fiche non créée est une vente perdue.
 
 L'employé peut créer et modifier des articles, **jamais le prix** *(F10.4, matrice §3.2)*.
 
@@ -675,7 +593,7 @@ apps/mobile/src/features/article/
 ```
 
 ### 3. Base de données
-`article` et `variante` (CDC §3.2), `mouvement_stock`. Unicité `(article_id, taille, couleur)`. Index `(vendeur_id, statut)`.
+`article` et `variante` (CDC §3.2), `mouvement_stock`. Unicité `(article_id, taille, couleur)`. Index `(boutique_id, statut)`.
 
 Images : trois tailles générées côté serveur (vignette, liste, détail). **Jamais d'image pleine résolution dans une liste** *(C1, C2)*.
 
@@ -733,7 +651,7 @@ depend: [F1.1]
 
 `P1 · M · complet` — **Règles** R-A2, R-S2
 
-**Conception** — écran « Stock » trié par quantité croissante, modification en ligne, **historique des mouvements** (vente, retour, correction manuelle, réservation expirée). Alerte quand une variante passe sous un seuil défini par le vendeur. Le stock affiché en direct est le stock réel **moins les réservations** *(R-S2)*.
+**Conception** — écran « Stock » trié par quantité croissante, modification en ligne, **historique des mouvements** (vente, retour, correction manuelle, réservation expirée). Alerte quand une variante passe sous un seuil défini par la boutique. Le stock affiché en direct est le stock réel **moins les réservations** *(R-S2)*.
 
 **Structure** — `modules/stock/{mouvements,alertes}.ts` · `apps/mobile/src/features/stock/ecrans/EcranStock.tsx`.
 
@@ -741,7 +659,7 @@ depend: [F1.1]
 
 **Design** — liste triée, saisie en ligne, historique dépliable par variante. Prompt Stitch : *stock management list, rows showing product thumbnail, variant label "Robe wax · M · Bleu", a large inline numeric stepper, and a red "Rupture" or amber "Bas (2)" chip; rows sorted lowest first; a filter bar "Tout · En rupture · Sous le seuil"; tapping a row expands a movement history list with dated entries "Vente −1", "Réservation expirée +1", "Correction +5".*
 
-**Backend** — `GET /vendeur/stock`, `PATCH /variantes/:id/quantite` (crée un mouvement de type `correction`), `GET /variantes/:id/mouvements`. Alerte émise par un travail asynchrone, pas dans la transaction de vente.
+**Backend** — `GET /boutique/stock`, `PATCH /variantes/:id/quantite` (crée un mouvement de type `correction`), `GET /variantes/:id/mouvements`. Alerte émise par un travail asynchrone, pas dans la transaction de vente.
 
 **Tests** : toute variation de quantité produit un mouvement ; somme des mouvements = quantité courante ; alerte au franchissement du seuil, **une seule fois** par franchissement ; disponible = stock − réservé.
 
@@ -767,7 +685,7 @@ depend: [F1.2]
 
 **Backend** — `PATCH /articles/:id/statut`. Transitions non prévues rejetées *(CDC §13.1)*.
 
-**Design** — sélecteur d'état sur la fiche vendeur, badge d'état dans la liste du catalogue. Prompt Stitch : *seller catalogue list with a status chip on each row — grey "Brouillon", green "En ligne", muted "Masqué", red "Épuisé" — and a bottom sheet to change status showing four rows with radio buttons and a one-line explanation under each.*
+**Design** — sélecteur d'état sur la fiche boutique, badge d'état dans la liste du catalogue. Prompt Stitch : *seller catalogue list with a status chip on each row — grey "Brouillon", green "En ligne", muted "Masqué", red "Épuisé" — and a bottom sheet to change status showing four rows with radio buttons and a one-line explanation under each.*
 
 **Tests** : transitions valides et invalides ; `epuise` automatique à stock nul et retour automatique ; article masqué absent des listes mais accessible par identifiant.
 
@@ -783,17 +701,17 @@ depend: [F1.1]
 
 ---
 
-## F1.11 — Vitrine publique du vendeur
+## F1.11 — Vitrine publique de la boutique
 
 `P1 · M · complet` — **Voir** F1.19 qui en porte la refonte
 
-**Conception** — onglets Articles / Directs / Avis / À propos, badge, score de confiance, délai d'expédition moyen, nombre de ventes. Accessible **sans compte** *(F0.10)* et par lien partagé — c'est le canal d'acquisition principal du vendeur, il doit être atteignable en un appui depuis le tableau de bord.
+**Conception** — onglets Articles / Directs / Avis / À propos, badge, score de confiance, délai d'expédition moyen, nombre de ventes. Accessible **sans compte** *(F0.10)* et par lien partagé — c'est le canal d'acquisition principal de la boutique, il doit être atteignable en un appui depuis le tableau de bord.
 
 **Structure, base de données, design, backend, frontend** — mutualisés avec `F1.19`, qui décrit la vitrine dans son état définitif. Ce mini-plan couvre la structure de base (onglets, projections, pagination) ; `F1.19` ajoute le comportement catalogue-first, les promotions, les événements et l'état vide.
 
 ```issues
 feature: F1.11
-titre: Vitrine publique du vendeur
+titre: Vitrine publique de la boutique
 epic: "01"
 phase: P1
 prio: M
@@ -809,7 +727,7 @@ depend: [F1.1, F0.10]
 
 **Conception** — stock = 1, comportement spécifique : une seule réservation possible, pas de sélecteur de quantité, marqueur « Une seule pièce » à l'écran. C'est le **moteur d'urgence naturel** du direct, sans avoir à inventer une fausse rareté — et la rareté affichée doit être vraie *(RB9)*.
 
-Comportement par défaut du vendeur particulier *(F1.17)*.
+~~Comportement par défaut du vendeur particulier~~ ❌ *(`DP-01`)* — l'acteur et `F1.17` n'existent plus.
 
 **Base de données** — `article.piece_unique bool`.
 
@@ -863,7 +781,7 @@ depend: [F1.1]
 
 `P1 · S · moyen`
 
-**Conception** — sélection de N photos → N fiches en brouillon → complétées à la chaîne (prix, taille, état), avec report de la saisie précédente pour aller vite. Usage réel : le vendeur photographie son arrivage de 30 pièces, puis complète le soir.
+**Conception** — sélection de N photos → N fiches en brouillon → complétées à la chaîne (prix, taille, état), avec report de la saisie précédente pour aller vite. Usage réel : la boutique photographie son arrivage de 30 pièces, puis complète le soir.
 
 **Base de données** — aucune table nouvelle : des `article` en `brouillon`.
 
@@ -915,7 +833,7 @@ depend: [F1.1]
 
 `P2 · S · moyen` — **Règles** R-H9 · **Story** US-VENTE-07
 
-**Conception** — question publique sous la fiche, réponse publique du vendeur, visible de toutes les acheteuses suivantes. **Public et non privé pour deux raisons** : cela évite de rouvrir la messagerie libre *(F7.14)*, et une réponse écrite une fois sert cent fois.
+**Conception** — question publique sous la fiche, réponse publique de la boutique, visible de toutes les acheteuses suivantes. **Public et non privé pour deux raisons** : cela évite de rouvrir la messagerie libre *(F7.14)*, et une réponse écrite une fois sert cent fois.
 
 Filtrage automatique appliqué *(R-X1)*. **Blocage explicite** des questions contenant un numéro de téléphone ou une invitation à sortir de la plateforme *(US-VENTE-07 CA5)* — c'est le principal usage détourné à prévoir.
 
@@ -923,9 +841,9 @@ Filtrage automatique appliqué *(R-X1)*. **Blocage explicite** des questions con
 
 **Backend** — `GET/POST /articles/:id/questions`, `POST .../reponse`. Filtrage et détection de coordonnées avant publication.
 
-**Design** — section « Questions (3) » sur la fiche, les 3 plus utiles visibles sans dépliage. Prompt Stitch : *product page questions section titled "Questions (3)", each entry showing the asker's first name and date, the question text, and an indented seller answer with a small verified badge; a "Voir les 3 questions" link; and a compose row at the bottom "Posez votre question" with a send icon; plus an error state under the compose field reading "Les numéros de téléphone ne sont pas autorisés — posez votre question ici, la vendeuse vous répondra publiquement."*
+**Design** — section « Questions (3) » sur la fiche, les 3 plus utiles visibles sans dépliage. Prompt Stitch : *product page questions section titled "Questions (3)", each entry showing the asker's first name and date, the question text, and an indented seller answer with a small verified badge; a "Voir les 3 questions" link; and a compose row at the bottom "Posez votre question" with a send icon; plus an error state under the compose field reading "Les numéros de téléphone ne sont pas autorisés — posez votre question ici, la boutique vous répondra publiquement."*
 
-**Tests** : question filtrée masquée ; numéro de téléphone bloqué avec message explicite ; réponse visible publiquement ; notification du vendeur.
+**Tests** : question filtrée masquée ; numéro de téléphone bloqué avec message explicite ; réponse visible publiquement ; notification de la boutique.
 
 ```issues
 feature: F1.20
@@ -945,7 +863,7 @@ depend: [F1.1, F19.1]
 
 **Conception** — table de correspondance par marque et repères de mesure, pour traduire un « M » d'un fournisseur en centimètres. Complète `F1.18` : les mesures réelles de l'article restent prioritaires sur le guide, qui n'est qu'une aide.
 
-**Base de données** — `guide_taille (marque, categorie, taille, mesures jsonb)`, alimenté par l'équipe et enrichi par les vendeurs.
+**Base de données** — `guide_taille (marque, categorie, taille, mesures jsonb)`, alimenté par l'équipe et enrichi par les boutiques.
 
 **Backend** — `GET /guides-tailles?marque=&categorie=`.
 
@@ -995,7 +913,7 @@ depend: [F1.1]
 
 **Impact base de données** — `article.position_vitrine int null`, `article.epingle bool`.
 
-**Endpoint** — `PUT /vendeur/vitrine/ordre`.
+**Endpoint** — `PUT /boutique/vitrine/ordre`.
 
 ```issues
 feature: F1.12
@@ -1013,13 +931,13 @@ depend: [F1.19]
 
 `P2 · C · cadre`
 
-**Conception** — import par tableau (CSV) ou photos en masse, avec correspondance de colonnes et rapport d'erreurs ligne par ligne. Destiné aux vendeurs qui tiennent déjà un fichier.
+**Conception** — import par tableau (CSV) ou photos en masse, avec correspondance de colonnes et rapport d'erreurs ligne par ligne. Destiné aux boutiques qui tiennent déjà un fichier.
 
-**Impact base de données** — table `import_catalogue (id, vendeur_id, statut, lignes_total, lignes_ok, rapport jsonb)`.
+**Impact base de données** — table `import_catalogue (id, boutique_id, statut, lignes_total, lignes_ok, rapport jsonb)`.
 
-**Endpoints** — `POST /vendeur/imports`, `GET /vendeur/imports/:id`.
+**Endpoints** — `POST /boutique/imports`, `GET /boutique/imports/:id`.
 
-**Point d'attention** — l'import ne doit **jamais** créer d'articles en ligne directement : tout arrive en brouillon, le vendeur valide. Un import raté qui publie 200 fiches fausses coûte plus cher que l'import ne rapporte.
+**Point d'attention** — l'import ne doit **jamais** créer d'articles en ligne directement : tout arrive en brouillon, la boutique valide. Un import raté qui publie 200 fiches fausses coûte plus cher que l'import ne rapporte.
 
 ```issues
 feature: F1.13
@@ -1126,12 +1044,12 @@ depend: [F1.21]
 
 `P1 · S · moyen` — **Règles** R-Y15 · **Dépend de** F1.21
 
-Le vendeur déclare d'où vient le produit. **Texte libre obligatoire, pièce
+La boutique déclare d'où vient le produit. **Texte libre obligatoire, pièce
 justificative facultative** mais valorisée au tri.
 
 **Pourquoi pas la facture obligatoire** : une revendeuse qui achète en gros à
 Antananarivo n'a souvent aucune facture. L'exiger exclurait la majorité des
-vendeuses réelles. La déclaration engage sa responsabilité ; la pièce la
+boutiques réelles. La déclaration engage sa responsabilité ; la pièce la
 renforce.
 
 **Base.** `attributs->>'provenance'` + `article.provenance_justifiee boolean`
@@ -1152,11 +1070,11 @@ depend: [F1.21]
 
 ---
 
-## F1.24 — Alerte de péremption au vendeur
+## F1.24 — Alerte de péremption à la boutique
 
 `P2 · S · cadre` — **Dépend de** F1.22, S5
 
-Un travail quotidien avertit le vendeur des articles qui périment sous trente
+Un travail quotidien avertit la boutique des articles qui périment sous trente
 jours. Sans cette alerte, il découvre l'invendable au refus de paiement d'une
 cliente — le pire moment.
 
@@ -1165,7 +1083,7 @@ avertir deux fois le même mois.
 
 ```issues
 feature: F1.24
-titre: Alerte de péremption au vendeur
+titre: Alerte de péremption à la boutique
 epic: "01"
 phase: P2
 prio: S

@@ -42,7 +42,7 @@
 
 > **Elles encaissent et reversent. Aucune ne détient les fonds pendant la
 > livraison.** Ce sont des fournisseurs, pas des concurrents — et l'absence de
-> séquestre chez toutes les cinq est notre première fenêtre.
+> séquestre chez toutes les cinq **était** notre première fenêtre. ⚠️ **JP n'en fait plus** *(`DP-07`)* — la fenêtre devient **la vérification d'identité du vendeur**, qu'aucune des cinq ne fait davantage *(`D-21`)*.
 
 ## 1.3 Le seul outil de direct malgache — et il ne parle pas à l'acheteuse
 
@@ -61,8 +61,8 @@
 >
 > **Trois enseignements :**
 >
-> 1. **Le problème vendeur est déjà servi.** Encaisser, tracer, ne pas
->    survendre : c'est fait, pour 50 000 Ar par mois. **Notre studio vendeur
+> 1. **Le problème boutique est déjà servi.** Encaisser, tracer, ne pas
+>    survendre : c'est fait, pour 50 000 Ar par mois. **Notre studio boutique
 >    n'est pas un différenciateur** — c'est un prérequis.
 > 2. **Le problème acheteur n'est servi par personne.** Live Pay Mada ne dit
 >    rien à celle qui vient de virer 50 000 Ar à un inconnu. **Le côté acheteur
@@ -72,8 +72,8 @@
 >    du secteur l'a compris avant nous. *(Voir la décision de genre, `D-16`.)*
 >
 > **Et un avertissement sur notre modèle.** Leur abonnement à 50 000 Ar/mois est
-> un revenu **certain** pour la vendeuse à comparer à notre commission de 8 %.
-> Une vendeuse qui fait 1 000 000 Ar de ventes mensuelles nous paierait
+> un revenu **certain** pour la boutique à comparer à notre commission de 8 %.
+> Une boutique qui fait 1 000 000 Ar de ventes mensuelles nous paierait
 > 80 000 Ar contre 50 000 Ar chez eux. **Notre commission ne se défend que par
 > ce qu'elle achète en plus : les acheteuses qui n'osaient pas.** C'est
 > exactement l'argument du badge vérifié, et il devient central, pas
@@ -106,7 +106,7 @@ dit tout : **la première place de marché du pays est un groupe Facebook.**
 
 > **Conséquence directe, et elle est majeure pour le deck.**
 >
-> Les vendeuses malgaches font du commerce en direct **sur une infrastructure
+> Les boutiques malgaches font du commerce en direct **sur une infrastructure
 > que Meta a délibérément dénudée**. Commande, prix, paiement, litige : tout est
 > manuel, depuis quatre ans.
 >
@@ -120,7 +120,7 @@ dit tout : **la première place de marché du pays est un groupe Facebook.**
 
 ## 2.1 Les sept téléphones
 
-Portrait d'une vendeuse de friperie en direct à Madagascar, publié en
+Portrait d'une boutique de friperie en direct à Madagascar, publié en
 **juillet 2026** *([Newsmada](https://newsmada.com/2026/07/17/e-commerce-comment-se-lancer-avec-mahenintsoa-jenny-alissa-rakotonirina/))* :
 
 | | |
@@ -138,10 +138,10 @@ Portrait d'une vendeuse de friperie en direct à Madagascar, publié en
 > locale ou internationale, n'a jamais nommé cette friction. **Nous devrions
 > l'utiliser dans le deck et sur le terrain.**
 >
-> **2. La vendeuse la plus visible du pays cite comme premier problème le défaut
+> **2. La boutique la plus visible du pays cite comme premier problème le défaut
 > de paiement de l'acheteuse.** C'est le **symétrique exact** du risque
-> acheteur. **Personne ne dit au vendeur malgache qu'il est aussi une victime.**
-> Notre BrandScript vendeur *(`01`)* est donc validé par le terrain : on ne lui
+> acheteur. **Personne ne dit à la boutique malgache qu'elle est aussi une victime.**
+> Notre BrandScript boutique *(`01`)* est donc validé par le terrain : on ne lui
 > vend pas du temps, on lui vend les ventes qu'il perd déjà.
 
 ## 2.2 Ce que coûte la gestion par commentaires
@@ -174,10 +174,10 @@ grandeur indicatif, jamais comme chiffre de deck.*
 | **TikTok Shop** | ***« Where Entertainment meets Commerce »*** · concept propriétaire : ***« Shoppertainment »*** | **Divertissement** | Ne parle jamais de confiance. Parle d'**envie**. |
 | **Shopee Live** | *« Shopee puts you first »* · *« Love Shopping – Surf Shopee »* | **Ludique / promo** | Oui — **« Shopee Guarantee »**, escrow réel, libération **J+3** après livraison, fenêtre de litige **15 jours**. Jamais dans le slogan. |
 | **Taobao Live** | — | **Spectacle** | — |
-| **Poshmark** | *« Buy, sell, and discover fashion, home decor, beauty, and more »* | **Sororal / communautaire** | Oui — **« Posh Protect »**. **Paiement libéré automatiquement au vendeur 3 jours après livraison sans litige** = escrow de fait. Jamais dans le slogan. |
+| **Poshmark** | *« Buy, sell, and discover fashion, home decor, beauty, and more »* | **Sororal / communautaire** | Oui — **« Posh Protect »**. **Paiement libéré automatiquement à la boutique 3 jours après livraison sans litige** = escrow de fait. Jamais dans le slogan. |
 | **Bambuser** | *« We are the number #1 video commerce platform, empowering brands with immediate conversion… through the magic of video content. »* | **Infrastructure B2B** | Sans objet — vend aux marques |
 | **TalkShopLive** | *« The leading platform for live shopping—stream, watch, and shop seamlessly »* | **Showbiz / pro** | — |
-| **CommentSold** | *« The #1 Video Commerce & Live Selling Platform »* · *« Stop Chasing One-Time Buyers. Build Revenue That Lasts. »* | **ROI / outil vendeur** | Sans objet |
+| **CommentSold** | *« The #1 Video Commerce & Live Selling Platform »* · *« Stop Chasing One-Time Buyers. Build Revenue That Lasts. »* | **ROI / outil boutique** | Sans objet |
 | **NTWRK** | ***« Shopping At The Speed of Culture »*** | **Hype / drops** | **MORT** — absorbé dans Complex Shop, nov. 2024 |
 | **Popshop Live** | Devenu *« POP.STORE - The Creator Link in Bio Store That Does It All »* | **Créateur** | **PIVOTÉ** — racheté par CommentSold, a abandonné le direct pur |
 
@@ -187,7 +187,7 @@ grandeur indicatif, jamais comme chiffre de deck.*
 >
 > Les dix vendent **le plaisir, l'appartenance, ou la conversion.**
 >
-> Whatnot et Poshmark ont une protection acheteur solide et un séquestre réel.
+> Whatnot et Poshmark ont une protection acheteur solide et un séquestre réel — **et aucun des deux n'opère à Madagascar** *(`D-21`)*. Le concurrent réel est le direct Facebook.
 > **Ils n'en parlent jamais en première ligne.** C'est une page d'aide, un
 > filet juridique, un coût de conformité.
 >
@@ -212,7 +212,7 @@ grandeur indicatif, jamais comme chiffre de deck.*
 | **Sécurité** | *Safe & Secure*, *paiement sécurisé* | Konga, Jumia, e-varotra, Marche Madagascar — **le plus galvaudé de tous** |
 | **Séquestre / Escrow** | *Escrow*, *séquestre*, *tiers de confiance* | Thiqaty *(Algérie)*, Sentinel/SentiBud *(Nigeria)*, EscrowPay *(Nigeria)*, **Kaable *(Côte d'Ivoire)*** — **exclusivement des acteurs 2024-2026, africains, et jamais des leaders** |
 
-> **Lecture.** *« Escrow »* et *« séquestre »* sont **le vocabulaire des
+> **Lecture, à relire avec `D-21`.** JP ne fait plus de séquestre : ce vocabulaire nous est **désormais interdit**, pas seulement disputé. Analyse d'origine : *« Escrow »* et *« séquestre »* sont **le vocabulaire des
 > challengers**. Les leaders l'habillent. Les nouveaux entrants africains
 > l'exhibent — précisément parce que le mot signale la rupture avec le paiement
 > à l'aveugle.
@@ -225,9 +225,9 @@ grandeur indicatif, jamais comme chiffre de deck.*
 
 | Plateforme | Règle | Pourquoi nous devons nous en inspirer |
 |---|---|---|
-| **Poshmark** | Le paiement est **libéré automatiquement au vendeur 3 jours après livraison** si aucun litige n'est ouvert | Répond à notre décision ouverte *« quel délai de libération automatique des fonds ? »*. Un précédent de marché à grande échelle vaut mieux qu'un arbitrage en réunion |
-| **Shopee** | **Fenêtre de garantie portée à 15 jours** pour ouvrir un litige, après libération | Découple *libérer le vendeur vite* et *protéger l'acheteuse longtemps*. Les deux ne sont pas en contradiction |
-| **SentiBud** *(Nigeria)* | **Si l'acheteur ne répond pas au livreur, les frais de livraison sont automatiquement libérés au vendeur** | **Protection symétrique.** Le vendeur n'est pas puni de l'absence de l'acheteuse. Aucun acteur ne fait ça, et c'est exactement notre discours vendeur |
+| **Poshmark** | Le paiement est **libéré automatiquement à la boutique 3 jours après livraison** si aucun litige n'est ouvert | Répond à notre décision ouverte *« quel délai de libération automatique des fonds ? »*. Un précédent de marché à grande échelle vaut mieux qu'un arbitrage en réunion |
+| **Shopee** | **Fenêtre de garantie portée à 15 jours** pour ouvrir un litige, après libération | Découple *libérer la boutique vite* et *protéger l'acheteuse longtemps*. Les deux ne sont pas en contradiction |
+| **SentiBud** *(Nigeria)* | **Si l'acheteur ne répond pas au livreur, les frais de livraison sont automatiquement libérés à la boutique** | **Protection symétrique.** La boutique n'est pas puni de l'absence de l'acheteuse. Aucun acteur ne fait ça, et c'est exactement notre discours boutique |
 
 ---
 
@@ -240,9 +240,9 @@ produit que JP, en Afrique de l'Ouest francophone.
 |---|---|---|
 | **Slogan** | ***« Achetez, Vendez, Go Live »*** — code-switching français/anglais | *« Le direct devient une boutique »* |
 | **Auto-description** | ***« l'infrastructure de confiance et de commerce pour l'Afrique de l'Ouest francophone »*** | « Une boutique dont le catalogue est fait de vidéos » |
-| **Le mot** | **« séquestre »** — assumé, explicite | Séquestre, en interne |
+| **Le mot** | ⚠️ **« vérifiée »** — assumé, explicite *(`D-21`)*. Ancienne position : « séquestre » | Séquestre, en interne |
 | **Modèle acheteur** | Gratuit + **frais de protection acheteur de 3 %** | Gratuit, protection incluse |
-| **Modèle vendeur** | **7 %** sur livraisons confirmées + 1 % de retrait *(plafonné)*, sans abonnement | **8 %** Mode et Beauté, 3 % Tech |
+| **Modèle boutique** | **7 %** sur livraisons confirmées + 1 % de retrait *(plafonné)*, sans abonnement | **8 %** Mode et Beauté, 3 % Tech |
 | **Paiement** | Wave, Orange Money, MTN MoMo | MVola, Orange Money, Airtel Money, carte |
 | **Catégories** | **6** : beauté/cosmétiques, **perruques/cheveux**, bijoux/accessoires, mode femme… | Mode, Beauté *(Tech fermé)* |
 | Volume affiché | **250+ sessions en direct par semaine** | — |
@@ -254,7 +254,7 @@ produit que JP, en Afrique de l'Ouest francophone.
 
 **1. La thèse est validée par quelqu'un d'autre, avec de l'argent.**
 Un acteur indépendant a fait la même lecture du même marché — direct + séquestre
-+ vendeurs vérifiés + mobile money + mode et beauté — et l'a lancé. **Ce n'est
++ boutiques vérifiées + mobile money + mode et beauté — et l'a lancé. **Ce n'est
 plus une intuition, c'est une catégorie naissante.**
 
 **2. Leurs catégories recoupent exactement les nôtres.**
@@ -263,7 +263,7 @@ malgaches.** Notre découpage Mode / Beauté est confirmé par le terrain d'un
 marché comparable.
 
 **3. Leur choix le plus intelligent : facturer la protection à part, 3 %.**
-Ils font du séquestre **une ligne de facture visible** plutôt qu'un coût caché
+⚠️ **Lecture à réviser** *(`D-21`)* : nous ne faisons plus de séquestre, donc ce modèle ne nous est plus opposable tel quel. **Ce qui reste transposable** : rendre visible ce que l'acheteuse obtient — chez nous, la vérification et la trace. Analyse d'origine : ils font du séquestre **une ligne de facture visible** plutôt qu'un coût caché
 — donc **un produit, pas une fonctionnalité**. C'est une option que nous
 n'avions pas envisagée, et elle mérite un arbitrage explicite. Voir `D-11`.
 
@@ -273,7 +273,7 @@ rien du risque, rien de la peur, rien de la transformation. Et ils rangent le
 séquestre en note de bas de page à 3 %, comme tout le monde. **Ils ont le
 mécanisme sans avoir la position.** C'est précisément l'espace que nous prenons.
 
-**5. Le mot « séquestre » est pris en Afrique de l'Ouest. Il est libre à
+**5. ⚠️ Le mot « séquestre » nous est désormais interdit** *(`D-21`)* — pas parce qu'il est pris, **parce que nous n'en faisons plus**. Ancienne analyse : il est pris en Afrique de l'Ouest, libre à
 Madagascar.**
 Aucune occurrence malgache, en français comme en malgache. **Mais la fenêtre est
 datée**, comme celle de TikTok Shop.
@@ -338,10 +338,10 @@ choix.** C'est un argument de calendrier, et il joue pour nous.
 | # | L'espace vacant | Qui pourrait le prendre |
 |---|---|---|
 | **1** | **Personne, à Madagascar, ne détient les fonds pendant la livraison.** Cinq passerelles, six marketplaces : aucune. Le mot « sécurisé » partout, le mécanisme nulle part | **Nous, dès le jour 1** |
-| **2** | **Le mot « séquestre » n'a jamais été prononcé à Madagascar**, en français comme en malgache. Le champ lexical de la confiance transactionnelle est entièrement libre | Nous — et *azo antoka* est disponible |
+| **2** | ⚠️ **Obsolète** *(`D-21`)* — nous ne faisons plus de séquestre. Le fait reste vrai et **se reporte sur « boutique vérifiée »**, tout aussi inédit localement. Ancienne rédaction : le mot n'a jamais été prononcé à Madagascar, en français comme en malgache. Le champ lexical de la confiance transactionnelle est entièrement libre | Nous — et *azo antoka* est disponible |
 | **3** | **Aucune plateforme de direct au monde ne fait de la protection acheteur son slogan** | Nous — c'est le Zag |
-| **4** | **Le seul outil de direct malgache sert la vendeuse, pas l'acheteuse.** Le côté acheteur du marché n'a aucun porte-parole | Nous |
-| **5** | **Personne ne revendique la symétrie du risque.** La vendeuse la plus visible du pays cite le défaut de paiement comme son problème n° 1, et personne ne lui dit qu'elle est aussi une victime | Nous |
+| **4** | **Le seul outil de direct malgache sert la boutique, pas l'acheteuse.** Le côté acheteur du marché n'a aucun porte-parole | Nous |
+| **5** | **Personne ne revendique la symétrie du risque.** La boutique la plus visible du pays cite le défaut de paiement comme son problème n° 1, et personne ne lui dit qu'elle est aussi une victime | Nous |
 | **6** | **Personne ne parle des sept téléphones.** La friction opérationnelle réelle n'a jamais été nommée par une marque | Nous |
 | **7** | **TikTok Shop n'est pas disponible à Madagascar** et n'a pas ouvert en Afrique de l'Ouest francophone. Le déploiement africain a commencé mi-2026 par l'Afrique du Sud et le Nigeria | **Fenêtre datée** |
 | **8** | **Le malgache comme langue de marque est inoccupé.** Toutes les plateformes malgaches communiquent en français. Les noms empruntent au malgache — *E-varotra*, *Zoma*, *Taanavo* — mais **le discours reste francophone et institutionnel. Aucun ton propre, aucune voix, aucune identité visuelle mémorable dans tout le paysage local** | **Nous, et c'est peut-être le plus grand des huit** |

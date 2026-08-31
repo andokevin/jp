@@ -30,7 +30,7 @@
 | Univers | **3** — Mode, Beauté *(ouverts)*, Tech *(déclaré)* |
 | Sources de revenu annoncées | **8** |
 | Fonctionnalités au backlog | **266**, en 21 épiques |
-| Rôles servis | 4 — acheteuse, vendeuse, créatrice, donateur |
+| Rôles servis | 4 — acheteuse, boutique, créatrice, donateur |
 | Couches produit | Commerce **+** réseau de contenu **+** affiliation **+** précommande **+** cadeau |
 
 **Verdict : violation caractérisée.** Ries écrirait que JP essaie d'être une
@@ -40,8 +40,8 @@ cadeau et un tiers de confiance — **et qu'aucun esprit ne retient cinq choses.
 ### Ce que la défense vaut
 
 Le dossier a de bons arguments : Mode et Beauté **partagent la même logistique,
-la même vendeuse et le même panier** ; la promesse — la certitude — **est
-horizontale par nature** ; le séquestre protège un cosmétique aussi bien qu'une
+la même boutique et le même panier** ; la promesse — la certitude — **est
+horizontale par nature** ; **la vérification d'identité** *(`D-21`)* protège un cosmétique aussi bien qu'une
 robe.
 
 **Ces arguments sont vrais sur le plan opérationnel. Ils sont hors sujet sur le
@@ -199,7 +199,7 @@ est défensif : entretenir une position déjà acquise.
 1. **C'est la moitié de la transaction qui n'arrive jamais aujourd'hui.** On
    dit « je prends », et on ne reçoit rien. Le mot nomme exactement le manque.
 2. **Il est déjà dans la signature** — *« Je prends. Je reçois. »* — et dans le
-   mécanisme : *« le vendeur n'est payé qu'à votre confirmation de réception »*.
+   mécanisme : *« vous savez à qui vous payez »*.
 3. **Il porte deux sens en français, et les deux nous servent** : ce qu'on
    reçoit *(le colis)*, et **le reçu** *(la preuve écrite)*. Notre produit
    fabrique les deux.
@@ -227,7 +227,7 @@ signature *« Alaiko. Azoko. »* **À faire arbitrer par un locuteur natif.**
 ### Le fait qui rend cette loi décisive
 
 **La catégorie n'existe pas.** Aucune plateforme de commerce en direct dédiée à
-Madagascar. Aucun séquestre. Le mot « séquestre » n'a **jamais été prononcé**
+Madagascar. Aucune vérification d'identité du vendeur. Le mot « séquestre » n'a **jamais été prononcé**
 dans le contexte malgache, en français comme en malgache.
 
 **Nous ne prenons pas des parts de marché. Nous créons la case.**
@@ -270,7 +270,7 @@ revendication de leadership serait fausse — et sur un produit de confiance,
 
 ### La revendication utilisable dès le jour 1
 
-> **« La première plateforme malgache où le vendeur n'est payé qu'à la
+> **« La première plateforme malgache où vous savez à qui vous payez — la
 > confirmation de réception de l'acheteuse. »**
 
 | Critère | ✔ |
@@ -349,7 +349,7 @@ seul signe de reconnaissance. Le mot et la forme portent autant qu'elle.**
 
 **La mono-idée de JP :**
 
-> ## Le vendeur n'est payé qu'à votre confirmation de réception.
+> ## Vous savez à qui vous payez.
 
 **Test de singularité** : chaque fonctionnalité du produit doit pouvoir être
 rattachée à cette phrase, ou justifier explicitement pourquoi elle existe quand
@@ -365,7 +365,7 @@ même.
 | Les avis vérifiés | Seul un acheteur ayant payé peut noter |
 | Le point de retrait | ⚠️ Économique, pas rattaché — **mais il rend le petit panier viable, donc la fréquence possible.** Justifié |
 | Le dressing virtuel | ❌ **Non rattaché.** Rétention pure. Garder, ne jamais communiquer |
-| L'assistant IA du vendeur | ❌ **Non rattaché.** → retirer *(`R-2`)* |
+| L'assistant IA de la boutique | ❌ **Non rattaché.** → retirer *(`R-2`)* |
 | Les enchères | ❌ **Contredit** l'engagement de rareté réelle → réexaminer *(`R-3`)* |
 
 ---
