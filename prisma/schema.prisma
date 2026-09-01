@@ -56,6 +56,7 @@ enum TypeExtrait {
 }
 
 enum FournisseurExterne {
+  facebook
   google
 
   @@map("fournisseur_externe")
@@ -607,12 +608,15 @@ model Utilisateur {
   email          String    @unique
   emailVerifieLe DateTime? @map("email_verifie_le") @db.Timestamptz(6)
 
+  motDePasseHash String? // hashé jamais en clair 
+
   /// Le téléphone n'est PLUS un identifiant : c'est un contact de
   /// livraison (R-C15). D'où le point d'interrogation — il peut être vide.
   telephone          String?
   telephoneVerifieLe DateTime? @map("telephone_verifie_le") @db.Timestamptz(6)
 
   prenom   String?
+  nom                String?   // ← NOUVEAU — nom de famille
   photoUrl String? @map("photo_url")
   /// Français par défaut : c'est la langue écrite courante à Madagascar.
   langue   Langue  @default(fr)
