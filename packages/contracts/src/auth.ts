@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from 'zod';
 
 /**
  * Schémas Zod pour l'authentification
@@ -7,27 +7,33 @@ import {z} from "zod";
 
 // -- type de base --
 
-export const email = z.string().email({message: "L'adresse e-mail n'est pas valide."});
-export const codeOtp = z.string().length(6, {message: "Le code OTP doit contenir exactement 6 caractères."});
-export const password = z.string().min(8, {message: "Le mot de passe doit contenir au moins 8 caractères."});
-export const prenom = z.string().min(1, {message: "Le prénom est requis."});
-export const genre = z.enum(["Homme", "Femme", "Autre"], {message: "Le genre doit être 'Homme', 'Femme' ou 'Autre'."});
+export const email = z.string().email({ message: "L'adresse e-mail n'est pas valide." });
+export const codeOtp = z
+  .string()
+  .length(6, { message: 'Le code OTP doit contenir exactement 6 caractères.' });
+export const password = z
+  .string()
+  .min(8, { message: 'Le mot de passe doit contenir au moins 8 caractères.' });
+export const prenom = z.string().min(1, { message: 'Le prénom est requis.' });
+export const genre = z.enum(['Homme', 'Femme', 'Autre'], {
+  message: "Le genre doit être 'Homme', 'Femme' ou 'Autre'.",
+});
 
 // -- fonctions de validation --
-export const demanderCodeOptSchema = z.object({ email, });
+export const demanderCodeOptSchema = z.object({ email });
 export type DemanderCodeOptSchema = z.infer<typeof demanderCodeOptSchema>;
 export const verifierCodeOptSchema = z.object({
-    email,
-    code: codeOtp,
-    prenom: prenom.optional(),
-    genre: genre.optional(),
-    langue: z.enum(["fr", "en"]).default("fr"),
+  email,
+  code: codeOtp,
+  prenom: prenom.optional(),
+  genre: genre.optional(),
+  langue: z.enum(['fr', 'en']).default('fr'),
 });
 export type VerifierCodeOptSchema = z.infer<typeof verifierCodeOptSchema>;
 
 export const connexionEmailSchema = z.object({
-    email,
-    password,
+  email,
+  password,
 });
 export type ConnexionEmailSchema = z.infer<typeof connexionEmailSchema>;
 
@@ -44,33 +50,33 @@ export type ConnexionExterne = z.infer<typeof ConnexionExterneSchema>;
  * Réponse  de session aprés authentification
  */
 export const ReponseSessionSchema = z.object({
-    token: z.string(),
-    user: z.object({
-        id: z.string(),
-        email: z.string().email(),
-        prenom: z.string().nullable(),
-        genre: z.enum(["Homme", "Femme", "Autre"]).nullable(),
-        langue: z.enum(["fr", "en"]),
-        isNew: z.boolean(),
-    }),
-    expiresAt: z.number(),
+  token: z.string(),
+  user: z.object({
+    id: z.string(),
+    email: z.string().email(),
+    prenom: z.string().nullable(),
+    genre: z.enum(['Homme', 'Femme', 'Autre']).nullable(),
+    langue: z.enum(['fr', 'en']),
+    isNew: z.boolean(),
+  }),
+  expiresAt: z.number(),
 });
 export type ReponseSession = z.infer<typeof ReponseSessionSchema>;
 
 /** Réponse après la demande de code OTP */
 export const ReponseOtpSchema = z.object({
-    message: z.string(),
-    resendAfter: z.number(),
+  message: z.string(),
+  resendAfter: z.number(),
 });
 export type ReponseOtp = z.infer<typeof ReponseOtpSchema>;
 
 /** Réponse  d'erreur */
 export const ReponseErreurSchema = z.object({
-    code: z.string(),
-    message: z.string(),
-    action: z.string().optional(),
-    fields: z.record(z.string(), z.string()).optional(),
-    correlation: z.string().optional(),
+  code: z.string(),
+  message: z.string(),
+  action: z.string().optional(),
+  fields: z.record(z.string(), z.string()).optional(),
+  correlation: z.string().optional(),
 });
 export type ReponseErreur = z.infer<typeof ReponseErreurSchema>;
 
