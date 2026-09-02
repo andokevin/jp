@@ -11,7 +11,7 @@ export const email = z.string().email({ message: "L'adresse e-mail n'est pas val
 export const codeOtp = z
   .string()
   .length(6, { message: 'Le code OTP doit contenir exactement 6 caractères.' });
-export const password = z
+export const motDePasse = z
   .string()
   .min(8, { message: 'Le mot de passe doit contenir au moins 8 caractères.' });
 export const prenom = z.string().min(1, { message: 'Le prénom est requis.' });
@@ -20,20 +20,26 @@ export const genre = z.enum(['Homme', 'Femme', 'Autre'], {
 });
 
 // -- fonctions de validation --
-export const demanderCodeOptSchema = z.object({ email });
+export const demanderCodeOptSchema = z.object({
+  email,
+  finalite: z.enum(['inscription', 'connexion']).optional().default('inscription'),
+});
 export type DemanderCodeOptSchema = z.infer<typeof demanderCodeOptSchema>;
+
 export const verifierCodeOptSchema = z.object({
   email,
   code: codeOtp,
   prenom: prenom.optional(),
   genre: genre.optional(),
   langue: z.enum(['fr', 'en']).default('fr'),
+  // ⬇️ AJOUTÉ : permet à l'utilisateur de définir son mot de passe à l'inscription
+  motDePasse: motDePasse.optional(),
 });
 export type VerifierCodeOptSchema = z.infer<typeof verifierCodeOptSchema>;
 
 export const connexionEmailSchema = z.object({
   email,
-  password,
+  motDePasse,
 });
 export type ConnexionEmailSchema = z.infer<typeof connexionEmailSchema>;
 
