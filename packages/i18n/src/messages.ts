@@ -42,6 +42,16 @@ const EN = {
   'etat.vide': 'Nothing here yet.',
   'etat.erreur': 'Could not load. Tap to retry.',
   'etat.hors_ligne': 'Offline — showing what we last saved.',
+
+  // ── Erreurs spécifiques à l'identité (Ajouté pour F0.1) ───────────────────
+  'erreur.otp_invalide': 'This code is not correct. {restantes} attempts left.',
+  'erreur.otp_expire': 'This code has expired. Request a new one.',
+  'erreur.otp_tentatives_depassees': 'Too many wrong attempts. Request a new code.',
+  'erreur.otp_debit_depasse': 'Too many requests. Try again in {duree}.',
+  'erreur.email_deja_utilise': 'This email is already in use.',
+  'erreur.identifiants_incorrects': 'Email or password is incorrect.',
+  'erreur.token_externe_invalide': 'The external token is invalid.',
+  'erreur.email_non_verifie': 'Please verify your email before continuing.',
 } as const;
 
 type Messages = Record<keyof typeof EN, string>;
@@ -72,6 +82,16 @@ const FR: Messages = {
   'etat.vide': 'Rien ici pour le moment.',
   'etat.erreur': 'Chargement échoué. Réessayer.',
   'etat.hors_ligne': 'Hors ligne — voici ce qui était enregistré.',
+
+  // ── Erreurs spécifiques à l'identité (Ajouté pour F0.1) ───────────────────
+  'erreur.otp_invalide': 'Ce code est incorrect. {restantes} essais restants.',
+  'erreur.otp_expire': 'Ce code a expiré. Demandez-en un nouveau.',
+  'erreur.otp_tentatives_depassees': 'Trop d’essais incorrects. Demandez un nouveau code.',
+  'erreur.otp_debit_depasse': 'Trop de requêtes. Réessayez dans {duree}.',
+  'erreur.email_deja_utilise': 'Cette adresse e-mail est déjà utilisée.',
+  'erreur.identifiants_incorrects': 'Adresse e-mail ou mot de passe incorrect.',
+  'erreur.token_externe_invalide': 'Le jeton externe est invalide.',
+  'erreur.email_non_verifie': 'Veuillez vérifier votre adresse e-mail avant de continuer.',
 };
 
 export const CATALOGUES: Record<Langue, Messages> = { en: EN, fr: FR };

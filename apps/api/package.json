@@ -21,14 +21,17 @@
     "@jp/money": "workspace:*",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "bcrypt": "^6.0.0",
     "bullmq": "^6.1.2",
     "fastify": "^5.12.1",
     "ioredis": "^6.0.0",
+    "mysql2": "^3.24.3",
     "ws": "^8.21.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@testcontainers/redis": "^12.1.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/pg": "^8.21.0",
     "@types/ws": "^8.18.1",
     "pg": "^8.23.0",

@@ -152,7 +152,6 @@ export const mesures = new Collecteur();
  * diraient rien du lancement — et c'est le lancement qu'on veut comprendre.
  */
 export const EVENEMENTS = {
-  compteCree: 'compte.cree',
   vendeurVerifie: 'vendeur.verifie',
   articlePublie: 'article.publie',
   vitrineVue: 'vitrine.vue',
@@ -167,6 +166,10 @@ export const EVENEMENTS = {
   receptionConfirmee: 'reception.confirmee',
   fondsLiberes: 'fonds.liberes',
   litigeOuvert: 'litige.ouvert',
+  compteCree: 'identite.compte_cree',
+  compteConnecte: 'identite.compte_connecte',
+  codeOtpEnvoye: 'identite.code_otp_envoye',
+  emailVerifie: 'identite.email_verifie',
 } as const;
 
 export type NomEvenement = (typeof EVENEMENTS)[keyof typeof EVENEMENTS];

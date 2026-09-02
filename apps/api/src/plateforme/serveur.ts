@@ -19,7 +19,6 @@ import { ErreurMetier, erreurInterne } from './erreurs.js';
 import { jetonDepuisEnTete, verifierJeton, type Identite } from './auth.js';
 import { Limiteur } from './debit.js';
 import type { PrismaClient } from '../genere/prisma/client.js';
-
 declare module 'fastify' {
   interface FastifyRequest {
     contexte: Contexte;
@@ -31,6 +30,7 @@ export interface OptionsServeur {
   readonly db: PrismaClient;
   readonly limiteur?: Limiteur;
   readonly journaux?: boolean;
+  readonly modules?: (app: FastifyInstance, db: PrismaClient) => void;
 }
 
 export async function creerServeur(options: OptionsServeur): Promise<FastifyInstance> {
@@ -132,6 +132,10 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
     await options.db.$queryRaw`SELECT 1`;
     return { etat: 'ok' };
   });
+
+  if (options.modules) {
+    options.modules(app, options.db); // On injecte les routes métier ici
+  }
 
   return app;
 }
