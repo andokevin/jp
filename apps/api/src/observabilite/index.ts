@@ -169,7 +169,7 @@ export const EVENEMENTS = {
   compteCree: 'identite.compte_cree',
   compteConnecte: 'identite.compte_connecte',
   codeOtpEnvoye: 'identite.code_otp_envoye',
-  emailVerifie: 'identite.email_verifie', 
+  emailVerifie: 'identite.email_verifie',
 } as const;
 
 export type NomEvenement = (typeof EVENEMENTS)[keyof typeof EVENEMENTS];

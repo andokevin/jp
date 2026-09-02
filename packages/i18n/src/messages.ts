@@ -91,7 +91,7 @@ const FR: Messages = {
   'erreur.email_deja_utilise': 'Cette adresse e-mail est déjà utilisée.',
   'erreur.identifiants_incorrects': 'Adresse e-mail ou mot de passe incorrect.',
   'erreur.token_externe_invalide': 'Le jeton externe est invalide.',
-  'erreur.email_non_verifie': "Veuillez vérifier votre adresse e-mail avant de continuer.",
+  'erreur.email_non_verifie': 'Veuillez vérifier votre adresse e-mail avant de continuer.',
 };
 
 export const CATALOGUES: Record<Langue, Messages> = { en: EN, fr: FR };

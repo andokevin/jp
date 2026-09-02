@@ -44,7 +44,7 @@ export function enregistrerRoutes(app: FastifyInstance, db: PrismaClient) {
     // Le schéma contient désormais `finalite` (avec valeur par défaut).
     const donnees = {
       email: resultat.data.email,
-      finalite: resultat.data.finalite ?? 'inscription' as const,
+      finalite: resultat.data.finalite ?? ('inscription' as const),
     };
 
     // Limitation : max 1 envoi par minute, 5 par heure

@@ -31,8 +31,7 @@ export const ERREURS = {
   TOKEN_EXTERNE_INVALIDE: () =>
     new ErreurMetier('TOKEN_EXTERNE_INVALIDE', 401, 'erreur.token_externe_invalide'),
 
-  EMAIL_NON_VERIFIE: () =>
-    new ErreurMetier('EMAIL_NON_VERIFIE', 403, 'erreur.email_non_verifie'),
+  EMAIL_NON_VERIFIE: () => new ErreurMetier('EMAIL_NON_VERIFIE', 403, 'erreur.email_non_verifie'),
 } as const;
 
 export type CodeErreur = keyof typeof ERREURS;
