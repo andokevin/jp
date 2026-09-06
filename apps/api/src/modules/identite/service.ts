@@ -11,7 +11,7 @@ import { ERREURS } from './erreurs.js';
 import { ouvrirSession } from '../../plateforme/auth.js'; // Déjà implémenté en S3
 import { journaliser } from '../../plateforme/audit.js';
 import { contexte } from '../../plateforme/contexte.js';
-import { mesurer } from '../../observabilite/index.js';
+import { EVENEMENTS, mesurer } from '../../observabilite/index.js';
 import { EMIS } from './events.js';
 import { auth } from '@jp/contracts';
 
@@ -51,7 +51,7 @@ export const service = {
       new Date(Date.now() + auth.OTP_TTL_SECONDS * 1000),
     );
 
-    mesurer('identite.code_otp_envoye', { finalite });
+    mesurer(EVENEMENTS.codeOtpEnvoye, { finalite });
     return { ok: true, expireDansS: auth.OTP_TTL_SECONDS };
   },
 
@@ -82,7 +82,7 @@ export const service = {
         ...params, // On passe toutes les infos
         motDePasseEmpreinte: params.motDePasse ? hashMotDePasse(params.motDePasse) : null,
       });
-      mesurer('identite.compte_cree');
+      mesurer(EVENEMENTS.compteCree);
     } else {
       // Cas : utilisateur existant, mais il définit son mot de passe ou ses préférences
       if (params.motDePasse && !utilisateur.motDePasseEmpreinte) {

@@ -49,13 +49,17 @@ export const dateDeNaissance = z.coerce
   .refine((date) => date <= new Date(), {
     message: 'La date de naissance ne peut pas être dans le futur.',
   })
-  .refine((date) => {
-    const age = new Date().getFullYear() - date.getFullYear();
-    const mois = new Date().getMonth() - date.getMonth();
-    const ageVerifie = age - (mois < 0 || (mois === 0 && new Date().getDate() < date.getDate()) ? 1 : 0);
-    return ageVerifie >= 18;
-  }, { message: 'Vous devez avoir au moins 18 ans.' });
-  
+  .refine(
+    (date) => {
+      const age = new Date().getFullYear() - date.getFullYear();
+      const mois = new Date().getMonth() - date.getMonth();
+      const ageVerifie =
+        age - (mois < 0 || (mois === 0 && new Date().getDate() < date.getDate()) ? 1 : 0);
+      return ageVerifie >= 18;
+    },
+    { message: 'Vous devez avoir au moins 18 ans.' },
+  );
+
 //  Préférences de vêtements (profil_acheteur)
 export const preferencesVetement = z.array(z.string()).max(3, {
   message: 'Maximum 3 préférences de vêtements.',
