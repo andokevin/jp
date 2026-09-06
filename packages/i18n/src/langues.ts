@@ -1,5 +1,5 @@
 /**
- * Les deux langues du projet
+ * Les trois langues du projet
  *
  * **Le français produit des libellés environ 20 % plus longs que l'anglais.**
  * « Confirm » contre « Confirmer la réception ». Ce n'est pas un détail de
@@ -7,7 +7,10 @@
  * largeur de l'anglais déborde en français.
  *
  * Le français est la langue PAR DÉFAUT : c'est la langue écrite courante à
- * Madagascar — administration, commerce, réseaux sociaux.
+ * Madagascar — administration, commerce, réseaux sociaux. Le malgache est la
+ * langue PARLÉE, et celle que les écrans proposent en premier ; il reste second
+ * ici parce qu'un en-tête `Accept-Language` illisible doit retomber sur ce que
+ * le serveur sait rendre partout.
  *
  * Ce fichier est la SEULE définition des langues. `@jp/money` y prend son
  * type au lieu de le redéclarer, et l'API y prend la lecture de l'en-tête
@@ -15,7 +18,7 @@
  * tôt ou tard.
  */
 
-export const LANGUES = ['en', 'fr'] as const;
+export const LANGUES = ['en', 'fr', 'mg'] as const;
 
 export type Langue = (typeof LANGUES)[number];
 
@@ -31,15 +34,25 @@ export const LANGUE_PAR_DEFAUT: Langue = 'fr';
  */
 export const RALLONGEMENT_FRANCAIS = 1.2;
 
+/**
+ * Même marge, pour le malgache : **30 %**.
+ *
+ * « Continue » contre « Tohizana », mais surtout « Enter your code » contre
+ * « Ampidiro ny kaody ». L'écart est plus fort qu'en français, et c'est lui qui
+ * décide de la largeur des boutons : une maquette dessinée à la longueur
+ * malgache tient en français, l'inverse tronque *(EP00 §6)*.
+ */
+export const RALLONGEMENT_MALGACHE = 1.3;
+
 export function estLangue(valeur: unknown): valeur is Langue {
   return typeof valeur === 'string' && (LANGUES as readonly string[]).includes(valeur);
 }
 
 /**
- * Lit un en-tête HTTP `Accept-Language` et en tire une de nos deux langues.
+ * Lit un en-tête HTTP `Accept-Language` et en tire une de nos trois langues.
  *
  * Volontairement simple : ni poids `q=`, ni négociation de variantes
- * régionales au-delà du préfixe. Nous n'avons que deux langues — un analyseur
+ * régionales au-delà du préfixe. Nous n'avons que trois langues — un analyseur
  * complet serait du code mort à maintenir.
  *
  * Tout ce qui n'est pas reconnu retombe sur le français, jamais sur une

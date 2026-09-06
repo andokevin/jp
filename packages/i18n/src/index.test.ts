@@ -14,20 +14,25 @@ import {
   LANGUES,
   langueDepuisEnTete,
   RALLONGEMENT_FRANCAIS,
+  RALLONGEMENT_MALGACHE,
   traduire,
   variablesDe,
 } from './index.js';
 
 describe('les langues', () => {
-  it('sont exactement anglais et français, français par défaut', () => {
-    expect(LANGUES).toEqual(['en', 'fr']);
+  it('sont anglais, français et malgache — français par défaut', () => {
+    expect(LANGUES).toEqual(['en', 'fr', 'mg']);
+    // Le défaut reste le FRANÇAIS, même si les écrans proposent le malgache en
+    // premier : c'est le repli d'un en-tête `Accept-Language` illisible, et il
+    // doit tomber sur ce que le serveur sait rendre partout.
     expect(LANGUE_PAR_DEFAUT).toBe('fr');
   });
 
   it('reconnaît une langue, refuse le reste', () => {
     expect(estLangue('fr')).toBe(true);
     expect(estLangue('en')).toBe(true);
-    for (const x of ['mg', 'FR', '', null, undefined, 42, {}]) {
+    expect(estLangue('mg')).toBe(true);
+    for (const x of ['MG', 'FR', '', null, undefined, 42, {}]) {
       expect(estLangue(x), String(x)).toBe(false);
     }
   });
@@ -41,6 +46,8 @@ describe('Accept-Language', () => {
     ['EN', 'en'],
     ['  en  ', 'en'],
     ['pt-BR,pt;q=0.9,en;q=0.5', 'en'],
+    ['mg-MG,mg;q=0.9,fr;q=0.8', 'mg'],
+    ['mg', 'mg'],
   ])('« %s » → %s', (enTete, attendu) => {
     expect(langueDepuisEnTete(enTete)).toBe(attendu);
   });
@@ -118,10 +125,13 @@ describe('les formats', () => {
 });
 
 describe('les catalogues', () => {
-  it('les deux langues portent EXACTEMENT les mêmes clés', () => {
+  it('les trois langues portent EXACTEMENT les mêmes clés', () => {
     // Le typage l'impose déjà à la compilation ; ce test le prouve à
     // l'exécution, au cas où un catalogue arriverait un jour d'ailleurs.
-    expect(Object.keys(CATALOGUES.fr).sort()).toEqual(Object.keys(CATALOGUES.en).sort());
+    const reference = Object.keys(CATALOGUES.en).sort();
+    for (const langue of LANGUES) {
+      expect(Object.keys(CATALOGUES[langue]).sort(), langue).toEqual(reference);
+    }
   });
 
   it('aucun message n’est vide', () => {
@@ -132,31 +142,40 @@ describe('les catalogues', () => {
     }
   });
 
-  it('les variables {nom} sont les mêmes dans les deux langues', () => {
+  it('les variables {nom} sont les mêmes dans les trois langues', () => {
     // Une traduction qui perd un {email} affiche une phrase amputée.
+    const variables = (texte: string) => [...texte.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
     for (const cle of CLES) {
-      const varsEn = [...CATALOGUES.en[cle].matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
-      const varsFr = [...CATALOGUES.fr[cle].matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
-      expect(varsFr, cle).toEqual(varsEn);
+      const attendu = variables(CATALOGUES.en[cle]);
+      for (const langue of LANGUES) {
+        expect(variables(CATALOGUES[langue][cle]), `${langue}/${cle}`).toEqual(attendu);
+      }
     }
   });
 
-  it('LE TEST DE LARGEUR : le français ne dépasse pas la marge annoncée', () => {
-    // C'est la contrainte de maquette, appliquée. Un libellé français trop
-    // long déborde d'un bouton dessiné à la largeur de l'anglais — et on le
-    // découvre ici, pas sur un écran de 5 pouces.
+  it('LE TEST DE LARGEUR : chaque langue tient dans la marge annoncée', () => {
+    // C'est la contrainte de maquette, appliquée. Un libellé trop long déborde
+    // d'un bouton dessiné à la largeur de l'anglais — et on le découvre ici,
+    // pas sur un écran de 5 pouces. Chaque langue a SA marge : le français
+    // rallonge de 20 %, le malgache de 30 %.
+    const marges = [
+      ['fr', RALLONGEMENT_FRANCAIS],
+      ['mg', RALLONGEMENT_MALGACHE],
+    ] as const;
+
     const debordent: string[] = [];
-    for (const cle of CLES) {
-      const en = CATALOGUES.en[cle].length;
-      const fr = CATALOGUES.fr[cle].length;
-      // Les messages courts échappent à la règle : « 0 » contre « 0 » n'a
-      // aucun sens à mesurer, et un mot de 8 lettres peut légitimement en
-      // faire 12.
-      if (en < 20) continue;
-      if (fr > Math.ceil(en * RALLONGEMENT_FRANCAIS)) {
-        debordent.push(
-          `${cle} : en ${en} → fr ${fr} (max ${Math.ceil(en * RALLONGEMENT_FRANCAIS)})`,
-        );
+    for (const [langue, marge] of marges) {
+      for (const cle of CLES) {
+        const en = CATALOGUES.en[cle].length;
+        const traduit = CATALOGUES[langue][cle].length;
+        // Les messages courts échappent à la règle : « 0 » contre « 0 » n'a
+        // aucun sens à mesurer, et un mot de 8 lettres peut légitimement en
+        // faire 12.
+        if (en < 20) continue;
+        const max = Math.ceil(en * marge);
+        if (traduit > max) {
+          debordent.push(`${cle} : en ${en} → ${langue} ${traduit} (max ${max})`);
+        }
       }
     }
     expect(debordent, debordent.join('\n')).toEqual([]);

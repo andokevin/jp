@@ -47,7 +47,15 @@ export class ClientApi {
   private readonly nouvelleCle: () => string;
 
   constructor(private readonly options: OptionsClient) {
-    this.f = options.fetch ?? globalThis.fetch;
+    // `.bind(globalThis)` n'est pas décoratif. Rangé dans un champ puis appelé
+    // en `this.f(…)`, `fetch` reçoit l'instance comme `this` — ce que le
+    // `fetch` d'un NAVIGATEUR refuse : « Illegal invocation ». Sur Hermes, le
+    // `fetch` de React Native est un polyfill JS ordinaire et ne s'en émeut
+    // pas ; sur Expo Web, c'est le vrai `fetch` du navigateur et chaque
+    // requête échouerait. Comme l'échec est un `TypeError`, le `catch`
+    // ci-dessous le prendrait pour une coupure : on annoncerait « pas de
+    // connexion » à quelqu'un de parfaitement connecté.
+    this.f = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.nouvelleCle = options.nouvelleCle ?? (() => crypto.randomUUID());
   }
 

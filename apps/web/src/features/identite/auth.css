@@ -1,0 +1,372 @@
+/*
+ * L'authentification web — la mise en page
+ *
+ * Aucune couleur écrite ici : tout passe par `var(--jp-*)`, alimenté depuis
+ * `theme.ts`, lui-même lu depuis `@jp/ui`. Ce fichier ne porte que ce qu'un
+ * style en ligne ne sait pas dire — les points de rupture, le survol, et
+ * l'anneau de focus clavier, exigence propre au web.
+ */
+
+.jp-auth {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--jp-fond);
+  color: var(--jp-texte);
+  font-family: var(--jp-sans);
+}
+
+/* ── Le bandeau hors ligne — épinglé en haut, avant tout le reste ────────── */
+.jp-bandeau {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px var(--jp-espace-m);
+  background: var(--jp-fond-2);
+  border-bottom: 1px solid var(--jp-bordure);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ── La bascule de langue ────────────────────────────────────────────────── */
+.jp-entete {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--jp-espace-s) var(--jp-espace-l);
+}
+
+.jp-langues {
+  display: flex;
+  gap: 2px;
+}
+
+/*
+ * L'actif est marqué par un SOULIGNEMENT et une GRAISSE, jamais par la
+ * couleur seule : le framboise et le violet de cette marque ont 1,08:1 entre
+ * eux — indiscernables en niveaux de gris et pour une bonne part des
+ * daltonismes.
+ */
+.jp-langue {
+  min-width: var(--jp-cible);
+  min-height: var(--jp-cible);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--jp-texte-2);
+  cursor: pointer;
+}
+
+.jp-langue[aria-current='true'] {
+  font-weight: 600;
+  color: var(--jp-texte);
+  border-bottom-color: var(--jp-texte);
+}
+
+/* ── La carte ────────────────────────────────────────────────────────────── */
+.jp-centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--jp-espace-l);
+  min-height: 0;
+}
+
+.jp-marque {
+  font-family: var(--jp-serif);
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--jp-identite);
+  margin-bottom: var(--jp-espace-l);
+}
+
+.jp-marque span {
+  font-weight: 400;
+}
+
+.jp-carte {
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  background: var(--jp-fond);
+  border: 1px solid var(--jp-bordure-carte);
+  border-radius: var(--jp-rayon);
+  padding: var(--jp-espace-xl);
+}
+
+/*
+ * Le titre occupe une hauteur FIXE de deux lignes. Le malgache est ~30 % plus
+ * long que le français : sans cette réserve, les deux versions du même écran
+ * n'auraient pas le même rythme vertical et le bouton sauterait à la bascule.
+ */
+.jp-titre {
+  min-height: 88px;
+  display: flex;
+  align-items: flex-end;
+  margin: 0;
+  font-family: var(--jp-serif);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.16;
+  text-wrap: pretty;
+}
+
+.jp-soutien {
+  margin: 10px 0 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--jp-texte-2);
+  text-wrap: pretty;
+}
+
+.jp-aide {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--jp-texte-2);
+  text-wrap: pretty;
+}
+
+/* ── Les champs ──────────────────────────────────────────────────────────── */
+.jp-champ {
+  margin-top: var(--jp-espace-l);
+}
+
+.jp-label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  color: var(--jp-texte-2);
+}
+
+.jp-saisie {
+  width: 100%;
+  height: var(--jp-hauteur-controle);
+  box-sizing: border-box;
+  padding: 0 18px;
+  border: 1.5px solid var(--jp-bordure);
+  border-radius: var(--jp-rayon-champ);
+  background: var(--jp-fond);
+  color: var(--jp-texte);
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.jp-saisie::placeholder {
+  color: var(--jp-texte-2);
+}
+
+/* L'erreur se dit par la BORDURE et par une icône, jamais par la couleur seule. */
+.jp-saisie[aria-invalid='true'] {
+  border-color: var(--jp-danger);
+}
+
+.jp-erreur {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--jp-espace-s);
+  margin-top: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--jp-danger);
+  text-wrap: pretty;
+}
+
+.jp-erreur svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* ── Les six cases du code ───────────────────────────────────────────────── */
+.jp-cases {
+  display: flex;
+  gap: 12px;
+}
+
+.jp-case {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  box-sizing: border-box;
+  text-align: center;
+  border: 1.5px solid var(--jp-bordure);
+  border-radius: var(--jp-rayon-champ);
+  background: var(--jp-fond);
+  color: var(--jp-texte);
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.jp-case[aria-invalid='true'] {
+  border-color: var(--jp-danger);
+}
+
+/* ── Le décompte et le renvoi ────────────────────────────────────────────── */
+.jp-minuteur {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: var(--jp-espace-m);
+  font-size: 13px;
+  color: var(--jp-texte-2);
+}
+
+.jp-renvoi {
+  min-height: var(--jp-cible);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--jp-texte-2);
+  cursor: pointer;
+}
+
+/* Actif, le renvoi gagne un SOULIGNEMENT en plus de sa couleur. */
+.jp-renvoi:enabled {
+  color: var(--jp-action);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.jp-renvoi:disabled {
+  cursor: default;
+}
+
+/* Le « Modifier » de la ligne d'adresse porte une cible de 44px de haut. */
+.jp-modifier {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  vertical-align: middle;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-weight: 500;
+  color: var(--jp-action);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ── Le bouton principal ─────────────────────────────────────────────────── */
+.jp-bouton {
+  width: 100%;
+  height: var(--jp-hauteur-controle);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 26px;
+  border: 1.5px solid var(--jp-action);
+  border-radius: var(--jp-rayon-pilule);
+  background: var(--jp-action);
+  color: var(--jp-texte-inverse);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.jp-bouton:hover:enabled {
+  filter: brightness(0.92);
+}
+
+/*
+ * Désactivé, le bouton se reconnaît SANS la couleur : il devient un contour
+ * vide au lieu d'un aplat plein. Une simple mise en gris ne se verrait pas
+ * en plein soleil sur un écran d'entrée de gamme.
+ */
+.jp-bouton:disabled {
+  background: var(--jp-fond);
+  border-color: var(--jp-texte-2);
+  color: var(--jp-texte-2);
+  cursor: not-allowed;
+}
+
+.jp-rondelle {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 999px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--jp-texte-inverse);
+  animation: jp-tourne 0.8s linear infinite;
+}
+
+@keyframes jp-tourne {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jp-rondelle {
+    animation-duration: 3s;
+  }
+}
+
+/*
+ * ── L'ANNEAU DE FOCUS ────────────────────────────────────────────────────
+ * Exigence propre au web, absente du mobile : au clavier, on doit voir où
+ * l'on est. Décalé de l'élément pour rester lisible sur une bordure déjà
+ * colorée.
+ */
+.jp-auth :focus-visible {
+  outline: 2px solid var(--jp-action);
+  outline-offset: 2px;
+}
+
+/* ── Mobile web : la carte perd sa bordure et prend toute la largeur ─────── */
+@media (max-width: 480px) {
+  .jp-centre {
+    justify-content: flex-start;
+    padding: var(--jp-espace-m) 24px var(--jp-espace-xl);
+  }
+
+  .jp-carte {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .jp-case {
+    width: 48px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  .jp-cases {
+    gap: 8px;
+  }
+}
+
+/* ── Tablette : la même carte, avec plus d'air ───────────────────────────── */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .jp-centre {
+    padding: var(--jp-espace-xl) var(--jp-espace-l);
+  }
+}

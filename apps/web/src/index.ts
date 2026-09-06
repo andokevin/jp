@@ -15,11 +15,37 @@
  * l'essentiel de son intérêt à Madagascar, où le partage passe par là. C'est
  * pour ça, et uniquement pour ça, que ce paquet existe.
  *
- * **Ce qu'il ne fera pas** : panier, paiement, compte, studio vendeur. Tout
- * cela est dans l'application. Une page publique mène à l'installation, ou
- * ouvre l'application si elle est déjà là.
+ * **Ce qu'il ne fera pas** : panier, paiement, studio vendeur. Tout cela est
+ * dans l'application. Une page publique mène à l'installation, ou ouvre
+ * l'application si elle est déjà là.
+ *
+ * **Amendement du 06/09/2026 — l'authentification web, et elle seule.**
+ * Le paquet porte désormais le parcours d'identité *(F0.1)*, dans
+ * `features/identite`. La raison est la même que celle qui a fait exister ce
+ * paquet : les liens partagés. Une page ouverte depuis WhatsApp qui demande
+ * d'installer l'application avant même de pouvoir dire qui l'on est perd la
+ * personne au premier écran.
+ *
+ * Cet amendement ne rouvre pas la porte : « compte » sort de la liste des
+ * exclusions, panier, paiement et studio y restent. Et les cinq pages
+ * partageables restent cinq — l'authentification n'en est pas une, elle ne
+ * s'envoie pas dans une conversation.
  */
 import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+
+/**
+ * La locale Open Graph de chaque langue.
+ *
+ * **Une table, pas un ternaire.** Un `langue === 'fr' ? 'fr_MG' : 'en_US'`
+ * envoie silencieusement toute langue ajoutée plus tard vers l'anglais — et
+ * comme il compile, personne ne le voit. Ici, une langue de plus dans
+ * `@jp/i18n` casse le typage jusqu'à ce qu'on ait décidé de sa locale.
+ */
+const LOCALES: Record<Langue, string> = {
+  en: 'en_US',
+  fr: 'fr_MG',
+  mg: 'mg_MG',
+};
 
 export const PAGES_PARTAGEABLES = [
   { chemin: '/v/:slug', quoi: 'vitrine vendeur', issue: 'F1.11' },
@@ -65,7 +91,7 @@ export function balisesApercu(a: Apercu): string {
     `<meta property="og:image" content="${e(a.image)}">`,
     `<meta property="og:url" content="${e(a.url)}">`,
     `<meta property="og:type" content="${a.type}">`,
-    `<meta property="og:locale" content="${a.langue === 'fr' ? 'fr_MG' : 'en_US'}">`,
+    `<meta property="og:locale" content="${LOCALES[a.langue]}">`,
     // Twitter/X lit ses propres balises, mais retombe sur og:* si `card` est
     // présent. Une ligne pour couvrir un réseau de plus.
     `<meta name="twitter:card" content="summary_large_image">`,

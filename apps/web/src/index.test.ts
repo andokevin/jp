@@ -35,9 +35,12 @@ describe('métadonnées d’aperçu', () => {
     expect(html).toContain('&quot;Miora&quot;');
   });
 
-  it('déclare la locale selon la langue', () => {
+  it('déclare la locale selon la langue — les trois', () => {
+    // Le malgache est le cas qui piégeait : l'ancien ternaire le renvoyait sur
+    // « en_US » sans que le compilateur bronche.
     expect(balisesApercu(base)).toContain('fr_MG');
     expect(balisesApercu({ ...base, langue: 'en' })).toContain('en_US');
+    expect(balisesApercu({ ...base, langue: 'mg' })).toContain('mg_MG');
   });
 
   it('couvre les cinq pages partageables', () => {

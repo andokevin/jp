@@ -118,6 +118,20 @@ model CodeOtp {
 
 ### 4. Design
 
+> **Écart constaté le 06/09/2026, à trancher.** La version WEB de ces écrans a
+> été livrée (`apps/web/src/features/identite`) d'après une maquette qui
+> contredit cette section sur trois points : **pas de bouton « Continuer avec
+> Google »**, pas de séparateur « ou », et pas de lien « J'ai perdu l'accès à
+> mon email » — aucune route n'implémente d'ailleurs `ConnexionExterneSchema`.
+> Ce qui a été retenu d'ici : la vérification automatique à la sixième saisie,
+> le lien « Modifier », et la phrase d'aide du prénom. Le bouton de validation
+> est conservé en repli, contrairement au « sans bouton » écrit plus bas : au
+> clavier, il faut pouvoir valider soi-même.
+>
+> Noter aussi que le §5 ci-dessous cite `POST /auth/otp` et
+> `/auth/otp/verifier` : les routes réellement implémentées sont
+> `POST /identite/otp/emettre` et `/identite/otp/verifier`.
+
 Trois écrans, quatre états chacun.
 
 - **Accueil** — logo, une phrase de proposition de valeur, **« Continuer avec Google » d'abord** (un appui, pas d'attente de courriel), séparateur « ou », champ email, bouton pleine largeur « Continuer ». Lien discret « J'ai perdu l'accès à mon email » *(F0.3)*.

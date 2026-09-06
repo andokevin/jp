@@ -1,7 +1,7 @@
 /**
  * Les catalogues de messages
  *
- * **Un seul objet, les deux langues côte à côte.** Deux fichiers séparés
+ * **Un seul objet, les trois langues côte à côte.** Deux fichiers séparés
  * dérivent : on ajoute une clé dans l'un, on oublie l'autre, et le trou ne se
  * voit qu'en production. Ici, une clé manquante fait échouer la compilation —
  * `CATALOGUES` est contraint à `Record<Langue, Messages>`.
@@ -88,13 +88,58 @@ const FR: Messages = {
   'erreur.otp_expire': 'Ce code a expiré. Demandez-en un nouveau.',
   'erreur.otp_tentatives_depassees': 'Trop d’essais incorrects. Demandez un nouveau code.',
   'erreur.otp_debit_depasse': 'Trop de requêtes. Réessayez dans {duree}.',
-  'erreur.email_deja_utilise': 'Cette adresse e-mail est déjà utilisée.',
-  'erreur.identifiants_incorrects': 'Adresse e-mail ou mot de passe incorrect.',
+  'erreur.email_deja_utilise': 'Adresse e-mail déjà utilisée.',
+  'erreur.identifiants_incorrects': 'E-mail ou mot de passe incorrect.',
   'erreur.token_externe_invalide': 'Le jeton externe est invalide.',
-  'erreur.email_non_verifie': 'Veuillez vérifier votre adresse e-mail avant de continuer.',
+  'erreur.email_non_verifie': 'Vérifiez votre e-mail avant de continuer.',
 };
 
-export const CATALOGUES: Record<Langue, Messages> = { en: EN, fr: FR };
+/**
+ * Le malgache — la langue parlée, celle que les écrans proposent en premier.
+ *
+ * Traductions à FAIRE RELIRE par un locuteur avant mise en production : elles
+ * sont proposées ici pour que le type tienne et que les écrans aient de quoi
+ * s'afficher, pas certifiées.
+ */
+const MG: Messages = {
+  // ── Transverse ────────────────────────────────────────────────────────────
+  'erreur.requete_invalide': 'Misy tsy feno na diso ny fampahalalana.',
+  'erreur.non_authentifie': 'Midira aloha vao manohy.',
+  'erreur.non_autorise': 'Tsy manana alalana amin’ity ianao.',
+  'erreur.introuvable': 'Tsy misy intsony ity.',
+  'erreur.conflit': 'Nisy nanova ity raha mbola niasa ianao.',
+  'erreur.debit_depasse': 'Be loatra ny andrana. Andramo indray afaka {duree}.',
+  'erreur.hors_ligne': 'Tsy misy fifandraisana. Voatahiry ny fanovanao.',
+  'erreur.indisponible': 'Tsy mandeha vetivety ny serivisy. Andramo indray.',
+
+  // ── Idempotence (RB10) ────────────────────────────────────────────────────
+  'erreur.cle_idempotence_manquante': 'Mila fanalahidy idempotence ity fangatahana ity.',
+  'erreur.cle_idempotence_reutilisee': 'Efa nampiasaina io fanalahidy io taloha.',
+
+  // ── Code à usage unique (R-C5 à R-C10) ───────────────────────────────────
+  'otp.envoye': 'Kaody miisa 6 nalefa tany amin’ny {email}.',
+  'otp.expire': 'Lany daty ity kaody ity. Mangataha vaovao.',
+  'otp.invalide': 'Diso ity kaody ity. {restantes} andrana sisa.',
+  'otp.epuise': 'Be loatra ny diso. Mangataha kaody vaovao.',
+
+  // ── États d'écran (les quatre, imposés par le design system) ──────────────
+  'etat.chargement': 'Eo am-pakana…',
+  'etat.vide': 'Mbola tsy misy na inona na inona.',
+  'etat.erreur': 'Tsy tafiditra. Tsindrio hanandrana.',
+  'etat.hors_ligne': 'Tsy misy fifandraisana — ity ny voatahiry.',
+
+  // ── Erreurs spécifiques à l'identité (Ajouté pour F0.1) ───────────────────
+  'erreur.otp_invalide': 'Diso ny kaody. Andramo indray. {restantes} sisa.',
+  'erreur.otp_expire': 'Lany daty ity kaody ity. Mangataha vaovao.',
+  'erreur.otp_tentatives_depassees': 'Be loatra ny diso. Mangataha kaody vaovao.',
+  'erreur.otp_debit_depasse': 'Be loatra ny fangatahana. Andramo afaka {duree}.',
+  'erreur.email_deja_utilise': 'Efa ampiasaina io adiresy mailaka io.',
+  'erreur.identifiants_incorrects': 'Diso ny mailaka na ny tenimiafina.',
+  'erreur.token_externe_invalide': 'Tsy mety ny jeton ivelany.',
+  'erreur.email_non_verifie': 'Hamarino aloha ny mailakao vao manohy.',
+};
+
+export const CATALOGUES: Record<Langue, Messages> = { en: EN, fr: FR, mg: MG };
 
 export type CleMessage = keyof typeof EN;
 
