@@ -1,7 +1,7 @@
 /**
  * Le hook du parcours — F0.1
  *
- * Mince par construction : les transitions vivent dans `parcours.ts`, qui est
+ * Mince par construction : les transitions vivent dans `@jp/identite`, qui est
  * pur et testé sans navigateur. Ce fichier n'ajoute que ce qui a besoin du
  * navigateur — les appels réseau, l'écoute de la connexion, et l'horloge du
  * décompte.
@@ -16,15 +16,16 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'r
 import type { Langue } from '@jp/i18n';
 
 import { ClientIdentite, HorsLigne } from '../api/identiteApi.js';
-import { codeAssemble, estComplet } from '../code-otp.js';
 import {
+  codeAssemble,
+  estComplet,
   etatInitial,
   peutEnvoyer,
   peutRenvoyer,
   reduire,
   type EtatParcours,
   type Panne,
-} from '../parcours.js';
+} from '@jp/identite';
 
 /** L'enveloppe d'erreur du serveur, telle qu'elle arrive. */
 function panneDepuis(erreur: unknown): Panne {

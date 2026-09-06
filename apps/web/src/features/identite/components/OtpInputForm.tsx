@@ -18,7 +18,7 @@
 import { useEffect, useRef } from 'react';
 import type { ClipboardEvent, KeyboardEvent } from 'react';
 
-import { caseSuivante, chiffresDe, NB_CHIFFRES, type Cases } from '../code-otp.js';
+import { caseSuivante, chiffresDe, NB_CHIFFRES, type Cases } from '@jp/identite';
 
 export function OtpInputForm(props: {
   readonly cases: Cases;

@@ -34,6 +34,12 @@ const CAS = [
     doitEchouer: false,
   },
   {
+    nom: 'un paquet partagé importe React',
+    fichier: 'packages/identite/src/__verif_archi.ts',
+    code: `import { useReducer } from 'react';\nexport const x = useReducer;\n`,
+    doitEchouer: true,
+  },
+  {
     nom: 'la plateforme importe un module métier',
     fichier: 'apps/api/src/plateforme/__verif_archi.ts',
     code: `import { service } from '../modules/catalogue/service.js';\nexport const x = service;\n`,

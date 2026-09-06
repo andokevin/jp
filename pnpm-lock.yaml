@@ -217,6 +217,9 @@ importers:
       '@jp/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@jp/identite':
+        specifier: workspace:*
+        version: link:../../packages/identite
       '@jp/money':
         specifier: workspace:*
         version: link:../../packages/money
@@ -253,6 +256,15 @@ importers:
         version: 4.4.3
 
   packages/i18n: {}
+
+  packages/identite:
+    dependencies:
+      '@jp/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@jp/i18n':
+        specifier: workspace:*
+        version: link:../i18n
 
   packages/money:
     dependencies:

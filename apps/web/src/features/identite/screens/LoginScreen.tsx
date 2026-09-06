@@ -20,7 +20,7 @@ import '../auth.css';
 import { BoutonPrincipal, ChampTexte, IconeHorloge, MessageErreur } from '../components/champs.js';
 import { OtpInputForm } from '../components/OtpInputForm.js';
 import { PageAuth } from '../components/chrome.js';
-import { avecTemps, langueEcran, LIBELLES, type LangueEcran } from '../libelles.js';
+import { avecTemps, langueEcran, LIBELLES, type LangueEcran } from '@jp/identite';
 import { useAuthOtp } from '../hooks/useAuthOtp.js';
 
 const ID_ERREUR = 'jp-erreur-auth';

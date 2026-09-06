@@ -16,10 +16,11 @@
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "@jp/ui": "workspace:*",
     "@jp/contracts": "workspace:*",
     "@jp/i18n": "workspace:*",
-    "@jp/money": "workspace:*"
+    "@jp/identite": "workspace:*",
+    "@jp/money": "workspace:*",
+    "@jp/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

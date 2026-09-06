@@ -7,7 +7,7 @@
  */
 import type { ReactNode } from 'react';
 
-import { LANGUES_ECRAN, LIBELLES, type LangueEcran } from '../libelles.js';
+import { LANGUES_ECRAN, LIBELLES, type LangueEcran } from '@jp/identite';
 import { styleRacine } from '../theme.js';
 
 /** Le pictogramme « pas de réseau » — l'icône EN PLUS du texte, jamais à la place. */

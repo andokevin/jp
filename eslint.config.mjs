@@ -67,7 +67,12 @@ export default tseslint.config(
     },
   },
 
-  // ── Un paquet partagé ne connaît aucune application ───────────────────────
+  // ── Un paquet partagé ne connaît aucune application, ni aucun moteur de rendu ─
+  // La seconde règle est ce qui rend la première tenable dans le temps. Un
+  // paquet qui importe React choisit son moteur de rendu, donc son client : il
+  // cesse d'être partageable entre `apps/web` (DOM) et `apps/mobile` (RN) le
+  // jour où quelqu'un ajoute « juste un petit hook ». `@jp/ui` le dit dans son
+  // en-tête, `@jp/identite` aussi ; désormais l'intégration continue le dit.
   {
     files: ['packages/**/*.{ts,tsx}'],
     rules: {
@@ -79,6 +84,11 @@ export default tseslint.config(
               group: ['**/apps/**', '@jp/api', '@jp/mobile', '@jp/admin', '@jp/web'],
               message:
                 'Un paquet partagé ne dépend jamais d’une application. La dépendance va dans l’autre sens.',
+            },
+            {
+              group: ['react', 'react-dom', 'react-dom/*', 'react-native', 'react-native/*'],
+              message:
+                'Un paquet partagé ne connaît aucun moteur de rendu. Les décisions ici, le rendu dans apps/.',
             },
           ],
         },
