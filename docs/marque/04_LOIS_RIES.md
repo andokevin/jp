@@ -337,9 +337,43 @@ quand le Baromètre existera.
 >   contrairement au rouge *(lambamena)*, au noir *(deuil)* et au tricolore.
 
 **Une réserve à tenir `[P]`** : violet `#7C2D92` et bleu marine Yas `#00377D`
-ont une **luminance très proche**. Sur une vignette dégradée, en petite taille,
-au soleil, ils peuvent se confondre. → **La couleur ne doit jamais être notre
-seul signe de reconnaissance. Le mot et la forme portent autant qu'elle.**
+ont une **luminance très proche** *(1,44:1 entre eux)*. Sur une vignette
+dégradée, en petite taille, au soleil, ils peuvent se confondre. → **La couleur
+ne doit jamais être notre seul signe de reconnaissance. Le mot et la forme
+portent autant qu'elle.**
+
+### Le complément `D-22` — le violet garde la loi, le framboise prend l'action
+
+> **`D-22` ne renverse pas `D-06`, elle la partage en deux.** Le verdict
+> ci-dessus reste vrai mot pour mot : c'est bien le violet qui répond à la loi
+> n° 17, parce que c'est lui qui porte l'identité — logotype, badge vérifié,
+> écrans d'argent. **La loi de la couleur parle de reconnaissance, pas de
+> boutons.**
+>
+> Ce qui change : **le framboise `#A31A5B` devient la couleur d'action** — le
+> bouton, « Je prends », « En direct », la promotion, l'onglet actif.
+
+**Pourquoi le framboise, et pas le violet, sur l'action :**
+
+- **L'audience est très majoritairement féminine, sur un vertical mode.** Le
+  framboise est lu dans cet univers comme une couleur d'envie et d'achat. Le
+  violet y est lu comme une couleur d'institution — ce qui est exactement ce
+  qu'on lui demande **ailleurs**, sur la facture et sur le badge, et pas sur le
+  bouton.
+- **Il sépare deux choses que le produit ne doit jamais confondre** : ce sur
+  quoi on appuie, et ce qui prouve. Un badge vérifié qui a la couleur du bouton
+  apprend à toucher là où il n'y a rien.
+- **Il dégage la réserve de luminance de son endroit le plus coûteux.** La
+  confusion violet / bleu Yas ne disparaît pas — mesurée, elle reste du même
+  ordre pour le framboise *(1,55:1 contre le bleu Yas, contre 1,44:1 pour le
+  violet)*. **Mais elle ne pèse plus sur l'élément le plus fréquent de
+  l'écran** : le bouton n'est plus dans la famille disputée, et la réserve se
+  concentre là où le mot et la forme la couvrent déjà — le logotype.
+
+> ⚠️ **Une réserve nouvelle, propre à `D-22` `[P]`** : le framboise et le violet
+> ont entre eux **1,08:1** — aucune différence de luminance du tout. C'est la
+> raison d'être de la règle **`R-Z1`** *(cahier des charges §5.17)* : ces deux
+> couleurs ne portent **jamais seules** une différence de sens.
 
 ---
 
@@ -359,7 +393,7 @@ même.
 |---|---|
 | Le bouton « Je prends » | Rend l'engagement écrit, donc opposable |
 | La réservation de stock | Rend la survente impossible, donc la promesse tenable |
-| L'unboxing | **Déclenche** la confirmation, et la prouve publiquement |
+| La confirmation de réception | **Clôt** la commande en un appui, et alimente la preuve publique |
 | La facture | La preuve écrite de la transaction |
 | Le badge vérifié | Ce qui rend crédible la confirmation à venir |
 | Les avis vérifiés | Seul un acheteur ayant payé peut noter |
@@ -481,7 +515,7 @@ tant qu'il n'a jamais été promis publiquement. *(D'où `R-4`.)*
 | 14 | Sous-marques | ❌ **Violée** | `D-11` — abandonner « JP Club » |
 | 15 | Les sœurs | ✅ | Aucune seconde marque |
 | 16 | La forme | ⚠️ **À exécuter** | `D-17` — logotype horizontal |
-| 17 | La couleur | ✅ **Vérifiée** | `D-06` — violet `#7C2D92` |
+| 17 | La couleur | ✅ **Vérifiée** | `D-06` — violet `#7C2D92`, **révisée par `D-22`** : le violet porte l'identité, le framboise `#A31A5B` porte l'action |
 | 18 | Les frontières | ✅ **Actif** | Le nom voyage en Afrique francophone |
 | 19 | Cohérence | ⚠️ **Engagement** | Ne rien changer pendant 3 ans |
 | 20 | Le changement | ✅ | Un seul changement, prévu et daté |

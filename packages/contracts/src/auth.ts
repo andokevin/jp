@@ -7,37 +7,93 @@ import { langueSchema } from './commun.js';
  * Source unique du contrat API
  */
 
+/**
+ * La longueur du code à usage unique — **la source unique**.
+ *
+ * Elle est déclarée ICI, en haut, et non avec les autres constantes en bas :
+ * `codeOtp` l'évalue au chargement du module, et un `const` n'existe pas avant
+ * sa ligne. La ranger plus bas lèverait une `ReferenceError` à l'import.
+ *
+ * Les clients l'importent au lieu de recopier `6`. Le jour où le serveur passe
+ * à huit chiffres, cette ligne suffit — sinon il faut le savoir dans trois
+ * fichiers, dont un qui le cache derrière un `===` littéral.
+ */
+export const OTP_LONGUEUR = 6;
+
 // -- type de base --
 
 export const email = z.string().email({ message: "L'adresse e-mail n'est pas valide." });
-export const codeOtp = z
-  .string()
-  .length(6, { message: 'Le code OTP doit contenir exactement 6 caractères.' });
+export const codeOtp = z.string().length(OTP_LONGUEUR, {
+  message: `Le code OTP doit contenir exactement ${OTP_LONGUEUR} caractères.`,
+});
 export const motDePasse = z
   .string()
   .min(8, { message: 'Le mot de passe doit contenir au moins 8 caractères.' });
 export const prenom = z.string().min(1, { message: 'Le prénom est requis.' });
-export const genre = z.enum(['Homme', 'Femme', 'Autre'], {
-  message: "Le genre doit être 'Homme', 'Femme' ou 'Autre'.",
+export const nom = z.string().min(1, { message: 'Le nom est requis.' });
+export const genre = z.enum(['femme', 'homme', 'autre'], {
+  message: "Le genre doit être 'femme', 'homme' ou 'autre'.",
 });
 
+// ⬇️ Téléphone (contact de livraison, PAS un identifiant)
+export const telephone = z
+  .string()
+  .regex(/^0[0-9]{9}$/, { message: 'Le téléphone doit contenir 10 chiffres et commencer par 0.' });
+
+// ⬇️ Date de naissance (obligatoire pour publier des vidéos — RB6)
+export const dateDeNaissance = z.coerce
+  .date({
+    // Ici, on utilise simplement `message` (ou rien du tout)
+    message: 'La date de naissance est invalide.',
+  })
+  .refine((date) => date <= new Date(), {
+    message: 'La date de naissance ne peut pas être dans le futur.',
+  })
+  .refine(
+    (date) => {
+      const age = new Date().getFullYear() - date.getFullYear();
+      const mois = new Date().getMonth() - date.getMonth();
+      const ageVerifie =
+        age - (mois < 0 || (mois === 0 && new Date().getDate() < date.getDate()) ? 1 : 0);
+      return ageVerifie >= 18;
+    },
+    { message: 'Vous devez avoir au moins 18 ans.' },
+  );
+
+//  Préférences de vêtements (profil_acheteur)
+export const preferencesVetement = z.array(z.string()).max(3, {
+  message: 'Maximum 3 préférences de vêtements.',
+});
+
+// ⬇️ Photo de profil (URL)
+export const photoUrl = z.string().url({ message: "L'URL de la photo est invalide." }).optional();
+
 // -- fonctions de validation --
+
 export const demanderCodeOptSchema = z.object({
   email,
   finalite: z.enum(['inscription', 'connexion']).optional().default('inscription'),
 });
 export type DemanderCodeOptSchema = z.infer<typeof demanderCodeOptSchema>;
 
+// ⬇️ Étape d'inscription complète (souvent appelée après l'OTP)
 export const verifierCodeOptSchema = z.object({
   email,
   code: codeOtp,
+  // Données du profil utilisateur
   prenom: prenom.optional(),
+  nom: nom.optional(),
   genre: genre.optional(),
   // Dérivé de `LANGUES` (@jp/i18n) : une langue ajoutée là-bas vaut ici sans
   // qu'on ait à y penser. Une énumération recopiée finit toujours par diverger.
   langue: langueSchema.default('fr'),
-  // ⬇️ AJOUTÉ : permet à l'utilisateur de définir son mot de passe à l'inscription
+  dateNaissance: dateDeNaissance.optional(),
+  telephone: telephone.optional(),
+  photoUrl: photoUrl,
+  // Mot de passe optionnel (défini à l'inscription ou plus tard)
   motDePasse: motDePasse.optional(),
+  // Préférences acheteur (stockées dans profil_acheteur)
+  preferencesVetement: preferencesVetement.optional(),
 });
 export type VerifierCodeOptSchema = z.infer<typeof verifierCodeOptSchema>;
 
@@ -99,7 +155,7 @@ export const ReponseOtpSchema = z.object({
 });
 export type ReponseOtp = z.infer<typeof ReponseOtpSchema>;
 
-/** Réponse  d'erreur */
+/** Réponse d'erreur */
 export const ReponseErreurSchema = z.object({
   code: z.string(),
   message: z.string(),

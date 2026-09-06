@@ -247,7 +247,7 @@ produit que JP, en Afrique de l'Ouest francophone.
 | **Catégories** | **6** : beauté/cosmétiques, **perruques/cheveux**, bijoux/accessoires, mode femme… | Mode, Beauté *(Tech fermé)* |
 | Volume affiché | **250+ sessions en direct par semaine** | — |
 | SLA | Exécution sous **72 h ouvrées** | — |
-| Identité | Bleu marine / bleu foncé, mobile-first | Violet `#7C2D92` |
+| Identité | Bleu marine / bleu foncé, mobile-first | Violet `#7C2D92` *(identité et preuve)* + framboise `#A31A5B` *(action)* — `D-22` |
 | Ton | Français conversationnel, amical | À fixer *(`05`)* |
 
 ## Les cinq enseignements

@@ -140,9 +140,21 @@ depend: [F1.1]
 
 ---
 
-## F14.7 — L'unboxing
+## ~~F14.7 — L'unboxing~~ ❌ supprimée *(`DP-17`)*
 
-`P1 · M · complet` — **Le geste le plus important de la couche sociale** · **Règles** R-K2 · **⚠️ montant du crédit à calibrer**
+**Cette fonctionnalité est annulée.** La confirmation de réception en un appui
+*(`UC-31`)* devient le seul chemin ; le backlog l'a rayée, et un mini-plan qui
+la déclarerait encore engendrerait un ticket GitHub pour du travail décidé
+mort — d'où l'absence de bloc `issues` en fin de section.
+
+**La conception est conservée telle quelle, volontairement.** Elle documente ce
+qui a été pesé et écarté ; l'effacer ferait reproposer la même idée dans six
+mois sans le raisonnement qui l'a écartée. Rien de ce qui suit n'est à
+construire.
+
+> Le texte d'origine, pour mémoire : `P1 · M · complet` — **Le geste le plus
+> important de la couche sociale** · **Règles** R-K2 · **⚠️ montant du crédit à
+> calibrer**
 
 ### 1. Conception
 
@@ -230,15 +242,9 @@ button "Voir ma vidéo".
 
 Enregistrement limité à 30 s (poids, transcodage, et une vidéo courte est plus regardée). Le bouton « Confirmer sans filmer » est **visuellement équivalent**, pas relégué.
 
-```issues
-feature: F14.7
-titre: Unboxing, le geste central du social
-epic: "14"
-phase: P1
-prio: M
-etapes: [conception, squelette, bdd, design, backend, frontend]
-depend: [F14.5, F4.5, F6.1]
-```
+*Pas de bloc `issues` : `DP-17` a supprimé cette fonctionnalité du backlog. Le
+déclarer ici la rendrait « planifiée sans être au backlog » — ce que
+`pnpm couverture` refuse, à juste titre.*
 
 ---
 

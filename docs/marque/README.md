@@ -10,7 +10,7 @@
 ## Par où commencer
 
 **Si vous n'avez que dix minutes** → [`05_PLATEFORME_DE_MARQUE.md`](05_PLATEFORME_DE_MARQUE.md),
-§1 *(la marque en une page)* et §13 *(les 20 décisions)*.
+§1 *(la marque en une page)* et §13 *(les décisions)*.
 
 **Si vous devez écrire un texte, un écran ou une affiche** →
 [`05_PLATEFORME_DE_MARQUE.md`](05_PLATEFORME_DE_MARQUE.md), §7 à §10.
@@ -31,7 +31,7 @@
 | **2** | [`02_CERCLE_DOR.md`](02_CERCLE_DOR.md) | **Le Cercle d'Or** — Simon Sinek | Le **Pourquoi**, les 5 principes du **Comment**, le **Quoi**, le manifeste, et 3 corrections de communication |
 | **3** | [`03_ZAG.md`](03_ZAG.md) | **Zag** — Marty Neumeier | Les **17 points de contrôle**, l'énoncé d'unicité, **les 3 zags**, l'ennemi, le cri de ralliement, ce qu'il faut ajouter et retirer |
 | **4** | [`04_LOIS_RIES.md`](04_LOIS_RIES.md) | **Les 22 lois du branding** — Al & Laura Ries | Les **3 lois que nous violons**, le mot à posséder, la catégorie à créer, la couleur, la forme du logo |
-| **5** | [**`05_PLATEFORME_DE_MARQUE.md`**](05_PLATEFORME_DE_MARQUE.md) | **L'englobement** | **Le document de travail.** Positionnement · audience · valeur · histoire · personnalité · ton · lexique · **les mots de chaque écran** · nom et slogan · **logo et prompt Stitch** · **fonctionnalités à ajouter, améliorer, retirer** · **20 décisions** |
+| **5** | [**`05_PLATEFORME_DE_MARQUE.md`**](05_PLATEFORME_DE_MARQUE.md) | **L'englobement** | **Le document de travail.** Positionnement · audience · valeur · histoire · personnalité · ton · lexique · **les mots de chaque écran** · nom et slogan · **logo et prompt Stitch** · **fonctionnalités à ajouter, améliorer, retirer** · **les décisions** |
 | **6** | [`06_ETUDE_MARCHE.md`](06_ETUDE_MARCHE.md) | **L'étude terrain** | Les faits vérifiés et sourcés qui **tranchent** une décision : marché, paiement, réglementation, langue, couleurs relevées, le nom |
 | **7** | [`07_CONCURRENCE.md`](07_CONCURRENCE.md) | **La carte** | Ce que chaque concurrent revendique, **verbatim** — et **les 8 espaces vacants** |
 
@@ -53,7 +53,7 @@
 | **Signature** | **« Je prends. Je reçois. »** |
 | **Voix** | **JP vous vouvoie. Vous parlez à la première personne.** |
 | **Registre** | **Le soulagement.** Jamais l'enthousiasme |
-| **Couleur** | Violet `#7C2D92` |
+| **Couleurs** | Violet `#7C2D92` — l'identité et la preuve · Framboise `#A31A5B` — l'action *(`D-22`)* |
 
 ---
 
@@ -78,7 +78,7 @@
 | ~~« en attente de confirmation »~~ | — | ❌ **Sans objet** *(`DP-07`)* — JP ne tient aucun solde |
 | « JP Club » | Modèle économique | ❌ Sous-marque, et risque de faire payer la confiance — `D-11` |
 | Régie publicitaire, assistant IA, enchères | Modèle, EP12, phase 3 | ❌ **À retirer du discours** — `R-1`, `R-2`, `R-3` |
-| Violet `#7C2D92` | [`packages/ui/src/jetons.ts`](../../packages/ui/src/jetons.ts) | ✅ **Confirmé et désormais justifié** — `D-06` |
+| Violet `#7C2D92` + framboise `#A31A5B` | [`packages/ui/src/jetons.ts`](../../packages/ui/src/jetons.ts) | ✅ **Justifiés et répartis par rôle** — `D-06`, révisée par `D-22` : `COULEURS.identite` pour la preuve, `COULEURS.action` pour le bouton |
 | Un accent par univers, un seul design system | [`packages/ui/src/univers.ts`](../../packages/ui/src/univers.ts) | ✅ **Respecte exactement la loi des sous-marques** |
 
 ---

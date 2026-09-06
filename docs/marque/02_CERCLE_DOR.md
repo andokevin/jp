@@ -123,13 +123,13 @@ réellement employés**, pas un vocabulaire de commerce électronique importé
 
 ### 5. La preuve est publique, et elle vient des clientes.
 
-Ce ne sont pas nos mots qui prouvent que JP livre. **Ce sont les colis que les
-clientes ouvrent en vidéo.** Un geste — filmer son colis — confirme la
-réception, libère les fonds, produit un avis vérifié, alimente le fil, et prouve
-publiquement que JP livre pour de vrai.
+Ce ne sont pas nos mots qui prouvent que JP livre. **Ce sont les clientes qui
+disent avoir reçu.** Un appui — confirmer sa réception — clôt la commande,
+alimente le score public de la boutique et produit un avis vérifié, adossé à un
+achat réel.
 
-> Personne n'est obligé de se filmer. C'est une possibilité récompensée, jamais
-> une condition.
+> Personne n'a à se filmer : confirmer une réception se fait en un appui
+> *(`DP-17`)*.
 
 ## Le tableau de vérification
 
@@ -142,7 +142,7 @@ preuve dans le produit :
 | 2 — Nous gagnons quand il gagne | Commission par univers `F21.5`, aucun abonnement obligatoire en phase 1 |
 | 3 — Rien de faux | `N6.1`, `N6.2`, `RB7`, `RB9`, minuteur calé sur le serveur `MinuteurReservation` |
 | 4 — Un usage existant | Le nom même du produit, `N4.4`, la vente hors direct qui prolonge le direct |
-| 5 — La preuve publique | Unboxing `F14.x`, avis vérifiés `F6.1`, fil consultable sans compte `F0.10` |
+| 5 — La preuve publique | Avis vérifiés `F6.1`, fil et mur d'avis consultables sans compte `F0.10` |
 
 ---
 
@@ -160,7 +160,7 @@ Le détail :
 |---|---|
 | **Le geste** | Un bouton « Je prends » dans le direct et sous chaque vidéo — quantité, taille, livraison, paiement, sans écrire un mot |
 | **L'argent** | Paiement mobile money ou carte, encaissé par JP, gardé jusqu'à la confirmation, facture horodatée des deux côtés |
-| **Le catalogue** | Une boutique dont le catalogue est fait de vidéos — stories, clips, looks, unboxings, tous achetables |
+| **Le catalogue** | Une boutique dont le catalogue est fait de vidéos — stories, clips, looks, tous achetables |
 | **La livraison** | À domicile ou en point de retrait, suivi partagé, code de retrait |
 | **Les univers** | JP Mode et JP Beauté ouverts. JP Tech déclaré, fermé. |
 | **Sans capital** | Affiliation et précommande groupée, pour vendre sans avancer un ariary |
@@ -214,7 +214,7 @@ vous confirmiez avoir reçu.
 [ Continuer avec Google ]
 [ Continuer avec un e-mail ]
 
-Regarder d'abord →   (le mur des colis ouverts, sans compte)
+Regarder d'abord →   (le mur d'avis vérifiés, sans compte)
 ```
 
 Le lien du bas est l'appel transitionnel du BrandScript. Il est essentiel :

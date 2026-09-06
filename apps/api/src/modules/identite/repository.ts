@@ -6,6 +6,7 @@
  * ESLint.
  */
 import type { PrismaClient } from '../../genere/prisma/client.js';
+import type { auth } from '@jp/contracts';
 
 export const depot = {
   /** Cherche un utilisateur par email. */
@@ -13,25 +14,46 @@ export const depot = {
     return db.utilisateur.findUnique({ where: { email } });
   },
 
-  /** Crée un utilisateur après vérification OTP (avec mot de passe optionnel). */
+  /** Crée un utilisateur complet + son profil acheteur (si nécessaire). */
   async creerUtilisateur(
     db: PrismaClient,
-    params: {
-      email: string;
-      motDePasseEmpreinte?: string | null;
-      prenom?: string | null;
-      genre?: string | null;
-      langue?: 'fr' | 'en';
-    },
+    params: auth.VerifierCodeOptSchema & { motDePasseEmpreinte?: string | null },
   ) {
     return db.utilisateur.create({
       data: {
         email: params.email,
         ...(params.motDePasseEmpreinte ? { motDePasseEmpreinte: params.motDePasseEmpreinte } : {}),
         ...(params.prenom ? { prenom: params.prenom } : {}),
+        ...(params.nom ? { nom: params.nom } : {}),
         ...(params.genre ? { genre: params.genre as never } : {}),
         ...(params.langue ? { langue: params.langue } : {}),
+        ...(params.dateNaissance ? { dateNaissance: params.dateNaissance } : {}),
+        ...(params.telephone ? { telephone: params.telephone } : {}),
+        ...(params.photoUrl ? { photoUrl: params.photoUrl } : {}),
+        // Création du profil acheteur avec les préférences de vêtements
+        ...(params.preferencesVetement && params.preferencesVetement.length > 0
+          ? {
+              profilAcheteur: {
+                create: {
+                  preferencesVetement: params.preferencesVetement,
+                },
+              },
+            }
+          : {}),
       },
+    });
+  },
+
+  /** Met à jour le profil acheteur (si les préférences arrivent après l'inscription). */
+  async mettreAJourProfilAcheteur(
+    db: PrismaClient,
+    utilisateurId: string,
+    preferencesVetement: string[],
+  ) {
+    return db.profilAcheteur.upsert({
+      where: { utilisateurId },
+      create: { utilisateurId, preferencesVetement },
+      update: { preferencesVetement },
     });
   },
 

@@ -30,10 +30,27 @@ export const COULEURS = {
   texteSecondaire: '#52525B',
   texteInverse: '#FFFFFF',
 
-  // Une seule couleur d'action. Deux couleurs d'action, c'est zéro couleur
-  // d'action : plus rien ne ressort.
-  action: '#7C2D92',
-  actionPressee: '#5B1D6D',
+  // ── Les deux couleurs de la marque, et leurs deux rôles (`D-22`) ──────────
+  //
+  // Ce ne sont PAS deux couleurs d'action. C'est une couleur d'action et une
+  // couleur d'identité, et la frontière est stricte :
+  //
+  //   · `action` — framboise. Ce sur quoi on appuie : bouton principal,
+  //     « Je prends », pastille « En direct », étiquette de promotion,
+  //     élément actif de la navigation.
+  //   · `identite` — violet. Ce qui prouve : logotype, badge « Boutique
+  //     vérifiée » / « Mpivarotra azo antoka », écrans de paiement, de facture
+  //     et de commission, score de confiance.
+  //
+  // Le violet ne devient jamais un bouton, le framboise ne devient jamais un
+  // badge vérifié ni un écran d'argent. `D-22` révise `D-06` : le violet reste,
+  // il change de rôle.
+  action: '#A31A5B',
+  actionPressee: '#821549',
+
+  identite: '#7C2D92',
+  /** Fond profond d'identité : carré partageable, en-tête de facture. */
+  identiteFoncee: '#5B1D6D',
 
   succes: '#15803D',
   attention: '#A16207',
@@ -43,6 +60,16 @@ export const COULEURS = {
   // bouton, et le confondre fait toucher là où il ne faut pas.
   montant: '#18181B',
 } as const;
+
+/**
+ * Les deux couleurs de `D-22`, et la raison d'être de la règle `R-Z1`.
+ *
+ * Leur rapport de contraste mutuel est de **1,08:1** — c'est-à-dire aucun.
+ * Elles se distinguent par la teinte, jamais par la luminance : sur un écran
+ * d'entrée de gamme en plein soleil, en petite taille, ou pour une personne
+ * daltonienne, elles sont le même gris.
+ */
+export const COULEURS_D22 = [COULEURS.action, COULEURS.identite] as const;
 
 export type Couleur = keyof typeof COULEURS;
 
@@ -94,4 +121,51 @@ export function contraste(a: string, b: string): number {
   const lb = luminance(b);
   const [clair, sombre] = la > lb ? [la, lb] : [lb, la];
   return (clair + 0.05) / (sombre + 0.05);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// R-Z1 — aucune différence de sens portée par la seule couleur
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Ce qui distingue un état d'un autre à l'écran.
+ *
+ * `couleur` seule ne suffit jamais quand les deux couleurs comparées sont
+ * celles de `D-22` : il faut un libellé, une icône ou une forme qui change
+ * aussi.
+ */
+export type SigneDistinctif = {
+  readonly couleur?: string;
+  readonly libelle?: string;
+  readonly icone?: string;
+  readonly forme?: string;
+};
+
+/**
+ * **R-Z1** — vrai si la distinction entre `a` et `b` tient à autre chose qu'au
+ * seul couple framboise / violet.
+ *
+ * ⚠️ **Ce que ce contrôle attrape, et ce qu'il n'attrape pas.** Il vérifie
+ * *une paire de descripteurs qu'on lui donne*. Il ne parcourt pas les écrans de
+ * `apps/mobile`, `apps/web` ni `apps/admin` : rien, ici, ne peut voir qu'un
+ * développeur a peint deux onglets de deux couleurs sans changer le libellé.
+ * La vérification exhaustive demanderait une règle de lint sur les feuilles de
+ * style des applications, qui n'existe pas — **c'est un manque assumé, pas un
+ * oubli**. Tout composant qui expose deux états colorés DOIT appeler cette
+ * fonction dans son propre test.
+ */
+export function respecteRZ1(a: SigneDistinctif, b: SigneDistinctif): boolean {
+  const couplesD22 = COULEURS_D22 as readonly string[];
+  const distinctionParCouleurD22 =
+    a.couleur !== undefined &&
+    b.couleur !== undefined &&
+    a.couleur !== b.couleur &&
+    couplesD22.includes(a.couleur) &&
+    couplesD22.includes(b.couleur);
+
+  if (!distinctionParCouleurD22) return true;
+
+  // La couleur les sépare, mais elle ne peut pas le faire seule : il faut
+  // qu'autre chose change aussi.
+  return a.libelle !== b.libelle || a.icone !== b.icone || a.forme !== b.forme;
 }

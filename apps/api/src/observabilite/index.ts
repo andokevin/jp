@@ -166,10 +166,13 @@ export const EVENEMENTS = {
   receptionConfirmee: 'reception.confirmee',
   fondsLiberes: 'fonds.liberes',
   litigeOuvert: 'litige.ouvert',
-  compteCree: 'identite.compte_cree',
-  compteConnecte: 'identite.compte_connecte',
-  codeOtpEnvoye: 'identite.code_otp_envoye',
-  emailVerifie: 'identite.email_verifie',
+  // `<chose>.<action>`, comme les quatorze au-dessus. Le sprint F0.1 les avait
+  // préfixées `identite.` — quatre entrées contre quatorze, et l'entonnoir du
+  // pilote y perdait `compte.cree`, son premier palier.
+  compteCree: 'compte.cree',
+  compteConnecte: 'compte.connecte',
+  codeOtpEnvoye: 'code_otp.envoye',
+  emailVerifie: 'email.verifie',
 } as const;
 
 export type NomEvenement = (typeof EVENEMENTS)[keyof typeof EVENEMENTS];

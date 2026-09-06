@@ -244,27 +244,11 @@ Stories, vidéos verticales courtes, looks : un fil que l'on parcourt par balaya
 
 ---
 
-## Slide 13 — L'unboxing
+## ~~Slide 13 — L'unboxing~~ ❌ **supprimée** *(`DP-17`)*
 
-**ACTE II · LA SOLUTION**
-
-# Un geste. Cinq résultats.
-
-L'acheteuse filme l'ouverture de son colis.
-
-| Ce qu'elle fait | Ce que ça produit |
-|---|---|
-| Elle filme | Du contenu gratuit pour le fil |
-| Elle publie | La preuve publique que JP livre pour de vrai |
-| Elle valide la réception | Les fonds sont libérés vers la boutique |
-| Elle dit si ça taille bien | Un avis vérifié |
-| Elle poste | Du crédit dans sa cagnotte |
-
-**C'est le pendant social du bouton « Je prends » : un seul geste, plusieurs problèmes réglés.**
-
-*Et personne n'est obligé de se filmer : la confirmation en un appui reste toujours disponible.*
-
-**Notes.** La meilleure slide du dossier pour un investisseur qui cherche l'efficacité du produit. Contre « un paiement envoyé, puis plus de nouvelles » (slide 3), rien ne vaut un fil rempli de gens qui ouvrent leurs colis. Préciser que le fil d'unboxings est consultable sans compte : c'est la meilleure page d'accueil possible pour quelqu'un qui doute de la plateforme. Le montant du crédit est une hypothèse à calibrer au pilote.
+> Le geste filmé est retiré du produit. **Le numéro n'est pas réattribué** : les
+> slides suivantes gardent le leur. ⚠️ `scripts/build_deck.py` génère encore
+> cette slide — voir les points ouverts.
 
 ---
 
@@ -370,14 +354,14 @@ Publier · sa sélection d'articles chez plusieurs boutiques · ses précommande
 
 1. **Le bouton à la place du commentaire.** Une action au lieu d'une négociation en message privé.
 2. **L'argent tenu jusqu'à la réception.** La protection est un mécanisme, pas une promesse.
-3. **L'unboxing qui vaut confirmation, avis et preuve publique.** Un geste, cinq résultats.
+3. **Le mur d'avis vérifiés, public et sans compte.** Chaque avis adossé à un achat réel, consultable avant même de s'inscrire.
 4. **La créatrice sans capital.** Affiliation et précommande groupée.
 5. **Le cadeau depuis l'étranger.** Offrir un objet précis, pas envoyer de l'argent.
 6. **Le point de retrait sans adresse.** Ce qui rend le petit panier viable.
 7. **Le replay qui vend.** Le direct terminé reste achetable, chaque article repéré à sa minute. *(phase 2)*
 8. **Bien à sa taille.** Guide par marque, avis d'acheteuses de la même morphologie, vidéos portées. *(phase 2)*
 
-**Notes.** Ne pas dérouler les huit. En présenter deux, selon l'interlocuteur : pour un investisseur, l'unboxing (point 3) et la créatrice sans capital (point 4), parce que ce sont les deux qui font baisser le coût d'acquisition. Les autres montrent la profondeur de la feuille de route.
+**Notes.** Ne pas dérouler les huit. En présenter deux, selon l'interlocuteur : pour un investisseur, le mur d'avis vérifiés (point 3) et la créatrice sans capital (point 4), parce que ce sont les deux qui font baisser le coût d'acquisition. Les autres montrent la profondeur de la feuille de route.
 
 ---
 
@@ -449,7 +433,7 @@ Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factur
 | Panier moyen | À établir sur le segment vestimentaire | Effet du paiement intégré sur le montant commandé |
 | Conversion en direct | À établir | Spectateurs → « Je prends » → paiement confirmé |
 | Conversion du contenu | Inconnue | Ce que convertit un clip, comparé à un direct |
-| Production de contenu | Inconnue | Part des acheteuses qui publient un unboxing |
+| Production de contenu | Inconnue | Contenus publiés par acheteuse et par créatrice active |
 | Acquisition par créatrice | Moins chère que la publicité | Coût d'une cliente amenée par une créatrice |
 | Commande-cadeau | Panier plus élevé | Écart avec le panier ordinaire, part payée depuis l'étranger |
 | Mode de livraison | Point de retrait majoritaire sur les petits paniers | Répartition, et effet sur le taux d'abandon |
@@ -487,7 +471,7 @@ Et côté acheteuse, un coût de sortie qui monte tout seul : historique, factur
 
 # Trois phases. Une seule à financer aujourd'hui.
 
-**Phase 1 — Le geste et la preuve.** Direct et bouton « Je prends », paiement mobile money, fonds tenus jusqu'à réception, facture automatique, suivi de commande, boutiques vérifiées — et le noyau de contenu : stories, clips achetables, unboxing, créatrices et affiliation, précommande, cadeau, modération. *C'est le produit minimum qui règle le problème.*
+**Phase 1 — Le geste et la preuve.** Direct et bouton « Je prends », paiement mobile money, fonds tenus jusqu'à réception, facture automatique, suivi de commande, boutiques vérifiées — et le noyau de contenu : stories, clips achetables, créatrices et affiliation, précommande, cadeau, modération. *C'est le produit minimum qui règle le problème.*
 
 **Phase 2 — La communauté.** Replay achetable, avis vérifiés et score public, abonnés et notifications, promotions programmées, paliers de fidélité et cagnotte, guide des tailles, retours, JP Club.
 

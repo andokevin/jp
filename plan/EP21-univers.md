@@ -124,6 +124,24 @@ Rien à créer : la table `univers` existe *(migration `univers`)*. `GET /univer
 
 **Écrans** : la barre de sélection en tête, l'entête d'univers à la première visite, la pastille sur une vignette hors contexte.
 
+> ⚠️ **Les couleurs des trois prompts de cette épique sont en attente de `D-22`.**
+> `D-22` a fait du framboise `#A31A5B` la **couleur d'action** de toute
+> l'application. Deux conséquences non tranchées, laissées telles quelles ici
+> **volontairement** :
+>
+> - **L'accent de `JP Beauté` ne peut plus être `#A31A5B`** — un bandeau ou une
+>   pastille d'univers de la couleur du bouton principal apprend à toucher le
+>   mauvais élément. **Une couleur de remplacement est à décider** *(point
+>   ouvert, `06_ETUDE_MARCHE.md` §6)*.
+> - **La pastille active du sélecteur est-elle de la couleur d'action ou de
+>   l'accent d'univers ?** `D-22` range « l'élément actif de navigation » du
+>   côté de l'action *(framboise)* ; le sélecteur d'univers, lui, porte
+>   l'identité de l'univers courant *(violet pour Mode)*. **Les deux lectures se
+>   tiennent — à trancher avant de lancer ces prompts.**
+>
+> Les valeurs ci-dessous sont donc **celles d'avant `D-22`**, conservées pour ne
+> rien inventer, pas validées.
+
 **Prompt Stitch** *(préambule commun de `PLAN_SOCLE §8`, puis)* :
 
 ```

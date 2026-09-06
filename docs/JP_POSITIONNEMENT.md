@@ -149,23 +149,10 @@ Cette phrase doit tenir tout le produit. Le jour où l'on publie un contenu qui 
 **1. La vidéo est une meilleure preuve que la photo.**
 Une vraie personne, filmée, avec sa morphologie, portant le vêtement : c'est le signal de taille le plus fiable qui existe. La photo de catalogue ment ; la vidéo portée ne ment pas. Cela sert directement le différenciateur « bien à sa taille » (slide 15) et fait baisser les retours, qui sont la première cause de litige dans le vestimentaire. **Le contenu n'est pas du divertissement posé à côté du commerce : c'est une preuve de plus, dans un produit qui vend de la preuve.**
 
-**2. L'unboxing est la démonstration publique que JP livre vraiment.**
-C'est le geste le plus important de toute la couche sociale. Une acheteuse filme l'ouverture de son colis. Une seule action produit **cinq résultats** :
-
-| Ce qu'elle fait | Ce que ça produit |
-|---|---|
-| Elle filme son colis | Du contenu gratuit pour le fil |
-| Elle publie | La preuve publique que JP livre pour de vrai |
-| Elle valide la réception | Les fonds sont libérés vers la boutique (`F4.5`) |
-| Elle dit si ça taille bien | Un avis vérifié (`F6.1`) |
-| Elle poste | Du crédit dans sa cagnotte (`F7.7`) |
-
-**C'est le pendant social exact du bouton « Je prends » : un seul geste, plusieurs problèmes réglés.** Et surtout : c'est l'antidote le plus efficace au problème de la slide 4. Contre « un paiement envoyé, puis plus de nouvelles », rien ne vaut un fil rempli de gens qui ouvrent leurs colis.
-
-**3. Le contenu remplit les 23 heures vides.**
+**2. Le contenu remplit les 23 heures vides.**
 Un direct dure une heure par soir. En dehors, l'application n'a aucune raison d'être ouverte — et une application qu'on n'ouvre pas se fait désinstaller le jour où le téléphone est plein. Le contenu crée l'habitude quotidienne, donc la rétention, donc la place sur l'écran d'accueil.
 
-**4. C'est le seul levier qui fasse baisser le coût d'acquisition.**
+**3. C'est le seul levier qui fasse baisser le coût d'acquisition.**
 La slide 19 admet que le blocage est l'acquisition et que le marketing est le poste dominant. Le contenu produit par les utilisatrices **est** de l'acquisition, et il est gratuit. Une acheteuse qui publie son look ramène ses amies ; elle ne coûte rien et elle est plus crédible qu'une publicité. C'est le mécanisme de la slide 5 — « seulement chez la personne qu'une amie lui a recommandée » — passé à l'échelle.
 
 ### Les trois risques, et ce qu'on en fait
@@ -288,7 +275,7 @@ Pourquoi c'est sérieux :
 | 14 | Point relais | Ajouter l'argument **« sans donner son adresse »** — il est déjà mentionné en puce 3, il mérite d'être en tête. |
 | 17 | Modèle économique | Réordonner et **ajouter l'affiliation et les campagnes de marque**. Placer la publicité display en dernier, en la présentant comme une option d'échelle et non comme un pilier. |
 | 18 | Hypothèses | Ajouter quatre lignes : **part des acheteuses refusant le prépaiement**, **taux de recrutement boutique par parrainage**, **panier moyen d'une commande-cadeau**, **coût d'acquisition via créatrice**. |
-| — | *Nouvelles slides à insérer* | **Le contenu comme catalogue vivant** · **L'unboxing comme preuve publique** · **La créatrice sans capital** · **Le cadeau et la diaspora** |
+| — | *Nouvelles slides à insérer* | **Le contenu comme catalogue vivant** · **La créatrice sans capital** · **Le cadeau et la diaspora** |
 
 **Phrases à dire** — « ton argent n'est pas perdu » · « la boutique est payée quand tu as reçu » · « combien de "je prends" t'ont vraiment payé ? » · « boutique vérifiée » · « il y a une trace » · « tu n'as pas besoin d'acheter le stock » · « une boutique dont le catalogue est fait de vidéos ».
 
@@ -308,7 +295,7 @@ En plus des quatre indicateurs de la slide 6, six tests :
 
 **Sur la couche sociale**
 
-4. **Taux de production de contenu** — quelle proportion d'acheteuses publie un unboxing après réception ? C'est ce qui détermine si le moteur d'acquisition gratuite s'amorce ou non. Si le taux est trop faible, l'incitation (cagnotte) est mal calibrée.
+4. **Taux d'avis vérifiés publiés** — quelle proportion d'acheteuses confirme la réception et laisse un avis ? C'est ce qui remplit le mur d'avis publics, seule preuve consultable sans compte que JP livre pour de vrai. ⚠️ **Point ouvert** *(`DP-17` §2)* : le rattachement de l'avis vérifié à la confirmation reste à trancher.
 5. **Conversion d'un clip** — vues → clics vers l'article → « Je prends » → paiement. À comparer à la conversion d'un direct. Cela dira si le contenu vend réellement ou s'il ne fait que divertir.
 6. **Coût d'acquisition par créatrice** — combien coûte une cliente amenée par une créatrice affiliée, comparé à une cliente amenée par la publicité payante ? C'est l'hypothèse qui justifie tout l'investissement dans la couche sociale.
 

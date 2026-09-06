@@ -825,7 +825,7 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 | F14.4 | Enregistrement et montage simple dans l'application | P1 | S |
 | F14.5 | **Attacher 1 à n articles à un contenu** | P1 | M |
 | F14.6 | Post photo « look du jour » | P1 | S |
-| F14.7 | **Unboxing — le geste central du social** | P1 | M |
+| ~~F14.7~~ | ~~Unboxing — le geste central du social~~ ❌ **supprimée** *(`DP-17`)* — la confirmation de réception en un appui (`UC-31`) devient le seul chemin | — | — |
 | F14.8 | Avant / après essayage | P2 | S |
 | F14.9 | Sondage « laquelle je prends ? » | P2 | S |
 | F14.10 | Duo / réponse vidéo | P2 | C |
@@ -857,22 +857,8 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 **La fonctionnalité qui fait tenir toute la règle d'or.**
 - **V** : attache ses propres articles.
 - **C** : attache **les articles de n'importe quelle boutique** — c'est ce qui fait d'elle une affiliée (`F15.4`). L'article attaché porte son identifiant de créatrice, donc la vente lui est rattachée.
-- **A** : attache l'article qu'elle a réellement acheté (son unboxing, son look) — vérifié depuis son historique de commandes, donc **impossible d'attacher un article qu'on n'a pas acheté**.
+- **A** : attache l'article qu'elle a réellement acheté — vérifié depuis son historique de commandes, donc **impossible d'attacher un article qu'on n'a pas acheté**.
 - **Règle** : publication impossible sans au moins un article. Le bouton « Publier » reste inactif.
-
-### F14.7 — L'unboxing
-**Le geste le plus important de la couche sociale.** Une action, cinq résultats.
-
-- **A** : son colis arrive → notification *« Filmez l'ouverture et gagnez [X] Ar de crédit »* → elle enregistre → l'article de sa commande est **attaché automatiquement** → elle dit si ça taille bien → publie.
-  - → sa réception est **confirmée** (déclenche `F4.5`, les fonds partent chez la boutique) ;
-  - → un **avis vérifié** est créé (`F6.1`) avec la note de taille ;
-  - → du **contenu** entre dans le fil ;
-  - → sa **cagnotte** est créditée (`F17.13`) ;
-  - → et publiquement, **JP vient de prouver qu'il livre pour de vrai.**
-- **V** : notifiée, voit la vidéo, peut la repartager sur sa vitrine. Un unboxing positif vaut plus que dix photos de catalogue.
-- **AN** : le fil d'unboxings est **la meilleure page d'accueil possible** pour quelqu'un qui doute de la plateforme. À exposer sans compte.
-- **⚠️ À calibrer** : le montant du crédit. Trop bas, personne ne filme ; trop haut, on achète du contenu à perte. Le taux de production d'unboxings est un indicateur du pilote.
-- **Chemin sans vidéo** : la confirmation de réception classique (`F4.5`) reste toujours possible en un appui. **On n'oblige personne à se filmer.**
 
 ### F14.9 — Sondage « laquelle je prends ? »
 - **A** : publie deux ou trois articles → ses amies votent → elle achète la gagnante. Produit à la fois de l'engagement, de la preuve sociale, et **une intention d'achat mesurable**.
@@ -982,7 +968,7 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 ### F16.1 / F16.2 / F16.3 — Le parcours cadeau
 - **A** : compose son panier → **« Demander en cadeau »** → un lien → elle l'envoie sur WhatsApp ou Messenger à son frère, son copain, sa mère.
 - **D** : ouvre le lien, **sans avoir l'application** → voit les articles, les photos, le prix total, les frais de livraison, **la boutique vérifiée** → paie par carte ou mobile money → laisse un message (`F16.5`).
-- **A** : notifiée *« Naina vous a offert votre panier »* → la commande suit le parcours normal → à la réception, elle publie son remerciement (`F14.7`) → **le remerciement est du contenu, donc de l'acquisition. La boucle se referme.**
+- **A** : notifiée *« Naina vous a offert votre panier »* → la commande suit le parcours normal → à la réception, elle **confirme avoir reçu** (`UC-31`), en un appui → **le donateur en est notifié.**
 - **D** : suit la livraison depuis son lien, **sans compte**, et voit la preuve de remise. C'est exactement ce qui manque à un transfert d'argent classique : il ne sait jamais ce qui en a été fait.
 - **Règle** : l'adresse de livraison n'est **jamais** visible par le donateur. Il paie, il ne voit pas où ça va.
 
@@ -1017,7 +1003,7 @@ Pas des fonctionnalités visibles, mais des conditions de survie sur ce marché.
 | F17.10 | **Dressing virtuel** | P2 | S |
 | F17.11 | Composition et publication de looks depuis le dressing | P2 | C |
 | F17.12 | Rappel de panier abandonné, plafonné | P1 | S |
-| F17.13 | Cagnotte créditée par l'unboxing | P1 | S |
+| F17.13 | Cagnotte créditée à la confirmation de réception ⚠️ | P1 | S |
 
 ### F17.1 et F17.5 — les deux seules exceptions à la règle, assumées
 Toutes les autres mécaniques de cette épique sont adossées au commerce : la cagnotte vient d'un achat, les paliers d'un montant cumulé, le dressing d'articles réellement reçus. **La série de connexion (`F17.1`) et les classements hebdomadaires (`F17.5`) ne le sont pas** : ce sont de l'engagement pour l'engagement.
@@ -1041,8 +1027,9 @@ Ils sont maintenus en phase 2 et en priorité basse, mais il faut les regarder e
 ### F17.12 — Rappel de panier, encadré
 - **A** : un rappel, **un seul**, quelques heures après l'abandon, et uniquement s'il reste du stock. Pas de relance quotidienne. Une acheteuse harcelée coupe les notifications, et on perd alors les notifications utiles (colis arrivé, code de retrait) — ce qui coûte beaucoup plus cher.
 
-### F17.13 — Cagnotte par l'unboxing
-- **A** : publie son unboxing → crédit immédiat et visible dans sa cagnotte (`F7.7`), utilisable sur sa prochaine commande. **C'est JP qui achète son propre contenu d'acquisition, à un prix maîtrisé et payé en crédit d'achat plutôt qu'en argent.**
+### F17.13 — Cagnotte par la confirmation de réception
+- **A** : confirme la réception en un appui, avec un avis (étoiles + note de taille) → crédit immédiat et visible dans sa cagnotte (`F7.7`), utilisable sur sa prochaine commande.
+- **⚠️ Point ouvert** *(`DP-17` §5)* : le geste filmé qui justifiait le crédit a disparu. Reste à trancher — **retirer la cagnotte du périmètre V1**, ou la rattacher à ce geste de confirmation. Récompenser une confirmation en un appui n'achète plus de contenu d'acquisition : le raisonnement économique d'origine ne tient plus tel quel.
 
 ---
 
@@ -1348,7 +1335,7 @@ Le périmètre a été élargi : **le noyau social est livré dès le lancement*
 - **Socle technique** — F13.1 à F13.4, F13.6 à F13.9
 
 **Le noyau social — nouveau**
-- **Contenu** — F14.1 (stories), F14.2 et F14.3 (clips et fil), F14.5 (articles attachés), **F14.7 (unboxing)**, F14.12 (hashtags), F14.15, F14.17, F14.18, F14.20
+- **Contenu** — F14.1 (stories), F14.2 et F14.3 (clips et fil), F14.5 (articles attachés), F14.12 (hashtags), F14.15, F14.17, F14.18, F14.20
 - **Créatrices** — F15.1, F15.2, F15.3, F15.4, F15.5, F15.6 *(F15.10 supprimée — `DP-07`)* · et F15.8 (précommande) si la décision est tranchée à temps
 - **Cadeau** — F16.1, F16.2, F16.3, F16.4, F16.10
 - **Habitude** — F17.4, F17.9, F17.12, F17.13
@@ -1361,7 +1348,7 @@ Le périmètre a été élargi : **le noyau social est livré dès le lancement*
 
 En revanche, **trois choses doivent être faites en phase 1 sous peine de coûter dix fois plus cher ensuite** : le journal des commandes confirmées par couple (boutique, cliente), qui alimentera le rang sans reprise de données ; la **table des promotions et la règle de cumul** (`F7.26`), parce qu'une remise rétro-appliquée à des commandes déjà facturées est un cauchemar comptable ; et le **rattachement d'un article à un événement**, un simple champ, qui évite une migration lourde au moment où l'événement Noël sera décidé trois semaines avant Noël.
 
-> **Avertissement de périmètre, à assumer explicitement.** Ce lot est plus large que celui décrit slide 20. L'horizon d'environ 3 mois annoncé slide 19 devient tendu, notamment à cause de la vidéo (enregistrement, transcodage, diffusion, stockage) et de la modération, qui est autant un coût humain qu'un développement. Deux issues honnêtes : allonger l'horizon, ou livrer le noyau social en deux temps — **stories, clips et unboxing d'abord** (ils portent l'essentiel de la valeur), affiliation et précommande six semaines plus tard. Cet arbitrage doit être posé devant l'investisseur, pas découvert en cours de route.
+> **Avertissement de périmètre, à assumer explicitement.** Ce lot est plus large que celui décrit slide 20. L'horizon d'environ 3 mois annoncé slide 19 devient tendu, notamment à cause de la vidéo (enregistrement, transcodage, diffusion, stockage) et de la modération, qui est autant un coût humain qu'un développement. Deux issues honnêtes : allonger l'horizon, ou livrer le noyau social en deux temps — **stories et clips d'abord** (ils portent l'essentiel de la valeur), affiliation et précommande six semaines plus tard. Cet arbitrage doit être posé devant l'investisseur, pas découvert en cours de route.
 
 ---
 
@@ -1381,7 +1368,7 @@ En revanche, **trois choses doivent être faites en phase 1 sous peine de coûte
 
 8. **F15.8 — La précommande groupée : quand libérer les fonds à la créatrice ?** C'est la décision la plus délicate du produit. Tout garder jusqu'à la livraison la met en incapacité d'acheter le stock, donc la fonctionnalité ne sert à rien ; tout libérer au seuil expose l'acheteuse à exactement l'arnaque que JP prétend supprimer. Il faut aussi fixer le délai maximal d'expédition et le plafond de précommandes simultanées.
 9. ~~**F15.5 — Qui paie la commission d'affiliation ?**~~ ✅ **Tranchée** *(`DP-09`)* : **la boutique**, sur son prix, à un taux qu'elle fixe et que la créatrice connaît avant d'attacher l'article.
-10. **F14.7 — Le montant du crédit d'unboxing.** Trop bas, personne ne filme ; trop haut, on achète du contenu à perte. C'est le réglage qui décide si le moteur d'acquisition gratuite s'amorce.
+10. **F17.13 — Que devient la cagnotte sans geste filmé à récompenser ?** *(`DP-17` §5)* Le crédit payait un contenu d'acquisition qui n'existe plus. Deux issues : retirer la cagnotte du périmètre V1, ou la rattacher à la confirmation de réception — et alors, à quel montant ?
 11. **F14.13 — La musique.** Les droits sont un risque juridique réel. Bibliothèque restreinte sous licence en V1, pas de catalogue commercial.
 12. **F15.4 — La fenêtre d'attribution d'affiliation.** Hypothèse de 7 jours, à valider.
 13. **Le budget et l'organisation de la modération.** Combien de modérateurs, quels délais d'engagement, quelle couverture horaire. Ce n'est pas une question technique, c'est une ligne de coût d'exploitation permanente.

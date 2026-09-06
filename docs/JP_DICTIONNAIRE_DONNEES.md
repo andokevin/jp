@@ -554,7 +554,7 @@ l'adressage postal n'est pas praticable à Madagascar. `telephone_destinataire`.
 
 | Table | Rôle |
 |---|---|
-| **`contenu`** | Story, clip, photo, unboxing |
+| **`contenu`** | Story, clip, photo |
 | **`contenu_article`** | **La règle d'or : au moins une ligne, sinon la publication échoue** |
 | `statistique_contenu` | L'entonnoir, jusqu'aux gains |
 | `interaction` | Vues, réactions, commentaires, partages |
@@ -566,9 +566,9 @@ l'adressage postal n'est pas praticable à Madagascar. `telephone_destinataire`.
 | Attribut | Rôle |
 |---|---|
 | `auteur_id` | IDX(`auteur_id`, `publie_le`) |
-| `type` | `story` \| `clip` \| `photo` \| `unboxing` |
+| `type` | `story` \| `clip` \| `photo` |
 | `media_url`, `miniature_url`, `duree_s` | — |
-| **`commande_source_id`** | `CHECK (type <> 'unboxing' OR commande_source_id IS NOT NULL)` — **pas d'unboxing sans commande réelle** *(R-K2)* |
+| **`commande_source_id`** | La commande d'origine de l'article attaché — **on n'attache que ce qu'on a réellement acheté** *(R-K2)* |
 | **`commentaires_ouverts`** | `tous` \| `abonnes` \| `aucun` *(R-X2)*. **L'autrice restreint elle-même** — le geste de protection appartient à celle qui se filme |
 | `expire_le` | Story : +24 h |
 | **`empreinte_video`** | **Détection de republication** *(R-X7)*. Le vol de contenu est le premier abus qui apparaîtra ; sans réponse, les créatrices sérieuses partent |
@@ -710,9 +710,12 @@ idempotent)*, `montant_confirme`, `confirme_le`.
 
 ## `cagnotte` ✅ / `mouvement_cagnotte` ✅
 `cagnotte.solde` **dérivé des mouvements**.
-`mouvement_cagnotte.type` : `credit_unboxing` \| `credit_parrainage` \|
-`utilisation` \| `reprise` · `reference` **UK partiel pour `credit_unboxing`**
-*(un unboxing ne crédite qu'une fois)*.
+`mouvement_cagnotte.type` : `credit_reception` \| `credit_parrainage` \|
+`utilisation` \| `reprise` · `reference` **UK partiel pour `credit_reception`**
+*(une commande ne crédite qu'une fois)*.
+⚠️ **Point ouvert** *(`DP-17` §5)* : le geste récompensé — l'unboxing — a été
+retiré. Reste à trancher si la cagnotte sort du périmètre V1 ou se rattache à la
+confirmation de réception.
 
 ## `piece_dressing` ✅ / `look` ✅ / `look_piece` ✅
 `piece_dressing.origine` : `achat_jp` \| `ajout_manuel` · **`article_id` — ce qui
@@ -844,7 +847,7 @@ ALTER TABLE signalement_commande ADD CONSTRAINT compteur_coherent
 | `note` | `CHECK (1..5)` |
 | `conformite_taille` | `conforme` \| `petit` \| `grand` |
 | **`morphologie_autrice`** *(json)* | **FIGÉE au moment de l'avis** — sinon un changement de profil réécrirait le sens d'un avis passé *(F6.10)* |
-| `contenu_id` | L'unboxing qui a produit l'avis *(R-T7)* |
+| `contenu_id` | Le contenu rattaché à l'avis, le cas échéant *(R-T7)*. ⚠️ **Point ouvert** *(`DP-17` §2)* : le déclencheur de l'avis vérifié reste à trancher |
 | `reponse_texte` | La boutique répond **une seule fois** *(F6.9)* |
 
 ## `score_confiance` ✅
@@ -1051,7 +1054,7 @@ Indépendantes du code applicatif. **Un test de recette doit les vérifier en
 | 6 | Pas de remise supérieure au prix | `CHECK (remise_ligne <= prix_unitaire * quantite)` |
 | 7 | **Pas de signalement qui cesse de peser sans être résolu** | `CHECK compteur_coherent` *(`R-T8`)* — remplace `decision_motivee`, la décision motivée ayant disparu avec l'arbitre *(`DP-05`)* |
 | 8 | Pas de contenu publié sans article | **Déclencheur de contrainte différé** |
-| 9 | Pas d'unboxing sans commande source | `CHECK` sur `commande_source_id` |
+| ~~9~~ | ~~Pas d'unboxing sans commande source~~ ❌ **supprimée** *(`DP-17`)* — le type `unboxing` n'existe plus | — |
 | 10 | Pas de publication vidéo par un mineur | `CHECK` sur `auteur_majeur` |
 | 11 | **Pas de rang client global** | **Absence** d'index et de vue inter-boutiques |
 | 12 | Pas de double usage d'un code personnel | `UNIQUE(code_personnel)` + contrôle transactionnel |
