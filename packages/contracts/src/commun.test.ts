@@ -93,6 +93,7 @@ describe('langue', () => {
     // là-bas la rend valide ici, sans rien toucher.
     expect(langueSchema.safeParse('fr').success).toBe(true);
     expect(langueSchema.safeParse('en').success).toBe(true);
-    expect(langueSchema.safeParse('mg').success).toBe(false);
+    expect(langueSchema.safeParse('mg').success).toBe(true);
+    expect(langueSchema.safeParse('pt').success).toBe(false);
   });
 });

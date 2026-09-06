@@ -53,8 +53,11 @@ export const x: Page<string> = { elements: [], curseurSuivant: null };
   {
     nom: 'une langue qui n’existe pas',
     doitEchouer: true,
+    // Était « mg » jusqu'au 06/09/2026, date à laquelle le malgache est entré
+    // dans `LANGUES` — et ce contrôle s'est mis à passer, ce qui est
+    // exactement ce qu'on lui demande de détecter.
     code: `import type { Langue } from '@jp/i18n';
-export const x: Langue = 'mg';
+export const x: Langue = 'pt';
 `,
   },
   {
@@ -62,6 +65,7 @@ export const x: Langue = 'mg';
     doitEchouer: false,
     code: `import type { Langue } from '@jp/i18n';
 export const x: Langue = 'fr';
+export const y: Langue = 'mg';
 `,
   },
   {

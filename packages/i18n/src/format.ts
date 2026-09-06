@@ -20,9 +20,21 @@ import type { Langue } from './langues.js';
  */
 export const FUSEAU = 'Indian/Antananarivo';
 
+/**
+ * Le malgache est rendu avec la locale FRANÇAISE, volontairement.
+ *
+ * `Intl` s'appuie sur les données ICU de la plateforme, et `mg` n'y est pas
+ * garanti — ni sur un Android d'entrée de gamme, ni sur un Node compilé en
+ * `small-icu`. Une étiquette inconnue ne lève pas d'erreur : elle retombe en
+ * silence sur la locale du système, donc une date malgache s'afficherait en
+ * anglais américain à Antananarivo et personne ne le verrait avant la
+ * production. Un repli EXPLICITE vaut mieux qu'un repli invisible — et la date
+ * écrite à Madagascar est de toute façon celle du français.
+ */
 const ETIQUETTES: Record<Langue, string> = {
   en: 'en-GB',
   fr: 'fr-FR',
+  mg: 'fr-FR',
 };
 
 /** « 19 août 2026 » · « 19 August 2026 ». */

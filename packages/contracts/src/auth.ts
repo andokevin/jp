@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { langueSchema } from './commun.js';
+
 /**
  * Schémas Zod pour l'authentification
  * Source unique du contrat API
@@ -31,7 +33,9 @@ export const verifierCodeOptSchema = z.object({
   code: codeOtp,
   prenom: prenom.optional(),
   genre: genre.optional(),
-  langue: z.enum(['fr', 'en']).default('fr'),
+  // Dérivé de `LANGUES` (@jp/i18n) : une langue ajoutée là-bas vaut ici sans
+  // qu'on ait à y penser. Une énumération recopiée finit toujours par diverger.
+  langue: langueSchema.default('fr'),
   // ⬇️ AJOUTÉ : permet à l'utilisateur de définir son mot de passe à l'inscription
   motDePasse: motDePasse.optional(),
 });
@@ -53,26 +57,45 @@ export type ConnexionExterne = z.infer<typeof ConnexionExterneSchema>;
 // Réponse
 
 /**
- * Réponse  de session aprés authentification
+ * Réponse de session après authentification.
+ *
+ * **Décrit ce que le serveur renvoie vraiment**, pas ce qu'on aurait aimé
+ * qu'il renvoie : `service.verifierCode` et `service.connexionEmailMotDePasse`
+ * rendent des clés françaises, comme le reste de `contracts`. Le schéma
+ * annonçait `{ token, user, expiresAt }` ; aucun client ne pouvait l'utiliser
+ * pour lire une réponse réelle — un contrat qu'on ne peut pas parser n'est pas
+ * un contrat, c'est un commentaire.
+ *
+ * `genre` et `langue` n'y figurent pas : le serveur ne les renvoie pas. Les
+ * déclarer obligerait chaque client à gérer un champ qui n'arrive jamais.
  */
 export const ReponseSessionSchema = z.object({
-  token: z.string(),
-  user: z.object({
+  jeton: z.string(),
+  /** Horodatage epoch en millisecondes — `Date.now() + SESSION_TTL_MS`. */
+  expireLe: z.number(),
+  utilisateur: z.object({
     id: z.string(),
     email: z.string().email(),
     prenom: z.string().nullable(),
-    genre: z.enum(['Homme', 'Femme', 'Autre']).nullable(),
-    langue: z.enum(['fr', 'en']),
+    /** Un compte créé par code n'a pas de mot de passe tant qu'il n'en pose pas. */
+    hasPassword: z.boolean(),
+    /** Vrai si ce parcours vient de créer le compte — l'écran prénom en dépend. */
     isNew: z.boolean(),
   }),
-  expiresAt: z.number(),
 });
 export type ReponseSession = z.infer<typeof ReponseSessionSchema>;
 
-/** Réponse après la demande de code OTP */
+/**
+ * Réponse à la demande de code.
+ *
+ * **Identique que le compte existe ou non** *(R-C9)* : c'est la raison d'être
+ * de sa pauvreté. Elle ne porte ni message ni délai de renvoi — seulement la
+ * durée de validité du code, la même pour tout le monde.
+ */
 export const ReponseOtpSchema = z.object({
-  message: z.string(),
-  resendAfter: z.number(),
+  ok: z.boolean(),
+  /** Durée de validité en secondes — `OTP_TTL_SECONDS`. */
+  expireDansS: z.number(),
 });
 export type ReponseOtp = z.infer<typeof ReponseOtpSchema>;
 
