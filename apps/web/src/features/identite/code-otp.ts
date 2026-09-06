@@ -10,9 +10,16 @@
  * Tout est pur : aucun `document`, aucun état React. C'est ce qui rend ces
  * règles testables sans navigateur.
  */
+import { auth } from '@jp/contracts';
 
-/** Six, comme `auth.codeOtp` l'impose côté contrat. */
-export const NB_CHIFFRES = 6;
+/**
+ * La longueur vient du CONTRAT, elle n'est plus recopiée ici.
+ *
+ * `auth.codeOtp` et ces cases dérivent de la même constante : elles ne peuvent
+ * plus diverger. Un commentaire qui dit « six, comme le contrat » ne protège
+ * de rien — il documente la duplication au lieu de l'éviter.
+ */
+export const NB_CHIFFRES = auth.OTP_LONGUEUR;
 
 export type Cases = readonly string[];
 

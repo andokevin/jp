@@ -16,7 +16,7 @@
  */
 import type { auth } from '@jp/contracts';
 
-import { casesVides, effacer, poser, type Cases } from './code-otp.js';
+import { casesVides, effacer, estComplet, poser, type Cases } from './code-otp.js';
 
 export type Etape = 'email' | 'code' | 'prenom' | 'termine';
 
@@ -161,7 +161,7 @@ export function peutEnvoyer(etat: EtatParcours): boolean {
     case 'email':
       return emailPlausible(etat.email);
     case 'code':
-      return etat.cases.join('').length === 6;
+      return estComplet(etat.cases);
     case 'prenom':
       return etat.prenom.trim().length > 0;
     case 'termine':

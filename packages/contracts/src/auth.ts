@@ -7,12 +7,25 @@ import { langueSchema } from './commun.js';
  * Source unique du contrat API
  */
 
+/**
+ * La longueur du code à usage unique — **la source unique**.
+ *
+ * Elle est déclarée ICI, en haut, et non avec les autres constantes en bas :
+ * `codeOtp` l'évalue au chargement du module, et un `const` n'existe pas avant
+ * sa ligne. La ranger plus bas lèverait une `ReferenceError` à l'import.
+ *
+ * Les clients l'importent au lieu de recopier `6`. Le jour où le serveur passe
+ * à huit chiffres, cette ligne suffit — sinon il faut le savoir dans trois
+ * fichiers, dont un qui le cache derrière un `===` littéral.
+ */
+export const OTP_LONGUEUR = 6;
+
 // -- type de base --
 
 export const email = z.string().email({ message: "L'adresse e-mail n'est pas valide." });
-export const codeOtp = z
-  .string()
-  .length(6, { message: 'Le code OTP doit contenir exactement 6 caractères.' });
+export const codeOtp = z.string().length(OTP_LONGUEUR, {
+  message: `Le code OTP doit contenir exactement ${OTP_LONGUEUR} caractères.`,
+});
 export const motDePasse = z
   .string()
   .min(8, { message: 'Le mot de passe doit contenir au moins 8 caractères.' });
