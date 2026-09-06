@@ -7,9 +7,12 @@
 import { ErreurMetier } from '../../plateforme/erreurs.js';
 
 export const ERREURS = {
+  // Le nom de la variable est celui du GABARIT (« {restantes} »), pas celui du
+  // paramètre TypeScript. `traduire` substitue par nom : « essais » ne
+  // remplaçait rien, et le jeton partait tel quel jusqu'à l'écran.
   OTP_INVALIDE: (essaisRestants: number) =>
     new ErreurMetier('OTP_INVALIDE', 400, 'erreur.otp_invalide', {
-      variables: { essais: essaisRestants },
+      variables: { restantes: essaisRestants },
     }),
 
   OTP_EXPIRE: () => new ErreurMetier('OTP_EXPIRE', 410, 'erreur.otp_expire'),

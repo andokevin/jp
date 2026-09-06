@@ -105,6 +105,38 @@ describe('S8.3 — la clé d’idempotence, posée automatiquement', () => {
     expect(h['Accept-Language']).toBe('en');
     expect(h['X-Economie-Donnees']).toBe('1');
   });
+
+  it('appelle `fetch` avec le bon `this` — sinon tout ressemble à une coupure', () => {
+    // Le seul chemin que les autres tests n'exercent JAMAIS : ils injectent
+    // tous un faux `fetch`, si bien que le `?? globalThis.fetch` du
+    // constructeur n'était couvert par rien.
+    //
+    // Rangé dans un champ puis appelé en `this.f(…)`, le `fetch` d'un
+    // navigateur reçoit l'instance comme `this` et lève « Illegal
+    // invocation ». Hermes ne s'en émeut pas — c'est un polyfill JS — mais
+    // Expo Web, si. Et comme l'échec est un `TypeError`, le `catch` du client
+    // le prendrait pour une panne réseau : « pas de connexion » affiché à
+    // quelqu'un de connecté, sur chaque requête.
+    //
+    // Ce faux `fetch` refuse le mauvais `this`, exactement comme le fait un
+    // navigateur.
+    const vrai = globalThis.fetch;
+    let appeleCorrectement = false;
+    globalThis.fetch = function (this: unknown) {
+      if (this !== globalThis) throw new TypeError('Illegal invocation');
+      appeleCorrectement = true;
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response);
+    } as unknown as typeof fetch;
+
+    try {
+      const c = new ClientApi({ base: 'https://api.jp.mg' });
+      return c.lire('/x').then(() => {
+        expect(appeleCorrectement).toBe(true);
+      });
+    } finally {
+      globalThis.fetch = vrai;
+    }
+  });
 });
 
 describe('S8.4 — la file hors ligne', () => {
