@@ -4,7 +4,7 @@
 > issues GitHub. Ne le modifiez pas à la main — un tableau d'avancement tenu
 > à la main ment au bout de trois jours.
 >
-> Dernière génération : 2026-08-31
+> Dernière génération : 2026-09-06
 
 ## Projet en cours
 
@@ -39,17 +39,17 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 | | |
 |---|---|
-| Tranche 1 — première vente réelle | 0 / 231 |
-| *dont annulées par la refonte produit* | 71 |
+| Tranche 1 — première vente réelle | 0 / 230 |
+| *dont annulées par la refonte produit* | 72 |
 | Prochaine issue | **#1317** — S8.5 Mesure du poids de l'APK et de la mémoire en intégration continue |
 
 ## Ce que le dépôt contient
 
 | | |
 |---|---|
-| Fichiers TypeScript écrits | 188 |
-| Tests | 225 |
-| Migrations appliquées | 4 |
+| Fichiers TypeScript écrits | 204 |
+| Tests | 308 |
+| Migrations appliquées | 20 |
 
 ## Notions pratiquées
 
@@ -70,8 +70,11 @@ Ensuite seulement, la **tranche 1** : la première vente réelle.
 
 - **`ALTER DEFAULT PRIVILEGES`** accorde `UPDATE`/`DELETE` aux tables futures.
   `ecriture_financiere` *(migration n° 12)* devra porter son propre `REVOKE`.
-- **L'intégration continue n'a jamais tourné** sur GitHub. À confirmer à la
-  première pull request.
+- ~~**L'intégration continue n'a jamais tourné** sur GitHub.~~ Levé le
+  06/09/2026 : les six vérifications sont passées au vert sur la première pull
+  request *(#1479)*. Trois y ont échoué d'abord — format, couverture
+  backlog ↔ plan, audit de sécurité — dont deux qui étaient déjà rouges sur
+  `master` sans que personne puisse le savoir.
 - **Deux décisions produit ouvertes**, semées avec une valeur provisoire :
   `taux_commission_defaut = 80` *(8 %)* et
   `duree_reservation_catalogue_s = 1800` *(30 min)*.
