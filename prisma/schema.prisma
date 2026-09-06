@@ -12,12 +12,19 @@ datasource db {
 // Énumérés
 // ─────────────────────────────────────────────────────────────────────────
 
-/// Anglais et français. Le français est le défaut : c'est la langue écrite
-/// courante à Madagascar, et celle qui produit les libellés les plus longs —
-/// donc celle qui contraint les maquettes.
+/// Anglais, français et malgache — la liste doit rester identique à `LANGUES`
+/// de `@jp/i18n`, qui en est la source. Le français est le défaut : c'est la
+/// langue écrite courante à Madagascar, et celle qui produit les libellés les
+/// plus longs — donc celle qui contraint les maquettes.
 enum Langue {
   en
   fr
+  // Le malgache. Retiré par `20260819182525_langues` à l'époque où `@jp/i18n`
+  // n'en déclarait que deux ; réintroduit ici parce que le paquet en déclare
+  // trois et que le parcours d'authentification est livré en malgache. Sans
+  // cette valeur, l'inscription d'une malgachophone échoue à l'`INSERT` —
+  // exactement la population visée.
+  mg
 
   @@map("langue")
 }
