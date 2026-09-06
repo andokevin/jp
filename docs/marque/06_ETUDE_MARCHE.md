@@ -304,7 +304,7 @@ sur des escroqueries commerciales.
 > virement ne donnera jamais : savoir ce que l'argent est devenu.**
 >
 > Message retenu : **« Offrez-lui, ne lui envoyez pas. »**
-> Preuve retenue : **la vidéo du colis qui s'ouvre.**
+> Preuve retenue : **la confirmation de réception du bénéficiaire, et son avis public.**
 >
 > Toute accroche du type « transférez moins cher » ou « plus rapide » nous met
 > en concurrence frontale avec un service gratuit, sur son terrain. Interdit.
@@ -419,11 +419,13 @@ officiels.**
 | Vert | ⚠️ Occupé | MVola `#317041` |
 | Noir dominant | ⚠️ Évité | Couleur du deuil, écartée des mariages `[V]` |
 | Tricolore drapeau | ❌ Écarté | Convoque l'État. Terrain des labels *Vita Malagasy* — auxquels une part de l'opinion associe **une qualité médiocre**. Emprunter ces codes nous transfère ce handicap. `[V]` |
-| **Violet `#7C2D92`** | ✅ **LIBRE** | Aucun opérateur, aucune banque, aucune fintech malgache ne l'occupe |
+| **Violet `#7C2D92`** | ✅ **LIBRE — couleur d'identité et de preuve** *(`D-22`)* | Aucun opérateur, aucune banque, aucune fintech malgache ne l'occupe. **7,93:1** sur blanc |
+| **Framboise `#A31A5B`** | ✅ **LIBRE — couleur d'action retenue** *(`D-22`)* | Aucune marque du relevé ne l'occupe. **7,35:1** sur blanc. Lu comme une couleur d'envie sur un vertical mode, là où le violet est lu comme institutionnel. ⚠️ **Réserve à valider** *(ci-dessous)* |
 
 > ### Décision `D-06` — le violet est confirmé, et il est maintenant justifié
 >
-> Le jeton `COULEURS.action = '#7C2D92'` de
+> Le jeton de couleur unique *(alors `COULEURS.action = '#7C2D92'`, aujourd'hui
+> scindé en `action` et `identite` par `D-22`)* de
 > *[packages/ui/src/jetons.ts](../../packages/ui/src/jetons.ts)* était un bon
 > instinct. **Il est désormais un choix documenté :**
 >
@@ -450,6 +452,40 @@ officiels.**
 > **Beauté `#A31A5B` framboise** *(7,35:1)* · **Tech `#1D4E89`** *(8,39:1)* —
 > ce dernier étant à revoir le jour de l'ouverture de Tech, sa proximité avec
 > le bleu Yas étant réelle.
+
+> ### Décision `D-22` — le framboise `#A31A5B` devient la couleur d'action
+>
+> **`D-22` révise `D-06` ; elle ne l'annule pas.** Le violet reste la couleur de
+> la marque et garde tout ce que `D-06` lui a valu — il porte désormais
+> **l'identité et la preuve** *(logotype, badge « Boutique vérifiée », écrans de
+> paiement, de facture et de commission, score de confiance)*.
+>
+> **Le framboise `#A31A5B` prend l'action** : bouton principal, « Je prends »,
+> indicateur « En direct », étiquettes de promotion, élément actif de la
+> navigation. Il passe le test de contraste à **7,35:1 sur blanc**, et il est
+> aussi libre que le violet dans le relevé concurrentiel ci-dessus.
+>
+> **⚠️ Réserve culturelle à faire valider `[P]` — elle n'est pas tranchée.**
+> Le framboise appartient à la **famille du rouge**, et le tableau ci-dessus
+> écarte le rouge vif pour une raison qui n'est pas seulement concurrentielle :
+> le ***lambamena*** — le rouge **en textile drapé** — est **funéraire**
+> *(linceul du famadihana)*. Le framboise n'est ni le rouge vif d'Airtel ni la
+> teinte du lambamena, et il s'agit ici d'aplats d'interface, pas de tissu.
+> **Mais nous vendons de la mode, donc du textile**, et c'est précisément le
+> contexte où la charge se réveille. → **À faire valider par des locuteurs
+> malgaches avant tout engagement d'identité.** Ce document ne tranche pas.
+>
+> **⚠️ Conséquence ouverte sur l'univers Beauté.** `#A31A5B` était l'accent de
+> **JP Beauté**. Il ne peut plus l'être : un onglet d'univers de la couleur du
+> bouton principal apprend à toucher le mauvais élément. **Une couleur de
+> remplacement pour l'accent Beauté reste à décider** — elle n'est pas proposée
+> ici. En attendant, le code porte la valeur d'origine avec un avertissement
+> explicite *(`packages/ui/src/univers.ts`)*.
+>
+> **Et une règle qui vient avec `[V]`** : framboise et violet ont entre eux un
+> contraste de **1,08:1** — aucune différence de luminance. **`R-Z1`** *(cahier
+> des charges §5.17)* interdit donc qu'une différence de sens repose sur ce seul
+> couple.
 
 ---
 

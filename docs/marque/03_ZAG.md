@@ -185,14 +185,19 @@ Tout le monde zigue : on achète la confiance avec de la publicité, des logos d
 partenaires, des témoignages. La boutique malgache la plus visible du pays paie
 déjà **de la publicité Facebook quotidienne**.
 
-**Nous zaguons : notre preuve est un mur de colis qui s'ouvrent.**
+**Nous zaguons : notre preuve est un mur d'avis vérifiés.**
 
-L'unboxing n'est pas une fonctionnalité sociale, c'est **notre appareil de
-preuve**. Un geste, cinq résultats — dont *« la preuve publique que JP livre
-pour de vrai »*. Consultable **sans compte**, partageable sur WhatsApp.
+L'avis vérifié n'est pas une fonctionnalité sociale, c'est **notre appareil de
+preuve** : chacun est adossé à une commande réellement payée et confirmée —
+**impossible d'en écrire un sans avoir acheté**. Consultable **sans compte**,
+partageable sur WhatsApp.
 
-> **Contre « un paiement envoyé, puis plus de nouvelles », rien ne vaut un fil
-> rempli de gens qui ouvrent leurs colis.**
+> **Contre « un paiement envoyé, puis plus de nouvelles », rien ne vaut un mur
+> d'acheteuses qui disent avoir reçu.**
+
+> ⚠️ **Remplacement proposé, à valider** *(`DP-17` §3)* : le mur des colis
+> ouverts disparaît avec l'unboxing. Le mur d'avis vérifiés en est la
+> contrepartie proposée — **décision de marque à trancher.**
 
 ## L'anti-zag : ce qui détruirait tout
 
@@ -227,7 +232,7 @@ protection qu'on ne tient pas.
 | # | À ajouter | Pourquoi | Coût |
 |---|---|---|---|
 | **A-1** | **La « Boutique vérifiée » visible AVANT le paiement** — un composant partagé, comme `BadgeVerifie` | Aujourd'hui la phrase de séquestre n'apparaît qu'**à l'écran de confirmation** *(R-E1)*. **C'est trop tard : la peur agit avant de payer, pas après.** C'est la correction produit la plus importante de tout ce dossier | Faible — un composant, 4 emplacements |
-| **A-2** | **Le mur des colis ouverts, sans compte, comme 6ᵉ page publique de `apps/web`** | `apps/web` a cinq pages partageables. Il en manque une : **notre appareil de preuve**. C'est l'appel transitionnel du BrandScript et le seul écran qui répond à *« comment je sais que vous livrez ? »* | Moyen |
+| **A-2** | **Le mur d'avis vérifiés, sans compte, comme 6ᵉ page publique de `apps/web`** | `apps/web` a cinq pages partageables. Il en manque une : **notre appareil de preuve**. C'est l'appel transitionnel du BrandScript et le seul écran qui répond à *« comment je sais que vous livrez ? »* | Moyen |
 | **A-3** | **Le compteur de ventes perdues** — un outil d'une page pour la boutique | *« Combien de "je prends" hier soir ? Combien vous ont payée ? »* **On ne lui explique pas son problème, on le lui fait compter.** C'est l'appel transitionnel du BrandScript boutique, et l'entrée de tout le recrutement terrain | Faible |
 | **A-4** | **Le reçu de commande partageable** *(`D-21`)* — boutique vérifiée, montant, date, numéro | Une image que l'acheteuse envoie à sa mère ou à son amie : *« regarde, il ne sera payé que quand j'aurai reçu »*. **Transforme la garantie en objet social, donc en acquisition gratuite** | Faible |
 | **A-5** | **La protection symétrique de la boutique, nommée** | SentiBud *(Nigeria)* libère les frais de livraison à la boutique si l'acheteuse ne répond pas. **La boutique malgache la plus visible du pays cite le défaut de paiement comme son problème n° 1 — et personne ne lui dit qu'elle est aussi une victime** | Moyen |
@@ -408,7 +413,7 @@ de marque est totalement inoccupé.**
 |---|---|---|
 | **Le parrainage entre boutiques** | **Canal n° 1** | À Madagascar, la confiance passe par la relation. Une boutique recrutée par une autre coûte presque rien et reste |
 | **Facebook et Messenger** | Canal de masse | **4,15 à 5,22 M d'utilisateurs, contre 261 000 sur Instagram.** Instagram est un canal de vanité ici |
-| **Le mur des colis ouverts** | **Preuve** | Contenu gratuit, produit par les clientes, partageable sur WhatsApp |
+| **Le mur d'avis vérifiés** | **Preuve** | Contenu gratuit, produit par les clientes, partageable sur WhatsApp |
 | **Les relations publiques : publier les quatre mesures fondatrices** | **Autorité** | **Personne ne mesure ce marché.** Voir `D-14` et la loi des RP dans `04` |
 | **Les créatrices affiliées** | Acquisition à coût variable | Payée seulement sur une vente réalisée |
 | **La publicité display** | ❌ **Non** | Contredit le zag n° 3 |
@@ -423,7 +428,7 @@ Neumeier : le zag doit se vivre dès le premier contact, sans engagement.
 
 | Étape | Ce qu'on demande | Ce qu'on donne |
 |---|---|---|
-| **1. Le mur des colis ouverts** | **Rien.** Pas de compte, pas de téléchargement | La preuve |
+| **1. Le mur d'avis vérifiés** | **Rien.** Pas de compte, pas de téléchargement | La preuve |
 | **2. Consultation en invité** *(F0.10)* | Rien | Le catalogue, les boutiques vérifiées, le prix total |
 | **3. Le compte** | Un e-mail, un code | Le bouton « Je prends » |
 | **4. « Je prends »** | Un appui | La garantie, la facture, le suivi |

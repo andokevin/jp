@@ -235,7 +235,7 @@ sequestre                         -- R-E1
   id PK · commande_id FK
   montant_retenu · statut(retenu|libere|rembourse|partiel)
   liberable_le                    -- calculé à la livraison (R-E4)
-  libere_le · motif_liberation(confirmation|unboxing|automatique|arbitrage)
+  libere_le · motif_liberation(confirmation|automatique|arbitrage)
 
 ecriture_financiere               -- journal inaltérable, C4
   id PK · type · reference · montant · sens(debit|credit)
@@ -287,9 +287,9 @@ evenement_livraison
 
 ```
 contenu
-  id PK · auteur_id FK · type(story|clip|photo|unboxing)
+  id PK · auteur_id FK · type(story|clip|photo)
   media_url · miniature_url · duree_s · statut(brouillon|publie|retire)
-  commande_source_id FK null      -- obligatoire si type=unboxing (R-K2)
+  commande_source_id FK null      -- commande d'origine de l'article attaché (R-K2)
   commentaires_ouverts(tous|abonnes|aucun)   -- R-X1
   publie_le · expire_le           -- story : +24 h
   empreinte_video                 -- détection de republication, R-X7
@@ -500,7 +500,8 @@ avis                              -- F6.1
   id PK · commande_id FK UQ · auteur_id FK · boutique_id FK
   note int · texte · photo_url
   conformite_taille(conforme|petit|grand)
-  contenu_id FK null              -- si généré par un unboxing (R-T7)
+  contenu_id FK null              -- contenu rattaché, le cas échéant (R-T7)
+                                  -- ⚠️ DP-17 §2 : le déclencheur de l'avis vérifié reste à trancher
 ```
 
 ## 3.11 Exploitation
@@ -510,7 +511,8 @@ parametre                         -- R-O1
   cle PK · valeur · type · modifie_par_id · modifie_le
   -- duree_reservation_direct_s, duree_reservation_catalogue_s,
   -- delai_liberation_auto_j, taux_commission_<categorie>,
-  -- credit_unboxing_ariary, fenetre_affiliation_j, delai_garde_relais_j...
+  -- credit_cagnotte_ariary ⚠️ (DP-17 §5 — geste récompensé à trancher),
+  -- fenetre_affiliation_j, delai_garde_relais_j...
   -- délai d'acceptation boutique : delai_acceptation_direct_s
   --                               delai_acceptation_catalogue_s  (R-H8)
   -- bascule particulier : seuil_bascule_ventes, seuil_bascule_montant  (R-H11)
@@ -559,7 +561,7 @@ Toute transition non listée est interdite et doit lever une erreur.
           │         ┌──────▼───────┐        ┌─────────────────────┐
           │         │   LIVREE     │─ signalement ─►│ compteur boutique │
           │         └──────┬───────┘        │  (R-T8) — PAS un état │
-          │   confirmation OU unboxing OU délai automatique
+          │   confirmation OU délai automatique
           │         ┌──────▼───────┐        └─────────────────────┘
           └────────►│  CONFIRMEE   │  → clôture + score (R-E3, R-E4)
                     └──────────────┘
@@ -912,7 +914,7 @@ Dimensionner sur le pic 18 h – 23 h *(C5)*, avec un scénario de référence :
 | `reservation_expiree` | Stock immobilisé — mesure fondatrice n° 4 |
 | `paiement_abandonne` + étape | Demande bloquée par la confiance — mesure n° 3 |
 | `contenu_vu`, `article_clique`, `contenu_converti` | Conversion d'un clip contre un direct |
-| `unboxing_publie` / `commande_livree` | Taux de production de contenu |
+| `commande_confirmee` / `commande_livree` | Taux de confirmation de réception |
 | `vente_affiliee` + créatrice | Coût d'acquisition par créatrice |
 | `commande_cadeau` + pays du payeur | Axe diaspora |
 | `litige_ouvert`, `litige_resolu` + délai | Qualité du service |
@@ -952,7 +954,7 @@ Dimensionner sur le pic 18 h – 23 h *(C5)*, avec un scénario de référence :
 |---|---|
 | **Stock et réservation** | Tests de concurrence obligatoires : N appuis simultanés sur `stock = 1` → exactement une réservation. **RB1.** |
 | **Paiement** | Rejeu avec la même clé d'idempotence · rappel reçu deux fois · rappel reçu avant la réponse synchrone · coupure à chaque étape |
-| **Séquestre** | Chaque chemin de libération : confirmation, unboxing, délai automatique, arbitrage, remboursement |
+| **Séquestre** | Chaque chemin de libération : confirmation, délai automatique, arbitrage, remboursement |
 | **Précommande** | Seuil atteint / non atteint → **remboursement automatique intégral sans intervention. RB3.** |
 | **Contenu** | Publication refusée sans article attaché, sur chaque type. **RB5.** |
 | **Mineur** | Publication vidéo refusée. **RB6.** |

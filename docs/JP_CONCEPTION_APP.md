@@ -292,9 +292,7 @@ flowchart TD
     LIVR --> PAIE["Paiement"]
     PAIE --> CONF["Confirmation<br/>+ « boutique vérifiée »<br/>(R-E1, DP-16)"]
     CONF --> SUIVI["Suivi de commande<br/>+ fil de remise"]
-    SUIVI --> UNB["Unboxing"]
     SUIVI --> LITIGE["Signalement"]
-    PLUS --> UNB
     PLUS --> ANNONCE["Dépôt d'annonce (particulier)"]
     MOI --> CMDS["Mes commandes"]
     MOI --> OFFRES["Mes offres"]
@@ -463,7 +461,16 @@ Sept composants vivent dans `packages/ui` parce qu'ils apparaissent partout et q
 
 ## 8.3 Palette
 
-Une couleur d'accent unique pour l'action, un vert de confirmation, un rouge d'alerte, quatre gris. Les événements introduisent une **couleur d'accent temporaire** *(R-W7)*, appliquée **par jeton** et non par image, pour ne pas peser sur le budget de données.
+**Deux couleurs de marque, et deux rôles qui ne se croisent jamais** *(`D-22`)* — plus un vert de confirmation, un rouge d'alerte, quatre gris. Les événements introduisent une **couleur d'accent temporaire** *(R-W7)*, appliquée **par jeton** et non par image, pour ne pas peser sur le budget de données.
+
+| Jeton | Couleur | Rôle | Où |
+|---|---|---|---|
+| `COULEURS.action` | **`#A31A5B` framboise** *(7,35:1)* | **L'action** — ce sur quoi on appuie | Bouton principal · « Je prends » · indicateur « En direct » · étiquette de promotion · élément actif de la navigation |
+| `COULEURS.identite` | **`#7C2D92` violet** *(7,93:1)* | **L'identité et la preuve** | Logotype · `BadgeVerifie` · écrans de paiement, de facture et de commission · `ScoreConfiance` |
+
+**Un bouton n'est jamais violet, un badge vérifié n'est jamais framboise, un écran d'argent n'est jamais framboise.** La frontière est la raison d'être des deux jetons : les confondre revient à apprendre à l'utilisatrice à toucher ce qui ne se touche pas.
+
+> **`R-Z1`** *(cahier des charges §5.17)* — **le framboise et le violet ne portent jamais seuls une différence de sens.** Toute distinction qu'ils portent est doublée par une icône, un libellé ou un changement de forme. **Justification : 1,08:1 de contraste entre les deux** — ils se distinguent par la teinte, jamais par la luminance, donc pas du tout sur un écran délavé par le soleil ni pour un œil daltonien. La règle est outillée côté code par `respecteRZ1()` dans `packages/ui/src/jetons.ts`, qui vérifie **une paire de descripteurs** — il ne parcourt pas les écrans : chaque composant à deux états colorés doit l'appeler dans son propre test.
 
 ---
 

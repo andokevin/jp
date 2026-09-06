@@ -172,7 +172,9 @@ contenu.publie · moderation.contenu_retire
 | Rareté | Un compteur n'est affiché que s'il est **vrai** *(RB9)* |
 | Prix | Le prix affiché est le prix payé. Aucun frais découvert plus tard *(RB7)* |
 
-**Palette** — une couleur d'accent unique pour l'action, un vert de confirmation, un rouge d'alerte, quatre gris. Les événements introduisent une **couleur d'accent temporaire** *(R-W7)*, appliquée par jeton et non par image, pour ne pas peser sur le budget de données.
+**Palette** — **deux couleurs de marque, deux rôles disjoints** *(`D-22`)* : le **framboise `#A31A5B`** porte **l'action** *(bouton principal, « Je prends », « En direct », promotion, élément actif de navigation)*, le **violet `#7C2D92`** porte **l'identité et la preuve** *(logotype, badge « Boutique vérifiée », écrans de paiement, de facture et de commission, score de confiance)*. Plus un vert de confirmation, un rouge d'alerte, quatre gris. Les événements introduisent une **couleur d'accent temporaire** *(R-W7)*, appliquée par jeton et non par image, pour ne pas peser sur le budget de données.
+
+> **`R-Z1`** *(cahier des charges §5.17)* — ces deux couleurs ont **1,08:1** de contraste entre elles : elles ne portent **jamais seules** une différence de sens. Toute distinction qu'elles portent est doublée d'une icône, d'un libellé ou d'une forme.
 
 ---
 
@@ -190,8 +192,13 @@ Design system:
 - Low-end Android phone, 5-inch screen, one-hand use.
 - Generous touch targets (minimum 48dp), 8dp spacing between actions.
 - High contrast, readable in daylight. No heavy gradients, no glassmorphism.
-- Single accent color for the primary action. Green for confirmation,
-  red for alerts, neutral grays elsewhere.
+- Two brand colors, two strict roles. ACTION = raspberry #A31A5B:
+  primary button, "Je prends", "En direct" indicator, promotion tags,
+  active navigation item. IDENTITY AND PROOF = violet #7C2D92: logo,
+  "Boutique vérifiée" badge, payment / invoice / commission screens,
+  trust score. Never a violet button; never a raspberry verified badge
+  or money screen. Green for confirmation, red for alerts, neutral
+  grays elsewhere.
 - Images always show a low-resolution placeholder state first.
 - The primary action is ALWAYS a full-width button pinned to the bottom.
 - Amounts are typographically larger than their labels.

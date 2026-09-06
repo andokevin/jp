@@ -22,7 +22,7 @@
 
 **La solution.** On remplace le commentaire par un bouton. Une action, une quantité, un paiement, une facture. L'argent ne circule plus de main à main : il transite par la plateforme et n'est versé à la boutique qu'une fois la réception confirmée.
 
-**L'extension.** Le direct dure une heure ; le reste du temps, l'application doit rester vivante. Stories et vidéos courtes, chacune rattachée à des articles achetables, transforment le catalogue en fil de contenu. Et l'unboxing — l'acheteuse qui filme l'ouverture de son colis — confirme la réception, produit un avis vérifié, et prouve publiquement que JP livre pour de vrai.
+**L'extension.** Le direct dure une heure ; le reste du temps, l'application doit rester vivante. Stories et vidéos courtes, chacune rattachée à des articles achetables, transforment le catalogue en fil de contenu. Et à la réception, l'acheteuse confirme en un appui : la commande se clôt, l'avis vérifié devient public, et JP prouve qu'il livre pour de vrai.
 
 **Le troisième acteur.** Des créatrices ont une audience mais pas de capital. JP leur permet de gagner de l'argent sans acheter de stock : par l'affiliation, et par la précommande groupée où l'on ne commande chez le fournisseur qu'une fois les commandes réunies.
 
@@ -80,11 +80,9 @@ La boutique diffuse depuis son téléphone. Le prix et le stock restant s'affich
 
 ### Pilier 2 — Le contenu, qui fait vivre le catalogue
 
-Un direct dure une heure ; il reste 23 heures. Stories, vidéos verticales courtes, looks, unboxings : un fil que l'on parcourt par balayage, personnalisé selon la taille, le budget et le style.
+Un direct dure une heure ; il reste 23 heures. Stories, vidéos verticales courtes, looks : un fil que l'on parcourt par balayage, personnalisé selon la taille, le budget et le style.
 
 **Avec une règle qui ne souffre pas d'exception : aucun contenu sans article achetable attaché.** JP n'est pas un réseau social auquel on ajoute une boutique — c'est **une boutique dont le catalogue est fait de vidéos**.
-
-Le geste central de ce pilier est **l'unboxing**. L'acheteuse filme l'ouverture de son colis. Une seule action produit cinq résultats : elle confirme la réception, ce qui libère les fonds vers la boutique ; elle produit un avis vérifié ; elle alimente le fil ; elle gagne du crédit ; et elle prouve publiquement que JP livre vraiment. C'est le pendant social exact du bouton « Je prends ».
 
 ### Pilier 3 — La confiance, qui rend les deux autres possibles
 
@@ -130,7 +128,7 @@ C'est le premier canal de JP **qui ne dépend pas du pouvoir d'achat local**, su
 
 1. **Le bouton à la place du commentaire.** Une action au lieu d'une négociation en message privé.
 2. **L'argent tenu jusqu'à la réception.** La protection est un mécanisme, pas une promesse.
-3. **L'unboxing qui vaut confirmation, avis et preuve publique.** Un geste, cinq résultats.
+3. **Le mur d'avis vérifiés, public et sans compte.** Chaque avis adossé à un achat réel, consultable avant même de s'inscrire.
 4. **La créatrice sans capital.** Affiliation et précommande groupée : vendre sans avancer d'argent.
 5. **Le replay qui vend.** Le direct terminé reste achetable, chaque article repéré à sa minute. *(phase 2)*
 6. **Bien à sa taille.** Guide par marque, avis d'acheteuses de la même morphologie, vidéos portées. La vidéo est une meilleure preuve que la photo.
@@ -164,7 +162,6 @@ La publicité display classique ne rapporte presque rien à l'échelle de Madaga
 
 - La commission **aligne nos revenus sur ceux de la boutique** : nous n'avons aucun intérêt à une boutique qui stagne.
 - L'affiliation **transforme le coût d'acquisition en coût variable**, payé seulement sur une vente réalisée.
-- Le crédit d'unboxing **achète du contenu d'acquisition en crédit d'achat plutôt qu'en argent**.
 
 ---
 
@@ -186,13 +183,13 @@ Ni le code ni la vitesse ne sont défendables. Trois choses le sont, et elles s'
 
 **Le socle commerce** : direct avec bouton « Je prends », réservation de stock, panier multi-boutiques, paiement mobile money, séquestre et libération à la réception, facture automatique, livraison à domicile et en point relais, suivi partagé, litiges arbitrés, boutiques vérifiées.
 
-**Le noyau social** : stories et clips shoppables, fil personnalisé, **unboxing**, profil créatrice, affiliation, précommande groupée, panier offert par un tiers, et **toute la protection des personnes**.
+**Le noyau social** : stories et clips shoppables, fil personnalisé, profil créatrice, affiliation, précommande groupée, panier offert par un tiers, et **toute la protection des personnes**.
 
 **L'exploitation** : back-office de vérification, d'arbitrage, de modération et de réconciliation, et le tableau de bord des indicateurs du pilote **dès le premier direct**.
 
 > **Avertissement à assumer.** Ce périmètre est plus large que le produit minimum initialement décrit, et l'horizon d'environ 3 mois devient tendu — principalement à cause de la vidéo (enregistrement, transcodage, diffusion, stockage) et de la modération, qui est autant un coût humain qu'un développement.
 >
-> Deux issues honnêtes, à arbitrer avec l'investisseur plutôt qu'à découvrir en route : **allonger l'horizon**, ou **livrer le noyau social en deux temps** — stories, clips et unboxing d'abord, car ils portent l'essentiel de la valeur ; affiliation et précommande quelques semaines plus tard.
+> Deux issues honnêtes, à arbitrer avec l'investisseur plutôt qu'à découvrir en route : **allonger l'horizon**, ou **livrer le noyau social en deux temps** — stories, clips et fil d'abord, car ils portent l'essentiel de la valeur ; affiliation et précommande quelques semaines plus tard.
 
 ## Phase 2 — La communauté
 
@@ -285,7 +282,7 @@ Jamais mesurées sur ce marché. **Les instrumenter est un objectif du projet en
 
 **Commerce** — conversion spectateurs → « Je prends » → paiement · panier moyen · taux de réservations expirées · délai d'expédition · taux de litige et cause dominante · répartition domicile / point relais.
 
-**Contenu** — proportion d'acheteurs publiant un unboxing · conversion d'un clip comparée à celle d'un direct · contenus publiés par créatrice active.
+**Contenu** — taux de confirmation de réception et d'avis publiés · conversion d'un clip comparée à celle d'un direct · contenus publiés par créatrice active.
 
 **Créatrices** — ventes générées par affiliation · taux d'atteinte des seuils de précommande · coût d'acquisition d'une cliente par créatrice, comparé à la publicité payante.
 
@@ -309,7 +306,7 @@ Ces règles sont des choix économiques autant qu'éthiques. Sur un produit dont
 - **Le prix total est connu avant l'engagement.** Aucun frais découvert à la fin.
 - **Tout contenu rémunéré est identifié comme tel.**
 - **Aucun mineur ne publie de contenu vidéo**, et aucun mécanisme d'engagement ne leur est appliqué.
-- **Personne n'est obligé de se filmer.** L'unboxing est une possibilité récompensée, jamais une condition.
+- **Personne n'est obligé de se filmer.** Confirmer une réception se fait en un appui — aucune vidéo n'est demandée *(`DP-17`)*.
 - **La commission est connue avant la vente**, jamais découverte après.
 - **Toute sanction est motivée et contestable.**
 
@@ -323,7 +320,7 @@ Le dossier ne cache pas ses questions non résolues — c'est précisément ce q
 
 **Structurant** — le paiement à la livraison est-il ouvert, et à quelles conditions ? Quand les fonds d'une précommande sont-ils libérés à la créatrice ? Quel barème de commission ? Quelle durée de réservation du stock ?
 
-**À caler** — qui supporte la commission d'affiliation, quel délai de libération automatique des fonds, qui paie un retour, quel crédit pour un unboxing, quels moyens de modération, combien de créatrices amorcer avant l'ouverture.
+**À caler** — qui supporte la commission d'affiliation, quel délai de libération automatique des fonds, qui paie un retour, ce que devient la cagnotte sans geste filmé à récompenser, quels moyens de modération, combien de créatrices amorcer avant l'ouverture.
 
 Toutes ces questions se trancheront avec les premiers boutiques et les premières créatrices, pas dans une feuille de calcul.
 

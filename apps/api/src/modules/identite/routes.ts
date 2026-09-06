@@ -20,7 +20,7 @@ export const routes = [
   {
     methode: 'POST',
     chemin: '/identite/otp/verifier',
-    quoi: 'Vérification du code OTP et ouverture de session',
+    quoi: 'Vérification du code OTP et ouverture de session complète',
   },
   {
     methode: 'POST',
@@ -29,53 +29,39 @@ export const routes = [
   },
 ] as const;
 
-/**
- * Fonction d'assemblage des routes.
- * NOTE : Dans ton architecture, c'est le point d'entrée qui appelle cette fonction.
- */
 export function enregistrerRoutes(app: FastifyInstance, db: PrismaClient) {
-  const limiteur = new Limiteur(); // Rate limiting pour éviter le spam d'OTP
+  const limiteur = new Limiteur();
 
   // 1. Envoi d'OTP
   app.post('/identite/otp/emettre', async (req, reply) => {
     const resultat = auth.demanderCodeOptSchema.safeParse(req.body);
     if (!resultat.success) throw erreurs.requeteInvalide();
 
-    // Le schéma contient désormais `finalite` (avec valeur par défaut).
     const donnees = {
       email: resultat.data.email,
       finalite: resultat.data.finalite ?? ('inscription' as const),
     };
 
-    // Limitation : max 1 envoi par minute, 5 par heure
     const cle = `otp:${donnees.email}`;
     const verdict = await limiteur.verifier(cle, REGLES.ecriture);
     if (!verdict.autorise) throw erreurs.debitDepasse(`${verdict.attendreS}s`);
 
     const reponse = await service.demanderCode(db, donnees);
-    reply.code(202); // Accepté, traitement en cours
+    reply.code(202);
     return reponse;
   });
 
-  // 2. Vérification OTP et session
+  // 2. Vérification OTP et création de compte complet
   app.post('/identite/otp/verifier', async (req, reply) => {
     const resultat = auth.verifierCodeOptSchema.safeParse(req.body);
     if (!resultat.success) throw erreurs.requeteInvalide();
 
-    // ⬇️ CONSTRUCTION ROBUSTE POUR LE SERVICE (gère le `exactOptionalPropertyTypes`)
-    const donnees: { email: string; code: string; prenom?: string; motDePasse?: string } = {
-      email: resultat.data.email,
-      code: resultat.data.code,
-    };
-    if (resultat.data.prenom) donnees.prenom = resultat.data.prenom;
-    if (resultat.data.motDePasse) donnees.motDePasse = resultat.data.motDePasse;
-
-    // On limite aussi la vérification à 5 tentatives par 10 minutes.
-    const cle = `otp-verif:${donnees.email}`;
+    const cle = `otp-verif:${resultat.data.email}`;
     const verdict = await limiteur.verifier(cle, { max: 5, fenetreMs: 600_000 });
     if (!verdict.autorise) throw erreurs.debitDepasse(`${verdict.attendreS}s`);
 
-    const reponse = await service.verifierCode(db, donnees);
+    // ⬇️ On passe le résultat complet (le service gère l'upsert des profils)
+    const reponse = await service.verifierCode(db, resultat.data);
     return reply.code(200).send(reponse);
   });
 

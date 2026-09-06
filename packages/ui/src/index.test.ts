@@ -15,6 +15,7 @@ import {
   contraste,
   CONTRASTE_MIN,
   COULEURS,
+  COULEURS_D22,
   etatDepuis,
   etatVide,
   imageProgressive,
@@ -24,6 +25,7 @@ import {
   minuteurReservation,
   PRIMITIVES,
   prixAriary,
+  respecteRZ1,
   TYPOGRAPHIE,
   ACCENTS,
   accent,
@@ -42,6 +44,13 @@ describe('S7.1 — les jetons, vérifiés par test et non par relecture', () => 
       ['texte sur fond secondaire', COULEURS.texte, COULEURS.fondSecondaire],
       ['texte inverse sur action', COULEURS.texteInverse, COULEURS.action],
       ['texte inverse sur action pressée', COULEURS.texteInverse, COULEURS.actionPressee],
+      // `D-22` — les deux couleurs de la marque portent du texte blanc : le
+      // framboise sur un bouton, le violet sur un badge vérifié et un fond de
+      // facture. Les deux se vérifient, et sur blanc, et en inverse.
+      ['action sur fond', COULEURS.action, COULEURS.fond],
+      ['texte inverse sur identité', COULEURS.texteInverse, COULEURS.identite],
+      ['texte inverse sur identité foncée', COULEURS.texteInverse, COULEURS.identiteFoncee],
+      ['identité sur fond', COULEURS.identite, COULEURS.fond],
       ['texte inverse sur succès', COULEURS.texteInverse, COULEURS.succes],
       ['texte inverse sur danger', COULEURS.texteInverse, COULEURS.danger],
       ['texte inverse sur attention', COULEURS.texteInverse, COULEURS.attention],
@@ -64,10 +73,50 @@ describe('S7.1 — les jetons, vérifiés par test et non par relecture', () => 
     expect(luminance('#000000')).toBeCloseTo(0, 2);
   });
 
-  it('une seule couleur d’action — deux, c’est aucune', () => {
+  it('une couleur d’action, une couleur d’identité — jamais deux couleurs d’action (D-22)', () => {
     expect(COULEURS.action).not.toBe(COULEURS.succes);
     // Le montant n'a PAS la couleur de l'action : un prix ne se touche pas.
     expect(COULEURS.montant).not.toBe(COULEURS.action);
+    // `D-22` : deux jetons, deux rôles. Le violet a cessé d'être le bouton, il
+    // n'est pas devenu un doublon du framboise pour autant.
+    expect(COULEURS.action).toBe('#A31A5B');
+    expect(COULEURS.identite).toBe('#7C2D92');
+    expect(COULEURS.identite).not.toBe(COULEURS.action);
+  });
+
+  it('R-Z1 — le framboise et le violet ne portent jamais seuls une différence de sens', () => {
+    // La raison d'être de la règle, mesurée : 1,08:1 entre les deux. Elles se
+    // distinguent par la teinte, jamais par la luminance — donc pas du tout sur
+    // un écran délavé par le soleil, ni pour un œil daltonien.
+    expect(contraste(COULEURS.action, COULEURS.identite)).toBeLessThan(1.2);
+    expect(COULEURS_D22).toHaveLength(2);
+
+    // Deux états que SEULE la couleur sépare : refusé.
+    expect(respecteRZ1({ couleur: COULEURS.action }, { couleur: COULEURS.identite })).toBe(false);
+
+    // La même paire, doublée par un libellé, une icône ou une forme : acceptée.
+    expect(
+      respecteRZ1(
+        { couleur: COULEURS.action, libelle: 'En direct' },
+        { couleur: COULEURS.identite, libelle: 'Vérifiée' },
+      ),
+    ).toBe(true);
+    expect(
+      respecteRZ1(
+        { couleur: COULEURS.action, icone: 'point' },
+        { couleur: COULEURS.identite, icone: 'coche' },
+      ),
+    ).toBe(true);
+    expect(
+      respecteRZ1(
+        { couleur: COULEURS.action, forme: 'pastille' },
+        { couleur: COULEURS.identite, forme: 'ecusson' },
+      ),
+    ).toBe(true);
+
+    // La règle ne vise QUE ce couple : un vert de succès contre un rouge
+    // d'alerte se distingue déjà de 3,4:1, et n'est pas concerné.
+    expect(respecteRZ1({ couleur: COULEURS.succes }, { couleur: COULEURS.danger })).toBe(true);
   });
 
   it('trois tailles de texte, pas huit', () => {
@@ -203,7 +252,11 @@ describe('les univers dans l’interface — les décisions UX', () => {
   });
 
   it('un univers inconnu retombe sur l’accent de la marque', () => {
-    expect(accent('inexistant')).toBe(COULEURS.action);
+    // L'accent d'univers est un repère d'identité, pas un bouton : depuis
+    // `D-22`, le repli est le jeton d'identité, et sa valeur rendue est la même
+    // qu'avant la scission.
+    expect(accent('inexistant')).toBe(COULEURS.identite);
+    expect(accent('inexistant')).toBe('#7C2D92');
   });
 
   it('le sélecteur ne s’affiche PAS s’il n’y a qu’un univers', () => {

@@ -64,7 +64,7 @@ Voir la liste « produit minimum phase 1 » de `JP_BACKLOG.md`. Résumé :
 
 **Commerce** — identité par **code envoyé par courriel** et vérification boutique · catalogue et variantes · stock et réservation temporaire · direct avec « Je prends » · **vente hors direct : achat immédiat, panier catalogue, fiche enrichie, vitrine permanente** · panier multi-boutiques · **paiement mobile money direct à la boutique** *(`DP-07`)* · facture · **suivi de livraison déclaré par la boutique** *(`DP-04`)* · signalement · **abonnement boutique** *(`DP-08`)*.
 
-**Social** — stories et clips shoppables · fil personnalisé · **fil des abonnements incluant les nouveautés catalogue** · unboxing · profil et affiliation créatrice · précommande groupée · panier offert · modération complète.
+**Social** — stories et clips shoppables · fil personnalisé · **fil des abonnements incluant les nouveautés catalogue** · profil et affiliation créatrice · précommande groupée · panier offert · modération complète.
 
 > **Deux mouvements de périmètre.** L'**abonnement boutique** entre en V1 : il
 > n'est plus une option de monétisation mais **le modèle économique lui-même**
@@ -166,14 +166,14 @@ aucune procédure de support pour changer de type.
 ┌─ Accueil ────────── stories en haut · directs en cours · à venir · articles
 │                     · événements en cours · promotions des boutiques suivies
 ├─ Clips ──────────── fil vertical plein écran, balayage
-├─ [ + ] ──────────── publier (unboxing, look) — visible si achat confirmé
+├─ [ + ] ──────────── publier (story, clip, look) — visible si achat confirmé
 │
 ├─ Recherche ──────── texte · filtres taille/prix/couleur/catégorie · vitrines
 └─ Moi ───────────── commandes · cagnotte · **mes offres** · **mes avantages**
                       · adresses · abonnements · favoris · réglages
 ```
 
-**Écrans principaux :** fil d'accueil · fil abonnements · direct · clip plein écran · story · fiche produit · **questions sur une fiche** · vitrine boutique · profil créatrice · feuille « Je prends » · panier · choix de livraison · paiement · confirmation · suivi de commande · unboxing (enregistrement) · signalement · profil · **mes offres** · **page événement** · **calendrier des événements**.
+**Écrans principaux :** fil d'accueil · fil abonnements · direct · clip plein écran · story · fiche produit · **questions sur une fiche** · vitrine boutique · profil créatrice · feuille « Je prends » · panier · choix de livraison · paiement · confirmation · suivi de commande · signalement · profil · **mes offres** · **page événement** · **calendrier des événements**.
 
 ## 4.2 Application boutique — « mon studio »
 
@@ -519,7 +519,7 @@ vérifiables** : la **boutique vérifiée**, la **transaction historisée**, la
 
   **Une seule formulation reste interdite** : *« votre argent est gardé par JP »* — exposition juridique *(`D-02`)*, **et désormais fausse** *(`DP-16`)*. *« Vous payez directement la boutique »* **redevient exacte** : les fonds vont sur son mobile money, JP ne les touche pas.
 - **R-E2** — L'acheteur DOIT pouvoir consulter **avant de payer** : identité vérifiée, ancienneté, nombre de ventes, avis, taux de signalement de la boutique *(`F6.1`, `F6.2`)*.
-- **R-E3** — La **confirmation de réception** est conservée. Elle ne déclenche plus aucun mouvement d'argent : elle **clôt la commande et alimente la réputation**. Deux chemins équivalents : validation simple ou publication d'un unboxing *(`F14.7`)* — **personne n'est obligé de se filmer**.
+- **R-E3** — La **confirmation de réception** est conservée. Elle ne déclenche plus aucun mouvement d'argent : elle **clôt la commande et alimente la réputation**. **Un seul chemin : la validation en un appui** *(`UC-31`, `DP-17`)* — **personne n'a à se filmer**.
 - **R-E4** — En l'absence de réponse, clôture automatique après un délai. ⚠️ Hypothèse : 3 jours.
 - **R-E5** — **JP ne rembourse pas.** Il n'a rien à rendre. Un signalement ne rend pas l'argent : il **compte** contre la réputation de la boutique *(§5.9.1)*.
 
@@ -557,27 +557,6 @@ vérifiables** : la **boutique vérifiée**, la **transaction historisée**, la
 - **R-K8** — Le fil « Pour toi » DOIT être ordonné selon la taille, le budget, les catégories, les abonnements et l'historique de visionnage. **Une acheteuse en 42 ne doit pas voir défiler du 36** — c'est la première cause d'abandon d'un fil mode.
 - **R-K9** — Un fil « Abonnements » distinct DOIT exister.
 - **R-K10** — En mode économie de données : un seul contenu préchargé, qualité réduite, pas de lecture automatique.
-
-### 5.6.3 Unboxing *(F14.7 · B3.4)*
-
-**Le geste central de la couche sociale.**
-
-**Parcours**
-1. Livraison constatée → notification proposant de filmer, avec le crédit annoncé.
-2. Enregistrement dans l'application.
-3. Les articles de la commande sont **attachés automatiquement**.
-4. Indication de la conformité à la taille.
-5. Publication.
-
-**Effets, simultanés**
-- Réception confirmée → **commande clôturée et score de la boutique alimenté** *(R-E3)*. **Aucun mouvement d'argent** *(`DP-07`)*
-- Avis vérifié créé, avec la note de taille *(F6.1)*
-- Contenu publié dans le fil
-- Cagnotte créditée *(F17.13)*
-
-- **R-K11** — Le chemin sans vidéo (confirmation en un appui) DOIT rester disponible et aussi accessible que l'autre.
-- **R-K12** — Le fil des unboxings DOIT être consultable sans compte : c'est la meilleure page d'accueil possible pour un visiteur qui doute.
-- **R-K13** ⚠️ — Montant du crédit à calibrer.
 
 ### 5.6.4 Statistiques de contenu *(F14.17)*
 
@@ -690,7 +669,7 @@ conduit les gens à abandonner plutôt qu'à réclamer.
 
 - **R-T5** — Seul un acheteur ayant payé **et confirmé la réception** peut noter.
 - **R-T6** — L'avis porte une note, un commentaire, une photographie optionnelle et **une indication de conformité à la taille**.
-- **R-T7** — Un unboxing publié génère automatiquement l'avis correspondant.
+- ~~**R-T7**~~ — ~~Un unboxing publié génère automatiquement l'avis correspondant.~~ ❌ *(`DP-17`)*. ⚠️ **Point ouvert** *(`DP-17` §2)* : à quel geste l'avis vérifié se rattache-t-il désormais — à la confirmation de réception, ou à rien du tout ?
 
 ## 5.10 Modération et protection des personnes *(F19 · B7)*
 
@@ -848,6 +827,22 @@ décide.
 
 ---
 
+## 5.17 Identité visuelle et lisibilité *(`D-22`)*
+
+| Règle | Énoncé |
+|---|---|
+| **R-Z1** | **Le framboise `#A31A5B` et le violet `#7C2D92` ne DOIVENT jamais porter seuls une différence de sens.** Toute distinction portée par ces deux couleurs DOIT être doublée par une **icône**, un **libellé** ou un **changement de forme**. *Justification : contraste de **1,08:1** entre les deux — indistinguables en luminance.* |
+| **R-Z2** | La **couleur d'action** *(framboise)* et la **couleur d'identité** *(violet)* ont des emplois disjoints *(`D-22`)* : le framboise porte **ce sur quoi on appuie** — bouton principal, « Je prends », indicateur « En direct », étiquette de promotion, élément actif de navigation ; le violet porte **ce qui prouve** — logotype, badge « Boutique vérifiée » / « Mpivarotra azo antoka », écrans de paiement, de facture et de commission, score de confiance. **Un bouton n'est jamais violet ; un badge vérifié et un écran d'argent ne sont jamais framboise.** |
+
+**Pourquoi c'est au cahier des charges et pas au design system.** `R-Z1` n'est
+pas une préférence esthétique : c'est une règle d'accessibilité sur un parc de
+téléphones d'entrée de gamme utilisés en plein soleil. Deux couleurs qui ne
+diffèrent que par la teinte n'existent pas pour une part réelle des
+utilisatrices — daltonisme, écran délavé, vignette compressée. **Un produit qui
+fait dépendre un sens de cette seule différence l'a perdu pour elles.**
+
+---
+
 # 6. Exigences non fonctionnelles applicables
 
 Reprises de `JP_EXPRESSION_DE_BESOIN.md` section 7, avec les valeurs contractuelles.
@@ -878,12 +873,12 @@ Reprises de `JP_EXPRESSION_DE_BESOIN.md` section 7, avec les valeurs contractuel
 | **J0 — Sécurisation** | Accords paiement · **`PO-11` : idempotence honorée par les opérateurs** · **arbitrage des 14 décisions ⚠️** | *Préalable absolu au développement* |
 | **J1 — Conception** | Maquettes des parcours critiques · modèle de données · choix d'infrastructure vidéo · protocole de test terrain | Spécifications validées |
 | **J2 — Socle commerce** | Compte **(courriel + code, Google)**, vérification, catalogue, stock, direct, « Je prends », **vente hors direct**, panier, **paiement direct à la boutique**, facture, suivi de livraison, signalement, promotions, **abonnement boutique** | Version testable en interne |
-| **J3 — Noyau social** | Stories, clips, fil, unboxing, créatrices, affiliation, précommande, cadeau, **modération complète** | Version testable |
+| **J3 — Noyau social** | Stories, clips, fil, créatrices, affiliation, précommande, cadeau, **modération complète** | Version testable |
 | **J4 — Pilote fermé** | Boutiques et créatrices sélectionnés, directs réels, **argent réel** | Les quatre mesures fondatrices |
 | **J5 — Corrections** | Sur la base des mesures | Version d'ouverture |
 | **J6 — Ouverture** | Lancement public | — |
 
-> **Avertissement de délai.** Ce périmètre est plus large que le produit minimum initialement décrit, et l'horizon d'environ 3 mois devient tendu — principalement à cause de la vidéo et de la modération. Deux issues à arbitrer explicitement en J0 : allonger l'horizon, ou scinder J3 en deux (stories, clips et unboxing d'abord ; affiliation et précommande ensuite).
+> **Avertissement de délai.** Ce périmètre est plus large que le produit minimum initialement décrit, et l'horizon d'environ 3 mois devient tendu — principalement à cause de la vidéo et de la modération. Deux issues à arbitrer explicitement en J0 : allonger l'horizon, ou scinder J3 en deux (stories, clips et fil d'abord ; affiliation et précommande ensuite).
 
 ---
 
@@ -958,7 +953,7 @@ peut être tranché par l'équipe technique.** Les codes `PO-x` renvoient à
 | 6 | **Durée de tenue de l'article pendant la négociation du point de remise** | Le cadeau *(`R-G7`)* | `PO-10` |
 | 7 | Délai de clôture automatique après livraison | La confirmation de réception *(`R-E4`)* | — |
 | 8 | Fenêtre d'attribution d'affiliation | L'affiliation *(`R-N2`)* | — |
-| 9 | Montant du crédit d'unboxing | L'unboxing — **enjeu monté d'un cran** : il alimente la réputation, devenue la seule protection | — |
+| 9 | **Que devient la cagnotte sans geste filmé à récompenser ?** | La cagnotte *(`F17.13`)* — le geste récompensé a disparu *(`DP-17` §5)* | — |
 | 10 | Délai d'engagement sur les signalements d'urgence | La modération | — |
 | 11 | **Le donateur a-t-il un compte, ou un lien signé ?** | Le cadeau *(`R-G5`)* | `PO-9` |
 | 12 | **Les quatre mesures fondatrices, redéfinies sans le séquestre** | Le tableau de bord du pilote *(`R-O2`)* | `PO-4` |

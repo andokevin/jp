@@ -136,7 +136,7 @@ portefeuilles restaient séparés. Cette phrase est fausse depuis `DP-02`.
 | Valider une candidature **à son propre événement** | — | — | ✔ | ✔ |
 | **Gérer son abonnement** *(`DP-08`)* | — | — | ✔ | — |
 
-¹ uniquement sur des articles réellement achetés *(unboxing)*
+¹ uniquement sur des articles réellement achetés
 
 > ### Neuf droits ont disparu de cette matrice
 >
@@ -163,15 +163,14 @@ portefeuilles restaient séparés. Cette phrase est fausse depuis `DP-02`.
 ### AN · Visiteur non inscrit — 4 cas
 `UC-01` créer un compte · `UC-12` acheter hors direct *(réservation posée avant
 inscription)* · consulter une page publique *(vitrine, article, cadeau,
-événement, replay, mur des colis ouverts)* · regarder un direct
+événement, replay)* · regarder un direct
 
-### A · Acheteur — 13 cas
+### A · Acheteur — 12 cas
 `UC-02` se connecter · `UC-03` récupérer son compte · `UC-12` acheter hors direct
 · `UC-13` remplir un panier · `UC-21` acheter en direct · `UC-30` payer ·
 `UC-31` confirmer la réception · `UC-43` convenir du point de remise · `UC-50`
-signaler un problème · `UC-60` suivre une boutique · `UC-61` publier un unboxing
-· `UC-80` demander un article en cadeau · `UC-90` signaler · `UC-92` publier un
-contenu
+signaler un problème · `UC-60` suivre une boutique · `UC-80` demander un
+article en cadeau · `UC-90` signaler · `UC-92` publier un contenu
 
 ### B · Boutique — 13 cas
 `UC-10` publier un article · `UC-20` diffuser un direct · `UC-33` gérer son
@@ -181,10 +180,10 @@ clientes · `UC-70` lancer une promotion · `UC-71` promo VIP · `UC-72` créer 
 événement de boutique · `UC-73` participer à un événement · `UC-92` publier un
 contenu
 
-### C · Créatrice — 7 cas
-`UC-52` se faire vérifier · `UC-61` publier un unboxing · `UC-63` partager un
-lien d'affiliation · `UC-72` créer un événement · `UC-73` participer à un
-événement · `UC-90` signaler · `UC-92` publier un contenu
+### C · Créatrice — 6 cas
+`UC-52` se faire vérifier · `UC-63` partager un lien d'affiliation · `UC-72`
+créer un événement · `UC-73` participer à un événement · `UC-90` signaler ·
+`UC-92` publier un contenu
 
 ### D · Donateur / diaspora — 1 cas
 `UC-81` offrir un article à un compte JP nommé *(`DP-10`)*
@@ -192,7 +191,7 @@ lien d'affiliation · `UC-72` créer un événement · `UC-73` participer à un
 ### PM · Partenaire marque — phase 3
 Hors périmètre V1 *(`PO-2`)*.
 
-> ### Six cas d'utilisation sont supprimés
+> ### Sept cas d'utilisation sont supprimés
 >
 > | Cas | Pourquoi |
 > |---|---|
@@ -201,6 +200,7 @@ Hors périmètre V1 *(`PO-2`)*.
 > | `UC-41` Livrer à domicile · `UC-42` Remettre au relais | `DP-04` — JP n'opère plus de logistique |
 > | `UC-51` Arbitrer un litige | `DP-05` + `DP-07` — plus d'arbitre, plus d'argent à trancher |
 > | `UC-91` Traiter un signalement | `DP-05` — exécuté par `SYS` |
+> | `UC-61` Publier un unboxing | `DP-17` — le geste filmé est retiré ; la confirmation en un appui *(`UC-31`)* devient le seul chemin |
 >
 > **Les numéros libérés ne sont pas réattribués.** `UC-11` restera un trou :
 > ces codes sont cités dans `JP_CAS_UTILISATION.md`, `JP_BACKLOG.md` et
@@ -230,7 +230,6 @@ Hors périmètre V1 *(`PO-2`)*.
 | UC-50 | Signaler un problème sur une commande | | **●** | ● | | |
 | UC-52 | Se faire vérifier | | | **●** | **●** | |
 | UC-60 | Suivre une boutique | | **●** | ○ | ○ | |
-| UC-61 | Publier un unboxing | | **●** | | ● | |
 | UC-62 | Consulter ses clientes | | | **●** | | |
 | UC-63 | **Partager un lien d'affiliation** | | | ○ | **●** | |
 | UC-70 | Lancer une promotion | | | **●** | | |
@@ -572,11 +571,10 @@ commission)* · **3** *(commission + vente affiliée)*.
 > **effacer la fidélité des premières clientes, qui sont précisément les plus
 > fidèles.**
 
-**Deux autres chemins de clôture** :
+**L'autre chemin de clôture** :
 
 | Motif | Déclencheur |
 |---|---|
-| `unboxing` | `A` a filmé l'ouverture *(`UC-61`)* — la confirmation est **implicite** |
 | `automatique` | Délai écoulé sans réponse ni signalement *(délai à trancher — voir §8)* |
 
 > ### Ce que la confirmation ne fait plus
@@ -721,47 +719,6 @@ recommencer.
 > **L'étape 4 protège les notifications utiles.** Un utilisateur qui coupe tout
 > parce qu'une boutique est bavard nous fait perdre *« colis arrivé »* et *« code
 > de retrait »*.
-
----
-
-### UC-61 · Publier un unboxing ★
-`A` / `C` · *F14.x · R-K2, RB5, RB6*
-
-> **Un geste, cinq résultats. Le pendant social exact du bouton « Je prends ».**
-
-1. `SYS` notifie `A` à l'arrivée du colis : *« Filmez l'ouverture et gagnez X Ar
-   de crédit. »*
-2. `A` enregistre une vidéo de 30 s ; **l'article de sa commande est attaché
-   automatiquement** *(R-K2)* — elle n'a rien à sélectionner.
-3. `A` indique **si l'article taille bien** et met une note.
-4. **`[T]`** `SYS`, **en une transaction** : confirme la réception *(elle vaut
-   `UC-31` — mais ne déclenche **aucun** mouvement d'argent, `DP-07`)*, crée le
-   contenu **avec l'article attaché**, crédite la cagnotte.
-   → `commande.statut = CONFIRMEE` *(`motif = unboxing`)* · **`contenu`** ·
-   **`contenu_article`** · **`mouvement_cagnotte`**
-5. `SYS`, **en asynchrone idempotent** : crée l'avis vérifié, notifie le
-   boutique, fait entrer l'article au dressing.
-   → `avis`, `notification`, `piece_dressing`
-
-**Les cinq résultats d'un seul geste :**
-
-| Ce qu'elle fait | Ce que ça produit |
-|---|---|
-| Elle filme | Du contenu gratuit pour le fil |
-| Elle publie | **La preuve publique que JP livre pour de vrai** |
-| Elle valide la réception | **Les fonds sont libérés vers la boutique** |
-| Elle dit si ça taille | Un avis vérifié |
-| Elle poste | Du crédit dans sa cagnotte |
-
-> **Personne n'est obligé de se filmer.** La confirmation en un appui reste
-> toujours disponible *(`UC-31`)*. **C'est une possibilité récompensée, jamais
-> une condition.**
->
-> **Deux contraintes de base gardent ce parcours** : pas d'unboxing sans
-> `commande_source_id`, et **aucun mineur ne publie de vidéo** *(RB6)*.
->
-> **`mouvement_cagnotte.reference` porte un UK partiel** : un unboxing ne
-> crédite **qu'une fois**, même si l'asynchrone est rejoué.
 
 ---
 
@@ -938,8 +895,8 @@ recommencer.
    → **`paiement`** *(`payeur_utilisateur_id`, `payeur_pays`,
    `montant_devise_origine`)*, `commande.donateur_ref`
 7. La commande suit le parcours normal *(`UC-40`)*.
-8. À la réception, le bénéficiaire publie son remerciement *(`UC-61`)* — **du
-   contenu, donc de l'acquisition. La boucle se referme.**
+8. À la réception, le bénéficiaire **confirme avoir reçu** *(`UC-31`)*, en un
+   appui. `D` en est notifié.
 
 > **L'invariant `RB8` est devenu structurel.** Il fallait auparavant cacher
 > activement l'adresse au donateur ; désormais **il ne la manipule jamais** —
@@ -997,7 +954,7 @@ doivent l'être **avant** le développement du parcours concerné.
 | **4** | 🔴 **La précommande groupée est-elle encore possible ?** | `F15.8` | `R-N8` exige un **remboursement automatique et intégral** si le seuil n'est pas atteint — **critère de recette bloquant `B4.3`**. Sans séquestre, JP ne peut rembourser un argent qu'il n'a jamais tenu *(`PO-8`)*. Piste retenue à trancher : **n'encaisser qu'à l'atteinte du seuil** |
 | **5** | **Le libellé de la migration 17** — *une clarification, pas une décision* | `UC-13`, `UC-70` | Son intitulé se lit comme la création d'une **table** `remise_ligne`. C'est une **colonne** `int DEFAULT 0` de `ligne_commande`. **La garantie de non-cumul tient sans réserve** |
 | **6** | ~~Qui supporte la commission d'affiliation ?~~ | — | **Tranché** *(`DP-09`)* — **la boutique**, sur son prix, taux connu de la créatrice avant qu'elle attache l'article. `R-N4` est morte avec la commission JP *(`DP-08`)* |
-| **7** | **Quel crédit pour un unboxing ?** | `UC-61` | `mouvement_cagnotte`. Trop bas : personne ne filme. Trop haut : on achète du contenu plus cher que de la publicité. ⚠️ **L'enjeu a monté d'un cran** : l'unboxing alimente la réputation, devenue **la seule protection de l'acheteuse** *(`DP-07`)* |
+| **7** | **Que devient la cagnotte, maintenant qu'il n'y a plus de geste filmé à récompenser ?** | `UC-31` | 🔴 **Point ouvert** *(`DP-17` §5)* : le geste récompensé a disparu avec l'unboxing. Deux issues — retirer la cagnotte du périmètre V1, ou la rattacher à la confirmation de réception. **À trancher par le produit**, pas par la documentation |
 | **8** | **Trois schémas de tables cités sans colonnes** | `UC-80`, `UC-81`, `UC-52`, **`UC-43`** | `panier_cadeau` · `demande_verification` · **`fil_remise`** *(neuf, `DP-10`)* |
 | **9** | 🔴 **Le prestataire honore-t-il une clé d'idempotence sur une requête rejouée ?** | `UC-30` | `R-M5` **rejoue délibérément** les requêtes secondaires échouées. Sans idempotence honorée par l'opérateur, une relance paie la créatrice deux fois *(`PO-11`)* |
 | **10** | **Quel seuil de signalements suspend une boutique ?** | `UC-50` | C'est désormais **la seule sanction du produit** *(`DP-04`, `DP-05`)*. Trop bas, une boutique honnête est coupée par deux clientes mécontentes ; trop haut, la protection est décorative |

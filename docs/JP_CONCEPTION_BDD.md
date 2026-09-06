@@ -611,7 +611,6 @@ erDiagram
     CONTENU ||--o{ INTERACTION : "reçoit"
     CONTENU ||--o{ CONTENU_HASHTAG : "porte"
     HASHTAG ||--o{ CONTENU_HASHTAG : "rassemble"
-    COMMANDE ||--o| CONTENU : "source d'unboxing (R-K2)"
     UTILISATEUR ||--o{ ABONNEMENT : "suit"
     BOUTIQUE ||--o{ DIRECT : "diffuse"
     DIRECT ||--o{ DIRECT_ARTICLE : "prépare"
@@ -626,12 +625,12 @@ erDiagram
     CONTENU {
         uuid id PK
         uuid auteur_id FK "IDX(auteur_id, publie_le)"
-        enum type "story | clip | photo | unboxing"
+        enum type "story | clip | photo"
         string media_url
         string miniature_url
         int duree_s
         enum statut "brouillon | publie | retire"
-        uuid commande_source_id FK "CHECK obligatoire si unboxing"
+        uuid commande_source_id FK "commande d'origine de l'article attaché (R-K2)"
         enum commentaires_ouverts "tous | abonnes | aucun (R-X2)"
         timestamp publie_le
         timestamp expire_le "story : +24 h"
@@ -905,9 +904,9 @@ erDiagram
     MOUVEMENT_CAGNOTTE {
         uuid id PK
         uuid utilisateur_id FK
-        enum type "credit_unboxing | credit_parrainage | utilisation | reprise"
+        enum type "credit_reception | credit_parrainage | utilisation | reprise"
         int montant
-        string reference "UK partiel pour credit_unboxing"
+        string reference "UK partiel pour credit_reception"
     }
     PIECE_DRESSING {
         uuid id PK
@@ -946,7 +945,7 @@ erDiagram
     COMMANDE ||--o{ LITIGE : "peut faire l'objet de"
     LITIGE ||--o{ MESSAGE_LITIGE : "fil"
     COMMANDE ||--o| AVIS : "permet"
-    CONTENU ||--o| AVIS : "généré par unboxing (R-T7)"
+    CONTENU ||--o| AVIS : "contenu rattaché à un avis (R-T7)"
     UTILISATEUR ||--o{ SIGNALEMENT : "émet"
     UTILISATEUR ||--o{ SANCTION : "subit"
     UTILISATEUR ||--o{ BLOCAGE : "bloque"
@@ -1092,7 +1091,7 @@ stateDiagram-v2
         EN_PREPARATION --> REMBOURSEE : refus boutique
         EN_PREPARATION --> EXPEDIEE : remise au transport
         EXPEDIEE --> LIVREE : remise faite
-        LIVREE --> CONFIRMEE : confirmation, unboxing ou délai
+        LIVREE --> CONFIRMEE : confirmation ou délai
         LIVREE --> CONFIRMEE : JP ne rembourse pas (DP-07)
         CONFIRMEE --> [*]
     }
@@ -1269,7 +1268,7 @@ Les huit garanties structurelles, indépendantes du code applicatif. Ce sont ell
 | 6 | Pas de remise supérieure au prix | `CHECK (remise_ligne <= prix_unitaire * quantite)` |
 | 7 | Pas de litige clos sans décision motivée | `CHECK decision_motivee` |
 | 8 | Pas de contenu publié sans article | **déclencheur de contrainte différé** |
-| 9 | Pas d'unboxing sans commande source | `CHECK (type <> 'unboxing' OR commande_source_id IS NOT NULL)` |
+| ~~9~~ | ~~Pas d'unboxing sans commande source~~ ❌ **supprimée** *(`DP-17`)* — le type `unboxing` n'existe plus | — |
 | 10 | Pas de publication vidéo par un mineur | `CHECK (type NOT IN (...) OR auteur_majeur)` |
 | 11 | Pas de rang client global | **absence** d'index et de vue inter-boutiques |
 | 12 | Pas de double usage d'un code personnel | `UNIQUE(code_personnel)` + contrôle transactionnel |

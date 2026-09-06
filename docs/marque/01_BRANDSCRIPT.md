@@ -156,14 +156,19 @@ d'autorité, toutes mécaniques :
 | Source | Ce qu'elle prouve | Disponible |
 |---|---|---|
 | **Le mécanisme lui-même** | Nous ne demandons pas la confiance : nous supprimons le besoin d'en avoir | Jour 1 |
-| **Le mur des colis ouverts** | Des vraies clientes, des vrais colis, en vidéo, consultable **sans compte** | Jour 1 *(à condition d'amorcer)* |
+| **Le mur d'avis vérifiés** | De vraies clientes, de vraies commandes — **un avis adossé à chaque achat**, consultable **sans compte** | Jour 1 *(à condition d'amorcer)* |
 | **La boutique vérifiée** | Identité et compte mobile money contrôlés **avant** la première vente | Jour 1 |
 | **Les quatre mesures fondatrices** | Nous sommes les seuls à savoir ce qui se passe réellement sur ce marché | Après le pilote |
 
-> **Décision de marque.** Le mur des colis ouverts *(fil d'unboxings, sans
-> compte requis)* est **le moteur d'autorité de JP**. Ce n'est pas une
-> fonctionnalité sociale : c'est notre page de preuves. Voir la décision
-> `D-07` dans `05_PLATEFORME_DE_MARQUE.md`.
+> **Décision de marque.** Le mur d'avis vérifiés *(chaque avis adossé à une
+> commande réelle, sans compte requis)* est **le moteur d'autorité de JP**. Ce
+> n'est pas une fonctionnalité sociale : c'est notre page de preuves. Voir la
+> décision `D-07` dans `05_PLATEFORME_DE_MARQUE.md`.
+>
+> ⚠️ **Remplacement proposé, à valider** *(`DP-17` §3)* : l'unboxing ayant été
+> retiré *(`DP-17`)*, le mur des colis ouverts n'existe plus. Le mur d'avis
+> vérifiés est la contrepartie proposée — **c'est une décision de marque, pas
+> une correction de texte.**
 
 **Ce qu'il ne faut jamais faire pour paraître autoritaire** : afficher des faux
 compteurs d'utilisateurs, des logos de partenaires non signés, des témoignages
@@ -233,9 +238,9 @@ La majorité ne téléchargera pas au premier contact. Il faut un pas
 intermédiaire, gratuit, sans engagement, qui **donne la preuve avant de demander
 l'inscription** :
 
-> ### « Regardez les colis s'ouvrir. »
+> ### « Regardez ce que les autres acheteuses en disent. »
 >
-> Le mur des unboxings, ouvert sans compte, sans téléchargement, partageable
+> Le mur d'avis vérifiés, ouvert sans compte, sans téléchargement, partageable
 > sur WhatsApp.
 
 C'est l'appel transitionnel idéal : il ne coûte rien, il ne demande rien, et il
@@ -391,7 +396,7 @@ ne dépend pas du pouvoir d'achat local.**
 | **Problème philosophique** | **Aider quelqu'un ne devrait pas obliger à le faire à l'aveugle.** |
 | **Le plan** | **1.** Elle compose son panier et vous envoie un lien. **2.** Vous payez par carte, depuis la France. **3.** Vous voyez le colis remis — et son message. |
 | **Appel direct** | **« Offrez-lui, ne lui envoyez pas. »** |
-| **Le succès / la transformation** | De **celui qui envoie de l'argent** à **celui qui offre un cadeau**. Il voit la vidéo du colis qui s'ouvre. |
+| **Le succès / la transformation** | De **celui qui envoie de l'argent** à **celui qui offre un cadeau**. Il est notifié quand elle confirme avoir reçu. |
 
 **One-liner diaspora :**
 

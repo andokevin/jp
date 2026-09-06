@@ -56,13 +56,22 @@ import { COULEURS, RAYON, TYPOGRAPHIE, CIBLE_TACTILE_MIN } from './jetons.js';
  * Les trois accents sont vérifiés à 4,5:1 sur texte blanc, par test.
  */
 export const ACCENTS: Record<string, string> = {
-  mode: COULEURS.action, // violet — l'accent de la marque
-  beaute: '#A31A5B', // framboise
+  // `D-22` a scindé le jeton d'action et le jeton d'identité. L'accent d'univers
+  // reste sur la couleur d'identité : sa valeur rendue est inchangée, elle a
+  // seulement cessé d'emprunter le jeton du bouton.
+  mode: COULEURS.identite, // violet — l'accent de la marque
+  // ⚠️ POINT OUVERT (`D-22`) : le framboise est devenu la couleur d'action de
+  // toute l'application. Il ne peut plus servir d'accent d'univers — un onglet
+  // « Beauté » de la couleur du bouton principal apprend à toucher le mauvais
+  // élément. **Une couleur de remplacement est à décider**, elle n'est pas
+  // inventée ici. Tant qu'elle ne l'est pas, cette valeur duplique
+  // `COULEURS.action`.
+  beaute: '#A31A5B', // framboise — à remplacer
   tech: '#1D4E89', // bleu profond
 };
 
 export function accent(cleUnivers: string): string {
-  return ACCENTS[cleUnivers] ?? COULEURS.action;
+  return ACCENTS[cleUnivers] ?? COULEURS.identite;
 }
 
 /**

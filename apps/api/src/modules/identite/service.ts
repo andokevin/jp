@@ -29,17 +29,13 @@ export const service = {
   /** Étape 1 : Demande d'envoi d'un code OTP. (R-C9 : réponse identique) */
   async demanderCode(
     db: PrismaClient,
-    // ⬇️ `finalite` est désormais OPTIONNEL pour correspondre au schéma de `contracts`
     params: { email: string; finalite?: 'inscription' | 'connexion' },
   ) {
     const email = params.email.toLowerCase();
     const utilisateurExistant = await depot.trouverParEmail(db, email);
 
-    // ⬇️ On applique la valeur par défaut ici, de manière déterministe
     const finalite = params.finalite ?? 'inscription';
 
-    // Si finalité = inscription et que le compte existe, ou inverse, on renvoie la
-    // même réponse pour ne pas révéler l'existence du compte.
     if (
       (finalite === 'inscription' && utilisateurExistant) ||
       (finalite === 'connexion' && !utilisateurExistant)
@@ -47,7 +43,6 @@ export const service = {
       return { ok: true, expireDansS: auth.OTP_TTL_SECONDS };
     }
 
-    // Génération et enregistrement de l'OTP
     const code = randomInt(100000, 999999).toString();
     await depot.enregistrerCodeOtp(
       db,
@@ -56,22 +51,14 @@ export const service = {
       new Date(Date.now() + auth.OTP_TTL_SECONDS * 1000),
     );
 
-    // 🔒 TODO ICI : Appeler le module `notification` pour envoyer le code par email.
-    // console.log(`[DEV] Code OTP pour ${email}: ${code}`); // Pour tester en local
-
     mesurer('identite.code_otp_envoye', { finalite });
     return { ok: true, expireDansS: auth.OTP_TTL_SECONDS };
   },
 
-  /** Étape 2 : Vérification de l'OTP, création de compte et ouverture de session. */
+  /** Étape 2 : Vérification de l'OTP, création de compte complet et ouverture de session. */
   async verifierCode(
     db: PrismaClient,
-    params: {
-      email: string;
-      code: string;
-      prenom?: string;
-      motDePasse?: string; // Si fourni, on le stocke dès l'inscription
-    },
+    params: auth.VerifierCodeOptSchema, // Type complet du contrat
   ) {
     const email = params.email.toLowerCase();
     const otp = await depot.trouverDernierOtp(db, email);
@@ -89,29 +76,31 @@ export const service = {
     let utilisateur = await depot.trouverParEmail(db, email);
     const estNouveau = !utilisateur;
 
+    // ⬇️ Si nouveau compte, on crée TOUT : utilisateur + profil acheteur
     if (!utilisateur) {
       utilisateur = await depot.creerUtilisateur(db, {
-        email,
-        prenom: params.prenom ?? null,
+        ...params, // On passe toutes les infos
         motDePasseEmpreinte: params.motDePasse ? hashMotDePasse(params.motDePasse) : null,
       });
       mesurer('identite.compte_cree');
-    } else if (params.motDePasse && !utilisateur.motDePasseEmpreinte) {
-      // Cas : l'utilisateur s'est inscrit par OTP sans mot de passe, et le définit
-      // maintenant (ou lors d'une connexion ultérieure).
-      await depot.definirMotDePasse(db, utilisateur.id, hashMotDePasse(params.motDePasse));
+    } else {
+      // Cas : utilisateur existant, mais il définit son mot de passe ou ses préférences
+      if (params.motDePasse && !utilisateur.motDePasseEmpreinte) {
+        await depot.definirMotDePasse(db, utilisateur.id, hashMotDePasse(params.motDePasse));
+      }
+      if (params.preferencesVetement && params.preferencesVetement.length > 0) {
+        await depot.mettreAJourProfilAcheteur(db, utilisateur.id, params.preferencesVetement);
+      }
     }
 
-    // Ouvre une session standard via la plateforme.
     const ctx = contexte();
     const session = await ouvrirSession(db, {
       utilisateurId: utilisateur.id,
       ...(ctx?.adresseIp ? { adresseIp: ctx.adresseIp } : {}),
     });
 
-    // Journalisation de l'événement.
     await journaliser(db, {
-      action: estNouveau ? EMIS[0] : EMIS[1], // 'identite.compte_cree' ou 'identite.compte_connecte'
+      action: estNouveau ? EMIS[0] : EMIS[1],
       cibleType: 'utilisateur',
       cibleId: utilisateur.id,
     });
@@ -123,6 +112,12 @@ export const service = {
         id: utilisateur.id,
         email: utilisateur.email,
         prenom: utilisateur.prenom,
+        nom: utilisateur.nom,
+        genre: utilisateur.genre,
+        langue: utilisateur.langue,
+        dateNaissance: utilisateur.dateNaissance,
+        telephone: utilisateur.telephone,
+        photoUrl: utilisateur.photoUrl,
         hasPassword: Boolean(utilisateur.motDePasseEmpreinte),
         isNew: estNouveau,
       },
@@ -135,7 +130,6 @@ export const service = {
     const utilisateur = await depot.trouverParEmail(db, email);
 
     if (!utilisateur || !utilisateur.motDePasseEmpreinte) {
-      // On ne dit pas si l'email existe ou non : on renvoie la même erreur.
       throw ERREURS.IDENTIFIANTS_INCORRECTS();
     }
 
@@ -144,7 +138,6 @@ export const service = {
       throw ERREURS.IDENTIFIANTS_INCORRECTS();
     }
 
-    // Ouvre une session.
     const ctx = contexte();
     const session = await ouvrirSession(db, {
       utilisateurId: utilisateur.id,
@@ -152,7 +145,7 @@ export const service = {
     });
 
     await journaliser(db, {
-      action: EMIS[1], // 'identite.compte_connecte'
+      action: EMIS[1],
       cibleType: 'utilisateur',
       cibleId: utilisateur.id,
     });
@@ -164,6 +157,12 @@ export const service = {
         id: utilisateur.id,
         email: utilisateur.email,
         prenom: utilisateur.prenom,
+        nom: utilisateur.nom,
+        genre: utilisateur.genre,
+        langue: utilisateur.langue,
+        dateNaissance: utilisateur.dateNaissance,
+        telephone: utilisateur.telephone,
+        photoUrl: utilisateur.photoUrl,
         hasPassword: true,
         isNew: false,
       },

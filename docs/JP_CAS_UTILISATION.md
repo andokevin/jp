@@ -119,7 +119,6 @@ flowchart LR
 
     subgraph SOCIAL["Social et fidélité"]
         UC60["UC-60 Suivre une boutique"]
-        UC61["UC-61 Publier un unboxing"]
         UC62["UC-62 Consulter ses clientes"]
         UC63["UC-63 Partager un lien d'affiliation"]
     end
@@ -152,7 +151,6 @@ flowchart LR
     A --> UC43
     A --> UC50
     A --> UC60
-    A --> UC61
     A --> UC80
     A --> UC90
     B --> UC10
@@ -167,14 +165,13 @@ flowchart LR
     B --> UC72
     B --> UC73
     C --> UC52
-    C --> UC61
     C --> UC63
     C --> UC72
     C --> UC73
     D --> UC81
 ```
 
-**Inventaire** : ~~30~~ **27 cas d'utilisation**, regroupés en 9 paquetages. Les
+**Inventaire** : ~~30~~ **26 cas d'utilisation**, regroupés en 9 paquetages. Les
 marqués ★ portent un diagramme de séquence détaillé.
 
 | ID | Cas d'utilisation | Acteur principal | Séq. |
@@ -195,7 +192,6 @@ marqués ★ portent un diagramme de séquence détaillé.
 | UC-50 | Signaler un problème sur une commande | A | ★ |
 | UC-52 | Se faire vérifier | B / C | |
 | UC-60 | Suivre une boutique et recevoir ses nouveautés | A | |
-| UC-61 | Publier un unboxing | A | ★ |
 | UC-62 | Consulter ses clientes et leur rang | B | |
 | **UC-63** | 🆕 **Partager un lien d'affiliation** *(`DP-09`)* | C | |
 | UC-70 | Lancer une promotion et notifier ses abonnés | B | ★ |
@@ -207,7 +203,7 @@ marqués ★ portent un diagramme de séquence détaillé.
 | UC-90 | Signaler un contenu ou une personne | A / C | |
 | UC-92 | Publier un contenu avec articles attachés | C | |
 
-> ### Six cas d'utilisation supprimés
+> ### Sept cas d'utilisation supprimés
 >
 > | Cas | Motif |
 > |---|---|
@@ -216,6 +212,7 @@ marqués ★ portent un diagramme de séquence détaillé.
 > | `UC-41` Livrer à domicile · `UC-42` Remettre au relais | `DP-04` — JP n'opère plus de logistique |
 > | `UC-51` Arbitrer un litige | `DP-05` + `DP-07` — plus d'arbitre, plus d'argent à trancher |
 > | `UC-91` Traiter un signalement | `DP-05` — exécuté par `SYS` |
+> | `UC-61` Publier un unboxing | `DP-17` — le geste filmé est retiré ; la confirmation en un appui *(`UC-31`)* devient le seul chemin |
 >
 > **Les numéros libérés ne sont pas réattribués** : ils sont cités dans
 > `JP_ACTEURS_WORKFLOWS.md`, `JP_BACKLOG.md` et `JP_USER_STORIES.md`. Un trou se
@@ -873,7 +870,7 @@ sequenceDiagram
 |---|---|
 | **Acteur principal** | A |
 | **Acteurs secondaires** | B, SYS |
-| **Fonctionnalités** | F4.5, F6.1, F14.7 · **Règles** R-E3, R-E4, R-R11 · **Décisions** `DP-04`, `DP-07` |
+| **Fonctionnalités** | F4.5, F6.1 · **Règles** R-E3, R-E4, R-R11 · **Décisions** `DP-04`, `DP-07`, `DP-17` |
 | **Préconditions** | Commande en statut `LIVREE`. |
 | **Postconditions** | Commande `CONFIRMEE`, **score de la boutique alimenté**. **Aucun mouvement d'argent.** |
 
@@ -893,9 +890,8 @@ devenue le mécanisme de protection lui-même.**
 5. SYS écrit au **journal des ventes confirmées** *(R-R11)*, qui alimente le rang client **et le score de confiance de la boutique**.
 
 **Scénarios alternatifs**
-- **A1 — unboxing** *(depuis 2)* : la publication d'une vidéo d'ouverture vaut confirmation, **et** produit un avis.
-- **A2 — aucune réponse** *(depuis 2)* : au terme du délai *(R-E4, hypothèse 3 jours)*, SYS clôt **automatiquement**. **Cela ne coûte rien à personne** — l'argent est déjà parti.
-- **A3 — problème** *(depuis 2)* : A signale *(UC-50)*. **Rien n'est bloqué** — il n'y a plus de fonds à bloquer. Le signalement **pèse sur le score** de la boutique *(R-T8)*.
+- **A1 — aucune réponse** *(depuis 2)* : au terme du délai *(R-E4, hypothèse 3 jours)*, SYS clôt **automatiquement**. **Cela ne coûte rien à personne** — l'argent est déjà parti.
+- **A2 — problème** *(depuis 2)* : A signale *(UC-50)*. **Rien n'est bloqué** — il n'y a plus de fonds à bloquer. Le signalement **pèse sur le score** de la boutique *(R-T8)*.
 
 ```mermaid
 sequenceDiagram
@@ -918,10 +914,6 @@ sequenceDiagram
         Note over API,DB: DP-07 — aucun mouvement d'argent, il est déjà parti
         API->>A: invitation à laisser un avis
         API->>DB: file : entrée au dressing (asynchrone, idempotent)
-    else A publie un unboxing
-        A->>API: POST /commandes/:id/unboxing
-        Note over A,API: un geste, cinq résultats — voir UC-61
-        API->>DB: confirmation + contenu + crédit (transaction)
     else A signale un problème
         A->>API: POST /commandes/:id/signalement
         API->>DB: signalement_commande OUVERT
@@ -1258,71 +1250,6 @@ sequenceDiagram
         A->>APP: règle par boutique
         APP->>API: PUT /abonnements/:id/notifications {promotions: false}
         API-->>APP: 200 — l'abonnement est conservé
-    end
-```
-
----
-
-## UC-61 — Publier un unboxing ★
-
-| | |
-|---|---|
-| **Acteur principal** | A |
-| **Acteurs secondaires** | V, SYS |
-| **Fonctionnalités** | F14.7, F4.5, F6.1, F17.13 · **Règles** R-K2, R-T7 |
-| **Préconditions** | Une commande livrée, non encore confirmée. |
-| **Postconditions** | **Cinq effets** : réception confirmée, avis vérifié créé, contenu publié, cagnotte créditée, preuve publique que JP livre. |
-
-**Description.** Le geste le plus important de la couche sociale : **une action, cinq résultats**.
-
-**Le point technique** : les cinq effets doivent être **atomiques du point de vue de l'utilisatrice** mais **résilients individuellement**. Si la création de l'avis échoue, la confirmation de réception ne doit pas être annulée — sinon un bogue d'avis bloque le paiement de la boutique.
-
-**Scénario nominal**
-1. SYS notifie A à l'arrivée du colis : *« Filmez l'ouverture et gagnez X Ar de crédit »*.
-2. A enregistre une vidéo de 30 s ; **l'article de sa commande est attaché automatiquement** *(R-K2)*.
-3. A indique si l'article taille bien et met une note.
-4. SYS, **en transaction** : confirme la réception *(elle vaut `UC-31` — mais ne déclenche **aucun** mouvement d'argent, `DP-07`)*, crée le contenu avec l'article attaché, crédite la cagnotte.
-5. SYS, **en asynchrone idempotent** : crée l'avis vérifié, notifie la boutique, fait entrer l'article au dressing.
-
-**Scénarios alternatifs**
-- **A1 — sans vidéo** *(depuis 1)* : la confirmation classique en un appui reste toujours disponible *(UC-31)*. **On n'oblige personne à se filmer** — et cette règle n'est pas négociable sur un produit qui expose de jeunes femmes.
-- **A2 — échec de la création de l'avis** *(depuis 5)* : la confirmation et le crédit **sont conservés**, l'avis est rejoué.
-- **A3 — contenu retiré par la modération** *(après 5)* : le crédit est **repris par écriture inverse**, l'avis est conservé s'il repose sur un achat réel *(F19.6)*.
-
-```mermaid
-sequenceDiagram
-    participant SYS as Plateforme
-    actor A as A · Acheteuse
-    participant APP as Application
-    participant API as API JP
-    participant DB as PostgreSQL
-    participant JOB as File asynchrone
-    actor V as V · Boutique
-
-    SYS->>A: « Votre colis est arrivé — filmez et gagnez 2 000 Ar »
-    A->>APP: enregistre 30 s
-    Note over APP: l'article de la commande est attaché automatiquement (R-K2)
-    A->>APP: note de taille + étoiles
-    APP->>API: POST /commandes/:id/unboxing
-
-    API->>DB: BEGIN
-    API->>DB: 1 · commande = CONFIRMEE, sequestre = LIBERE
-    API->>DB: 2 · INSERT contenu (type=unboxing) + contenu_article
-    API->>DB: 3 · crédit de cagnotte (unique par commande)
-    API->>DB: COMMIT
-    API-->>A: « Merci ! » + les 4 résultats affichés
-
-    API->>JOB: effets asynchrones
-    JOB->>DB: 4 · INSERT avis vérifié (avec la note de taille)
-    JOB->>V: 5 · « Hanta a publié son unboxing »
-    JOB->>DB: entrée au dressing (F17.10)
-
-    Note over JOB,DB: si un effet échoue, il est rejoué —<br/>la confirmation et le crédit ne sont jamais annulés
-
-    alt chemin sans vidéo
-        A->>API: POST /commandes/:id/confirmer
-        API->>DB: confirmation seule, PAS de crédit
-        Note over A,API: on n'oblige personne à se filmer
     end
 ```
 
@@ -1846,7 +1773,7 @@ sequenceDiagram
 5. **L'accord sur le point de remise constaté** *(UC-43)*, D confirme le paiement ; SYS crée la commande et notifie le bénéficiaire : *« Naina vous a offert votre panier »* avec le message.
 6. La commande suit le parcours normal *(UC-40)*.
 7. D suit la livraison **depuis son lien, sans compte**, et voit la preuve de remise.
-8. À la réception, A publie son remerciement *(UC-61)* — **du contenu, donc de l'acquisition. La boucle se referme.**
+8. À la réception, A **confirme avoir reçu** *(UC-31)*, en un appui. **D en est notifié.**
 
 **Scénarios alternatifs**
 - **A1 — double paiement du même lien** : un seul encaissement *(idempotence)*.
@@ -1888,9 +1815,9 @@ sequenceDiagram
     API-->>WEB: frise + preuve de remise, TOUJOURS sans adresse
     WEB-->>D: « Remis le 16 août à 14 h 20 » + photo du colis
 
-    A->>API: publie son unboxing de remerciement (UC-61)
-    API->>D: « Hanta a reçu votre cadeau » + vidéo
-    Note over A,D: le remerciement est du contenu, donc de l'acquisition
+    A->>API: confirme la réception en un appui (UC-31)
+    API->>D: « Hanta a reçu votre cadeau »
+    Note over A,D: DP-17 — un appui, aucune vidéo demandée
 ```
 
 ---
@@ -1970,7 +1897,6 @@ sequenceDiagram
 | UC-50 Signaler un problème | | ● | ○ | | |
 | UC-52 Se faire vérifier | | | ● | ● | |
 | UC-60 Suivre une boutique | | ● | ○ | ○ | |
-| UC-61 Publier un unboxing | | ● | ○ | ● | |
 | UC-62 Consulter ses clientes | | ○ | ● | | |
 | **UC-63 Partager un lien d'affiliation** 🆕 | | | ○ | ● | |
 | UC-70 Lancer une promotion | | ○ | ● | | |

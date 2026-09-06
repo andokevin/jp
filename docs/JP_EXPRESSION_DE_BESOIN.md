@@ -122,7 +122,7 @@ Ce principe est une exigence de conception, pas une orientation marketing. Toute
 **La couche sociale**
 - Stories et vidéos courtes verticales, chacune rattachée à des articles achetables
 - Fil personnalisé selon la taille, le budget et le style
-- Publication d'unboxing valant confirmation de réception et avis vérifié
+- Confirmation de réception en un appui, valant clôture de commande et avis vérifié
 - Statut de créatrice, sélection d'articles, affiliation et commission sur ventes générées
 - Précommande groupée avec seuil et remboursement automatique si le seuil n'est pas atteint
 - Panier offert par un tiers, y compris depuis l'étranger
@@ -205,7 +205,7 @@ Exprimées en besoins. La traduction en fonctionnalités figure dans `JP_BACKLOG
 | **B3.1** | Un utilisateur doit trouver, à toute heure, du contenu nouveau qui l'intéresse. | F14.1, F14.2, F14.3 |
 | **B3.2** | Tout contenu doit permettre d'acheter en un geste ce qui y est montré. | F14.5, **exigence bloquante** |
 | **B3.3** | Le contenu proposé doit correspondre à la taille, au budget et au style de la personne. | F14.3, F17.9, F0.5 |
-| **B3.4** | Un acheteur doit pouvoir montrer publiquement ce qu'il a reçu, et ce geste doit valoir confirmation de réception et avis. | **F14.7** |
+| **B3.4** | Un acheteur doit pouvoir confirmer sa réception **en un appui**, et cette confirmation doit être publiquement visible. | `UC-31`, F6.1 ⚠️ *(le rattachement de l'avis vérifié reste ouvert — `DP-17` §2)* |
 | **B3.5** | Un utilisateur doit pouvoir consommer du contenu **sans le son**. | F14.21 |
 | **B3.6** | La consultation doit rester possible sur une connexion lente et un forfait limité. | F0.9, F13.1, F13.2 |
 | **B3.7** | Un visiteur doit pouvoir regarder sans compte, et créer un compte sans perdre ce qu'il était en train de faire. | F0.10 |
@@ -381,7 +381,7 @@ Toutes les valeurs ci-dessous sont **des questions ouvertes, pas des objectifs c
 | Quelle part d'acheteurs refuse le prépaiement ? | Conditionne la décision sur le paiement à la livraison, la plus lourde du projet |
 | À partir de quel taux de commission une boutique cherche-t-elle à contourner la plateforme ? | Conditionne tout le modèle économique |
 | Quelle durée de réservation optimise conversion et rotation du stock ? | Conditionne le cœur technique du direct |
-| Quelle proportion d'acheteurs publie un unboxing ? | Détermine si le moteur d'acquisition gratuite s'amorce |
+| Quelle proportion d'acheteurs confirme la réception et laisse un avis ? | Détermine si le mur d'avis vérifiés se remplit tout seul |
 | Que convertit un clip, comparé à un direct ? | Détermine si le contenu vend ou s'il ne fait que divertir |
 | Combien coûte une cliente amenée par une créatrice, comparé à la publicité payante ? | Justifie ou invalide l'investissement dans la couche sociale |
 | Le panier d'une commande-cadeau est-il significativement plus élevé ? | Détermine si la diaspora est un axe stratégique ou une fonctionnalité |
@@ -430,7 +430,7 @@ Ces points ne peuvent pas être décidés par l'équipe technique. Ils doivent l
 5. **Quel délai de libération automatique des fonds après livraison ?**
 6. **Quel barème de commission ?**
 7. **Qui paie un retour pour cause de taille ?**
-8. **Quel montant de crédit pour un unboxing ?**
+8. **Que devient la cagnotte sans geste filmé à récompenser ?** *(`DP-17` §5)*
 9. **Quels moyens et quels délais d'engagement pour la modération ?**
 10. **Combien de créatrices amorcer avant l'ouverture, et à quel coût ?**
 

@@ -24,7 +24,7 @@
 10. [Le nom, la signature, le slogan](#10-le-nom-la-signature-le-slogan)
 11. [L'identité visuelle et le logo](#11-lidentité-visuelle-et-le-logo)
 12. [Les fonctionnalités : ajouter, améliorer, retirer](#12-les-fonctionnalités--ajouter-améliorer-retirer)
-13. [Le tableau des 20 décisions](#13-le-tableau-des-20-décisions)
+13. [Le tableau des décisions](#13-le-tableau-des-décisions)
 14. [Ce qui reste à trancher](#14-ce-qui-reste-à-trancher)
 
 ---
@@ -45,7 +45,7 @@
 | **La ligne institutionnelle** | *« Le direct devient une boutique. »* |
 | **Le registre** | **Le soulagement.** Jamais l'enthousiasme |
 | **L'archétype** | **Le Gardien** — celui qui tient le registre, pas un commerçant *(`D-21`)* |
-| **La couleur** | Violet `#7C2D92` |
+| **Les couleurs** | Violet `#7C2D92` — l'identité et la preuve · Framboise `#A31A5B` — l'action *(`D-22`)* |
 | **Les langues** | Malgache et français. **L'anglais nulle part** |
 | **Ce qui nous tuerait** | Devenir un réseau social |
 
@@ -115,7 +115,7 @@ autre chose est faux.
 
 | Audience | Ce qu'elle vient chercher | Le message, en une phrase | Canal |
 |---|---|---|---|
-| **L'acheteuse** *(principale)* | Ne pas reperdre son argent | *« La boutique n'est payée que quand vous avez reçu. »* | Facebook, Messenger, le mur des colis ouverts |
+| **L'acheteuse** *(principale)* | Ne pas reperdre son argent | *« La boutique n'est payée que quand vous avez reçu. »* | Facebook, Messenger, le mur d'avis vérifiés |
 | **La boutique** | Ne plus perdre de ventes. Être prise au sérieux | *« Combien de "je prends" vous ont vraiment payée hier soir ? »* | **Parrainage entre boutiques — canal n° 1**, terrain |
 | **La créatrice** | Un revenu sans capital | *« Vous n'avez pas besoin d'acheter le stock. »* | Contact direct, avant l'ouverture |
 | **La diaspora** | Que son argent serve vraiment | *« Offrez-lui, ne lui envoyez pas. »* | France, groupes diaspora, Facebook |
@@ -155,7 +155,7 @@ Live Pay Mada se présente comme *« La plateforme des liveuses modernes »*.
 | **Acheteuse** | *« Vous pouvez acheter chez quelqu'un que vous ne connaissez pas. »* | Boutique vérifié · fonds libérés à la confirmation · facture · litige arbitré par JP | **Le soulagement** |
 | **Boutique** | *« Un "je prends" devient une commande déjà payée. »* | Paiement encaissé dans la plateforme · réservation de stock · zéro saisie · badge vérifié | **La considération** |
 | **Créatrice** | *« Vous vendez sans acheter le stock. »* | Affiliation · précommande groupée à **remboursement automatique** | **L'autonomie** |
-| **Diaspora** | *« Offrez un objet, pas un virement. »* | Boutique vérifié · suivi · **preuve de remise** · la vidéo du colis ouvert | **La présence** |
+| **Diaspora** | *« Offrez un objet, pas un virement. »* | Boutique vérifié · suivi · **preuve de remise** · la confirmation de réception du bénéficiaire | **La présence** |
 
 ## Les huit choses que personne ne fait
 
@@ -166,7 +166,7 @@ l'étude concurrentielle.)*
 |---|---|---|
 | **1** | **L'argent tenu jusqu'à la réception** | ✅ Aucune plateforme ni passerelle malgache ne le fait |
 | **2** | **Le bouton à la place du commentaire** | ✅ Meta a supprimé ses outils en 2022, rien ne les a remplacés |
-| **3** | **L'unboxing qui vaut confirmation, avis et preuve publique** | ✅ Aucun équivalent, nulle part |
+| **3** | **Le mur d'avis vérifiés, public et sans compte** — chaque avis adossé à un achat réel | ✅ Aucun équivalent, nulle part |
 | **4** | **La créatrice sans capital** | ✅ Aucun acteur local |
 | **5** | **Le cadeau depuis l'étranger** | ✅ 385 M USD/an de transferts, aucun d'eux ne dit ce qu'il devient |
 | **6** | **Le point de retrait sans adresse** | ⚠️ **Aucun réseau de points relais n'existe à Madagascar** — c'est à construire |
@@ -216,7 +216,7 @@ l'étude concurrentielle.)*
 |---|---|---|
 | **« Sept téléphones »** | Une boutique malgache réelle : 7 appareils, 4 agents *(Newsmada, juil. 2026)* | **Deck, presse, terrain boutique.** Personne n'a jamais nommé cette friction |
 | **« Un numéro. Un virement. Et l'espoir. »** | L'ennemi | Grand public, partout |
-| **« Le mur des colis ouverts »** | L'unboxing | La preuve, partout |
+| **« Regardez ce qu'elles en disent »** | Le mur d'avis vérifiés | La preuve, partout |
 
 ---
 
@@ -425,7 +425,7 @@ Vous savez à qui vous payez.
         Regarder d'abord  →
 ```
 
-Le lien du bas mène au **mur des colis ouverts**, sans compte. **Une marque qui
+Le lien du bas mène au **mur d'avis vérifiés**, sans compte. **Une marque qui
 vend la confiance ne doit pas exiger un compte avant d'avoir donné une preuve.**
 
 ## 9.2 La carte « Garantie JP » — `A-1`, le correctif le plus important
@@ -631,11 +631,28 @@ tout le paysage e-commerce malgache.
 | **Un logotype, pas un symbole** | Ries : personne ne reconnaît un symbole abstrait sans des années de matraquage. Nous n'avons ni les années ni le budget |
 | **Horizontal, ~2,25:1** | La forme qui se lit le plus vite |
 | **Le verrou** | **« JP »** avec **« Je prends »** dessous. Jamais séparés |
-| **Une couleur** | Violet **`#7C2D92`** — libre, complémentaire du jaune des deux marques d'argent, loin du bleu Facebook, 7,93:1 sur blanc |
+| **Deux couleurs, deux rôles** | **Framboise `#A31A5B` = l'action · Violet `#7C2D92` = l'identité et la preuve** *(`D-22`, qui révise `D-06`)*. Le violet reste la couleur de la marque — il cesse d'être la couleur du bouton. Répartition détaillée ci-dessous |
 | **Un seul détail signifiant** | La contreforme du **P** fermée, contenant un point plein — *ce qui est tenu*. À 24 dp, cela reste un P |
 | **Typographie du logotype** | **Un serif éditorial**, à contraste modéré. C'est un **zag** : tout le paysage africain du commerce utilise des sans-serif géométriques. Un serif dit *institution, facture, arbitre* — exactement notre positionnement |
 | **Typographie de l'interface** | **Sans-serif système.** Lisibilité sur Android d'entrée de gamme, poids nul à charger. **Le serif est la marque, pas l'interface** |
-| **Ce qui ne doit jamais arriver** | Un logo par univers · un dégradé · une ombre · un symbole seul sans le mot |
+| **Ce qui ne doit jamais arriver** | Un logo par univers · un dégradé · une ombre · un symbole seul sans le mot · **un bouton violet, un badge vérifié framboise, un écran d'argent framboise** |
+
+### La répartition, `D-22`
+
+| | `#A31A5B` framboise — **l'action** | `#7C2D92` violet — **l'identité et la preuve** |
+|---|---|---|
+| **Ce que c'est** | Ce sur quoi on appuie | Ce qui prouve qui nous sommes et que la transaction est tenue |
+| **Où** | Bouton d'action principal · bouton **« Je prends »** · indicateur **« En direct »** · étiquettes de promotion · élément actif de la navigation | **Logotype** · badge **« Boutique vérifiée » / « Mpivarotra azo antoka »** · écrans de **paiement**, de **facture** et de **commission** · **score de confiance** |
+| **Contraste sur blanc** | **7,35:1** | **7,93:1** |
+| **Jeton** | `COULEURS.action` | `COULEURS.identite` |
+
+> **`R-Z1` — la règle qui va avec.** Le contraste entre les deux est de
+> **1,08:1** : elles se distinguent par la teinte, jamais par la luminance. Sur
+> un écran d'entrée de gamme en plein soleil, ou pour un œil daltonien, **c'est
+> le même gris**. Aucune différence de sens ne doit donc reposer sur ce seul
+> couple : toute distinction qu'elles portent est **doublée par une icône, un
+> libellé ou une forme**. La règle est écrite au cahier des charges et vérifiée
+> par un test dans `packages/ui`.
 
 ## 11.2 Prompt Stitch — le logotype
 
@@ -751,7 +768,7 @@ marks and no emoji in anything involving money.
 | # | Quoi | Pourquoi | Effort | Priorité |
 |---|---|---|---|---|
 | **A-1** | **Le composant « Garantie JP », affiché AVANT le paiement** *(4 emplacements)* | **La correction produit la plus importante du dossier.** La peur agit avant de payer, pas après. Aujourd'hui la phrase n'apparaît qu'à la confirmation | Faible | **★ Critique** |
-| **A-2** | **Le mur des colis ouverts, sans compte — 6ᵉ page publique de `apps/web`** | Notre **appareil de preuve** et l'appel transitionnel du BrandScript. Le seul écran qui répond à « comment je sais que vous livrez ? » | Moyen | **★ Critique** |
+| **A-2** | **Le mur d'avis vérifiés, sans compte — 6ᵉ page publique de `apps/web`** | Notre **appareil de preuve** et l'appel transitionnel du BrandScript. Le seul écran qui répond à « comment je sais que vous livrez ? » | Moyen | **★ Critique** |
 | **A-3** | **Le compteur de ventes perdues** *(outil boutique, une page)* | *« Combien de "je prends" hier soir ? Combien vous ont payée ? »* **On ne lui explique pas son problème, on le lui fait compter.** Entrée de tout le recrutement terrain | Faible | ★ Haute |
 | **A-4** | **Le reçu de commande partageable** — identité vérifiée de la boutique, montant, date, numéro | *« Regarde à qui j'achète : elle est vérifiée, et il y a une trace. »* **Transforme la traçabilité en objet social, donc en acquisition gratuite** *(`D-21`)*. Ancienne rédaction : *« Regarde, il ne sera payé que quand j'aurai reçu. »* **Transforme la garantie en objet social, donc en acquisition gratuite** | Faible | Haute |
 | **A-5** | **La protection symétrique de la boutique, nommée et affichée** | La boutique la plus visible du pays cite le défaut de paiement comme problème n° 1 — **et personne ne lui dit qu'elle est aussi une victime**. Précédent : SentiBud, Nigeria | Moyen | Haute |
@@ -773,7 +790,7 @@ marks and no emoji in anything involving money.
 
 ---
 
-# 13. Le tableau des 20 décisions
+# 13. Le tableau des décisions
 
 | # | Décision | Où c'est justifié | Impact |
 |---|---|---|---|
@@ -782,8 +799,8 @@ marks and no emoji in anything involving money.
 | **D-03** | **La « Garantie JP » est un composant produit**, affiché avant le paiement | `01`, §9.2 | Produit |
 | **D-04** | **Malgache + français. L'anglais nulle part.** Nom et institutionnel en français, relation et terrain en malgache | `06` §5 | Code + communication |
 | **D-05** | **Lexique malgache validé** : *azo antoka* oui · **`toky` verbal et `vola` interdits** | `06` §5 | Produit |
-| **D-06** | **Violet `#7C2D92` confirmé** — libre, complémentaire du jaune, loin du bleu Facebook, 7,93:1 | `06` §6, `04` loi 17 | Identité |
-| **D-07** | **Le mur des colis ouverts est notre moteur d'autorité**, consultable sans compte | `01`, `03` §14 | Produit |
+| **D-06** | **Violet `#7C2D92` confirmé** — libre, complémentaire du jaune, loin du bleu Facebook, 7,93:1 · ⚠️ **révisée par `D-22`** : le violet est conservé, il devient la couleur d'**identité et de preuve** au lieu de la couleur d'action | `06` §6, `04` loi 17 | Identité |
+| **D-07** | **Le mur d'avis vérifiés est notre moteur d'autorité**, consultable sans compte ⚠️ *(remplacement proposé — `DP-17` §3, à valider)* | `01`, `03` §14 | Produit |
 | **D-08** | **Le compteur de ventes perdues** est l'appel transitionnel boutique | `01` | Produit + acquisition |
 | **D-09** | **« JP » ne circule jamais seul.** Verrou « JP — Je prends », 24 mois | `03` §10 | Identité |
 | **D-10** | **Communication sur JP Mode seul, 90 jours.** Beauté existe, mais pas dans le message | `04` loi 1 | Communication |
@@ -797,6 +814,7 @@ marks and no emoji in anything involving money.
 | **D-18** | **JP vouvoie. L'utilisatrice parle à la première personne** | §7.1 | **Tout le produit** |
 | **D-19** | **Signature : « Je prends. Je reçois. »** — système à trois lignes | §10.2 | Identité |
 | **D-20** | **Le registre est le soulagement, jamais l'enthousiasme** | §6 | Tout |
+| **D-22** | **Deux couleurs, deux rôles** — **framboise `#A31A5B` = l'action**, **violet `#7C2D92` = l'identité et la preuve**. **Révise `D-06`** sans l'annuler : le violet reste, il change de rôle. Va avec la règle **`R-Z1`** — ces deux couleurs ne portent jamais seules une différence de sens *(1,08:1 entre elles)* | §11.1, `04` loi 17, `06` §6 | **Identité + tout le produit** |
 
 ---
 

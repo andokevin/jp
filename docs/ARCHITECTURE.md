@@ -71,7 +71,7 @@ apps/api/src/modules/<domaine>/
 | `paiement` | mobile money, carte, reprise | **RB10**, hérité de la plateforme |
 | **`sequestre`** | retenue, libération, portefeuille | **RB2** — la promesse du produit tient ici |
 | `livraison` | colis, relais, codes de retrait | statut partagé des deux côtés, toujours |
-| `contenu` | clips, stories, unboxing | **RB5** — aucun contenu sans article |
+| `contenu` | clips, stories, looks | **RB5** — aucun contenu sans article |
 | `createur` | affiliation, précommandes | **RB3** — remboursement automatique |
 | `fidelite` | rang client, paliers | **par boutique, jamais global** |
 | `promotion` | promotions, codes, éligibilité | éligibilité vérifiée au calcul du panier |
