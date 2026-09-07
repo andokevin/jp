@@ -6,21 +6,21 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "tsconfig.json", "package.json"],
+      "inputs": ["src/**", "app/**", "tsconfig.json", "package.json"],
       "outputs": ["dist/**"]
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "test/**", "tsconfig.json"],
+      "inputs": ["src/**", "app/**", "test/**", "tsconfig.json"],
       "outputs": []
     },
     "lint": {
-      "inputs": ["src/**", "test/**", "eslint.config.mjs"],
+      "inputs": ["src/**", "app/**", "test/**", "eslint.config.mjs"],
       "outputs": []
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "test/**", "vitest.config.ts"],
+      "inputs": ["src/**", "app/**", "test/**", "vitest.config.ts"],
       "outputs": ["coverage/**"]
     },
     "dev": {

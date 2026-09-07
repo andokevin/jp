@@ -15,6 +15,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { minuteurReservation } from '@jp/ui';
 import type { Langue } from '@jp/i18n';
+import type { auth } from '@jp/contracts';
 
 import '../auth.css';
 import { BoutonPrincipal, ChampTexte, IconeHorloge, MessageErreur } from '../components/champs.js';
@@ -29,7 +30,7 @@ const ID_AIDE = 'jp-aide-auth';
 export function LoginScreen(props: {
   readonly base: string;
   readonly langueInitiale?: Langue;
-  readonly surSession?: (jeton: string) => void;
+  readonly surSession?: (session: auth.ReponseSession) => void;
 }) {
   const [langue, setLangue] = useState<LangueEcran>(() =>
     props.langueInitiale ? langueEcran(props.langueInitiale) : 'mg',

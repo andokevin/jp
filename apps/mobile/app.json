@@ -1,3 +1,22 @@
 {
-  "plugins": ["expo-router", "expo-secure-store", "expo-status-bar"]
+  "expo": {
+    "name": "JP",
+    "slug": "jp",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "scheme": "jp",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "mg.jp.app",
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": ["expo-router", "expo-secure-store", "expo-status-bar", "expo-localization"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
 }

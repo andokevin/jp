@@ -1,11 +1,14 @@
 /**
  * S8 — ce que l'appareil nous dit, et comment on l'interprète
  *
- * Deux lectures, deux pièges, et les deux tombent du même côté : **ne jamais
- * prendre un « je ne sais pas » pour un « non ».**
+ * Trois lectures, trois pièges. Les deux premières tombent du même côté :
+ * **ne jamais prendre un « je ne sais pas » pour un « non »**. La troisième
+ * tombe de l'autre — une configuration absente n'a pas de valeur raisonnable,
+ * elle a une erreur.
  */
 import { describe, expect, it } from 'vitest';
 
+import { baseApi, CLE_BASE_API } from './config.js';
 import { langueDepuisEtiquettes } from './langue.js';
 import { estEnLigne } from './reseau.js';
 
@@ -54,5 +57,27 @@ describe('S8 — le réseau : le doute n’est pas une coupure', () => {
 
   it('est en ligne quand les deux sont vrais', () => {
     expect(estEnLigne({ isConnected: true, isInternetReachable: true })).toBe(true);
+  });
+});
+
+describe('S8 — l’URL de l’API, gravée à la construction', () => {
+  it('refuse l’absence plutôt que de replier sur localhost', () => {
+    // Un repli produirait un APK qui s'installe, s'ouvre, et échoue à la
+    // première requête avec « pas de connexion » — le pire des messages,
+    // puisqu'il accuse le réseau de la personne.
+    expect(() => baseApi({})).toThrow(CLE_BASE_API);
+    expect(() => baseApi({ [CLE_BASE_API]: '   ' })).toThrow(CLE_BASE_API);
+  });
+
+  it('refuse une valeur qui n’est pas une URL', () => {
+    expect(() => baseApi({ [CLE_BASE_API]: 'api.jp.mg' })).toThrow(/http/);
+  });
+
+  it('retire la barre oblique finale', () => {
+    // Sinon `${base}/identite/otp/emettre` donne `...mg//identite/...` :
+    // certains serveurs répondent 404, d'autres normalisent en silence.
+    expect(baseApi({ [CLE_BASE_API]: 'https://api.jp.mg/' })).toBe('https://api.jp.mg');
+    expect(baseApi({ [CLE_BASE_API]: 'https://api.jp.mg///' })).toBe('https://api.jp.mg');
+    expect(baseApi({ [CLE_BASE_API]: 'https://api.jp.mg' })).toBe('https://api.jp.mg');
   });
 });

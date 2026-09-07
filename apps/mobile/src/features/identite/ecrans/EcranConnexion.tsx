@@ -28,6 +28,7 @@ import { getLocales } from 'expo-localization';
 import { langueEcran, LIBELLES, avecTemps, type LangueEcran } from '@jp/identite';
 import { minuteurReservation } from '@jp/ui';
 import type { Langue } from '@jp/i18n';
+import type { auth } from '@jp/contracts';
 
 import { CasesCode } from '../composants/CasesCode.js';
 import { PageAuth, Ressort } from '../composants/chrome.js';
@@ -48,7 +49,7 @@ import { langueDepuisEtiquettes } from '../../../noyau/langue.js';
 export function EcranConnexion(props: {
   readonly base: string;
   readonly langueInitiale?: Langue;
-  readonly surSession?: (jeton: string) => void;
+  readonly surSession?: (session: auth.ReponseSession) => void;
 }) {
   /*
    * `getLocales()` est synchrone et rend les locales DANS L'ORDRE de

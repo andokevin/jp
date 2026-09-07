@@ -13,6 +13,7 @@ import { useMemo } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
 import type { Langue } from '@jp/i18n';
+import type { auth } from '@jp/contracts';
 
 import { estEnLigne } from '../../../noyau/reseau.js';
 
@@ -56,7 +57,7 @@ export interface OptionsParcoursNatif {
   /** Injectable pour les tests — `undefined` désactive l'écoute. */
   readonly abonnerReseau?: AbonnementReseau;
   /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (jeton: string) => void;
+  readonly surSession?: (session: auth.ReponseSession) => void;
 }
 
 export function useAuthOtp(options: OptionsParcoursNatif) {

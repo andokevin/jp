@@ -18,6 +18,7 @@
  * elle-même.
  */
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import type { auth } from '@jp/contracts';
 
 import { HorsLigne, type ClientIdentite } from './api.js';
 import { codeAssemble, estComplet } from './code-otp.js';
@@ -58,8 +59,16 @@ export interface OptionsParcours {
   /** Construit par l'application — c'est elle qui connaît l'URL de base. */
   readonly client: Pick<ClientIdentite, 'demanderCode' | 'verifierCode'>;
   readonly abonnerReseau?: AbonnementReseau;
-  /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (jeton: string) => void;
+  /**
+   * Appelé une fois la session ouverte ET le prénom connu.
+   *
+   * Reçoit la réponse ENTIÈRE, pas le seul jeton : `expireLe` en fait partie,
+   * et sans lui l'appareil ne peut pas ranger la session — `ouvrirSession`
+   * de `noyau/session.ts` réclame les deux. Une signature qui ne passait que
+   * le jeton obligeait l'appelant à redemander au serveur ce qu'il venait de
+   * recevoir, ou à inventer une échéance.
+   */
+  readonly surSession?: (session: auth.ReponseSession) => void;
 }
 
 export function useAuthOtp(options: OptionsParcours) {
@@ -121,7 +130,7 @@ export function useAuthOtp(options: OptionsParcours) {
           ...(prenom ? { prenom: prenom.trim() } : {}),
         });
         envoyer({ type: 'sessionOuverte', session });
-        if (session.utilisateur.prenom !== null) ref.current.surSession?.(session.jeton);
+        if (session.utilisateur.prenom !== null) ref.current.surSession?.(session);
       } catch (erreur) {
         if (erreur instanceof HorsLigne) envoyer({ type: 'coupure' });
         else envoyer({ type: 'echec', panne: panneDepuis(erreur) });

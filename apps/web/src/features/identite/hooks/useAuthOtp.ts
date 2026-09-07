@@ -12,6 +12,7 @@
 import { useMemo } from 'react';
 import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
 import type { Langue } from '@jp/i18n';
+import type { auth } from '@jp/contracts';
 
 /**
  * L'écoute du navigateur.
@@ -39,7 +40,7 @@ export interface OptionsParcoursWeb {
   /** Injectable pour les tests et pour un futur rendu serveur. */
   readonly fetch?: typeof fetch;
   /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (jeton: string) => void;
+  readonly surSession?: (session: auth.ReponseSession) => void;
 }
 
 export function useAuthOtp(options: OptionsParcoursWeb) {
