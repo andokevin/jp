@@ -13,11 +13,18 @@
  *
  * **Pas de bascule de langue**, contrairement au web. La maquette n'en met
  * pas : l'appareil en porte déjà une, et un second sélecteur dans
- * l'application donnerait deux réponses à la même question. `langueInitiale`
- * viendra de `expo-localization` quand la coquille la branchera ; d'ici là,
- * c'est l'appelant qui la passe.
+ * l'application donnerait deux réponses à la même question. L'écran LIT donc
+ * la langue de l'appareil — et `langueInitiale` reste là pour qu'un appelant
+ * puisse forcer, en test comme dans un futur réglage.
+ *
+ * Conséquence à connaître : un téléphone réglé en français affiche le
+ * français, ce qui sera le cas de la plupart. Le malgache est la langue
+ * d'AUTORITÉ de la maquette — celle sur laquelle les boîtes sont dimensionnées
+ * — pas un défaut d'affichage imposé à quelqu'un qui a choisi autre chose.
  */
+import { useMemo } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { getLocales } from 'expo-localization';
 import { langueEcran, LIBELLES, avecTemps, type LangueEcran } from '@jp/identite';
 import { minuteurReservation } from '@jp/ui';
 import type { Langue } from '@jp/i18n';
@@ -36,13 +43,27 @@ import {
 import { IconeHorloge } from '../composants/icones.js';
 import { PALETTE } from '../theme.js';
 import { useAuthOtp } from '../hooks/useAuthOtp.js';
+import { langueDepuisEtiquettes } from '../../../noyau/langue.js';
 
 export function EcranConnexion(props: {
   readonly base: string;
   readonly langueInitiale?: Langue;
   readonly surSession?: (jeton: string) => void;
 }) {
-  const langue: LangueEcran = props.langueInitiale ? langueEcran(props.langueInitiale) : 'mg';
+  /*
+   * `getLocales()` est synchrone et rend les locales DANS L'ORDRE de
+   * préférence de la personne. On ne garde que la première que l'on sait
+   * rendre — le reste du travail est fait par `langueDepuisEtiquettes`, qui
+   * réutilise l'analyseur d'`Accept-Language` plutôt que d'en écrire un
+   * second.
+   */
+  const langue: LangueEcran = useMemo(
+    () =>
+      langueEcran(
+        props.langueInitiale ?? langueDepuisEtiquettes(getLocales().map((l) => l.languageTag)),
+      ),
+    [props.langueInitiale],
+  );
   const parcours = useAuthOtp({
     base: props.base,
     langue,

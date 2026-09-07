@@ -2,28 +2,59 @@
  * L'adaptateur natif du parcours — F0.1
  *
  * Le jumeau exact de `apps/web/src/features/identite/hooks/useAuthOtp.ts`, et
- * c'est le but : les deux font une quinzaine de lignes parce que les cent
+ * c'est le but : les deux font une vingtaine de lignes parce que les cent
  * autres — transitions, décompte, auto-vérification au sixième chiffre — sont
  * dans `@jp/identite` et n'existent qu'une fois.
  *
- * **Une différence assumée : pas d'abonnement réseau.** Le web écoute
- * `online`/`offline`, que le navigateur émet gratuitement. React Native
- * demanderait `@react-native-community/netinfo`, une dépendance native de
- * plus, non installée ici. Sans elle, la coupure se découvre au PREMIER appel
- * qui échoue : `ClientIdentite` lève `HorsLigne`, le réducteur bascule, le
- * bandeau paraît et la saisie est conservée. Ce qu'on perd est la détection
- * AVANT le geste — le bouton reste actif jusqu'à la première tentative.
- * `abonnerReseau` est le point d'accroche prévu pour ça.
+ * Ne restent ici que les deux choses proprement natives : le client HTTP
+ * construit sur l'URL de base, et l'écoute du réseau par NetInfo.
  */
 import { useMemo } from 'react';
-import { ClientIdentite, useAuthOtp as useParcours } from '@jp/identite';
+import NetInfo from '@react-native-community/netinfo';
+import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
 import type { Langue } from '@jp/i18n';
+
+import { estEnLigne } from '../../../noyau/reseau.js';
+
+/**
+ * L'écoute du réseau, version native.
+ *
+ * Déclarée au niveau du MODULE, donc stable d'un rendu à l'autre. Écrite en
+ * ligne dans l'appel du hook, elle serait un objet neuf à chaque frappe.
+ *
+ * Deux pièges de NetInfo, tous deux résolus ici :
+ *
+ *   1. **`isInternetReachable` peut valoir `null`** — « je suis en train de
+ *      vérifier ». La règle est dans `noyau/reseau.ts`, sortie d'ici pour
+ *      qu'un test la tienne : le doute n'est pas une coupure.
+ *   2. **L'abonnement émet aussitôt l'état courant**, puis à chaque
+ *      changement. C'est ce qui couvre l'application ouverte alors que le
+ *      réseau est DÉJÀ tombé — le cas que le web doit rattraper à la main
+ *      avec `navigator.onLine`, parce qu'aucun événement `offline` ne
+ *      viendra jamais l'annoncer.
+ *
+ * La comparaison avec l'état précédent évite de réémettre la même transition
+ * à chaque battement de NetInfo : une action `coupure` répétée reconstruirait
+ * l'état à l'identique, mais rendrait l'écran pour rien.
+ */
+const ecouterNetInfo: AbonnementReseau = ({ surCoupure, surRetour }) => {
+  let precedent: boolean | null = null;
+  return NetInfo.addEventListener((etat) => {
+    const enLigne = estEnLigne(etat);
+    if (enLigne === precedent) return;
+    precedent = enLigne;
+    if (enLigne) surRetour();
+    else surCoupure();
+  });
+};
 
 export interface OptionsParcoursNatif {
   readonly base: string;
   readonly langue: Langue;
   /** Injectable pour les tests. */
   readonly fetch?: typeof fetch;
+  /** Injectable pour les tests — `undefined` désactive l'écoute. */
+  readonly abonnerReseau?: AbonnementReseau;
   /** Appelé une fois la session ouverte ET le prénom connu. */
   readonly surSession?: (jeton: string) => void;
 }
@@ -41,6 +72,7 @@ export function useAuthOtp(options: OptionsParcoursNatif) {
 
   return useParcours({
     client,
+    abonnerReseau: options.abonnerReseau ?? ecouterNetInfo,
     ...(options.surSession ? { surSession: options.surSession } : {}),
   });
 }

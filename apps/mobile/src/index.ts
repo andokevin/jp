@@ -20,7 +20,9 @@
  */
 export * from './noyau/client-api.js';
 export * from './noyau/hors-ligne.js';
+export * from './noyau/langue.js';
 export * from './noyau/magasin.js';
+export * from './noyau/reseau.js';
 export * from './noyau/session.js';
 export * from './noyau/univers.js';
 export * from './navigation/index.js';
