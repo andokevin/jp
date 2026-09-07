@@ -21,6 +21,7 @@ import {
   ouvrirSession,
   etatSession,
   fermerSession,
+  departDepuis,
   verifierTailleSecret,
 } from './index.js';
 
@@ -335,5 +336,36 @@ describe('S8.2 — la session dans le trousseau', () => {
     // usage : ce qui ne tient pas dedans n'est pas un secret.
     expect(() => verifierTailleSecret('x'.repeat(3000))).toThrow(/trousseau/i);
     expect(() => verifierTailleSecret('jeton-court')).not.toThrow();
+  });
+});
+
+describe('S8.2 — où part-on au démarrage, et que faut-il effacer', () => {
+  it('une session ouverte mène à l’accueil, sans nettoyage', () => {
+    const d = departDepuis({ quoi: 'ouverte', jeton: 'jeton-abc', expireLe: Date.now() + 1000 });
+    expect(d).toEqual({ quoi: 'accueil', jeton: 'jeton-abc' });
+  });
+
+  it('une session PÉRIMÉE exige d’effacer le jeton mort', () => {
+    // Le distinguo qui compte : périmée et absente mènent au même écran, mais
+    // pas au même ménage. Un jeton périmé reste dans le trousseau — rien ne le
+    // relira jamais, puisque `etatSession` le refuse à chaque démarrage — et il
+    // y resterait pour la vie de l'appareil, revente d'occasion comprise.
+    expect(departDepuis({ quoi: 'perimee' })).toEqual({ quoi: 'connexion', nettoyer: true });
+  });
+
+  it('aucune session ne demande aucun nettoyage', () => {
+    expect(departDepuis({ quoi: 'aucune' })).toEqual({ quoi: 'connexion', nettoyer: false });
+  });
+
+  it('le nettoyage rend bien le trousseau vide', async () => {
+    // Le bout à bout : périmée → on efface → plus rien à effacer la fois
+    // suivante. Sans cette dernière assertion, `nettoyer: true` ne serait
+    // qu'une intention.
+    const m = magasinFactice();
+    await ouvrirSession('jeton-mort', Date.now() - 1000, m);
+    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'connexion', nettoyer: true });
+
+    await fermerSession(m);
+    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'connexion', nettoyer: false });
   });
 });

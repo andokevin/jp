@@ -5,9 +5,11 @@
  * fuite du cache ne doit pas donner une session utilisable — et beaucoup de
  * téléphones d'entrée de gamme à Madagascar arrivent déjà rootés.
  *
- * **Ce module ne décide rien** : il range et il relit. C'est le serveur qui dit
- * si une session est valide *(S3.3)* — un jeton non expiré peut avoir été
- * révoqué, et l'appareil ne peut pas le savoir.
+ * **Ce module ne décide rien du serveur** : il range et il relit. C'est le
+ * serveur qui dit si une session est VALIDE *(S3.3)* — un jeton non expiré
+ * peut avoir été révoqué, et l'appareil ne peut pas le savoir. La seule
+ * décision prise ici est locale : vers quel écran partir au lancement, et
+ * quel secret mort effacer en chemin *(`departDepuis`, en bas de fichier)*.
  *
  * Le magasin est **injecté**, jamais importé : voir `magasin.ts`.
  */
@@ -57,4 +59,44 @@ export async function etatSession(magasin: Magasin): Promise<EtatSession> {
 export async function fermerSession(magasin: Magasin): Promise<void> {
   await magasin.effacer(CLES.jeton);
   await magasin.effacer(CLES.jetonExpireLe);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Ce que l'application fait de cet état, au démarrage
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Où part-on, et que faut-il nettoyer avant ?
+ *
+ * **`nettoyer` n'est pas un détail.** Une session périmée laisse un jeton dans
+ * le trousseau — inutilisable, mais présent, et présent pour toujours : rien
+ * ne le relit jamais puisque `etatSession` le refuse à chaque démarrage. Un
+ * secret mort qui traîne sur un appareil d'occasion revendu au marché
+ * d'Analakely n'a aucune raison d'y être.
+ *
+ * Le porter dans le TYPE plutôt que dans un commentaire oblige la route à en
+ * faire quelque chose : on ne peut pas lire `quoi` sans voir `nettoyer` à
+ * côté.
+ */
+export type Depart =
+  | { readonly quoi: 'connexion'; readonly nettoyer: boolean }
+  | { readonly quoi: 'accueil'; readonly jeton: string };
+
+/**
+ * @remarks `session.ts` distingue « aucune » de « périmée » parce que les deux
+ * ne se racontent pas pareil — « connectez-vous » contre « votre session a
+ * expiré ». **L'écran ne fait pas encore cette distinction** : la maquette
+ * `JP Auth Flow` ne dessine aucun emplacement pour un tel avis, et en inventer
+ * un serait décider seul d'un écran. La différence est conservée ici, prête à
+ * être affichée le jour où la maquette dira où.
+ */
+export function departDepuis(session: EtatSession): Depart {
+  switch (session.quoi) {
+    case 'ouverte':
+      return { quoi: 'accueil', jeton: session.jeton };
+    case 'perimee':
+      return { quoi: 'connexion', nettoyer: true };
+    case 'aucune':
+      return { quoi: 'connexion', nettoyer: false };
+  }
 }
