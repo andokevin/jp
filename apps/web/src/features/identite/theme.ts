@@ -28,8 +28,15 @@ import { accent, CIBLE_TACTILE_MIN, COULEURS, ESPACEMENT, RAYON } from '@jp/ui';
 /** Le framboise de la maquette — l'accent « beauté » du design system. */
 export const ACTION = accent('beaute');
 
-/** Le violet des jetons, réservé au wordmark sur ces écrans. */
-export const IDENTITE = COULEURS.action;
+/**
+ * Le violet des jetons, réservé au wordmark sur ces écrans.
+ *
+ * `COULEURS.identite`, pas `COULEURS.action` : ce sont deux jetons distincts,
+ * et le second est le framboise. La confusion rendait le wordmark framboise et
+ * faisait de `--jp-identite` un alias de `--jp-action` — c'est-à-dire qu'elle
+ * effaçait `D-22` à l'endroit précis où l'en-tête ci-dessus le défend.
+ */
+export const IDENTITE = COULEURS.identite;
 
 export const VARIABLES_CSS = {
   '--jp-fond': COULEURS.fond,

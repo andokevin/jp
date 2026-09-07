@@ -14,9 +14,16 @@
  * pour deux comportements qui divergeront — et la divergence tombera sur
  * l'écran de connexion, celui que tout le monde traverse.
  *
- * Aucune dépendance à React, à `document`, ni à une application : tout est
- * pur, donc testable sans navigateur ni simulateur.
+ * **Le hook est ici lui aussi, et ce n'est pas une entorse.** `react` n'est
+ * pas un moteur de rendu — `react-dom` et `react-native` le sont, et ni l'un
+ * ni l'autre n'est importé ici. `useReducer` se comporte à l'identique sous
+ * les deux. React est donc déclaré en dépendance de PAIR : le paquet emprunte
+ * celui de l'application, il n'en apporte pas un second (voir `package.json`).
+ *
+ * Aucune dépendance à `document`, à une vue, ni à une application.
  */
 export * from './parcours.js';
 export * from './code-otp.js';
 export * from './libelles.js';
+export * from './api.js';
+export * from './hook.js';

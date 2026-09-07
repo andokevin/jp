@@ -1,21 +1,14 @@
 /**
- * F0.1 — le client HTTP d'identité
+ * F0.1 — le client d'identité
  *
- * Les règles du parcours vivent dans `@jp/identite` et y sont testées. Il ne
- * reste ici que la seule chose qui soit vraiment web : le client `fetch`, avec
- * ses en-têtes, sa clé d'idempotence et sa distinction entre une coupure
- * réseau et un refus du serveur.
- *
- * Ce fichier portait aussi un test de `etatDepuis` — mot pour mot celui de
- * `packages/ui/src/index.test.ts:201`. Un doublon, et un doublon qui ne
- * prouvait rien d'ici : aucun écran de ce dossier n'appelle `etatDepuis`. La
- * règle « hors ligne AVANT erreur » est vérifiée deux fois désormais, à ses
- * deux vraies adresses — dans `@jp/ui` pour l'état d'écran, dans
- * `@jp/identite` pour le réducteur.
+ * Ces tests ont vécu dans `apps/web`. Ils suivent le client, qui est partagé
+ * depuis qu'on sait qu'il n'utilise que `fetch` : l'écran natif hérite donc
+ * des trois garanties vérifiées ici — l'en-tête de langue, la clé
+ * d'idempotence, et la distinction entre une coupure et un refus du serveur.
  */
 import { describe, expect, it } from 'vitest';
 
-import { ClientIdentite, HorsLigne } from './api/identiteApi.js';
+import { ClientIdentite, HorsLigne } from './api.js';
 
 // ── Un faux `fetch`, injecté plutôt que simulé ───────────────────────────────
 function fauxFetch(reponses: readonly { statut: number; corps: unknown }[]) {

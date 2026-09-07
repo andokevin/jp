@@ -1,9 +1,12 @@
 /**
- * Le client d'identité — F0.1, côté web
+ * Le client d'identité — F0.1
  *
- * Même contrat que `apps/mobile/src/noyau/client-api.ts`, réduit aux deux
- * appels du parcours d'authentification. Trois choses qu'il fait, et qu'aucun
- * écran ne refait :
+ * Réduit aux deux appels du parcours d'authentification, et **partagé par les
+ * deux clients** : il n'utilise que `fetch`, que React Native fournit comme le
+ * navigateur. Il a vécu dans `apps/web` le temps d'un sprint ; l'écran natif
+ * aurait dû en écrire un jumeau, avec les mêmes trois pièges à retrouver.
+ *
+ * Trois choses qu'il fait, et qu'aucun écran ne refait :
  *
  *   1. **poser `Idempotency-Key`** sur chaque écriture *(RB10)* ;
  *   2. **annoncer la langue** — le serveur traduit lui-même ses messages, donc

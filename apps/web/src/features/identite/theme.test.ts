@@ -56,6 +56,11 @@ describe('F0.1 — l’accessibilité des couleurs', () => {
     // par la couleur seule : la langue active porte un soulignement et une
     // graisse, le bouton désactivé change de forme, l'erreur porte une icône.
     // Ce test échouerait si quelqu'un croyait pouvoir opposer les deux.
+    // D'ABORD : ce sont bien DEUX couleurs. Sans cette ligne, l'assertion de
+    // contraste ci-dessous est satisfaite par le pire des cas — deux jetons
+    // identiques donnent 1,00, donc « moins de 1,5 ». Le test passait pendant
+    // que `IDENTITE` valait le framboise.
+    expect(IDENTITE).not.toBe(ACTION);
     expect(contraste(ACTION, IDENTITE)).toBeLessThan(1.5);
   });
 
