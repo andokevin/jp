@@ -66,37 +66,38 @@ export async function fermerSession(magasin: Magasin): Promise<void> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Où part-on, et que faut-il nettoyer avant ?
+ * Où part-on, et pourquoi ?
  *
- * **`nettoyer` n'est pas un détail.** Une session périmée laisse un jeton dans
- * le trousseau — inutilisable, mais présent, et présent pour toujours : rien
- * ne le relit jamais puisque `etatSession` le refuse à chaque démarrage. Un
- * secret mort qui traîne sur un appareil d'occasion revendu au marché
- * d'Analakely n'a aucune raison d'y être.
+ * **Le motif porte DEUX conséquences, et c'est pour ça qu'il remplace le
+ * drapeau `nettoyer` de la première version.** Une session périmée demande à la
+ * fois d'effacer le jeton mort et de le dire à l'écran ; deux champs séparés
+ * auraient dû rester d'accord pour toujours, alors qu'ils décrivent le même
+ * fait. Un seul motif, deux comportements qui en dérivent.
  *
- * Le porter dans le TYPE plutôt que dans un commentaire oblige la route à en
- * faire quelque chose : on ne peut pas lire `quoi` sans voir `nettoyer` à
- * côté.
+ * Le nettoyage n'est pas un détail : une session périmée laisse un jeton dans
+ * le trousseau — inutilisable, mais présent, et présent pour toujours, puisque
+ * `etatSession` le refuse à chaque démarrage et que plus rien ne le relit. Un
+ * secret mort qui traîne sur un appareil revendu d'occasion n'a aucune raison
+ * d'y être.
  */
 export type Depart =
-  | { readonly quoi: 'connexion'; readonly nettoyer: boolean }
+  | { readonly quoi: 'connexion'; readonly motif: 'aucune' | 'perimee' }
   | { readonly quoi: 'accueil'; readonly jeton: string };
 
 /**
- * @remarks `session.ts` distingue « aucune » de « périmée » parce que les deux
- * ne se racontent pas pareil — « connectez-vous » contre « votre session a
- * expiré ». **L'écran ne fait pas encore cette distinction** : la maquette
- * `JP Auth Flow` ne dessine aucun emplacement pour un tel avis, et en inventer
- * un serait décider seul d'un écran. La différence est conservée ici, prête à
- * être affichée le jour où la maquette dira où.
+ * @remarks « aucune » et « périmée » mènent au même écran mais ne s'y racontent
+ * pas pareil : la seconde y remplace la ligne de soutien par « votre session a
+ * expiré ». C'est la ligne sous le titre, dont la boîte réserve déjà deux
+ * lignes — l'échange ne décale donc rien, et les deux messages ne sont jamais
+ * utiles ensemble.
  */
 export function departDepuis(session: EtatSession): Depart {
   switch (session.quoi) {
     case 'ouverte':
       return { quoi: 'accueil', jeton: session.jeton };
     case 'perimee':
-      return { quoi: 'connexion', nettoyer: true };
+      return { quoi: 'connexion', motif: 'perimee' };
     case 'aucune':
-      return { quoi: 'connexion', nettoyer: false };
+      return { quoi: 'connexion', motif: 'aucune' };
   }
 }

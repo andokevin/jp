@@ -345,27 +345,27 @@ describe('S8.2 — où part-on au démarrage, et que faut-il effacer', () => {
     expect(d).toEqual({ quoi: 'accueil', jeton: 'jeton-abc' });
   });
 
-  it('une session PÉRIMÉE exige d’effacer le jeton mort', () => {
-    // Le distinguo qui compte : périmée et absente mènent au même écran, mais
-    // pas au même ménage. Un jeton périmé reste dans le trousseau — rien ne le
-    // relira jamais, puisque `etatSession` le refuse à chaque démarrage — et il
-    // y resterait pour la vie de l'appareil, revente d'occasion comprise.
-    expect(departDepuis({ quoi: 'perimee' })).toEqual({ quoi: 'connexion', nettoyer: true });
+  it('une session PÉRIMÉE se distingue d’une session absente', () => {
+    // Le distinguo porte deux conséquences : effacer le jeton mort, et le dire
+    // à l'écran. Un jeton périmé reste dans le trousseau — rien ne le relira
+    // jamais, puisque `etatSession` le refuse à chaque démarrage — et il y
+    // resterait pour la vie de l'appareil, revente d'occasion comprise.
+    expect(departDepuis({ quoi: 'perimee' })).toEqual({ quoi: 'connexion', motif: 'perimee' });
   });
 
-  it('aucune session ne demande aucun nettoyage', () => {
-    expect(departDepuis({ quoi: 'aucune' })).toEqual({ quoi: 'connexion', nettoyer: false });
+  it('aucune session ne demande ni ménage ni explication', () => {
+    expect(departDepuis({ quoi: 'aucune' })).toEqual({ quoi: 'connexion', motif: 'aucune' });
   });
 
-  it('le nettoyage rend bien le trousseau vide', async () => {
-    // Le bout à bout : périmée → on efface → plus rien à effacer la fois
-    // suivante. Sans cette dernière assertion, `nettoyer: true` ne serait
-    // qu'une intention.
+  it('le ménage fait, la fois suivante n’a plus rien à effacer', async () => {
+    // Le bout à bout : périmée → on efface → « aucune » la fois suivante.
+    // Sans cette seconde assertion, `motif: 'perimee'` ne serait qu'une
+    // intention jamais suivie d'effet.
     const m = magasinFactice();
     await ouvrirSession('jeton-mort', Date.now() - 1000, m);
-    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'connexion', nettoyer: true });
+    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'connexion', motif: 'perimee' });
 
     await fermerSession(m);
-    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'connexion', nettoyer: false });
+    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'connexion', motif: 'aucune' });
   });
 });

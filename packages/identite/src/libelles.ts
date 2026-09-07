@@ -40,6 +40,15 @@ interface Libelles {
   readonly ecran3Exemple: string;
   readonly ecran3Aide: string;
   readonly ecran3Bouton: string;
+  /**
+   * Prend la place de `ecran1Soutien` quand on revient d'une session périmée.
+   *
+   * Les deux ne sont jamais utiles ensemble : « nous vous enverrons un code »
+   * explique ce qui va se passer, « votre session a expiré » explique pourquoi
+   * vous êtes là — et sous-entend la même suite. La boîte de soutien réserve
+   * déjà deux lignes, donc l'échange ne décale rien.
+   */
+  readonly sessionExpiree: string;
   readonly attente: string;
   readonly modifier: string;
   readonly horsLigne: string;
@@ -65,6 +74,9 @@ const MG: Libelles = {
   ecran3Exemple: 'Hanta',
   ecran3Aide: 'Ho hitan’ny fivarotana io anarana io amin’ny baiko ataonao',
   ecran3Bouton: 'Manomboka',
+  // ⚠ NON CERTIFIÉE — proposée, en attente de relecture par un locuteur, au
+  // même titre que les vingt-et-une autres.
+  sessionExpiree: 'Lany daty ny fidiranao. Ampidiro indray ny mailakao.',
   attente: 'Andrasana...',
   modifier: 'Hanova',
   horsLigne: 'Tsy misy fifandraisana',
@@ -90,6 +102,7 @@ const FR: Libelles = {
   ecran3Exemple: 'Hanta',
   ecran3Aide: 'Les boutiques verront ce prénom sur vos commandes',
   ecran3Bouton: 'Commencer',
+  sessionExpiree: 'Votre session a expiré. Entrez à nouveau votre adresse.',
   attente: 'Veuillez patienter...',
   modifier: 'Changer',
   horsLigne: 'Pas de connexion',

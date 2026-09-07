@@ -44,9 +44,10 @@ export default function Accueil() {
        * Le nettoyage AVANT l'affichage. Une session périmée laisse un jeton
        * mort dans le trousseau ; rien ne le relira jamais, puisque
        * `etatSession` le refuse à chaque démarrage. L'effacer ici est le seul
-       * moment où quelqu'un s'en occupe.
+       * moment où quelqu'un s'en occupe — et c'est le même motif qui, plus
+       * bas, fait dire à l'écran pourquoi il s'ouvre.
        */
-      if (suite.quoi === 'connexion' && suite.nettoyer) await fermerSession(secret);
+      if (suite.quoi === 'connexion' && suite.motif === 'perimee') await fermerSession(secret);
       if (vivant) setDepart(suite);
     });
     return () => {
@@ -69,7 +70,13 @@ export default function Accueil() {
   if (depart.quoi === 'lecture') return <Attente />;
   if (depart.quoi === 'accueil') return <AccueilProvisoire />;
 
-  return <EcranConnexion base={BASE} surSession={surSession} />;
+  return (
+    <EcranConnexion
+      base={BASE}
+      surSession={surSession}
+      {...(depart.motif === 'perimee' ? ({ motif: 'session-expiree' } as const) : {})}
+    />
+  );
 }
 
 /**

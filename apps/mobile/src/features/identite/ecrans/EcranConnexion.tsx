@@ -49,6 +49,15 @@ import { langueDepuisEtiquettes } from '../../../noyau/langue.js';
 export function EcranConnexion(props: {
   readonly base: string;
   readonly langueInitiale?: Langue;
+  /**
+   * Pourquoi cet écran s'ouvre.
+   *
+   * Une union fermée, pas une chaîne libre : l'écran rend des motifs qu'il
+   * CONNAÎT, donc dans la langue courante. Un texte passé par l'appelant
+   * arriverait dans la langue de l'appelant — c'est-à-dire en français, quoi
+   * qu'affiche le reste de l'écran.
+   */
+  readonly motif?: 'session-expiree';
   readonly surSession?: (session: auth.ReponseSession) => void;
 }) {
   /*
@@ -97,7 +106,16 @@ export function EcranConnexion(props: {
           {etat.etape === 'email' || etat.etape === 'termine' ? (
             <>
               <Titre texte={t.ecran1Titre} />
-              <Soutien>{t.ecran1Soutien}</Soutien>
+              {/*
+               * L'avis PREND LA PLACE du soutien, il ne s'y ajoute pas. Les
+               * deux ne sont jamais utiles ensemble : « nous vous enverrons un
+               * code » dit ce qui va se passer, « votre session a expiré » dit
+               * pourquoi vous êtes là — et sous-entend la même suite. La boîte
+               * réserve déjà deux lignes, donc l'échange ne décale rien.
+               */}
+              <Soutien>
+                {props.motif === 'session-expiree' ? t.sessionExpiree : t.ecran1Soutien}
+              </Soutien>
               <ChampTexte
                 label={t.ecran1Label}
                 exemple={t.ecran1Exemple}
