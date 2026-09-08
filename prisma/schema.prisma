@@ -1090,8 +1090,8 @@ model Article {
   /// Dénormalisé : sert le tri par pertinence, sans lire le JSON.
   aMesures     Boolean       @default(false) @map("a_mesures")
 
-  categorie   Categorie? @relation(fields: [categorieId], references: [id], onDelete: Restrict)
-  categorieId String?    @map("categorie_id") @db.Uuid
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categoryId String?   @map("category_id") @db.Uuid
 
   marque  String?
   matiere String?
@@ -1465,21 +1465,21 @@ model Adresse {
 
 /// L'arborescence de classement. Récursive : une catégorie a un parent
 /// facultatif, et le même modèle sert les trois univers.
-model Categorie {
+model Category {
   id String @id @default(uuid(7)) @db.Uuid
 
-  parent   Categorie?  @relation("arborescence", fields: [parentId], references: [id], onDelete: Restrict)
-  parentId String?     @map("parent_id") @db.Uuid
-  enfants  Categorie[] @relation("arborescence")
+  parent   Category?  @relation("arborescence", fields: [parentId], references: [id], onDelete: Restrict)
+  parentId String?    @map("parent_id") @db.Uuid
+  enfants  Category[] @relation("arborescence")
 
-  nomFr    String @map("nom_fr")
-  nomEn    String @map("nom_en")
+  nameFr   String @map("name_fr")
+  nameEn   String @map("name_en")
   position Int    @default(0)
 
   articles Article[]
 
   @@index([parentId, position])
-  @@map("categorie")
+  @@map("category")
 }
 
 /// **Toute variation de `quantite_stock` produit un mouvement.** C'est la seule
@@ -1831,7 +1831,7 @@ model Promotion {
   valeur Int
 
   perimetre   PerimetrePromotion @default(boutique)
-  categorieId String?            @map("categorie_id") @db.Uuid
+  categoryId  String?            @map("category_id") @db.Uuid
 
   cible       CiblePromotion  @default(tous)
   palierMin   PalierFidelite? @relation("palier_min", fields: [palierMinId], references: [id], onDelete: SetNull)
