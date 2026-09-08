@@ -305,24 +305,24 @@ enum StatutRepublication {
   @@map("statut_republication")
 }
 
-enum OrigineVente {
+enum SaleOrigin {
   direct
   catalogue
   clip
   story
-  evenement
+  event
 
-  @@map("origine_vente")
+  @@map("sale_origin")
 }
 
-enum StatutReservation {
+enum ReservationStatus {
   active
-  consommee
-  expiree
-  annulee
-  en_file
+  consumed
+  expired
+  cancelled
+  queued
 
-  @@map("statut_reservation")
+  @@map("reservation_status")
 }
 
 enum StatutCommande {
@@ -514,50 +514,50 @@ enum StatutPromotion {
   @@map("statut_promotion")
 }
 
-enum TypeMouvementStock {
-  entree
-  vente
-  retour
-  correction
+enum StockMovementType {
+  intake
+  sale
+  return_movement
+  adjustment
   expiration
 
-  @@map("type_mouvement_stock")
+  @@map("stock_movement_type")
 }
 
-enum StatutQuestion {
-  publiee
-  masquee
+enum QuestionStatus {
+  published
+  hidden
 
-  @@map("statut_question")
+  @@map("question_status")
 }
 
-enum StatutArticle {
-  brouillon
-  en_ligne
-  masque
-  epuise
+enum ArticleStatus {
+  draft
+  online
+  hidden
+  sold_out
 
-  @@map("statut_article")
+  @@map("article_status")
 }
 
-enum TypeVente {
+enum SaleType {
   stock
-  precommande
+  preorder
 
-  @@map("type_vente")
+  @@map("sale_type")
 }
 
 /// Facultatif sur l'article. En direct, la vendeuse essaie le vêtement devant
 /// la caméra — l'image dit l'état mieux qu'un énuméré. Hors direct, l'acheteuse
 /// n'a que la fiche : la règle « état requis » s'applique alors à la
 /// publication, pas à la colonne.
-enum EtatVetement {
-  neuf_etiquette
-  tres_bon
-  bon
-  correct
+enum ClothingCondition {
+  new_with_tags
+  excellent
+  good
+  fair
 
-  @@map("etat_vetement")
+  @@map("clothing_condition")
 }
 
 enum VerificationStatus {
@@ -1074,8 +1074,8 @@ model Article {
   prixAriary      Int  @map("prix_ariary")
   prixBarreAriary Int? @map("prix_barre_ariary")
 
-  statut    StatutArticle @default(brouillon)
-  typeVente TypeVente     @default(stock) @map("type_vente")
+  statut    ArticleStatus @default(draft)
+  typeVente SaleType      @default(stock) @map("type_vente")
 
   /// Un seul exemplaire (F1.14) : pas de sélecteur de quantité, une seule
   /// réservation possible. **Le moteur d'urgence naturel du direct** — et la
@@ -1083,7 +1083,7 @@ model Article {
   pieceUnique Boolean @default(false) @map("piece_unique")
 
   /// Facultatifs — voir le commentaire du modèle.
-  etatVetement EtatVetement? @map("etat_vetement")
+  etatVetement ClothingCondition? @map("etat_vetement")
   /// Épaules, poitrine, taille, longueur (R-H4). **Sans essayage, les mesures
   /// remplacent le fait de toucher le vêtement.**
   mesures      Json?
@@ -1491,7 +1491,7 @@ model MouvementStock {
   variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
   varianteId String   @map("variante_id") @db.Uuid
 
-  type          TypeMouvementStock
+  type          StockMovementType
   /// Signé : négatif pour une vente, positif pour une entrée.
   quantiteDelta Int                @map("quantite_delta")
   reference     String?
@@ -1516,7 +1516,7 @@ model QuestionArticle {
 
   texte        String
   reponseTexte String?        @map("reponse_texte")
-  statut       StatutQuestion @default(publiee)
+  statut       QuestionStatus @default(published)
 
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
@@ -1897,8 +1897,8 @@ model Reservation {
 
   quantite Int @default(1)
 
-  statut  StatutReservation @default(active)
-  origine OrigineVente      @default(catalogue)
+  statut  ReservationStatus @default(active)
+  origine SaleOrigin        @default(catalogue)
 
   direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("direct_id") @db.Uuid
@@ -1986,7 +1986,7 @@ model Commande {
   statut  StatutCommande @default(brouillon)
   /// **Une file de commandes unique** (R-H2) : deux files signifieraient deux
   /// logistiques, et la boutique en oublierait une.
-  origine OrigineVente   @default(catalogue)
+  origine SaleOrigin     @default(catalogue)
 
   /// Figé (R-Y3) : changer l'univers changerait les règles de litige et la
   /// commission après coup.
@@ -3210,7 +3210,7 @@ model AgregatBoutique {
   boutiqueId String   @map("boutique_id") @db.Uuid
 
   jour    DateTime     @db.Date
-  origine OrigineVente
+  origine SaleOrigin
 
   vues            Int @default(0)
   reservations    Int @default(0)
