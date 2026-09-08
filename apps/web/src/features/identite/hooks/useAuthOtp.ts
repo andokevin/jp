@@ -40,7 +40,7 @@ export interface OptionsParcoursWeb {
   /** Injectable pour les tests et pour un futur rendu serveur. */
   readonly fetch?: typeof fetch;
   /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (session: auth.ReponseSession) => void;
+  readonly surSession?: (session: auth.SessionResponse) => void;
 }
 
 export function useAuthOtp(options: OptionsParcoursWeb) {

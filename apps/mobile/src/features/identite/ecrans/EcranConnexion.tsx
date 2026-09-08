@@ -58,7 +58,7 @@ export function EcranConnexion(props: {
    * qu'affiche le reste de l'écran.
    */
   readonly motif?: 'session-expiree';
-  readonly surSession?: (session: auth.ReponseSession) => void;
+  readonly surSession?: (session: auth.SessionResponse) => void;
 }) {
   /*
    * `getLocales()` est synchrone et rend les locales DANS L'ORDRE de

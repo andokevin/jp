@@ -5,22 +5,22 @@
  * réponse. Tout part d’ici.
  */
 
-export * from './commun.js';
-export * from './univers.js';
+export * from './common.js';
+export * from './universes.js';
 export * as auth from './auth.js';
-export * as identite from './identite.js';
-export * as catalogue from './catalogue.js';
+export * as identity from './identity.js';
+export * as catalog from './catalog.js';
 export * as stock from './stock.js';
-export * as commande from './commande.js';
-export * as paiement from './paiement.js';
-export * as sequestre from './sequestre.js';
-export * as livraison from './livraison.js';
-export * as contenu from './contenu.js';
-export * as createur from './createur.js';
-export * as fidelite from './fidelite.js';
+export * as order from './order.js';
+export * as payment from './payment.js';
+export * as escrow from './escrow.js';
+export * as shipping from './shipping.js';
+export * as content from './content.js';
+export * as creator from './creator.js';
+export * as loyalty from './loyalty.js';
 export * as promotion from './promotion.js';
-export * as evenement from './evenement.js';
-export * as litige from './litige.js';
+export * as event from './event.js';
+export * as dispute from './dispute.js';
 export * as moderation from './moderation.js';
 export * as notification from './notification.js';
 export * as exploitation from './exploitation.js';

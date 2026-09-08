@@ -58,7 +58,7 @@ export const service = {
   /** Étape 2 : Vérification de l'OTP, création de compte complet et ouverture de session. */
   async verifierCode(
     db: PrismaClient,
-    params: auth.VerifierCodeOptSchema, // Type complet du contrat
+    params: auth.VerifyOtpSchema, // Type complet du contrat
   ) {
     const email = params.email.toLowerCase();
     const otp = await depot.trouverDernierOtp(db, email);

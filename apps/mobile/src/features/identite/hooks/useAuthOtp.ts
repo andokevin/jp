@@ -57,7 +57,7 @@ export interface OptionsParcoursNatif {
   /** Injectable pour les tests — `undefined` désactive l'écoute. */
   readonly abonnerReseau?: AbonnementReseau;
   /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (session: auth.ReponseSession) => void;
+  readonly surSession?: (session: auth.SessionResponse) => void;
 }
 
 export function useAuthOtp(options: OptionsParcoursNatif) {

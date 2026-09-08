@@ -11,11 +11,11 @@
  *
  * Ce partage est la décision de conception du module.
  */
-import { univers as registre, universOuverts, type DefinitionUnivers } from '@jp/contracts';
+import { universe as registre, openUniverses, type UniverseDefinition } from '@jp/contracts';
 import type { PrismaClient } from '../../genere/prisma/client.js';
 
 /** Un univers tel qu'il est vraiment : registre + état en base. */
-export interface UniversResolu extends DefinitionUnivers {
+export interface UniversResolu extends UniverseDefinition {
   /** Le taux EN BASE, qui peut différer de celui du registre. */
   readonly commissionEffective: number;
 }
@@ -64,12 +64,12 @@ export const service = {
   },
 
   /** Les règles structurelles, qui viennent du code. */
-  regles(cle: string): DefinitionUnivers | undefined {
+  regles(cle: string): UniverseDefinition | undefined {
     return registre(cle);
   },
 
   /** Utile au back-office et aux tests : tout, ouverts comme fermés. */
-  tous(): readonly DefinitionUnivers[] {
-    return [...universOuverts()];
+  tous(): readonly UniverseDefinition[] {
+    return [...openUniverses()];
   },
 } as const;

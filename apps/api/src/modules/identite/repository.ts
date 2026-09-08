@@ -17,7 +17,7 @@ export const depot = {
   /** Crée un utilisateur complet + son profil acheteur (si nécessaire). */
   async creerUtilisateur(
     db: PrismaClient,
-    params: auth.VerifierCodeOptSchema & { motDePasseEmpreinte?: string | null },
+    params: auth.VerifyOtpSchema & { motDePasseEmpreinte?: string | null },
   ) {
     return db.utilisateur.create({
       data: {

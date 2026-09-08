@@ -20,7 +20,7 @@
  * `fetch` et le générateur de clés sont injectables — c'est ce qui rend les
  * tests déterministes sans simulacre de module.
  */
-import { auth, EN_TETES, type Erreur } from '@jp/contracts';
+import { auth, HEADERS, type ApiError } from '@jp/contracts';
 import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 /** Levée quand la requête n'est jamais partie. À ne pas confondre avec une erreur du serveur. */
@@ -62,9 +62,9 @@ export class ClientIdentite {
    * **La réponse est la même que le compte existe ou non** *(R-C9)* : l'écran
    * ne doit donc jamais chercher à y lire l'existence d'un compte.
    */
-  async demanderCode(email: string): Promise<auth.ReponseOtp> {
+  async demanderCode(email: string): Promise<auth.OtpResponse> {
     const brut = await this.poster('/identite/otp/emettre', { email });
-    return auth.ReponseOtpSchema.parse(brut);
+    return auth.OtpResponseSchema.parse(brut);
   }
 
   /**
@@ -75,7 +75,7 @@ export class ClientIdentite {
     readonly email: string;
     readonly code: string;
     readonly prenom?: string;
-  }): Promise<auth.ReponseSession> {
+  }): Promise<auth.SessionResponse> {
     const corps: Record<string, unknown> = {
       email: params.email,
       code: params.code,
@@ -84,7 +84,7 @@ export class ClientIdentite {
     if (params.prenom !== undefined) corps['prenom'] = params.prenom;
 
     const brut = await this.poster('/identite/otp/verifier', corps);
-    return auth.ReponseSessionSchema.parse(brut);
+    return auth.SessionResponseSchema.parse(brut);
   }
 
   private async poster(chemin: string, corps: unknown): Promise<unknown> {
@@ -94,11 +94,11 @@ export class ClientIdentite {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          [EN_TETES.langue]: this.langue,
+          [HEADERS.language]: this.langue,
           // La clé est posée ICI et nulle part ailleurs : un écran qui
           // l'oublierait ouvrirait un trou dans RB10, invisible jusqu'au jour
           // où un renvoi de code compterait double.
-          [EN_TETES.idempotence]: this.nouvelleCle(),
+          [HEADERS.idempotency]: this.nouvelleCle(),
         },
         body: JSON.stringify(corps),
       });
@@ -109,7 +109,7 @@ export class ClientIdentite {
     const lu: unknown = await reponse.json().catch(() => null);
     // L'enveloppe est remontée telle quelle : son `message` est déjà traduit
     // par le serveur, dans la langue que nous venons de lui annoncer.
-    if (!reponse.ok) throw lu as Erreur;
+    if (!reponse.ok) throw lu as ApiError;
     return lu;
   }
 }

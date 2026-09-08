@@ -1,11 +1,11 @@
 /**
- * Contrat — les univers
+ * Contrat — les universe
  *
- * **Un univers n'est pas un filtre de catégorie. C'est un jeu de règles.**
+ * **Un universe n'est pas un filtre de catégorie. C'est un jeu de règles.**
  *
  * Entre une robe et un téléphone, ce qui change n'est pas l'étagère : c'est la
  * fiche article, le mode de livraison, les motifs de litige recevables, le
- * taux de commission et la vérification exigée du vendeur. Traiter un univers
+ * taux de commission et la vérification exigée du vendeur. Traiter un universe
  * comme une simple catégorie mènerait à un `JP Tech` vide — 8 % de commission
  * sur un téléphone, c'est toute la marge du revendeur.
  *
@@ -13,41 +13,41 @@
  * champs de fiche article, les modes de livraison proposés au paiement, les
  * motifs de litige offerts à l'acheteuse, et le barème de commission.
  *
- * **Trois univers, une seule logistique.** Mode, Beauté et Tech partagent
+ * **Trois universe, une seule logistique.** Mode, Beauté et Tech partagent
  * `point_relais` et `domicile`. C'est ce qui rend l'application identique dans
  * les trois : ce qui varie n'est pas le flux, ce sont trois listes — les champs
  * de la fiche, les motifs de litige, le taux de commission.
  *
- * Un univers plus lourd — du mobilier, par exemple — aurait exigé le camion et
+ * Un universe plus lourd — du mobilier, par exemple — aurait exigé le camion et
  * deux personnes, donc un second modèle de livraison, donc un autre parcours.
  * Il a été écarté pour cette raison.
  */
 
-export const DOMAINE_UNIVERS = 'univers' as const;
+export const UNIVERSE_DOMAIN = 'universe' as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Ce qui peut varier d'un univers à l'autre
+// Ce qui peut varier d'un universe à l'autre
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
  * Les modes de livraison.
  *
- * **Les trois univers partagent les deux mêmes** : point relais et domicile.
- * C'est un choix de périmètre, pas une coïncidence — un univers exigeant le
+ * **Les trois universe partagent les deux mêmes** : point relais et domicile.
+ * C'est un choix de périmètre, pas une coïncidence — un universe exigeant le
  * camion aurait imposé un second parcours de livraison et un second métier.
  *
  * `retrait_boutique` est déclaré pour la vendeuse qui a un local physique.
  */
-export const LIVRAISONS = ['point_relais', 'domicile', 'retrait_boutique'] as const;
-export type ModeLivraison = (typeof LIVRAISONS)[number];
+export const SHIPPING_MODES = ['point_relais', 'domicile', 'retrait_boutique'] as const;
+export type ShippingMode = (typeof SHIPPING_MODES)[number];
 
 /**
- * Les champs de fiche article propres à un univers.
+ * Les champs de fiche article propres à un universe.
  *
  * `commun` regroupe ce que tout article porte — photos, nom, prix,
  * description. Ces clés-ci sont les champs **en plus**.
  */
-export const CHAMPS_FICHE = [
+export const LISTING_FIELDS = [
   // Mode
   'taille',
   'couleur',
@@ -68,7 +68,7 @@ export const CHAMPS_FICHE = [
   'garantie_mois',
   'etat_appareil',
 ] as const;
-export type ChampFiche = (typeof CHAMPS_FICHE)[number];
+export type ListingField = (typeof LISTING_FIELDS)[number];
 
 /**
  * Les motifs de litige recevables.
@@ -78,7 +78,7 @@ export type ChampFiche = (typeof CHAMPS_FICHE)[number];
  * complète à tout le monde produirait des litiges mal qualifiés — et un litige
  * mal qualifié est un litige mal arbitré *(RB4)*.
  */
-export const MOTIFS_LITIGE = [
+export const DISPUTE_REASONS = [
   // Transverses
   'non_recu',
   'different_de_la_photo',
@@ -96,150 +96,157 @@ export const MOTIFS_LITIGE = [
   'batterie_hors_service',
   'imei_bloque',
 ] as const;
-export type MotifLitige = (typeof MOTIFS_LITIGE)[number];
+export type DisputeReason = (typeof DISPUTE_REASONS)[number];
 
-export interface DefinitionUnivers {
+export interface UniverseDefinition {
   /** Identifiant technique. Ne change JAMAIS — il est en base et dans les URL. */
-  readonly cle: string;
+  readonly key: string;
   /** Le nom affiché, marque mère comprise. */
-  readonly nom: string;
+  readonly name: string;
   /** La signature : le nom explique, elle donne le caractère. */
   readonly signature: string;
   /** Court, pour un onglet ou une puce. */
-  readonly onglet: string;
+  readonly tab: string;
   /**
-   * **Ouvert au public ?** Un univers fermé existe en base, garde ses règles,
+   * **Ouvert au public ?** Un universe fermé existe en base, garde ses règles,
    * et n'apparaît nulle part. L'ouvrir est une mise à jour d'une ligne.
    */
-  readonly ouvert: boolean;
+  readonly open: boolean;
   /** Commission JP en pour mille. 80 = 8 %. */
-  readonly commissionPourMille: number;
-  readonly livraisons: readonly ModeLivraison[];
-  readonly champsFiche: readonly ChampFiche[];
+  readonly commissionPerMille: number;
+  readonly shipping: readonly ShippingMode[];
+  readonly listingFields: readonly ListingField[];
   /** Ceux de `champsFiche` sans lesquels on ne publie pas. */
-  readonly champsObligatoires: readonly ChampFiche[];
-  readonly motifsLitige: readonly MotifLitige[];
+  readonly requiredFields: readonly ListingField[];
+  readonly disputeReasons: readonly DisputeReason[];
   /** Le vendeur doit-il justifier la provenance de ce qu'il vend ? */
-  readonly provenanceExigee: boolean;
-  /** Pourquoi cet univers existe, en une phrase. Pour le back-office et l'équipe. */
-  readonly raison: string;
+  readonly sourceRequired: boolean;
+  /** Pourquoi cet universe existe, en une phrase. Pour le back-office et l'équipe. */
+  readonly reason: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Les trois univers
+// Les trois universe
 // ═══════════════════════════════════════════════════════════════════════════
 
-const TRANSVERSES = [
+const CROSS_CUTTING = [
   'non_recu',
   'different_de_la_photo',
   'endommage_au_transport',
   'contrefacon',
 ] as const;
 
-export const UNIVERS = [
+export const UNIVERSES = [
   {
-    cle: 'mode',
-    nom: 'JP Mode',
+    key: 'mode',
+    name: 'JP Mode',
     signature: 'Le direct qui habille',
-    onglet: 'Mode',
-    ouvert: true,
+    tab: 'Mode',
+    open: true,
     // 8 % — la marge de la friperie et du prêt-à-porter le supporte.
-    commissionPourMille: 80,
-    livraisons: ['point_relais', 'domicile'],
-    champsFiche: ['taille', 'couleur', 'mesures', 'matiere', 'marque', 'etat_vetement'],
+    commissionPerMille: 80,
+    shipping: ['point_relais', 'domicile'],
+    listingFields: ['taille', 'couleur', 'mesures', 'matiere', 'marque', 'etat_vetement'],
     // Les mesures sont facultatives mais valorisées au tri : sans démonstration
     // vidéo, elles remplacent le fait de toucher le vêtement (R-H4).
-    champsObligatoires: ['taille', 'etat_vetement'],
-    motifsLitige: [...TRANSVERSES, 'pas_la_bonne_taille', 'defaut_de_couture'],
-    provenanceExigee: false,
-    raison: "Le direct Facebook y est né. C'est le marché de départ et le produit déjà construit.",
+    requiredFields: ['taille', 'etat_vetement'],
+    disputeReasons: [...CROSS_CUTTING, 'pas_la_bonne_taille', 'defaut_de_couture'],
+    sourceRequired: false,
+    reason: "Le direct Facebook y est né. C'est le marché de départ et le produit déjà construit.",
   },
   {
-    cle: 'beaute',
-    nom: 'JP Beauté',
+    key: 'beaute',
+    name: 'JP Beauté',
     signature: 'Vrai produit, prix vrai',
-    onglet: 'Beauté',
-    ouvert: true,
+    tab: 'Beauté',
+    open: true,
     // 8 % aussi : la marge cosmétique est bonne, et la logistique est la même
     // que la mode — léger, point relais.
-    commissionPourMille: 80,
-    livraisons: ['point_relais', 'domicile'],
-    champsFiche: ['date_peremption', 'contenance', 'scelle', 'type_peau', 'provenance', 'marque'],
+    commissionPerMille: 80,
+    shipping: ['point_relais', 'domicile'],
+    listingFields: ['date_peremption', 'contenance', 'scelle', 'type_peau', 'provenance', 'marque'],
     // La péremption et le scellé sont OBLIGATOIRES. Un cosmétique contrefait
     // ou périmé ne déçoit pas : il blesse. C'est la différence de nature avec
-    // la mode, et elle justifie à elle seule un univers séparé.
-    champsObligatoires: ['date_peremption', 'scelle', 'marque'],
-    motifsLitige: [...TRANSVERSES, 'produit_entame', 'peremption_depassee', 'reaction_cutanee'],
+    // la mode, et elle justifie à elle seule un universe séparé.
+    requiredFields: ['date_peremption', 'scelle', 'marque'],
+    disputeReasons: [...CROSS_CUTTING, 'produit_entame', 'peremption_depassee', 'reaction_cutanee'],
     // Le vendeur déclare d'où vient le produit. La contrefaçon cosmétique est
     // LE sujet de ce marché à Madagascar.
-    provenanceExigee: true,
-    raison:
+    sourceRequired: true,
+    reason:
       "Deuxième marché du direct malgache après la mode. La contrefaçon y est dangereuse, pas seulement décevante — le séquestre y répond mieux qu'ailleurs.",
   },
 
   // ── Déclarés, pas encore ouverts ───────────────────────────────────────────
   {
-    cle: 'tech',
-    nom: 'JP Tech',
+    key: 'tech',
+    name: 'JP Tech',
     signature: 'Vérifié avant de payer',
-    onglet: 'Tech',
-    ouvert: false,
+    tab: 'Tech',
+    open: false,
     // 3 % — et pas plus. Un revendeur de téléphones gagne 5 % sur un appareil ;
-    // lui en prendre 8 rendrait l'univers vide.
-    commissionPourMille: 30,
-    livraisons: ['point_relais', 'domicile'],
-    champsFiche: ['imei', 'stockage', 'sante_batterie', 'garantie_mois', 'etat_appareil', 'marque'],
-    champsObligatoires: ['imei', 'etat_appareil', 'garantie_mois'],
-    motifsLitige: [...TRANSVERSES, 'ne_demarre_pas', 'batterie_hors_service', 'imei_bloque'],
+    // lui en prendre 8 rendrait l'universe vide.
+    commissionPerMille: 30,
+    shipping: ['point_relais', 'domicile'],
+    listingFields: [
+      'imei',
+      'stockage',
+      'sante_batterie',
+      'garantie_mois',
+      'etat_appareil',
+      'marque',
+    ],
+    requiredFields: ['imei', 'etat_appareil', 'garantie_mois'],
+    disputeReasons: [...CROSS_CUTTING, 'ne_demarre_pas', 'batterie_hors_service', 'imei_bloque'],
     // Le téléphone volé est un vrai problème. L'IMEI et la provenance sont
-    // exigés, et un IMEI bloqué est un motif de litige à part entière.
-    provenanceExigee: true,
-    raison:
+    // exigés, et un IMEI bloqué est un reason de litige à part entière.
+    sourceRequired: true,
+    reason:
       "Panier moyen le plus élevé, risque d'arnaque maximal. Le reconditionné est un marché énorme.",
   },
-] as const satisfies readonly DefinitionUnivers[];
+] as const satisfies readonly UniverseDefinition[];
 
-export type CleUnivers = (typeof UNIVERS)[number]['cle'];
+export type UniverseKey = (typeof UNIVERSES)[number]['key'];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Lecture
 // ═══════════════════════════════════════════════════════════════════════════
 
-export function univers(cle: string): DefinitionUnivers | undefined {
-  return UNIVERS.find((u) => u.cle === cle);
+export function universe(key: string): UniverseDefinition | undefined {
+  return UNIVERSES.find((u) => u.key === key);
 }
 
 /** Ceux que l'application montre. Les autres existent sans se voir. */
-export function universOuverts(): readonly DefinitionUnivers[] {
-  return UNIVERS.filter((u) => u.ouvert);
+export function openUniverses(): readonly UniverseDefinition[] {
+  return UNIVERSES.filter((u) => u.open);
 }
 
 /**
- * Un mode de livraison est-il permis dans cet univers ?
+ * Un mode de livraison est-il permis dans cet universe ?
  *
  * À vérifier **côté serveur** au paiement, pas seulement à l'affichage : une
  * requête forgée pourrait demander un point relais pour un canapé.
  */
-export function livraisonPermise(cle: string, mode: ModeLivraison): boolean {
-  return univers(cle)?.livraisons.includes(mode) ?? false;
+export function shippingAllowed(key: string, mode: ShippingMode): boolean {
+  return universe(key)?.shipping.includes(mode) ?? false;
 }
 
-/** Un motif de litige est-il recevable dans cet univers ? */
-export function motifRecevable(cle: string, motif: MotifLitige): boolean {
-  return univers(cle)?.motifsLitige.includes(motif) ?? false;
+/** Un reason de litige est-il recevable dans cet universe ? */
+export function reasonAcceptable(key: string, reason: DisputeReason): boolean {
+  return universe(key)?.disputeReasons.includes(reason) ?? false;
 }
 
 /**
  * Les champs manquants pour publier. Rend la liste, pas un booléen : un refus
  * doit dire ce qui manque.
  */
-export function champsManquants(
-  cle: string,
-  fournis: Readonly<Record<string, unknown>>,
-): readonly ChampFiche[] {
-  const def = univers(cle);
+export function missingFields(
+  key: string,
+  provided: Readonly<Record<string, unknown>>,
+): readonly ListingField[] {
+  const def = universe(key);
   if (!def) return [];
-  return def.champsObligatoires.filter(
-    (c) => fournis[c] === undefined || fournis[c] === null || fournis[c] === '',
+  return def.requiredFields.filter(
+    (c) => provided[c] === undefined || provided[c] === null || provided[c] === '',
   );
 }

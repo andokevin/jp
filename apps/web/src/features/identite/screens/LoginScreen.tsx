@@ -30,7 +30,7 @@ const ID_AIDE = 'jp-aide-auth';
 export function LoginScreen(props: {
   readonly base: string;
   readonly langueInitiale?: Language;
-  readonly surSession?: (session: auth.ReponseSession) => void;
+  readonly surSession?: (session: auth.SessionResponse) => void;
 }) {
   const [langue, setLangue] = useState<LangueEcran>(() =>
     props.langueInitiale ? langueEcran(props.langueInitiale) : 'mg',

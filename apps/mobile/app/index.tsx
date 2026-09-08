@@ -55,7 +55,7 @@ export default function Accueil() {
     };
   }, []);
 
-  const surSession = useCallback((session: auth.ReponseSession) => {
+  const surSession = useCallback((session: auth.SessionResponse) => {
     /*
      * Le rangement est lancé sans être attendu, et c'est assumé : `secret`
      * avale ses erreurs *(voir `stockage.ts`)*. Un trousseau indisponible —

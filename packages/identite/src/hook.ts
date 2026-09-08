@@ -68,7 +68,7 @@ export interface OptionsParcours {
    * le jeton obligeait l'appelant à redemander au serveur ce qu'il venait de
    * recevoir, ou à inventer une échéance.
    */
-  readonly surSession?: (session: auth.ReponseSession) => void;
+  readonly surSession?: (session: auth.SessionResponse) => void;
 }
 
 export function useAuthOtp(options: OptionsParcours) {

@@ -15,11 +15,11 @@ import { auth } from '@jp/contracts';
 /**
  * La longueur vient du CONTRAT, elle n'est plus recopiée ici.
  *
- * `auth.codeOtp` et ces cases dérivent de la même constante : elles ne peuvent
+ * `auth.otpCode` et ces cases dérivent de la même constante : elles ne peuvent
  * plus diverger. Un commentaire qui dit « six, comme le contrat » ne protège
  * de rien — il documente la duplication au lieu de l'éviter.
  */
-export const NB_CHIFFRES = auth.OTP_LONGUEUR;
+export const NB_CHIFFRES = auth.OTP_LENGTH;
 
 export type Cases = readonly string[];
 

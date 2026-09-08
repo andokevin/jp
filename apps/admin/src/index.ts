@@ -7,7 +7,7 @@
  * Coquille : disposition, navigation, tableau paginé réutilisable, et le
  * journal d'audit visible. Les écrans arrivent avec l'épique 11.
  */
-import { EN_TETES, type Erreur, type Page } from '@jp/contracts';
+import { HEADERS, type ApiError, type Page } from '@jp/contracts';
 import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 export const ECRANS = [
@@ -46,7 +46,7 @@ export class ClientApi {
   private enTetes(): Record<string, string> {
     const h: Record<string, string> = {
       'Content-Type': 'application/json',
-      [EN_TETES.langue]: this.session?.langue ?? DEFAULT_LANGUAGE,
+      [HEADERS.language]: this.session?.langue ?? DEFAULT_LANGUAGE,
     };
     if (this.session) h['Authorization'] = `Bearer ${this.session.jeton}`;
     return h;
@@ -55,7 +55,7 @@ export class ClientApi {
   async lire<T>(chemin: string): Promise<T> {
     const r = await fetch(`${this.base}${chemin}`, { headers: this.enTetes() });
     const corps: unknown = await r.json();
-    if (!r.ok) throw corps as Erreur;
+    if (!r.ok) throw corps as ApiError;
     return corps as T;
   }
 

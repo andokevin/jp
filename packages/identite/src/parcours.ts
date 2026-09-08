@@ -38,7 +38,7 @@ export interface EtatParcours {
   readonly expireLe: number | null;
   /** Instant à partir duquel un renvoi est accepté — le débit serveur est d'un code par minute. */
   readonly renvoiPossibleLe: number | null;
-  readonly session: auth.ReponseSession | null;
+  readonly session: auth.SessionResponse | null;
 }
 
 /** Le serveur n'accepte qu'un code par minute et par adresse *(R-C7)*. */
@@ -66,7 +66,7 @@ export type Action =
   | { readonly type: 'effacerCase'; readonly index: number }
   | { readonly type: 'envoiCommence' }
   | { readonly type: 'codeDemande'; readonly expireDansS: number; readonly maintenant: number }
-  | { readonly type: 'sessionOuverte'; readonly session: auth.ReponseSession }
+  | { readonly type: 'sessionOuverte'; readonly session: auth.SessionResponse }
   | { readonly type: 'echec'; readonly panne: Panne }
   | { readonly type: 'coupure' }
   | { readonly type: 'reseauRevenu' }

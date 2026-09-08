@@ -13,7 +13,7 @@
  * « Code invalide » sans motif ni suite est un défaut, pas une simplification.
  */
 import { translate, type MessageKey, type Language } from '@jp/i18n';
-import type { Erreur } from '@jp/contracts';
+import type { ApiError } from '@jp/contracts';
 
 /**
  * Une erreur attendue, qui décrit une situation prévue du domaine.
@@ -38,8 +38,8 @@ export class ErreurMetier extends Error {
   }
 
   /** Met l'erreur en forme pour la réponse, dans la langue de l'appelant. */
-  versReponse(langue: Language, correlation?: string): Erreur {
-    const enveloppe: Erreur = {
+  versReponse(langue: Language, correlation?: string): ApiError {
+    const enveloppe: ApiError = {
       code: this.code,
       message: translate(this.cleMessage, langue, this.options.variables),
     };
@@ -85,7 +85,7 @@ export const erreurs = {
 } as const;
 
 /** Une erreur inattendue : on ne divulgue rien de son contenu au client. */
-export function erreurInterne(correlation: string, langue: Language): Erreur {
+export function erreurInterne(correlation: string, langue: Language): ApiError {
   return {
     code: 'ERREUR_INTERNE',
     message: translate('erreur.indisponible', langue),
