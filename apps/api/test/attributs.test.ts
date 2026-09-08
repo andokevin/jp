@@ -52,7 +52,7 @@ async function creerBoutique(logo: string | null = null): Promise<string> {
 async function creerArticle(options: { pieceUnique?: boolean } = {}): Promise<string> {
   const boutique = await creerBoutique();
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, universe_key, nom, prix_ariary, piece_unique)
+    `INSERT INTO article (id, boutique_id, universe_key, name, price_ariary, one_of_a_kind)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 50000, $2) RETURNING id`,
     [boutique, options.pieceUnique ?? false],
   );
@@ -196,11 +196,11 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     // En direct, la vendeuse essaie le vêtement devant la caméra. Exiger les
     // mesures fermerait le direct à celle qui ne les connaît pas.
     const article = await creerArticle();
-    const { rows } = await base.appli.query<{ mesures: unknown; etat_vetement: string | null }>(
-      `SELECT mesures, etat_vetement FROM article WHERE id = $1`,
+    const { rows } = await base.appli.query<{ measurements: unknown; clothing_condition: string | null }>(
+      `SELECT measurements, clothing_condition FROM article WHERE id = $1`,
       [article],
     );
-    expect(rows[0]).toEqual({ mesures: null, etat_vetement: null });
+    expect(rows[0]).toEqual({ measurements: null, clothing_condition: null });
   });
 
   it('la taille non renseignée vaut `taille_unique`, jamais NULL', async () => {
@@ -268,7 +268,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const boutique = await creerBoutique();
     await expect(
       base.appli.query(
-        `INSERT INTO article (id, boutique_id, universe_key, nom, prix_ariary)
+        `INSERT INTO article (id, boutique_id, universe_key, name, price_ariary)
          VALUES (gen_random_uuid(), $1, 'mode', 'Gratuit', 0)`,
         [boutique],
       ),
@@ -394,7 +394,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer un article supprimé passe, lui', async () => {
     const article = await creerArticle();
     const { rowCount } = await base.appli.query(
-      `UPDATE article SET supprime_le = now() WHERE id = $1`,
+      `UPDATE article SET deleted_at = now() WHERE id = $1`,
       [article],
     );
     expect(rowCount).toBe(1);

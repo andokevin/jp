@@ -1067,58 +1067,58 @@ model Article {
   universe    Universe @relation(fields: [universeKey], references: [key], onDelete: Restrict)
   universeKey String   @map("universe_key")
 
-  nom         String
+  name        String
   description String?
 
   /// **Entiers en Ariary, jamais de flottant** (D6).
-  prixAriary      Int  @map("prix_ariary")
-  prixBarreAriary Int? @map("prix_barre_ariary")
+  priceAriary         Int  @map("price_ariary")
+  originalPriceAriary Int? @map("original_price_ariary")
 
-  statut    ArticleStatus @default(draft)
-  typeVente SaleType      @default(stock) @map("type_vente")
+  status   ArticleStatus @default(draft)
+  saleType SaleType      @default(stock) @map("sale_type")
 
   /// Un seul exemplaire (F1.14) : pas de sélecteur de quantité, une seule
   /// réservation possible. **Le moteur d'urgence naturel du direct** — et la
   /// rareté affichée doit être vraie (RB9).
-  pieceUnique Boolean @default(false) @map("piece_unique")
+  oneOfAKind Boolean @default(false) @map("one_of_a_kind")
 
   /// Facultatifs — voir le commentaire du modèle.
-  etatVetement ClothingCondition? @map("etat_vetement")
+  clothingCondition ClothingCondition? @map("clothing_condition")
   /// Épaules, poitrine, taille, longueur (R-H4). **Sans essayage, les mesures
   /// remplacent le fait de toucher le vêtement.**
-  mesures      Json?
+  measurements    Json?              @map("measurements")
   /// Dénormalisé : sert le tri par pertinence, sans lire le JSON.
-  aMesures     Boolean       @default(false) @map("a_mesures")
+  hasMeasurements Boolean            @default(false) @map("has_measurements")
 
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   categoryId String?   @map("category_id") @db.Uuid
 
-  marque  String?
-  matiere String?
+  brand    String?
+  material String?
 
   /// Les champs propres à l'univers — contenance et INCI pour Beauté, garantie
   /// et compatibilité pour Tech. Un `jsonb` plutôt que trente colonnes vides :
   /// la fiche varie par univers, la table non.
-  attributs Json?
+  attributes Json?
 
   /// JP Beauté. **Colonne ordinaire et non générée** : PostgreSQL sait la
   /// calculer, mais Prisma ne sait pas la déclarer, et une colonne ajoutée à la
   /// main ferait dériver le schéma à chaque migration suivante. Elle est donc
   /// tenue par l'application, et vérifiée **à la publication et à l'achat** —
   /// un article périme en stock (R-Y13).
-  peremptionLe DateTime? @map("peremption_le") @db.Date
+  expiryDate DateTime? @map("expiry_date") @db.Date
 
-  epingle         Boolean @default(false)
-  positionVitrine Int     @default(0) @map("position_vitrine")
+  pinned           Boolean @default(false)
+  showcasePosition Int     @default(0) @map("showcase_position")
 
-  achatDirectActif Boolean @default(true) @map("achat_direct_actif")
+  livePurchaseEnabled Boolean @default(true) @map("live_purchase_enabled")
 
   /// Suppression douce. Un article retiré reste lisible depuis les commandes
   /// passées : sans lui, une facture perdrait son libellé.
-  supprimeLe DateTime? @map("supprime_le") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   variantes      Variant[]
   questions      QuestionArticle[]
@@ -1131,9 +1131,9 @@ model Article {
   piecesDressing PieceDressing[]
   aLecranDans    Direct[]           @relation("article_a_lecran")
 
-  @@index([boutiqueId, statut])
-  @@index([peremptionLe])
-  @@index([universeKey, statut])
+  @@index([boutiqueId, status])
+  @@index([expiryDate])
+  @@index([universeKey, status])
   @@map("article")
 }
 

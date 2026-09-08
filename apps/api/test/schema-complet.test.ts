@@ -48,7 +48,7 @@ async function boutique(): Promise<string> {
 
 async function article(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, universe_key, nom, prix_ariary)
+    `INSERT INTO article (id, boutique_id, universe_key, name, price_ariary)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 40000) RETURNING id`,
     [await boutique()],
   );
