@@ -39,7 +39,7 @@ export function enregistrerRoutes(app: FastifyInstance, db: PrismaClient) {
 
     const donnees = {
       email: resultat.data.email,
-      finalite: resultat.data.finalite ?? ('inscription' as const),
+      purpose: resultat.data.purpose ?? ('signup' as const),
     };
 
     const cle = `otp:${donnees.email}`;

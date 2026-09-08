@@ -22,7 +22,7 @@ export const ECRANS = [
 ] as const;
 
 export interface Session {
-  readonly jeton: string;
+  readonly token: string;
   readonly langue: Language;
 }
 
@@ -48,7 +48,7 @@ export class ClientApi {
       'Content-Type': 'application/json',
       [HEADERS.language]: this.session?.langue ?? DEFAULT_LANGUAGE,
     };
-    if (this.session) h['Authorization'] = `Bearer ${this.session.jeton}`;
+    if (this.session) h['Authorization'] = `Bearer ${this.session.token}`;
     return h;
   }
 

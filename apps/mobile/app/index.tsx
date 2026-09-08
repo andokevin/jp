@@ -47,7 +47,7 @@ export default function Accueil() {
        * moment où quelqu'un s'en occupe — et c'est le même motif qui, plus
        * bas, fait dire à l'écran pourquoi il s'ouvre.
        */
-      if (suite.quoi === 'connexion' && suite.motif === 'perimee') await fermerSession(secret);
+      if (suite.quoi === 'login' && suite.motif === 'perimee') await fermerSession(secret);
       if (vivant) setDepart(suite);
     });
     return () => {
@@ -63,8 +63,8 @@ export default function Accueil() {
      * retenir l'écran. La conséquence est bornée : la session sera à rouvrir
      * au prochain lancement, jamais une application bloquée sur un écran.
      */
-    void ouvrirSession(session.jeton, session.expireLe, secret);
-    setDepart({ quoi: 'accueil', jeton: session.jeton });
+    void ouvrirSession(session.token, session.expiresAt, secret);
+    setDepart({ quoi: 'accueil', token: session.token });
   }, []);
 
   if (depart.quoi === 'lecture') return <Attente />;

@@ -23,7 +23,7 @@ export const HEADERS = {
   correlation: 'X-Correlation-Id',
   language: 'Accept-Language',
   /** Le client demande des images dégradées et pas de préchargement vidéo. */
-  dataSaver: 'X-Economie-Donnees',
+  dataSaver: 'X-Data-Saver',
 } as const;
 
 export const languageSchema = z.enum(LANGUAGES);

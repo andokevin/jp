@@ -31,12 +31,12 @@ function fauxFetch(reponses: readonly { statut: number; body: unknown }[]) {
 }
 
 const SESSION_NOUVELLE = {
-  jeton: 'sess_9f2c',
-  expireLe: 1_800_000_000_000,
-  utilisateur: {
+  token: 'sess_9f2c',
+  expiresAt: 1_800_000_000_000,
+  user: {
     id: '0b8f4c1e-7c3a-4b1d-9f61-2a5e8c7d0a11',
     email: 'hanta.r@gmail.com',
-    prenom: null,
+    firstName: null,
     hasPassword: false,
     isNew: true,
   },
@@ -44,7 +44,7 @@ const SESSION_NOUVELLE = {
 
 describe('F0.1 — le client d’identité', () => {
   it('annonce la langue et pose une clé d’idempotence', async () => {
-    const { f, appels } = fauxFetch([{ statut: 202, body: { ok: true, expireDansS: 600 } }]);
+    const { f, appels } = fauxFetch([{ statut: 202, body: { ok: true, expiresInS: 600 } }]);
     const client = new IdentityClient({
       base: 'https://api.jp.mg',
       language: 'mg',
@@ -54,7 +54,7 @@ describe('F0.1 — le client d’identité', () => {
 
     const r = await client.requestCode('hanta.r@gmail.com');
 
-    expect(r.expireDansS).toBe(600);
+    expect(r.expiresInS).toBe(600);
     const appel = appels[0] as (typeof appels)[number];
     expect(appel.url).toBe('https://api.jp.mg/identite/otp/emettre');
     // Le serveur traduit lui-même ses messages : c'est cet en-tête, et lui
@@ -77,7 +77,7 @@ describe('F0.1 — le client d’identité', () => {
       return Promise.resolve({
         ok: true,
         status: 202,
-        json: async () => ({ ok: true, expireDansS: 600 }),
+        json: async () => ({ ok: true, expiresInS: 600 }),
       } as Response);
     } as unknown as typeof fetch;
 

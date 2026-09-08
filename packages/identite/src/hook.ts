@@ -113,7 +113,7 @@ export function useAuthOtp(options: FlowOptions) {
     dispatch({ type: 'submitStarted' });
     try {
       const r = await ref.current.client.requestCode(state.email.trim());
-      dispatch({ type: 'codeRequested', expiresInS: r.expireDansS, now: Date.now() });
+      dispatch({ type: 'codeRequested', expiresInS: r.expiresInS, now: Date.now() });
     } catch (error) {
       if (error instanceof Offline) dispatch({ type: 'wentOffline' });
       else dispatch({ type: 'failed', failure: failureFrom(error) });
@@ -130,7 +130,7 @@ export function useAuthOtp(options: FlowOptions) {
           ...(prenom ? { prenom: prenom.trim() } : {}),
         });
         dispatch({ type: 'sessionOpened', session });
-        if (session.utilisateur.prenom !== null) ref.current.onSession?.(session);
+        if (session.user.firstName !== null) ref.current.onSession?.(session);
       } catch (error) {
         if (error instanceof Offline) dispatch({ type: 'wentOffline' });
         else dispatch({ type: 'failed', failure: failureFrom(error) });

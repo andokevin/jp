@@ -16,12 +16,12 @@ import { emptyBoxes, digitsOf, assembledCode, nextBox, setBox } from './otp-boxe
 import { initialState, canSubmit, canResend, reduce, type FlowState } from './flow.js';
 
 const SESSION_NOUVELLE = {
-  jeton: 'sess_9f2c',
-  expireLe: 1_800_000_000_000,
-  utilisateur: {
+  token: 'sess_9f2c',
+  expiresAt: 1_800_000_000_000,
+  user: {
     id: '0b8f4c1e-7c3a-4b1d-9f61-2a5e8c7d0a11',
     email: 'hanta.r@gmail.com',
-    prenom: null,
+    firstName: null,
     hasPassword: false,
     isNew: true,
   },
@@ -134,7 +134,7 @@ describe('F0.1 — l’écran prénom ne s’ouvre que pour un compte sans prén
   it('un retour d’une personne déjà connue va droit au but', () => {
     const connue = {
       ...SESSION_NOUVELLE,
-      utilisateur: { ...SESSION_NOUVELLE.utilisateur, prenom: 'Hanta', isNew: false },
+      user: { ...SESSION_NOUVELLE.user, firstName: 'Hanta', isNew: false },
     };
     const e = reduce(initialState(), { type: 'sessionOpened', session: connue });
     expect(e.step).toBe('done');

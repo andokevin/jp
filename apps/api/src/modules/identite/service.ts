@@ -16,8 +16,8 @@ import { EMIS } from './events.js';
 import { auth } from '@jp/contracts';
 
 // Hash du mot de passe (SHA-256 pour la structure actuelle, Argon2id plus tard)
-function hashMotDePasse(motDePasse: string): string {
-  return createHash('sha256').update(motDePasse).digest('hex');
+function hashMotDePasse(password: string): string {
+  return createHash('sha256').update(password).digest('hex');
 }
 
 // Hash du code OTP
@@ -27,20 +27,17 @@ function hashOtp(code: string): string {
 
 export const service = {
   /** Étape 1 : Demande d'envoi d'un code OTP. (R-C9 : réponse identique) */
-  async demanderCode(
-    db: PrismaClient,
-    params: { email: string; finalite?: 'inscription' | 'connexion' },
-  ) {
+  async demanderCode(db: PrismaClient, params: { email: string; purpose?: 'signup' | 'login' }) {
     const email = params.email.toLowerCase();
     const utilisateurExistant = await depot.trouverParEmail(db, email);
 
-    const finalite = params.finalite ?? 'inscription';
+    const purpose = params.purpose ?? 'signup';
 
     if (
-      (finalite === 'inscription' && utilisateurExistant) ||
-      (finalite === 'connexion' && !utilisateurExistant)
+      (purpose === 'signup' && utilisateurExistant) ||
+      (purpose === 'login' && !utilisateurExistant)
     ) {
-      return { ok: true, expireDansS: auth.OTP_TTL_SECONDS };
+      return { ok: true, expiresInS: auth.OTP_TTL_SECONDS };
     }
 
     const code = randomInt(100000, 999999).toString();
@@ -51,8 +48,8 @@ export const service = {
       new Date(Date.now() + auth.OTP_TTL_SECONDS * 1000),
     );
 
-    mesurer(EVENEMENTS.codeOtpEnvoye, { finalite });
-    return { ok: true, expireDansS: auth.OTP_TTL_SECONDS };
+    mesurer(EVENEMENTS.codeOtpEnvoye, { purpose });
+    return { ok: true, expiresInS: auth.OTP_TTL_SECONDS };
   },
 
   /** Étape 2 : Vérification de l'OTP, création de compte complet et ouverture de session. */
@@ -80,16 +77,16 @@ export const service = {
     if (!utilisateur) {
       utilisateur = await depot.creerUtilisateur(db, {
         ...params, // On passe toutes les infos
-        motDePasseEmpreinte: params.motDePasse ? hashMotDePasse(params.motDePasse) : null,
+        motDePasseEmpreinte: params.password ? hashMotDePasse(params.password) : null,
       });
       mesurer(EVENEMENTS.compteCree);
     } else {
       // Cas : utilisateur existant, mais il définit son mot de passe ou ses préférences
-      if (params.motDePasse && !utilisateur.motDePasseEmpreinte) {
-        await depot.definirMotDePasse(db, utilisateur.id, hashMotDePasse(params.motDePasse));
+      if (params.password && !utilisateur.motDePasseEmpreinte) {
+        await depot.definirMotDePasse(db, utilisateur.id, hashMotDePasse(params.password));
       }
-      if (params.preferencesVetement && params.preferencesVetement.length > 0) {
-        await depot.mettreAJourProfilAcheteur(db, utilisateur.id, params.preferencesVetement);
+      if (params.clothingPreferences && params.clothingPreferences.length > 0) {
+        await depot.mettreAJourProfilAcheteur(db, utilisateur.id, params.clothingPreferences);
       }
     }
 
@@ -106,18 +103,12 @@ export const service = {
     });
 
     return {
-      jeton: session.jeton,
-      expireLe: Date.now() + auth.SESSION_TTL_MS,
-      utilisateur: {
+      token: session.jeton,
+      expiresAt: Date.now() + auth.SESSION_TTL_MS,
+      user: {
         id: utilisateur.id,
         email: utilisateur.email,
-        prenom: utilisateur.prenom,
-        nom: utilisateur.nom,
-        genre: utilisateur.genre,
-        langue: utilisateur.langue,
-        dateNaissance: utilisateur.dateNaissance,
-        telephone: utilisateur.telephone,
-        photoUrl: utilisateur.photoUrl,
+        firstName: utilisateur.prenom,
         hasPassword: Boolean(utilisateur.motDePasseEmpreinte),
         isNew: estNouveau,
       },
@@ -125,7 +116,7 @@ export const service = {
   },
 
   /** Connexion classique par Email + Mot de passe. */
-  async connexionEmailMotDePasse(db: PrismaClient, params: { email: string; motDePasse: string }) {
+  async connexionEmailMotDePasse(db: PrismaClient, params: { email: string; password: string }) {
     const email = params.email.toLowerCase();
     const utilisateur = await depot.trouverParEmail(db, email);
 
@@ -133,7 +124,7 @@ export const service = {
       throw ERREURS.IDENTIFIANTS_INCORRECTS();
     }
 
-    const hash = hashMotDePasse(params.motDePasse);
+    const hash = hashMotDePasse(params.password);
     if (hash !== utilisateur.motDePasseEmpreinte) {
       throw ERREURS.IDENTIFIANTS_INCORRECTS();
     }
@@ -151,18 +142,12 @@ export const service = {
     });
 
     return {
-      jeton: session.jeton,
-      expireLe: Date.now() + auth.SESSION_TTL_MS,
-      utilisateur: {
+      token: session.jeton,
+      expiresAt: Date.now() + auth.SESSION_TTL_MS,
+      user: {
         id: utilisateur.id,
         email: utilisateur.email,
-        prenom: utilisateur.prenom,
-        nom: utilisateur.nom,
-        genre: utilisateur.genre,
-        langue: utilisateur.langue,
-        dateNaissance: utilisateur.dateNaissance,
-        telephone: utilisateur.telephone,
-        photoUrl: utilisateur.photoUrl,
+        firstName: utilisateur.prenom,
         hasPassword: true,
         isNew: false,
       },

@@ -113,7 +113,7 @@ export function reduce(state: FlowState, action: Action): FlowState {
         session: action.session,
         // Le prénom n'est demandé qu'aux comptes qui n'en ont pas. Le
         // redemander à chaque connexion serait un péage sur le retour.
-        step: action.session.utilisateur.prenom === null ? 'firstName' : 'done',
+        step: action.session.user.firstName === null ? 'firstName' : 'done',
       };
 
     case 'failed':

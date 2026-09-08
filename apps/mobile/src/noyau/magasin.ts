@@ -27,8 +27,8 @@ export type MagasinEcriture = Pick<Magasin, 'lire' | 'ecrire'>;
 
 /** Les clés, nommées une fois. Une faute de frappe perdrait une session. */
 export const CLES = {
-  jeton: 'jp.session.jeton',
-  jetonExpireLe: 'jp.session.expire',
+  token: 'jp.session.token',
+  tokenExpiresAt: 'jp.session.expire',
   universCourant: 'jp.univers.courant',
   universVus: 'jp.univers.vus',
   fileEcritures: 'jp.hors-ligne.file',

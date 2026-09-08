@@ -26,8 +26,8 @@ export class HorsLigne extends Error {
  * le client n'appelle pas l'API sans jeton.
  */
 export interface JetonEnCours {
-  readonly jeton: string;
-  readonly expireLe: number;
+  readonly token: string;
+  readonly expiresAt: number;
 }
 
 export interface OptionsClient {
@@ -77,7 +77,7 @@ export class ClientApi {
     if (this.options.economieDonnees) enTetes[HEADERS.dataSaver] = '1';
 
     const session = this.options.session?.();
-    if (session) enTetes['Authorization'] = `Bearer ${session.jeton}`;
+    if (session) enTetes['Authorization'] = `Bearer ${session.token}`;
 
     // ── Le point qui compte : la clé, posée ici et nulle part ailleurs ──
     if (METHODES_ECRITURE.has(methode.toUpperCase())) {

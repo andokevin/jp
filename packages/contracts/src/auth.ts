@@ -77,7 +77,7 @@ export const photoUrl = z.string().url({ message: "L'URL de la photo est invalid
 
 export const requestOtpSchema = z.object({
   email,
-  finalite: z.enum(['inscription', 'connexion']).optional().default('inscription'),
+  purpose: z.enum(['signup', 'login']).optional().default('signup'),
 });
 export type RequestOtpSchema = z.infer<typeof requestOtpSchema>;
 
@@ -86,25 +86,25 @@ export const verifyOtpSchema = z.object({
   email,
   code: otpCode,
   // Données du profil utilisateur
-  prenom: firstName.optional(),
-  nom: lastName.optional(),
-  genre: gender.optional(),
+  firstName: firstName.optional(),
+  lastName: lastName.optional(),
+  gender: gender.optional(),
   // Dérivé de `LANGUAGES` (@jp/i18n) : une langue ajoutée là-bas vaut ici sans
   // qu'on ait à y penser. Une énumération recopiée finit toujours par diverger.
-  langue: languageSchema.default('fr'),
-  dateNaissance: birthDate.optional(),
-  telephone: phone.optional(),
+  language: languageSchema.default('fr'),
+  birthDate: birthDate.optional(),
+  phone: phone.optional(),
   photoUrl: photoUrl,
   // Mot de passe optionnel (défini à l'inscription ou plus tard)
-  motDePasse: password.optional(),
+  password: password.optional(),
   // Préférences acheteur (stockées dans profil_acheteur)
-  preferencesVetement: clothingPreferences.optional(),
+  clothingPreferences: clothingPreferences.optional(),
 });
 export type VerifyOtpSchema = z.infer<typeof verifyOtpSchema>;
 
 export const emailLoginSchema = z.object({
   email,
-  motDePasse: password,
+  password: password,
 });
 export type EmailLoginSchema = z.infer<typeof emailLoginSchema>;
 
@@ -131,13 +131,13 @@ export type ExternalLogin = z.infer<typeof ExternalLoginSchema>;
  * déclarer obligerait chaque client à gérer un champ qui n'arrive jamais.
  */
 export const SessionResponseSchema = z.object({
-  jeton: z.string(),
+  token: z.string(),
   /** Horodatage epoch en millisecondes — `Date.now() + SESSION_TTL_MS`. */
-  expireLe: z.number(),
-  utilisateur: z.object({
+  expiresAt: z.number(),
+  user: z.object({
     id: z.string(),
     email: z.string().email(),
-    prenom: z.string().nullable(),
+    firstName: z.string().nullable(),
     /** Un compte créé par code n'a pas de mot de passe tant qu'il n'en pose pas. */
     hasPassword: z.boolean(),
     /** Vrai si ce parcours vient de créer le compte — l'écran prénom en dépend. */
@@ -156,7 +156,7 @@ export type SessionResponse = z.infer<typeof SessionResponseSchema>;
 export const OtpResponseSchema = z.object({
   ok: z.boolean(),
   /** Durée de validité en secondes — `OTP_TTL_SECONDS`. */
-  expireDansS: z.number(),
+  expiresInS: z.number(),
 });
 export type OtpResponse = z.infer<typeof OtpResponseSchema>;
 

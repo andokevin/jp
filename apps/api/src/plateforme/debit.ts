@@ -32,18 +32,18 @@ export interface MagasinDebit {
 
 /** Magasin en mémoire. Remplacé par Redis à `S5`. */
 export class MagasinMemoire implements MagasinDebit {
-  private readonly compteurs = new Map<string, { compte: number; expireLe: number }>();
+  private readonly compteurs = new Map<string, { compte: number; expiresAt: number }>();
 
   async incrementer(cle: string, fenetreMs: number) {
     const maintenant = Date.now();
     const actuel = this.compteurs.get(cle);
-    if (!actuel || actuel.expireLe <= maintenant) {
-      const neuf = { compte: 1, expireLe: maintenant + fenetreMs };
+    if (!actuel || actuel.expiresAt <= maintenant) {
+      const neuf = { compte: 1, expiresAt: maintenant + fenetreMs };
       this.compteurs.set(cle, neuf);
       return { compte: 1, expireDansMs: fenetreMs };
     }
     actuel.compte += 1;
-    return { compte: actuel.compte, expireDansMs: actuel.expireLe - maintenant };
+    return { compte: actuel.compte, expireDansMs: actuel.expiresAt - maintenant };
   }
 
   async reinitialiser(cle: string) {
@@ -55,7 +55,7 @@ export class MagasinMemoire implements MagasinDebit {
     const maintenant = Date.now();
     let retirees = 0;
     for (const [cle, v] of this.compteurs) {
-      if (v.expireLe <= maintenant) {
+      if (v.expiresAt <= maintenant) {
         this.compteurs.delete(cle);
         retirees++;
       }
