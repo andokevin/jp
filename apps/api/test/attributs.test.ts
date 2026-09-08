@@ -33,7 +33,7 @@ function unique(prefixe: string): string {
 
 async function creerUtilisateur(genre: string | null = null): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO utilisateur (id, email, genre) VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
+    `INSERT INTO app_user (id, email, gender) VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
     [`${unique('u')}@jp.mg`, genre],
   );
   return rows[0]!.id;
@@ -59,19 +59,19 @@ async function creerArticle(options: { pieceUnique?: boolean } = {}): Promise<st
   return rows[0]!.id;
 }
 
-describe('utilisateur.genre — le facultatif qui reste distinguable', () => {
+describe('app_user.gender — le facultatif qui reste distinguable', () => {
   it("« non renseigné » n'est PAS « autre »", async () => {
-    // Si la colonne avait un défaut à 'autre', on ne saurait plus jamais qui a
+    // Si la colonne avait un défaut à 'other', on ne saurait plus jamais qui a
     // répondu et qui a sauté la question — et la statistique compterait comme
     // « autre » tous ceux qui n'ont rien dit.
     const sansReponse = await creerUtilisateur(null);
-    const aRepondu = await creerUtilisateur('autre');
+    const aRepondu = await creerUtilisateur('other');
 
-    const { rows } = await base.appli.query<{ id: string; genre: string | null }>(
-      `SELECT id, genre FROM utilisateur WHERE id = ANY($1::uuid[]) ORDER BY genre NULLS FIRST`,
+    const { rows } = await base.appli.query<{ id: string; gender: string | null }>(
+      `SELECT id, gender FROM app_user WHERE id = ANY($1::uuid[]) ORDER BY gender NULLS FIRST`,
       [[sansReponse, aRepondu]],
     );
-    expect(rows.map((r) => r.genre)).toEqual([null, 'autre']);
+    expect(rows.map((r) => r.gender)).toEqual([null, 'other']);
   });
 
   it('refuse une valeur hors des trois', async () => {
@@ -85,7 +85,7 @@ describe('profil_acheteur — trois préférences au plus', () => {
   it('accepte trois types de vêtements', async () => {
     const moi = await creerUtilisateur();
     const { rowCount } = await base.appli.query(
-      `INSERT INTO profil_acheteur (utilisateur_id, preferences_vetement)
+      `INSERT INTO buyer_profile (utilisateur_id, clothing_preferences)
        VALUES ($1, ARRAY['robe','jean','jupe'])`,
       [moi],
     );
@@ -96,7 +96,7 @@ describe('profil_acheteur — trois préférences au plus', () => {
     const moi = await creerUtilisateur();
     await expect(
       base.appli.query(
-        `INSERT INTO profil_acheteur (utilisateur_id, preferences_vetement)
+        `INSERT INTO buyer_profile (utilisateur_id, clothing_preferences)
          VALUES ($1, ARRAY['robe','jean','jupe','short'])`,
         [moi],
       ),
@@ -107,12 +107,12 @@ describe('profil_acheteur — trois préférences au plus', () => {
     const silencieux = await creerUtilisateur();
     const explicite = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO profil_acheteur (utilisateur_id, preferences_vetement) VALUES ($1, ARRAY[]::text[])`,
+      `INSERT INTO buyer_profile (utilisateur_id, clothing_preferences) VALUES ($1, ARRAY[]::text[])`,
       [explicite],
     );
 
     const { rows } = await base.appli.query<{ utilisateur_id: string }>(
-      `SELECT utilisateur_id FROM profil_acheteur WHERE utilisateur_id = ANY($1::uuid[])`,
+      `SELECT utilisateur_id FROM buyer_profile WHERE utilisateur_id = ANY($1::uuid[])`,
       [[silencieux, explicite]],
     );
     expect(rows.map((r) => r.utilisateur_id)).toEqual([explicite]);
@@ -120,9 +120,9 @@ describe('profil_acheteur — trois préférences au plus', () => {
 
   it('un compte, au plus un profil', async () => {
     const moi = await creerUtilisateur();
-    await base.appli.query(`INSERT INTO profil_acheteur (utilisateur_id) VALUES ($1)`, [moi]);
+    await base.appli.query(`INSERT INTO buyer_profile (utilisateur_id) VALUES ($1)`, [moi]);
     await expect(
-      base.appli.query(`INSERT INTO profil_acheteur (utilisateur_id) VALUES ($1)`, [moi]),
+      base.appli.query(`INSERT INTO buyer_profile (utilisateur_id) VALUES ($1)`, [moi]),
     ).rejects.toMatchObject({ code: DOUBLON });
   });
 });
@@ -365,7 +365,7 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
 });
 
 describe('suppression douce — le REVOKE, pas le commentaire', () => {
-  const douces = ['utilisateur', 'boutique', 'article', 'variante', 'extrait_boutique'] as const;
+  const douces = ['app_user', 'boutique', 'article', 'variante', 'extrait_boutique'] as const;
 
   it.each(douces)('jp_app ne peut PAS supprimer une ligne de %s', async (table) => {
     await expect(base.appli.query(`DELETE FROM "${table}"`)).rejects.toMatchObject({
@@ -376,7 +376,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer un compte supprimé passe, lui', async () => {
     const moi = await creerUtilisateur();
     const { rowCount } = await base.appli.query(
-      `UPDATE utilisateur SET statut = 'supprime' WHERE id = $1`,
+      `UPDATE app_user SET status = 'deleted' WHERE id = $1`,
       [moi],
     );
     expect(rowCount).toBe(1);
@@ -418,7 +418,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
     // Sans ce test, un REVOKE mal écrit et un DELETE syntaxiquement invalide
     // donneraient le même vert. Il prouve qu'on mesure bien le RÔLE.
     const orphelin = await creerUtilisateur();
-    const { rowCount } = await base.proprietaire.query(`DELETE FROM utilisateur WHERE id = $1`, [
+    const { rowCount } = await base.proprietaire.query(`DELETE FROM app_user WHERE id = $1`, [
       orphelin,
     ]);
     expect(rowCount).toBe(1);

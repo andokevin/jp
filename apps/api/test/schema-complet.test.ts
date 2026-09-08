@@ -31,7 +31,7 @@ function unique(prefixe: string): string {
 
 async function utilisateur(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
+    `INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
     [`${unique('u')}@jp.mg`],
   );
   return rows[0]!.id;

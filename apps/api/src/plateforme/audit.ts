@@ -40,12 +40,12 @@ export async function journaliser(db: PrismaClient, entree: EntreeAudit): Promis
     action: entree.action,
     cibleType: entree.cibleType,
   };
-  const acteurId = entree.acteurId ?? ctx?.utilisateurId;
+  const acteurId = entree.acteurId ?? ctx?.userId;
   if (entree.cibleId !== undefined) donnees['cibleId'] = entree.cibleId;
   if (entree.avant !== undefined) donnees['avant'] = entree.avant;
   if (entree.apres !== undefined) donnees['apres'] = entree.apres;
   if (acteurId !== undefined) donnees['acteurId'] = acteurId;
-  if (ctx?.adresseIp !== undefined) donnees['adresseIp'] = ctx.adresseIp;
+  if (ctx?.ipAddress !== undefined) donnees['adresseIp'] = ctx.ipAddress;
 
   try {
     await db.journalAudit.create({ data: donnees as never });

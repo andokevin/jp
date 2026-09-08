@@ -68,7 +68,7 @@ describe('journal_audit — ajout seul (D3)', () => {
 describe('parametre_modification — double validation', () => {
   async function utilisateur(email: string): Promise<string> {
     const { rows } = await base.proprietaire.query<{ id: string }>(
-      `INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [email],
     );
     return rows[0]!.id;
@@ -133,35 +133,35 @@ describe('parametre_modification — double validation', () => {
 describe('utilisateur — R-C1 et R-C15', () => {
   it('l’adresse électronique est unique : c’est l’identifiant du compte', async () => {
     const email = `doublon-${Date.now()}@jp.mg`;
-    await base.appli.query(`INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1)`, [
+    await base.appli.query(`INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1)`, [
       email,
     ]);
     await expect(
-      base.appli.query(`INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1)`, [
+      base.appli.query(`INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1)`, [
         email,
       ]),
     ).rejects.toMatchObject({ code: '23505' });
   });
 
   it('le téléphone peut être vide : ce n’est plus un identifiant', async () => {
-    const { rows } = await base.appli.query<{ telephone: string | null }>(
-      `INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1) RETURNING telephone`,
+    const { rows } = await base.appli.query<{ phone: string | null }>(
+      `INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1) RETURNING phone`,
       [`sans-tel-${Date.now()}@jp.mg`],
     );
-    expect(rows[0]!.telephone).toBeNull();
+    expect(rows[0]!.phone).toBeNull();
   });
 
   it('maj_le a une valeur par défaut — un INSERT à la main ne doit pas échouer', async () => {
-    const { rows } = await base.appli.query<{ maj_le: Date }>(
-      `INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1) RETURNING maj_le`,
+    const { rows } = await base.appli.query<{ updated_at: Date }>(
+      `INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1) RETURNING updated_at`,
       [`majle-${Date.now()}@jp.mg`],
     );
-    expect(rows[0]!.maj_le).toBeInstanceOf(Date);
+    expect(rows[0]!.updated_at).toBeInstanceOf(Date);
   });
 
   it('un acteur cité dans le journal ne peut pas être supprimé', async () => {
     const { rows } = await base.proprietaire.query<{ id: string }>(
-      `INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [`trace-${Date.now()}@jp.mg`],
     );
     const id = rows[0]!.id;
@@ -180,7 +180,7 @@ describe('utilisateur — R-C1 et R-C15', () => {
     // vérifiable en fin de transaction et lève 23503. Recevoir 23001 prouve
     // donc que c'est bien RESTRICT qui est en place, et pas autre chose.
     await expect(
-      base.proprietaire.query('DELETE FROM utilisateur WHERE id = $1', [id]),
+      base.proprietaire.query('DELETE FROM app_user WHERE id = $1', [id]),
     ).rejects.toMatchObject({ code: '23001' });
 
     await base.proprietaire.query('DELETE FROM journal_audit WHERE acteur_id = $1', [id]);
@@ -190,10 +190,10 @@ describe('utilisateur — R-C1 et R-C15', () => {
 describe('le client Prisma applicatif', () => {
   it('lit à travers le rôle restreint', async () => {
     const email = `prisma-${Date.now()}@jp.mg`;
-    await base.prisma.utilisateur.create({ data: { email } });
-    const trouve = await base.prisma.utilisateur.findUnique({ where: { email } });
+    await base.prisma.user.create({ data: { email } });
+    const trouve = await base.prisma.user.findUnique({ where: { email } });
     expect(trouve?.email).toBe(email);
-    expect(trouve?.langue).toBe('fr'); // français par défaut
+    expect(trouve?.language).toBe('fr'); // français par défaut
   });
 });
 

@@ -57,9 +57,9 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
 
     const contexte: Contexte = {
       correlation: String(req.id),
-      langue: languageFromHeader(req.headers['accept-language']),
-      ...(identite ? { utilisateurId: identite.utilisateurId } : {}),
-      ...(req.ip ? { adresseIp: req.ip } : {}),
+      language: languageFromHeader(req.headers['accept-language']),
+      ...(identite ? { userId: identite.userId } : {}),
+      ...(req.ip ? { ipAddress: req.ip } : {}),
       economieDonnees: req.headers[HEADERS.dataSaver.toLowerCase()] === '1',
     };
 
@@ -77,7 +77,7 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
 
   // ── Une seule sortie pour les erreurs ────────────────────────────────────
   app.setErrorHandler((erreur, req, reply) => {
-    const langue = req.contexte?.langue ?? 'fr';
+    const langue = req.contexte?.language ?? 'fr';
     const correlation = req.contexte?.correlation ?? String(req.id);
 
     if (erreur instanceof ErreurMetier) {
@@ -119,7 +119,7 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
   });
 
   app.setNotFoundHandler((req, reply) => {
-    const langue = req.contexte?.langue ?? 'fr';
+    const langue = req.contexte?.language ?? 'fr';
     return reply.status(404).send({
       code: 'INTROUVABLE',
       message: langue === 'fr' ? "Ceci n'existe plus." : 'This no longer exists.',

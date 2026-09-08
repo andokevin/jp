@@ -37,7 +37,7 @@ export const ROLES = [
 export type Role = (typeof ROLES)[number];
 
 export interface Acteur {
-  readonly utilisateurId: string;
+  readonly userId: string;
   readonly roles: readonly Role[];
   /** Le vendeur pour le compte duquel un employé agit. */
   readonly pourVendeurId?: string;
@@ -57,8 +57,8 @@ export function garde(acteur: Acteur, ...roles: readonly Role[]): void {
 }
 
 /** Lève 403 si l'acteur n'est pas la personne visée, ni un opérateur JP. */
-export function gardeSoiMeme(acteur: Acteur, utilisateurId: string): void {
-  if (acteur.utilisateurId !== utilisateurId && !aRole(acteur, 'operateur')) {
+export function gardeSoiMeme(acteur: Acteur, userId: string): void {
+  if (acteur.userId !== userId && !aRole(acteur, 'operateur')) {
     throw erreurs.nonAutorise();
   }
 }
@@ -120,4 +120,4 @@ export function projeterCommande<T extends object>(acteur: Acteur, commande: T):
 }
 
 /** Un acteur sans compte — une visiteuse *(F0.10)*. */
-export const VISITEUR: Acteur = { utilisateurId: '', roles: ['visiteur'] };
+export const VISITEUR: Acteur = { userId: '', roles: ['visiteur'] };

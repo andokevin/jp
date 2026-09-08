@@ -16,9 +16,9 @@ import type { Language } from '@jp/i18n';
 
 export interface Contexte {
   readonly correlation: string;
-  readonly langue: Language;
-  readonly utilisateurId?: string;
-  readonly adresseIp?: string;
+  readonly language: Language;
+  readonly userId?: string;
+  readonly ipAddress?: string;
   readonly economieDonnees: boolean;
 }
 

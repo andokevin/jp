@@ -61,11 +61,11 @@ export const service = {
     const otp = await depot.trouverDernierOtp(db, email);
 
     if (!otp) throw ERREURS.OTP_EXPIRE();
-    if (otp.tentatives >= auth.OTP_MAX_ATTEMPTS) throw ERREURS.OTP_TENTATIVES_DEPASSEES();
+    if (otp.attempts >= auth.OTP_MAX_ATTEMPTS) throw ERREURS.OTP_TENTATIVES_DEPASSEES();
 
-    if (otp.codeEmpreinte !== hashOtp(params.code)) {
+    if (otp.codeHash !== hashOtp(params.code)) {
       await depot.incrementerTentativeOtp(db, otp.id);
-      throw ERREURS.OTP_INVALIDE(auth.OTP_MAX_ATTEMPTS - otp.tentatives - 1);
+      throw ERREURS.OTP_INVALIDE(auth.OTP_MAX_ATTEMPTS - otp.attempts - 1);
     }
 
     await depot.consommerOtp(db, otp.id);
@@ -77,12 +77,12 @@ export const service = {
     if (!utilisateur) {
       utilisateur = await depot.creerUtilisateur(db, {
         ...params, // On passe toutes les infos
-        motDePasseEmpreinte: params.password ? hashMotDePasse(params.password) : null,
+        passwordFingerprint: params.password ? hashMotDePasse(params.password) : null,
       });
       mesurer(EVENEMENTS.compteCree);
     } else {
       // Cas : utilisateur existant, mais il définit son mot de passe ou ses préférences
-      if (params.password && !utilisateur.motDePasseEmpreinte) {
+      if (params.password && !utilisateur.passwordFingerprint) {
         await depot.definirMotDePasse(db, utilisateur.id, hashMotDePasse(params.password));
       }
       if (params.clothingPreferences && params.clothingPreferences.length > 0) {
@@ -92,8 +92,8 @@ export const service = {
 
     const ctx = contexte();
     const session = await ouvrirSession(db, {
-      utilisateurId: utilisateur.id,
-      ...(ctx?.adresseIp ? { adresseIp: ctx.adresseIp } : {}),
+      userId: utilisateur.id,
+      ...(ctx?.ipAddress ? { ipAddress: ctx.ipAddress } : {}),
     });
 
     await journaliser(db, {
@@ -108,8 +108,8 @@ export const service = {
       user: {
         id: utilisateur.id,
         email: utilisateur.email,
-        firstName: utilisateur.prenom,
-        hasPassword: Boolean(utilisateur.motDePasseEmpreinte),
+        firstName: utilisateur.firstName,
+        hasPassword: Boolean(utilisateur.passwordFingerprint),
         isNew: estNouveau,
       },
     };
@@ -120,19 +120,19 @@ export const service = {
     const email = params.email.toLowerCase();
     const utilisateur = await depot.trouverParEmail(db, email);
 
-    if (!utilisateur || !utilisateur.motDePasseEmpreinte) {
+    if (!utilisateur || !utilisateur.passwordFingerprint) {
       throw ERREURS.IDENTIFIANTS_INCORRECTS();
     }
 
     const hash = hashMotDePasse(params.password);
-    if (hash !== utilisateur.motDePasseEmpreinte) {
+    if (hash !== utilisateur.passwordFingerprint) {
       throw ERREURS.IDENTIFIANTS_INCORRECTS();
     }
 
     const ctx = contexte();
     const session = await ouvrirSession(db, {
-      utilisateurId: utilisateur.id,
-      ...(ctx?.adresseIp ? { adresseIp: ctx.adresseIp } : {}),
+      userId: utilisateur.id,
+      ...(ctx?.ipAddress ? { ipAddress: ctx.ipAddress } : {}),
     });
 
     await journaliser(db, {
@@ -147,7 +147,7 @@ export const service = {
       user: {
         id: utilisateur.id,
         email: utilisateur.email,
-        firstName: utilisateur.prenom,
+        firstName: utilisateur.firstName,
         hasPassword: true,
         isNew: false,
       },

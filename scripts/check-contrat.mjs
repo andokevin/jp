@@ -25,15 +25,15 @@ const CAS = [
   {
     nom: 'une erreur sans message',
     doitEchouer: true,
-    code: `import type { Erreur } from '@jp/contracts';
-export const x: Erreur = { code: 'STOCK_INSUFFISANT' };
+    code: `import type { ApiError } from '@jp/contracts';
+export const x: ApiError = { code: 'STOCK_INSUFFISANT' };
 `,
   },
   {
     nom: 'une erreur complète',
     doitEchouer: false,
-    code: `import type { Erreur } from '@jp/contracts';
-export const x: Erreur = { code: 'STOCK_INSUFFISANT', message: 'Plus de stock.' };
+    code: `import type { ApiError } from '@jp/contracts';
+export const x: ApiError = { code: 'STOCK_INSUFFISANT', message: 'Plus de stock.' };
 `,
   },
   {
@@ -54,32 +54,32 @@ export const x: Page<string> = { elements: [], curseurSuivant: null };
     nom: 'une langue qui n’existe pas',
     doitEchouer: true,
     // Était « mg » jusqu'au 06/09/2026, date à laquelle le malgache est entré
-    // dans `LANGUES` — et ce contrôle s'est mis à passer, ce qui est
+    // dans `LANGUAGES` — et ce contrôle s'est mis à passer, ce qui est
     // exactement ce qu'on lui demande de détecter.
-    code: `import type { Langue } from '@jp/i18n';
-export const x: Langue = 'pt';
+    code: `import type { Language } from '@jp/i18n';
+export const x: Language = 'pt';
 `,
   },
   {
     nom: 'une langue du catalogue',
     doitEchouer: false,
-    code: `import type { Langue } from '@jp/i18n';
-export const x: Langue = 'fr';
-export const y: Langue = 'mg';
+    code: `import type { Language } from '@jp/i18n';
+export const x: Language = 'fr';
+export const y: Language = 'mg';
 `,
   },
   {
     nom: 'une clé de message inconnue',
     doitEchouer: true,
-    code: `import { traduire } from '@jp/i18n';
-export const x = traduire('cle.qui.nexiste.pas');
+    code: `import { translate } from '@jp/i18n';
+export const x = translate('cle.qui.nexiste.pas');
 `,
   },
   {
     nom: 'une clé de message du catalogue',
     doitEchouer: false,
-    code: `import { traduire } from '@jp/i18n';
-export const x = traduire('etat.vide', 'fr');
+    code: `import { translate } from '@jp/i18n';
+export const x = translate('state.empty', 'fr');
 `,
   },
 ];

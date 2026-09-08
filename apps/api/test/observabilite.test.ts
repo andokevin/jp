@@ -17,7 +17,7 @@ describe('S10.1 — aucune donnée personnelle dans un journal', () => {
     // Un journal se copie, s'exporte, part chez un prestataire : il ne
     // bénéficie d'aucune des protections de la base.
     const sale = {
-      utilisateurId: 'u1',
+      userId: 'u1',
       password: 'hunter2',
       niveau2: {
         token: 'abc.def.ghi',

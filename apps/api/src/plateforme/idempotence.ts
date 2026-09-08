@@ -30,7 +30,7 @@ import { erreurs } from './erreurs.js';
 export const CONSERVATION_MS = 24 * 60 * 60 * 1000;
 
 export interface ResultatIdempotent {
-  readonly statut: number;
+  readonly status: number;
   readonly corps: unknown;
 }
 
@@ -88,7 +88,7 @@ export async function executerUneSeuleFois(
       // La première requête n'a pas encore répondu.
       throw erreurs.requeteEnCours();
     }
-    return { statut: existante.statut, corps: existante.reponse };
+    return { status: existante.statut, corps: existante.reponse };
   }
 
   // La clé est à nous : on exécute.
@@ -96,7 +96,7 @@ export async function executerUneSeuleFois(
     const resultat = await action();
     await db.cleIdempotence.update({
       where: { cle: params.cle },
-      data: { statut: resultat.statut, reponse: resultat.corps as never },
+      data: { statut: resultat.status, reponse: resultat.corps as never },
     });
     return resultat;
   } catch (e) {
