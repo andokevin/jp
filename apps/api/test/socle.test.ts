@@ -221,28 +221,28 @@ describe('le registre des paramètres', () => {
 
 describe('les univers — R-Y1 à R-Y18', () => {
   it('la table porte les trois, deux ouverts', async () => {
-    const tous = await base.prisma.univers.findMany({ orderBy: { rang: 'asc' } });
-    expect(tous.map((u) => u.cle)).toEqual(['mode', 'beaute', 'tech']);
-    expect(tous.filter((u) => u.ouvert).map((u) => u.cle)).toEqual(['mode', 'beaute']);
+    const tous = await base.prisma.universe.findMany({ orderBy: { rank: 'asc' } });
+    expect(tous.map((u) => u.key)).toEqual(['mode', 'beaute', 'tech']);
+    expect(tous.filter((u) => u.isOpen).map((u) => u.key)).toEqual(['mode', 'beaute']);
   });
 
   it('les commissions diffèrent — c’est ce qui empêche un univers vide', async () => {
     // Un revendeur de téléphones gagne ~5 % sur un appareil : lui en prendre 8
     // rendrait JP Tech vide, quel que soit le reste du produit.
-    const mode = await base.prisma.univers.findUnique({ where: { cle: 'mode' } });
-    const tech = await base.prisma.univers.findUnique({ where: { cle: 'tech' } });
-    expect(mode!.commissionPourMille).toBe(80);
-    expect(tech!.commissionPourMille).toBe(30);
+    const mode = await base.prisma.universe.findUnique({ where: { key: 'mode' } });
+    const tech = await base.prisma.universe.findUnique({ where: { key: 'tech' } });
+    expect(mode!.commissionPerMille).toBe(80);
+    expect(tech!.commissionPerMille).toBe(30);
   });
 
   it('la base refuse une commission hors des bornes', async () => {
     // Les bornes sont AUSSI dans le code ; ici c'est le dernier filet.
     await expect(
-      base.proprietaire.query(`UPDATE univers SET commission_pour_mille = 0 WHERE cle = 'mode'`),
+      base.proprietaire.query(`UPDATE universe SET commission_per_mille = 0 WHERE key = 'mode'`),
     ).rejects.toMatchObject({ constraint: 'commission_dans_les_bornes' });
 
     await expect(
-      base.proprietaire.query(`UPDATE univers SET commission_pour_mille = 500 WHERE cle = 'mode'`),
+      base.proprietaire.query(`UPDATE universe SET commission_per_mille = 500 WHERE key = 'mode'`),
     ).rejects.toMatchObject({ constraint: 'commission_dans_les_bornes' });
   });
 
@@ -251,7 +251,7 @@ describe('les univers — R-Y1 à R-Y18', () => {
     // un lien partagé selon l'outil qui l'a encodé.
     await expect(
       base.proprietaire.query(
-        `INSERT INTO univers (cle, nom, signature, onglet, commission_pour_mille)
+        `INSERT INTO universe (key, name, signature, tab, commission_per_mille)
          VALUES ('Beauté', 'X', 'Y', 'Z', 80)`,
       ),
     ).rejects.toMatchObject({ constraint: 'cle_technique_stable' });
@@ -259,10 +259,10 @@ describe('les univers — R-Y1 à R-Y18', () => {
 
   it('ouvrir un univers est un UPDATE, pas un chantier', async () => {
     // C'est tout l'intérêt d'avoir construit l'abstraction maintenant.
-    await base.proprietaire.query(`UPDATE univers SET ouvert = true WHERE cle = 'tech'`);
-    const ouverts = await base.prisma.univers.count({ where: { ouvert: true } });
+    await base.proprietaire.query(`UPDATE universe SET is_open = true WHERE key = 'tech'`);
+    const ouverts = await base.prisma.universe.count({ where: { isOpen: true } });
     expect(ouverts).toBe(3);
     // C'est tout : pas de migration, pas de déploiement, pas de code à écrire.
-    await base.proprietaire.query(`UPDATE univers SET ouvert = false WHERE cle = 'tech'`);
+    await base.proprietaire.query(`UPDATE universe SET is_open = false WHERE key = 'tech'`);
   });
 });

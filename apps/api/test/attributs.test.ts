@@ -52,7 +52,7 @@ async function creerBoutique(logo: string | null = null): Promise<string> {
 async function creerArticle(options: { pieceUnique?: boolean } = {}): Promise<string> {
   const boutique = await creerBoutique();
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, univers_cle, nom, prix_ariary, piece_unique)
+    `INSERT INTO article (id, boutique_id, universe_key, nom, prix_ariary, piece_unique)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 50000, $2) RETURNING id`,
     [boutique, options.pieceUnique ?? false],
   );
@@ -268,7 +268,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const boutique = await creerBoutique();
     await expect(
       base.appli.query(
-        `INSERT INTO article (id, boutique_id, univers_cle, nom, prix_ariary)
+        `INSERT INTO article (id, boutique_id, universe_key, nom, prix_ariary)
          VALUES (gen_random_uuid(), $1, 'mode', 'Gratuit', 0)`,
         [boutique],
       ),

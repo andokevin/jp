@@ -1017,31 +1017,31 @@ model Session {
 /// Les trois partagent la même livraison — point relais et domicile. C'est ce
 /// qui rend l'application identique dans les trois : ce qui varie n'est pas le
 /// parcours, ce sont trois listes.
-model Univers {
+model Universe {
   /// Ne change JAMAIS : il est dans les URL et les lignes de commande.
-  cle String @id
+  key String @id
 
-  nom       String
+  name      String
   signature String
-  onglet    String
+  tab       String
 
   /// Un univers fermé garde ses règles et n'apparaît nulle part.
-  ouvert Boolean @default(false)
+  isOpen Boolean @default(false) @map("is_open")
 
   /// En pour mille. 80 = 8 %. Modifiable sans déploiement — c'est le levier
   /// économique du pilote, et il diffère fortement d'un univers à l'autre.
-  commissionPourMille Int @map("commission_pour_mille")
+  commissionPerMille Int @map("commission_per_mille")
 
   /// Ordre d'affichage des onglets.
-  rang Int @default(0)
+  rank Int @default(0)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   articles Article[]
 
-  @@index([ouvert, rang])
-  @@map("univers")
+  @@index([isOpen, rank])
+  @@map("universe")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1064,8 +1064,8 @@ model Article {
 
   /// **Immuable** (R-Y1) : changer l'univers changerait les règles de litige et
   /// la commission APRÈS une commande.
-  univers    Univers @relation(fields: [universCle], references: [cle], onDelete: Restrict)
-  universCle String  @map("univers_cle")
+  universe    Universe @relation(fields: [universeKey], references: [key], onDelete: Restrict)
+  universeKey String   @map("universe_key")
 
   nom         String
   description String?
@@ -1133,7 +1133,7 @@ model Article {
 
   @@index([boutiqueId, statut])
   @@index([peremptionLe])
-  @@index([universCle, statut])
+  @@index([universeKey, statut])
   @@map("article")
 }
 
@@ -1990,7 +1990,7 @@ model Commande {
 
   /// Figé (R-Y3) : changer l'univers changerait les règles de litige et la
   /// commission après coup.
-  universCle String @map("univers_cle")
+  universeKey String @map("universe_key")
 
   modeLivraison ModeLivraison @default(domicile) @map("mode_livraison")
   adresse       Adresse?      @relation(fields: [adresseId], references: [id], onDelete: Restrict)
@@ -2430,9 +2430,9 @@ model SignalementCommande {
   /// **Filtré par univers** : « pas ma taille » n'a aucun sens pour un
   /// téléphone, « batterie morte » aucun pour une robe. D'où l'univers figé ici
   /// plutôt qu'un motif universel qui ne parlerait à personne.
-  universCle String                    @map("univers_cle")
-  motif      MotifLitige
-  statut     StatutSignalementCommande @default(ouvert)
+  universeKey String                    @map("universe_key")
+  motif       MotifLitige
+  statut      StatutSignalementCommande @default(ouvert)
 
   /// `CHECK (compte_dans_le_score = (statut <> 'resolu'))`. La résolution
   /// décrémente le compteur, et aucun code ne peut les désynchroniser.
@@ -3231,8 +3231,8 @@ model AgregatBoutique {
 model BaremeCommission {
   id String @id @default(uuid(7)) @db.Uuid
 
-  universCle String           @map("univers_cle")
-  palier     PalierAbonnement @default(gratuit)
+  universeKey String           @map("universe_key")
+  palier      PalierAbonnement @default(gratuit)
 
   /// En pour mille. 80 = 8 % (D6).
   tauxPourMille Int @map("taux_pour_mille")
@@ -3243,6 +3243,6 @@ model BaremeCommission {
 
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
-  @@index([universCle, palier, debutLe])
+  @@index([universeKey, palier, debutLe])
   @@map("bareme_commission")
 }

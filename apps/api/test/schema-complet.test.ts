@@ -48,7 +48,7 @@ async function boutique(): Promise<string> {
 
 async function article(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, univers_cle, nom, prix_ariary)
+    `INSERT INTO article (id, boutique_id, universe_key, nom, prix_ariary)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 40000) RETURNING id`,
     [await boutique()],
   );
@@ -57,7 +57,7 @@ async function article(): Promise<string> {
 
 async function commande(acheteurId?: string): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO commande (id, numero, acheteur_id, univers_cle, sous_total, total)
+    `INSERT INTO commande (id, numero, acheteur_id, universe_key, sous_total, total)
      VALUES (gen_random_uuid(), $1, $2, 'mode', 40000, 40000) RETURNING id`,
     [unique('CMD'), acheteurId ?? (await utilisateur())],
   );
@@ -124,7 +124,7 @@ describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', (
     await expect(
       base.appli.query(
         `INSERT INTO signalement_commande
-           (id, commande_id, ouvert_par_id, univers_cle, motif, statut, compte_dans_le_score)
+           (id, commande_id, ouvert_par_id, universe_key, motif, statut, compte_dans_le_score)
          VALUES (gen_random_uuid(), $1, $2, 'mode', 'non_recu', 'ouvert', false)`,
         [await commande(), await utilisateur()],
       ),
@@ -257,7 +257,7 @@ describe('D4 — le cumul de promotions est impossible par la FORME de la table'
 describe('DP-15 — le barème est historisé, jamais modifié', () => {
   async function bareme(taux: number, univers = unique('u')): Promise<string> {
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO bareme_commission (id, univers_cle, taux_pour_mille)
+      `INSERT INTO bareme_commission (id, universe_key, taux_pour_mille)
        VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
       [univers, taux],
     );
