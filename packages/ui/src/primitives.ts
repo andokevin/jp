@@ -84,7 +84,7 @@ export function emptyState(params: {
   readonly action?: { readonly label: string; readonly target: string };
 }) {
   return {
-    message: translate('etat.vide', params.language),
+    message: translate('state.empty', params.language),
     action: params.action ?? null,
     spacing: SPACING.xl,
   };

@@ -184,19 +184,19 @@ describe('les catalogues', () => {
 
 describe('translate', () => {
   it('rend la chaîne de la language demandée', () => {
-    expect(translate('etat.chargement', 'fr')).toBe('Chargement…');
-    expect(translate('etat.chargement', 'en')).toBe('Loading…');
+    expect(translate('state.loading', 'fr')).toBe('Chargement…');
+    expect(translate('state.loading', 'en')).toBe('Loading…');
   });
 
   it('utilise le français sans language précisée', () => {
-    expect(translate('etat.vide')).toBe('Rien ici pour le moment.');
+    expect(translate('state.empty')).toBe('Rien ici pour le moment.');
   });
 
   it('remplace les variables', () => {
-    expect(translate('otp.envoye', 'fr', { email: 'a@jp.mg' })).toBe(
+    expect(translate('otp.sent', 'fr', { email: 'a@jp.mg' })).toBe(
       'Code à 6 chiffres envoyé à a@jp.mg.',
     );
-    expect(translate('otp.invalide', 'en', { restantes: 3 })).toBe(
+    expect(translate('otp.invalid', 'en', { remaining: 3 })).toBe(
       'This code is not correct. 3 attempts left.',
     );
   });
@@ -204,12 +204,12 @@ describe('translate', () => {
   it('laisse la variable visible si elle n’est pas fournie', () => {
     // Mieux vaut un « {email} » visible à l'écran qu'un « undefined » : le
     // premier se voit en recette, le second passe pour du contenu.
-    expect(translate('otp.envoye', 'fr')).toContain('{email}');
+    expect(translate('otp.sent', 'fr')).toContain('{email}');
   });
 
   it('déclare les variables attendues par un message', () => {
-    expect(variablesOf('otp.envoye')).toEqual(['email']);
-    expect(variablesOf('otp.invalide')).toEqual(['restantes']);
-    expect(variablesOf('etat.vide')).toEqual([]);
+    expect(variablesOf('otp.sent')).toEqual(['email']);
+    expect(variablesOf('otp.invalid')).toEqual(['remaining']);
+    expect(variablesOf('state.empty')).toEqual([]);
   });
 });

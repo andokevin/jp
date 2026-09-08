@@ -56,39 +56,39 @@ export class ErreurMetier extends Error {
  */
 export const erreurs = {
   requeteInvalide: (champs?: Readonly<Record<string, string>>) =>
-    new ErreurMetier('REQUETE_INVALIDE', 400, 'erreur.requete_invalide', {
+    new ErreurMetier('REQUETE_INVALIDE', 400, 'error.invalid_request', {
       ...(champs ? { champs } : {}),
     }),
 
-  nonAuthentifie: () => new ErreurMetier('NON_AUTHENTIFIE', 401, 'erreur.non_authentifie'),
+  nonAuthentifie: () => new ErreurMetier('NON_AUTHENTIFIE', 401, 'error.unauthenticated'),
 
-  nonAutorise: () => new ErreurMetier('NON_AUTORISE', 403, 'erreur.non_autorise'),
+  nonAutorise: () => new ErreurMetier('NON_AUTORISE', 403, 'error.unauthorized'),
 
-  introuvable: () => new ErreurMetier('INTROUVABLE', 404, 'erreur.introuvable'),
+  introuvable: () => new ErreurMetier('INTROUVABLE', 404, 'error.not_found'),
 
-  conflit: () => new ErreurMetier('CONFLIT', 409, 'erreur.conflit'),
+  conflit: () => new ErreurMetier('CONFLIT', 409, 'error.conflict'),
 
-  debitDepasse: (duree: string) =>
-    new ErreurMetier('DEBIT_DEPASSE', 429, 'erreur.debit_depasse', { variables: { duree } }),
+  debitDepasse: (duration: string) =>
+    new ErreurMetier('DEBIT_DEPASSE', 429, 'error.rate_limited', { variables: { duration } }),
 
   cleIdempotenceManquante: () =>
-    new ErreurMetier('CLE_IDEMPOTENCE_MANQUANTE', 400, 'erreur.cle_idempotence_manquante'),
+    new ErreurMetier('CLE_IDEMPOTENCE_MANQUANTE', 400, 'error.idempotency_key_missing'),
 
   cleIdempotenceReutilisee: () =>
-    new ErreurMetier('CLE_IDEMPOTENCE_REUTILISEE', 422, 'erreur.cle_idempotence_reutilisee'),
+    new ErreurMetier('CLE_IDEMPOTENCE_REUTILISEE', 422, 'error.idempotency_key_reused'),
 
   /**
    * Deux requêtes simultanées portent la même clé. La première n'a pas encore
    * répondu — on ne peut ni rejouer sa réponse, ni exécuter deux fois.
    */
-  requeteEnCours: () => new ErreurMetier('REQUETE_EN_COURS', 409, 'erreur.conflit'),
+  requeteEnCours: () => new ErreurMetier('REQUETE_EN_COURS', 409, 'error.conflict'),
 } as const;
 
 /** Une erreur inattendue : on ne divulgue rien de son contenu au client. */
 export function erreurInterne(correlation: string, langue: Language): ApiError {
   return {
     code: 'ERREUR_INTERNE',
-    message: translate('erreur.indisponible', langue),
+    message: translate('error.unavailable', langue),
     correlation,
   };
 }

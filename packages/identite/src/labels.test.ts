@@ -31,7 +31,7 @@ describe('F0.1 — les deux catalogues disent la même chose', () => {
   it.each(Object.keys(MG))('« %s » porte les mêmes jetons dans les deux langues', (cle) => {
     /*
      * Le défaut déjà vécu sur ce dépôt : `OTP_INVALIDE` passait `{essais}` à
-     * un gabarit qui réclamait `{restantes}`. `traduire` ne substitue que par
+     * un gabarit qui réclamait `{remaining}`. `traduire` ne substitue que par
      * nom et laisse le jeton visible sinon — le nombre n'arrivait jamais, et
      * le désaccord n'était pas ENTRE les catalogues mais entre un catalogue et
      * son appelant. Ici, on ferme au moins la moitié de la classe.

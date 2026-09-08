@@ -88,7 +88,7 @@ describe('F0.1 — la vérification du code', () => {
 describe('F0.1 — les constantes', () => {
   it('dix minutes de validité, cinq essais', () => {
     // Le décompte de l'écran code se cale sur OTP_TTL_SECONDS ; le message
-    // « {restantes} essais » se cale sur OTP_MAX_ATTEMPTS.
+    // « {remaining} essais » se cale sur OTP_MAX_ATTEMPTS.
     expect(OTP_TTL_SECONDS).toBe(600);
     expect(OTP_MAX_ATTEMPTS).toBe(5);
   });

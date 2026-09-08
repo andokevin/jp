@@ -18,80 +18,80 @@ import { DEFAULT_LANGUAGE, type Language } from './languages.js';
 
 const EN = {
   // ── Transverse ────────────────────────────────────────────────────────────
-  'erreur.requete_invalide': 'Some information is missing or incorrect.',
-  'erreur.non_authentifie': 'Please sign in to continue.',
-  'erreur.non_autorise': 'You do not have access to this.',
-  'erreur.introuvable': 'This no longer exists.',
-  'erreur.conflit': 'Someone changed this while you were working on it.',
-  'erreur.debit_depasse': 'Too many attempts. Try again in {duree}.',
-  'erreur.hors_ligne': 'No connection. Your changes are saved and will be sent.',
-  'erreur.indisponible': 'The service is briefly unavailable. Try again shortly.',
+  'error.invalid_request': 'Some information is missing or incorrect.',
+  'error.unauthenticated': 'Please sign in to continue.',
+  'error.unauthorized': 'You do not have access to this.',
+  'error.not_found': 'This no longer exists.',
+  'error.conflict': 'Someone changed this while you were working on it.',
+  'error.rate_limited': 'Too many attempts. Try again in {duration}.',
+  'error.offline': 'No connection. Your changes are saved and will be sent.',
+  'error.unavailable': 'The service is briefly unavailable. Try again shortly.',
 
   // ── Idempotence (RB10) ────────────────────────────────────────────────────
-  'erreur.cle_idempotence_manquante': 'This request must carry an idempotency key.',
-  'erreur.cle_idempotence_reutilisee': 'This key was already used for another request.',
+  'error.idempotency_key_missing': 'This request must carry an idempotency key.',
+  'error.idempotency_key_reused': 'This key was already used for another request.',
 
   // ── Code à usage unique (R-C5 à R-C10) ───────────────────────────────────
-  'otp.envoye': 'We sent a 6-digit code to {email}.',
-  'otp.expire': 'This code has expired. Request a new one.',
-  'otp.invalide': 'This code is not correct. {restantes} attempts left.',
-  'otp.epuise': 'Too many wrong attempts. Request a new code.',
+  'otp.sent': 'We sent a 6-digit code to {email}.',
+  'otp.expired': 'This code has expired. Request a new one.',
+  'otp.invalid': 'This code is not correct. {remaining} attempts left.',
+  'otp.exhausted': 'Too many wrong attempts. Request a new code.',
 
   // ── États d'écran (les quatre, imposés par le design system) ──────────────
-  'etat.chargement': 'Loading…',
-  'etat.vide': 'Nothing here yet.',
-  'etat.erreur': 'Could not load. Tap to retry.',
-  'etat.hors_ligne': 'Offline — showing what we last saved.',
+  'state.loading': 'Loading…',
+  'state.empty': 'Nothing here yet.',
+  'state.error': 'Could not load. Tap to retry.',
+  'state.offline': 'Offline — showing what we last saved.',
 
   // ── Erreurs spécifiques à l'identité (Ajouté pour F0.1) ───────────────────
-  'erreur.otp_invalide': 'This code is not correct. {restantes} attempts left.',
-  'erreur.otp_expire': 'This code has expired. Request a new one.',
-  'erreur.otp_tentatives_depassees': 'Too many wrong attempts. Request a new code.',
-  'erreur.otp_debit_depasse': 'Too many requests. Try again in {duree}.',
-  'erreur.email_deja_utilise': 'This email is already in use.',
-  'erreur.identifiants_incorrects': 'Email or password is incorrect.',
-  'erreur.token_externe_invalide': 'The external token is invalid.',
-  'erreur.email_non_verifie': 'Please verify your email before continuing.',
+  'error.otp_invalid': 'This code is not correct. {remaining} attempts left.',
+  'error.otp_expired': 'This code has expired. Request a new one.',
+  'error.otp_attempts_exhausted': 'Too many wrong attempts. Request a new code.',
+  'error.otp_rate_limited': 'Too many requests. Try again in {duration}.',
+  'error.email_already_used': 'This email is already in use.',
+  'error.invalid_credentials': 'Email or password is incorrect.',
+  'error.invalid_external_token': 'The external token is invalid.',
+  'error.email_unverified': 'Please verify your email before continuing.',
 } as const;
 
 type Messages = Record<keyof typeof EN, string>;
 
 const FR: Messages = {
   // ── Transverse ────────────────────────────────────────────────────────────
-  'erreur.requete_invalide': 'Une information manque ou est incorrecte.',
-  'erreur.non_authentifie': 'Connectez-vous pour continuer.',
-  'erreur.non_autorise': "Vous n'avez pas accès à ceci.",
-  'erreur.introuvable': "Ceci n'existe plus.",
-  'erreur.conflit': "Quelqu'un a modifié ceci pendant que vous y travailliez.",
-  'erreur.debit_depasse': 'Trop de tentatives. Réessayez dans {duree}.',
-  'erreur.hors_ligne': 'Pas de connexion. Vos modifications sont gardées.',
-  'erreur.indisponible': 'Service indisponible un instant. Réessayez.',
+  'error.invalid_request': 'Une information manque ou est incorrecte.',
+  'error.unauthenticated': 'Connectez-vous pour continuer.',
+  'error.unauthorized': "Vous n'avez pas accès à ceci.",
+  'error.not_found': "Ceci n'existe plus.",
+  'error.conflict': "Quelqu'un a modifié ceci pendant que vous y travailliez.",
+  'error.rate_limited': 'Trop de tentatives. Réessayez dans {duration}.',
+  'error.offline': 'Pas de connexion. Vos modifications sont gardées.',
+  'error.unavailable': 'Service indisponible un instant. Réessayez.',
 
   // ── Idempotence (RB10) ────────────────────────────────────────────────────
-  'erreur.cle_idempotence_manquante': "Cette requête doit porter une clé d'idempotence.",
-  'erreur.cle_idempotence_reutilisee': 'Cette clé a déjà servi pour une autre requête.',
+  'error.idempotency_key_missing': "Cette requête doit porter une clé d'idempotence.",
+  'error.idempotency_key_reused': 'Cette clé a déjà servi pour une autre requête.',
 
   // ── Code à usage unique (R-C5 à R-C10) ───────────────────────────────────
-  'otp.envoye': 'Code à 6 chiffres envoyé à {email}.',
-  'otp.expire': 'Ce code a expiré. Demandez-en un nouveau.',
-  'otp.invalide': 'Ce code est incorrect. {restantes} essais restants.',
-  'otp.epuise': 'Trop d’essais incorrects. Demandez un nouveau code.',
+  'otp.sent': 'Code à 6 chiffres envoyé à {email}.',
+  'otp.expired': 'Ce code a expiré. Demandez-en un nouveau.',
+  'otp.invalid': 'Ce code est incorrect. {remaining} essais restants.',
+  'otp.exhausted': 'Trop d’essais incorrects. Demandez un nouveau code.',
 
   // ── États d'écran ─────────────────────────────────────────────────────────
-  'etat.chargement': 'Chargement…',
-  'etat.vide': 'Rien ici pour le moment.',
-  'etat.erreur': 'Chargement échoué. Réessayer.',
-  'etat.hors_ligne': 'Hors ligne — voici ce qui était enregistré.',
+  'state.loading': 'Chargement…',
+  'state.empty': 'Rien ici pour le moment.',
+  'state.error': 'Chargement échoué. Réessayer.',
+  'state.offline': 'Hors ligne — voici ce qui était enregistré.',
 
   // ── Erreurs spécifiques à l'identité (Ajouté pour F0.1) ───────────────────
-  'erreur.otp_invalide': 'Ce code est incorrect. {restantes} essais restants.',
-  'erreur.otp_expire': 'Ce code a expiré. Demandez-en un nouveau.',
-  'erreur.otp_tentatives_depassees': 'Trop d’essais incorrects. Demandez un nouveau code.',
-  'erreur.otp_debit_depasse': 'Trop de requêtes. Réessayez dans {duree}.',
-  'erreur.email_deja_utilise': 'Adresse e-mail déjà utilisée.',
-  'erreur.identifiants_incorrects': 'E-mail ou mot de passe incorrect.',
-  'erreur.token_externe_invalide': 'Le jeton externe est invalide.',
-  'erreur.email_non_verifie': 'Vérifiez votre e-mail avant de continuer.',
+  'error.otp_invalid': 'Ce code est incorrect. {remaining} essais restants.',
+  'error.otp_expired': 'Ce code a expiré. Demandez-en un nouveau.',
+  'error.otp_attempts_exhausted': 'Trop d’essais incorrects. Demandez un nouveau code.',
+  'error.otp_rate_limited': 'Trop de requêtes. Réessayez dans {duration}.',
+  'error.email_already_used': 'Adresse e-mail déjà utilisée.',
+  'error.invalid_credentials': 'E-mail ou mot de passe incorrect.',
+  'error.invalid_external_token': 'Le jeton externe est invalide.',
+  'error.email_unverified': 'Vérifiez votre e-mail avant de continuer.',
 };
 
 /**
@@ -103,40 +103,40 @@ const FR: Messages = {
  */
 const MG: Messages = {
   // ── Transverse ────────────────────────────────────────────────────────────
-  'erreur.requete_invalide': 'Misy tsy feno na diso ny fampahalalana.',
-  'erreur.non_authentifie': 'Midira aloha vao manohy.',
-  'erreur.non_autorise': 'Tsy manana alalana amin’ity ianao.',
-  'erreur.introuvable': 'Tsy misy intsony ity.',
-  'erreur.conflit': 'Nisy nanova ity raha mbola niasa ianao.',
-  'erreur.debit_depasse': 'Be loatra ny andrana. Andramo indray afaka {duree}.',
-  'erreur.hors_ligne': 'Tsy misy fifandraisana. Voatahiry ny fanovanao.',
-  'erreur.indisponible': 'Tsy mandeha vetivety ny serivisy. Andramo indray.',
+  'error.invalid_request': 'Misy tsy feno na diso ny fampahalalana.',
+  'error.unauthenticated': 'Midira aloha vao manohy.',
+  'error.unauthorized': 'Tsy manana alalana amin’ity ianao.',
+  'error.not_found': 'Tsy misy intsony ity.',
+  'error.conflict': 'Nisy nanova ity raha mbola niasa ianao.',
+  'error.rate_limited': 'Be loatra ny andrana. Andramo indray afaka {duration}.',
+  'error.offline': 'Tsy misy fifandraisana. Voatahiry ny fanovanao.',
+  'error.unavailable': 'Tsy mandeha vetivety ny serivisy. Andramo indray.',
 
   // ── Idempotence (RB10) ────────────────────────────────────────────────────
-  'erreur.cle_idempotence_manquante': 'Mila fanalahidy idempotence ity fangatahana ity.',
-  'erreur.cle_idempotence_reutilisee': 'Efa nampiasaina io fanalahidy io taloha.',
+  'error.idempotency_key_missing': 'Mila fanalahidy idempotence ity fangatahana ity.',
+  'error.idempotency_key_reused': 'Efa nampiasaina io fanalahidy io taloha.',
 
   // ── Code à usage unique (R-C5 à R-C10) ───────────────────────────────────
-  'otp.envoye': 'Kaody miisa 6 nalefa tany amin’ny {email}.',
-  'otp.expire': 'Lany daty ity kaody ity. Mangataha vaovao.',
-  'otp.invalide': 'Diso ity kaody ity. {restantes} andrana sisa.',
-  'otp.epuise': 'Be loatra ny diso. Mangataha kaody vaovao.',
+  'otp.sent': 'Kaody miisa 6 nalefa tany amin’ny {email}.',
+  'otp.expired': 'Lany daty ity kaody ity. Mangataha vaovao.',
+  'otp.invalid': 'Diso ity kaody ity. {remaining} andrana sisa.',
+  'otp.exhausted': 'Be loatra ny diso. Mangataha kaody vaovao.',
 
   // ── États d'écran (les quatre, imposés par le design system) ──────────────
-  'etat.chargement': 'Eo am-pakana…',
-  'etat.vide': 'Mbola tsy misy na inona na inona.',
-  'etat.erreur': 'Tsy tafiditra. Tsindrio hanandrana.',
-  'etat.hors_ligne': 'Tsy misy fifandraisana — ity ny voatahiry.',
+  'state.loading': 'Eo am-pakana…',
+  'state.empty': 'Mbola tsy misy na inona na inona.',
+  'state.error': 'Tsy tafiditra. Tsindrio hanandrana.',
+  'state.offline': 'Tsy misy fifandraisana — ity ny voatahiry.',
 
   // ── Erreurs spécifiques à l'identité (Ajouté pour F0.1) ───────────────────
-  'erreur.otp_invalide': 'Diso ny kaody. Andramo indray. {restantes} sisa.',
-  'erreur.otp_expire': 'Lany daty ity kaody ity. Mangataha vaovao.',
-  'erreur.otp_tentatives_depassees': 'Be loatra ny diso. Mangataha kaody vaovao.',
-  'erreur.otp_debit_depasse': 'Be loatra ny fangatahana. Andramo afaka {duree}.',
-  'erreur.email_deja_utilise': 'Efa ampiasaina io adiresy mailaka io.',
-  'erreur.identifiants_incorrects': 'Diso ny mailaka na ny tenimiafina.',
-  'erreur.token_externe_invalide': 'Tsy mety ny jeton ivelany.',
-  'erreur.email_non_verifie': 'Hamarino aloha ny mailakao vao manohy.',
+  'error.otp_invalid': 'Diso ny kaody. Andramo indray. {remaining} sisa.',
+  'error.otp_expired': 'Lany daty ity kaody ity. Mangataha vaovao.',
+  'error.otp_attempts_exhausted': 'Be loatra ny diso. Mangataha kaody vaovao.',
+  'error.otp_rate_limited': 'Be loatra ny fangatahana. Andramo afaka {duration}.',
+  'error.email_already_used': 'Efa ampiasaina io adiresy mailaka io.',
+  'error.invalid_credentials': 'Diso ny mailaka na ny tenimiafina.',
+  'error.invalid_external_token': 'Tsy mety ny jeton ivelany.',
+  'error.email_unverified': 'Hamarino aloha ny mailakao vao manohy.',
 };
 
 export const CATALOGS: Record<Language, Messages> = { en: EN, fr: FR, mg: MG };

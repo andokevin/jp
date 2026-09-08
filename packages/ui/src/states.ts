@@ -56,13 +56,13 @@ export function stateFrom<T>(params: {
 export function stateMessage<T>(state: State<T>, language: Language): string | null {
   switch (state.name) {
     case 'chargement':
-      return translate('etat.chargement', language);
+      return translate('state.loading', language);
     case 'vide':
-      return translate('etat.vide', language);
+      return translate('state.empty', language);
     case 'erreur':
       return state.message;
     case 'hors-ligne':
-      return translate('etat.hors_ligne', language);
+      return translate('state.offline', language);
     case 'charge':
       return null;
   }

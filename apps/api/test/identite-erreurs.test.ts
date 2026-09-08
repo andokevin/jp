@@ -8,7 +8,7 @@
  *
  * `translate` ne remplace que les jetons dont le nom est présent dans
  * `variables`, et **laisse le jeton visible sinon** — un choix délibéré, pour
- * qu'un « {restantes} » se remarque en recette plutôt qu'un « undefined » qui
+ * qu'un « {remaining} » se remarque en recette plutôt qu'un « undefined » qui
  * passerait pour du contenu. Encore faut-il que quelqu'un regarde. C'est le
  * rôle de ce fichier.
  *
@@ -83,7 +83,7 @@ describe('F0.1 — aucun message ne part avec un trou dedans', () => {
 
   it('le compte d’essais restants arrive bien jusqu’au message', () => {
     // Le cas concret : c'est ce nombre qui dit à quelqu'un s'il lui reste une
-    // chance ou quatre. Un « {restantes} » à sa place transforme un refus
+    // chance ou quatre. Un « {remaining} » à sa place transforme un refus
     // utile en charabia, sur l'écran le plus fragile du parcours.
     for (const langue of LANGUAGES) {
       expect(ERREURS.OTP_INVALIDE(3).versReponse(langue).message, langue).toContain('3');
