@@ -7,7 +7,7 @@
  *
  * Ce paquet ne dépend de rien et ne connaît aucune application.
  */
-export * from './langues.js';
-export * from './pluriel.js';
+export * from './languages.js';
+export * from './plural.js';
 export * from './format.js';
 export * from './messages.js';

@@ -18,10 +18,10 @@ describe('S10.1 — aucune donnée personnelle dans un journal', () => {
     // bénéficie d'aucune des protections de la base.
     const sale = {
       utilisateurId: 'u1',
-      motDePasse: 'hunter2',
+      password: 'hunter2',
       niveau2: {
-        jeton: 'abc.def.ghi',
-        niveau3: { code: '123456', cin: '101234567890', telephone: '+261341234567' },
+        token: 'abc.def.ghi',
+        niveau3: { code: '123456', cin: '101234567890', phone: '+261341234567' },
       },
     };
     const propre = JSON.stringify(nettoyer(sale));

@@ -55,13 +55,18 @@ jp/
 │  ├─ contracts/               schémas Zod + types = source unique du contrat
 │  ├─ ui/                      design system partagé (jetons + primitives)
 │  ├─ money/                   Ariary en entiers — aucun flottant, nulle part
-│  └─ i18n/                    catalogues mg / fr, formats locaux
+│  ├─ i18n/                    catalogues mg / fr, formats locaux
+│  └─ identite/                le parcours d'authentification, sans écran
 ├─ prisma/
 │  ├─ schema.prisma
 │  └─ migrations/
 ├─ plan/                       les mini-plans, ce dossier
 └─ scripts/                    génération et publication des issues GitHub
 ```
+
+**Quand un domaine mérite son paquet.** Les quatre premiers paquets sont techniques : un contrat, un design system, une arithmétique, des catalogues. `identite` est le premier paquet de DOMAINE, et il n'ouvre pas la porte à seize autres. La condition est étroite : **deux applications rendent le même parcours, et ses règles ne tiennent ni au DOM ni à React Native.** L'authentification la remplit — `apps/web` et `apps/mobile` affichent tous deux « adresse → code → prénom », et « hors ligne désactive le bouton » est vrai des deux côtés. Tant qu'un seul client rend un parcours, il reste dans `apps/<client>/src/features/<domaine>/` : un paquet créé pour un seul consommateur n'est qu'un dossier avec une cérémonie autour.
+
+Ces paquets ne portent **jamais de composant**, pas plus que `@jp/ui` : la frontière est la même, appliquée à un domaine plutôt qu'au design system.
 
 ---
 

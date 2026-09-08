@@ -15,17 +15,17 @@ import { auth } from '@jp/contracts';
 /**
  * La longueur vient du CONTRAT, elle n'est plus recopiée ici.
  *
- * `auth.codeOtp` et ces cases dérivent de la même constante : elles ne peuvent
+ * `auth.otpCode` et ces cases dérivent de la même constante : elles ne peuvent
  * plus diverger. Un commentaire qui dit « six, comme le contrat » ne protège
  * de rien — il documente la duplication au lieu de l'éviter.
  */
-export const NB_CHIFFRES = auth.OTP_LONGUEUR;
+export const DIGIT_COUNT = auth.OTP_LENGTH;
 
-export type Cases = readonly string[];
+export type Boxes = readonly string[];
 
 /** Six cases vides. */
-export function casesVides(): Cases {
-  return Array.from({ length: NB_CHIFFRES }, () => '');
+export function emptyBoxes(): Boxes {
+  return Array.from({ length: DIGIT_COUNT }, () => '');
 }
 
 /**
@@ -35,11 +35,11 @@ export function casesVides(): Cases {
  * « Code : 482153 » ou un retour à la ligne. Filtrer plutôt que refuser évite
  * de renvoyer la personne à sa souris.
  */
-export function chiffresDe(texte: string): string {
-  return [...texte]
+export function digitsOf(text: string): string {
+  return [...text]
     .filter((c) => c >= '0' && c <= '9')
     .join('')
-    .slice(0, NB_CHIFFRES);
+    .slice(0, DIGIT_COUNT);
 }
 
 /**
@@ -48,33 +48,33 @@ export function chiffresDe(texte: string): string {
  * Sert aux deux gestes : une frappe (un caractère) et un collage (six). Le
  * même chemin de code pour les deux, donc pas de divergence entre eux.
  */
-export function poser(cases: Cases, index: number, texte: string): Cases {
-  const chiffres = chiffresDe(texte);
-  const suite = [...cases];
-  for (let i = 0; i < chiffres.length && index + i < NB_CHIFFRES; i += 1) {
-    suite[index + i] = chiffres[i] as string;
+export function setBox(boxes: Boxes, index: number, text: string): Boxes {
+  const digits = digitsOf(text);
+  const result = [...boxes];
+  for (let i = 0; i < digits.length && index + i < DIGIT_COUNT; i += 1) {
+    result[index + i] = digits[i] as string;
   }
-  return suite;
+  return result;
 }
 
 /** Vide une case. Le retour arrière ne doit pas décaler les autres. */
-export function effacer(cases: Cases, index: number): Cases {
-  const suite = [...cases];
-  suite[index] = '';
-  return suite;
+export function clearBox(boxes: Boxes, index: number): Boxes {
+  const result = [...boxes];
+  result[index] = '';
+  return result;
 }
 
 /** La case qui doit recevoir le curseur après une saisie à `index`. */
-export function caseSuivante(index: number, texte: string): number {
-  const avance = Math.max(1, chiffresDe(texte).length);
-  return Math.min(index + avance, NB_CHIFFRES - 1);
+export function nextBox(index: number, text: string): number {
+  const step = Math.max(1, digitsOf(text).length);
+  return Math.min(index + step, DIGIT_COUNT - 1);
 }
 
 /** Le code tel qu'il part au serveur — vide tant qu'il n'est pas complet. */
-export function codeAssemble(cases: Cases): string {
-  return cases.join('');
+export function assembledCode(boxes: Boxes): string {
+  return boxes.join('');
 }
 
-export function estComplet(cases: Cases): boolean {
-  return codeAssemble(cases).length === NB_CHIFFRES;
+export function isComplete(boxes: Boxes): boolean {
+  return assembledCode(boxes).length === DIGIT_COUNT;
 }

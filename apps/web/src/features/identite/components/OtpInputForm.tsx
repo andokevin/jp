@@ -18,14 +18,14 @@
 import { useEffect, useRef } from 'react';
 import type { ClipboardEvent, KeyboardEvent } from 'react';
 
-import { caseSuivante, chiffresDe, NB_CHIFFRES, type Cases } from '../code-otp.js';
+import { nextBox, digitsOf, DIGIT_COUNT, type Boxes } from '@jp/identite';
 
 export function OtpInputForm(props: {
-  readonly cases: Cases;
+  readonly cases: Boxes;
   readonly label: string;
   readonly enErreur: boolean;
   readonly decritPar?: string;
-  readonly surPose: (index: number, texte: string) => void;
+  readonly surPose: (index: number, text: string) => void;
   readonly surEffacement: (index: number) => void;
 }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
@@ -36,13 +36,13 @@ export function OtpInputForm(props: {
     refs.current[0]?.focus();
   }, []);
 
-  const viser = (index: number) => refs.current[Math.min(index, NB_CHIFFRES - 1)]?.focus();
+  const viser = (index: number) => refs.current[Math.min(index, DIGIT_COUNT - 1)]?.focus();
 
   const saisir = (index: number, brut: string) => {
-    const chiffres = chiffresDe(brut);
+    const chiffres = digitsOf(brut);
     if (chiffres.length === 0) return;
     props.surPose(index, chiffres);
-    viser(caseSuivante(index, chiffres));
+    viser(nextBox(index, chiffres));
   };
 
   const toucher = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
@@ -94,7 +94,7 @@ export function OtpInputForm(props: {
             inputMode="numeric"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
             maxLength={1}
-            aria-label={`${index + 1} / ${NB_CHIFFRES}`}
+            aria-label={`${index + 1} / ${DIGIT_COUNT}`}
             aria-invalid={props.enErreur}
             onChange={(e) => saisir(index, e.target.value)}
             onKeyDown={(e) => toucher(index, e)}

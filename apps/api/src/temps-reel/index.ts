@@ -19,7 +19,7 @@ import type { WebSocket } from 'ws';
 export const CANAUX = {
   direct: 'chat, annonces de stock, compte à rebours',
   commande: 'changements de statut',
-  utilisateur: 'notifications personnelles',
+  user: 'notifications personnelles',
 } as const;
 
 export type TypeCanal = keyof typeof CANAUX;

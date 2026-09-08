@@ -21,6 +21,6 @@ if (!racine) throw new Error('élément #racine introuvable');
 
 createRoot(racine).render(
   <StrictMode>
-    <LoginScreen base={BASE_API} langueInitiale="mg" />
+    <LoginScreen base={BASE_API} initialLanguage="mg" />
   </StrictMode>,
 );

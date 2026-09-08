@@ -9,7 +9,7 @@
  * maintenir, et un rendu correct sur un Android d'entrée de gamme comme dans
  * un navigateur.
  */
-import type { Langue } from './langues.js';
+import type { Language } from './languages.js';
 
 /**
  * Le fuseau est FIXÉ à Antananarivo, jamais celui de l'appareil.
@@ -18,7 +18,7 @@ import type { Langue } from './langues.js';
  * pour la vendeuse et dans les statistiques — même si l'une des deux consulte
  * depuis Paris. La base stocke en UTC ; l'affichage convertit ici, une fois.
  */
-export const FUSEAU = 'Indian/Antananarivo';
+export const TIMEZONE = 'Indian/Antananarivo';
 
 /**
  * Le malgache est rendu avec la locale FRANÇAISE, volontairement.
@@ -31,40 +31,40 @@ export const FUSEAU = 'Indian/Antananarivo';
  * production. Un repli EXPLICITE vaut mieux qu'un repli invisible — et la date
  * écrite à Madagascar est de toute façon celle du français.
  */
-const ETIQUETTES: Record<Langue, string> = {
+const TAGS: Record<Language, string> = {
   en: 'en-GB',
   fr: 'fr-FR',
   mg: 'fr-FR',
 };
 
 /** « 19 août 2026 » · « 19 August 2026 ». */
-export function date(valeur: Date, langue: Langue): string {
-  return new Intl.DateTimeFormat(ETIQUETTES[langue], {
+export function date(value: Date, language: Language): string {
+  return new Intl.DateTimeFormat(TAGS[language], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-    timeZone: FUSEAU,
-  }).format(valeur);
+    timeZone: TIMEZONE,
+  }).format(value);
 }
 
 /** « 19/08/2026 » — pour les tableaux, où la place manque. */
-export function dateCourte(valeur: Date, langue: Langue): string {
-  return new Intl.DateTimeFormat(ETIQUETTES[langue], {
+export function shortDate(value: Date, language: Language): string {
+  return new Intl.DateTimeFormat(TAGS[language], {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-    timeZone: FUSEAU,
-  }).format(valeur);
+    timeZone: TIMEZONE,
+  }).format(value);
 }
 
 /** « 14:05 ». Toujours sur 24 h — `en-GB` et non `en-US`, pour éviter AM/PM. */
-export function heure(valeur: Date, langue: Langue): string {
-  return new Intl.DateTimeFormat(ETIQUETTES[langue], {
+export function time(value: Date, language: Language): string {
+  return new Intl.DateTimeFormat(TAGS[language], {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-    timeZone: FUSEAU,
-  }).format(valeur);
+    timeZone: TIMEZONE,
+  }).format(value);
 }
 
 /**
@@ -72,30 +72,28 @@ export function heure(valeur: Date, langue: Langue): string {
  * d'abonnés. **Refuse les décimaux** : nous n'en manipulons pas, et un
  * décimal qui arrive ici est le signe qu'un calcul a dérapé ailleurs.
  */
-export function entier(valeur: number, langue: Langue): string {
-  if (!Number.isInteger(valeur)) {
-    throw new TypeError(`Attendu un entier, reçu ${valeur}.`);
+export function integer(value: number, language: Language): string {
+  if (!Number.isInteger(value)) {
+    throw new TypeError(`Attendu un entier, reçu ${value}.`);
   }
-  return new Intl.NumberFormat(ETIQUETTES[langue], {
+  return new Intl.NumberFormat(TAGS[language], {
     maximumFractionDigits: 0,
-  }).format(valeur);
+  }).format(value);
 }
 
 /**
  * Une durée en mots, pour les minuteurs de réservation — qu'on n'écrit jamais
  * en secondes brutes à l'écran. « 30 min », « 1 h 30 », « 2 h ».
  */
-export function duree(secondes: number, langue: Langue): string {
-  if (!Number.isInteger(secondes) || secondes < 0) {
-    throw new TypeError(`Attendu un nombre entier de secondes positif, reçu ${secondes}.`);
+export function duration(seconds: number, language: Language): string {
+  if (!Number.isInteger(seconds) || seconds < 0) {
+    throw new TypeError(`Attendu un nombre entier de secondes positif, reçu ${seconds}.`);
   }
-  const minutes = Math.round(secondes / 60);
+  const minutes = Math.round(seconds / 60);
   if (minutes < 60) return `${minutes} min`;
 
-  const heures = Math.floor(minutes / 60);
-  const reste = minutes % 60;
-  const unite = langue === 'fr' ? 'h' : 'h';
-  return reste === 0
-    ? `${heures} ${unite}`
-    : `${heures} ${unite} ${String(reste).padStart(2, '0')}`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  const unit = language === 'fr' ? 'h' : 'h';
+  return rest === 0 ? `${hours} ${unit}` : `${hours} ${unit} ${String(rest).padStart(2, '0')}`;
 }

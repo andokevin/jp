@@ -4,6 +4,11 @@
  * Les seules requêtes SQL du domaine. **Interne au module** : aucun autre
  * module n’a le droit d’importer ce fichier, la règle est appliquée par
  * ESLint.
+ *
+ * **Frontière contrat / base.** Le contrat API parle anglais depuis v2 ; les
+ * tables Prisma parlent encore français (colonnes historiques). Ce fichier est
+ * donc l'endroit où le mapping se fait, une fois — la CLÉ Zod anglaise en
+ * entrée devient la CLÉ Prisma française à l'écriture.
  */
 import type { PrismaClient } from '../../genere/prisma/client.js';
 import type { auth } from '@jp/contracts';
@@ -17,25 +22,24 @@ export const depot = {
   /** Crée un utilisateur complet + son profil acheteur (si nécessaire). */
   async creerUtilisateur(
     db: PrismaClient,
-    params: auth.VerifierCodeOptSchema & { motDePasseEmpreinte?: string | null },
+    params: auth.VerifyOtpSchema & { motDePasseEmpreinte?: string | null },
   ) {
     return db.utilisateur.create({
       data: {
         email: params.email,
         ...(params.motDePasseEmpreinte ? { motDePasseEmpreinte: params.motDePasseEmpreinte } : {}),
-        ...(params.prenom ? { prenom: params.prenom } : {}),
-        ...(params.nom ? { nom: params.nom } : {}),
-        ...(params.genre ? { genre: params.genre as never } : {}),
-        ...(params.langue ? { langue: params.langue } : {}),
-        ...(params.dateNaissance ? { dateNaissance: params.dateNaissance } : {}),
-        ...(params.telephone ? { telephone: params.telephone } : {}),
+        ...(params.firstName ? { prenom: params.firstName } : {}),
+        ...(params.lastName ? { nom: params.lastName } : {}),
+        ...(params.gender ? { genre: params.gender as never } : {}),
+        ...(params.language ? { langue: params.language } : {}),
+        ...(params.birthDate ? { dateNaissance: params.birthDate } : {}),
+        ...(params.phone ? { telephone: params.phone } : {}),
         ...(params.photoUrl ? { photoUrl: params.photoUrl } : {}),
-        // Création du profil acheteur avec les préférences de vêtements
-        ...(params.preferencesVetement && params.preferencesVetement.length > 0
+        ...(params.clothingPreferences && params.clothingPreferences.length > 0
           ? {
               profilAcheteur: {
                 create: {
-                  preferencesVetement: params.preferencesVetement,
+                  preferencesVetement: params.clothingPreferences,
                 },
               },
             }
@@ -48,12 +52,12 @@ export const depot = {
   async mettreAJourProfilAcheteur(
     db: PrismaClient,
     utilisateurId: string,
-    preferencesVetement: string[],
+    clothingPreferences: string[],
   ) {
     return db.profilAcheteur.upsert({
       where: { utilisateurId },
-      create: { utilisateurId, preferencesVetement },
-      update: { preferencesVetement },
+      create: { utilisateurId, preferencesVetement: clothingPreferences },
+      update: { preferencesVetement: clothingPreferences },
     });
   },
 
@@ -66,9 +70,14 @@ export const depot = {
   },
 
   /** Enregistre un code OTP haché. */
-  async enregistrerCodeOtp(db: PrismaClient, email: string, codeEmpreinte: string, expireLe: Date) {
+  async enregistrerCodeOtp(
+    db: PrismaClient,
+    email: string,
+    codeEmpreinte: string,
+    expiresAt: Date,
+  ) {
     return db.codeOtp.create({
-      data: { email, codeEmpreinte, expireLe },
+      data: { email, codeEmpreinte, expireLe: expiresAt },
     });
   },
 

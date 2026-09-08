@@ -7,8 +7,8 @@
  * Coquille : disposition, navigation, tableau paginé réutilisable, et le
  * journal d'audit visible. Les écrans arrivent avec l'épique 11.
  */
-import { EN_TETES, type Erreur, type Page } from '@jp/contracts';
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { HEADERS, type ApiError, type Page } from '@jp/contracts';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 export const ECRANS = [
   { chemin: '/verifications', titre: 'File de vérification des vendeurs', issue: 'F11.1' },
@@ -22,8 +22,8 @@ export const ECRANS = [
 ] as const;
 
 export interface Session {
-  readonly jeton: string;
-  readonly langue: Langue;
+  readonly token: string;
+  readonly langue: Language;
 }
 
 /**
@@ -46,16 +46,16 @@ export class ClientApi {
   private enTetes(): Record<string, string> {
     const h: Record<string, string> = {
       'Content-Type': 'application/json',
-      [EN_TETES.langue]: this.session?.langue ?? LANGUE_PAR_DEFAUT,
+      [HEADERS.language]: this.session?.langue ?? DEFAULT_LANGUAGE,
     };
-    if (this.session) h['Authorization'] = `Bearer ${this.session.jeton}`;
+    if (this.session) h['Authorization'] = `Bearer ${this.session.token}`;
     return h;
   }
 
   async lire<T>(chemin: string): Promise<T> {
     const r = await fetch(`${this.base}${chemin}`, { headers: this.enTetes() });
     const corps: unknown = await r.json();
-    if (!r.ok) throw corps as Erreur;
+    if (!r.ok) throw corps as ApiError;
     return corps as T;
   }
 

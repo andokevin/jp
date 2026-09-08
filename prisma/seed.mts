@@ -21,8 +21,8 @@
  * Lancé par `pnpm db:seed`.
  */
 import pg from 'pg';
-import { PARAMETRES, valider } from '../packages/contracts/src/exploitation.js';
-import { UNIVERS } from '../packages/contracts/src/univers.js';
+import { PARAMETERS, validate } from '../packages/contracts/src/exploitation.js';
+import { UNIVERSES } from '../packages/contracts/src/universes.js';
 
 try {
   process.loadEnvFile();
@@ -41,10 +41,10 @@ if (!url) {
 // Contrôle de cohérence du registre AVANT toute écriture : une valeur par
 // défaut hors de ses propres bornes est une faute de frappe qu'il vaut mieux
 // voir ici que six mois plus tard dans le back-office.
-for (const p of PARAMETRES) {
-  const probleme = valider(p.cle, p.defaut);
+for (const p of PARAMETERS) {
+  const probleme = validate(p.key, p.default);
   if (probleme) {
-    console.error(`✗ ${p.cle} : valeur par défaut invalide — ${probleme}`);
+    console.error(`✗ ${p.key} : valeur par défaut invalide — ${probleme}`);
     process.exit(1);
   }
 }
@@ -56,7 +56,7 @@ let poses = 0;
 let inchanges = 0;
 
 try {
-  for (const p of PARAMETRES) {
+  for (const p of PARAMETERS) {
     // `ON CONFLICT DO NOTHING` : on crée si absent, on ne touche à rien si
     // présent. C'est ce qui rend le seed rejouable sans écraser un réglage
     // qu'on aurait ajusté à la main pendant le pilote.
@@ -64,7 +64,7 @@ try {
       `INSERT INTO parametre (cle, valeur, type, description)
        VALUES ($1, $2, $3::type_parametre, $4)
        ON CONFLICT (cle) DO NOTHING`,
-      [p.cle, p.defaut, p.type, `${p.description} [${p.source}]`],
+      [p.key, p.default, p.type, `${p.description} [${p.source}]`],
     );
     if (rowCount === 1) poses++;
     else inchanges++;
@@ -78,18 +78,18 @@ try {
   // parce qu'eux doivent être modifiables sans déploiement pendant le pilote.
   let uPoses = 0;
   let uInchanges = 0;
-  for (const [rang, u] of UNIVERS.entries()) {
+  for (const [rang, u] of UNIVERSES.entries()) {
     const { rowCount } = await client.query(
       `INSERT INTO univers (cle, nom, signature, onglet, ouvert, commission_pour_mille, rang)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (cle) DO NOTHING`,
-      [u.cle, u.nom, u.signature, u.onglet, u.ouvert, u.commissionPourMille, rang],
+      [u.key, u.name, u.signature, u.tab, u.open, u.commissionPerMille, rang],
     );
     if (rowCount === 1) uPoses++;
     else uInchanges++;
   }
-  const ouverts = UNIVERS.filter((u) => u.ouvert)
-    .map((u) => u.nom)
+  const ouverts = UNIVERSES.filter((u) => u.open)
+    .map((u) => u.name)
     .join(', ');
   console.log(`✓ univers : ${uPoses} posés, ${uInchanges} déjà présents — ouverts : ${ouverts}`);
 } finally {

@@ -21,6 +21,7 @@ import {
   ouvrirSession,
   etatSession,
   fermerSession,
+  departDepuis,
   verifierTailleSecret,
 } from './index.js';
 
@@ -103,7 +104,7 @@ describe('S8.3 — la clé d’idempotence, posée automatiquement', () => {
     await c.lire('/x');
     const h = appels[0]!.init.headers as Record<string, string>;
     expect(h['Accept-Language']).toBe('en');
-    expect(h['X-Economie-Donnees']).toBe('1');
+    expect(h['X-Data-Saver']).toBe('1');
   });
 
   it('appelle `fetch` avec le bon `this` — sinon tout ressemble à une coupure', () => {
@@ -308,14 +309,18 @@ describe('S8.2 — la session dans le trousseau', () => {
 
     const dans1h = Date.now() + 3_600_000;
     await ouvrirSession('jeton-abc', dans1h, m);
-    expect(await etatSession(m)).toEqual({ quoi: 'ouverte', jeton: 'jeton-abc', expireLe: dans1h });
+    expect(await etatSession(m)).toEqual({
+      quoi: 'ouverte',
+      token: 'jeton-abc',
+      expiresAt: dans1h,
+    });
   });
 
   it('traite une échéance illisible comme périmée', async () => {
     // On redemande un code plutôt que de partir avec un jeton dont on ne sait
     // rien.
     const m = magasinFactice();
-    await m.ecrire('jp.session.jeton', 'abc');
+    await m.ecrire('jp.session.token', 'abc');
     await m.ecrire('jp.session.expire', 'pas-un-nombre');
     expect(await etatSession(m)).toEqual({ quoi: 'perimee' });
   });
@@ -326,7 +331,7 @@ describe('S8.2 — la session dans le trousseau', () => {
     const m = magasinFactice();
     await ouvrirSession('abc', Date.now() + 3_600_000, m);
     await fermerSession(m);
-    expect(await m.lire('jp.session.jeton')).toBeNull();
+    expect(await m.lire('jp.session.token')).toBeNull();
     expect(await etatSession(m)).toEqual({ quoi: 'aucune' });
   });
 
@@ -335,5 +340,36 @@ describe('S8.2 — la session dans le trousseau', () => {
     // usage : ce qui ne tient pas dedans n'est pas un secret.
     expect(() => verifierTailleSecret('x'.repeat(3000))).toThrow(/trousseau/i);
     expect(() => verifierTailleSecret('jeton-court')).not.toThrow();
+  });
+});
+
+describe('S8.2 — où part-on au démarrage, et que faut-il effacer', () => {
+  it('une session ouverte mène à l’accueil, sans nettoyage', () => {
+    const d = departDepuis({ quoi: 'ouverte', token: 'jeton-abc', expiresAt: Date.now() + 1000 });
+    expect(d).toEqual({ quoi: 'accueil', token: 'jeton-abc' });
+  });
+
+  it('une session PÉRIMÉE se distingue d’une session absente', () => {
+    // Le distinguo porte deux conséquences : effacer le jeton mort, et le dire
+    // à l'écran. Un jeton périmé reste dans le trousseau — rien ne le relira
+    // jamais, puisque `etatSession` le refuse à chaque démarrage — et il y
+    // resterait pour la vie de l'appareil, revente d'occasion comprise.
+    expect(departDepuis({ quoi: 'perimee' })).toEqual({ quoi: 'login', motif: 'perimee' });
+  });
+
+  it('aucune session ne demande ni ménage ni explication', () => {
+    expect(departDepuis({ quoi: 'aucune' })).toEqual({ quoi: 'login', motif: 'aucune' });
+  });
+
+  it('le ménage fait, la fois suivante n’a plus rien à effacer', async () => {
+    // Le bout à bout : périmée → on efface → « aucune » la fois suivante.
+    // Sans cette seconde assertion, `motif: 'perimee'` ne serait qu'une
+    // intention jamais suivie d'effet.
+    const m = magasinFactice();
+    await ouvrirSession('jeton-mort', Date.now() - 1000, m);
+    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'login', motif: 'perimee' });
+
+    await fermerSession(m);
+    expect(departDepuis(await etatSession(m))).toEqual({ quoi: 'login', motif: 'aucune' });
   });
 });

@@ -7,12 +7,12 @@
  *      écran qui l'oublierait ouvrirait un trou dans RB10 — et ça ne se
  *      verrait qu'en production, sur un double prélèvement.
  *   2. **remonter l'enveloppe d'erreur telle quelle**. Le message est déjà
- *      traduit par le serveur : le traduire ici dupliquerait les catalogues.
+ *      traduit par le serveur : le translate ici dupliquerait les catalogues.
  *   3. **détecter le hors ligne** et le distinguer d'une panne serveur. Ce
  *      n'est pas la même chose et ça ne se raconte pas pareil.
  */
-import { EN_TETES, type Erreur } from '@jp/contracts';
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { HEADERS, type ApiError } from '@jp/contracts';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 export class HorsLigne extends Error {
   override readonly name = 'HorsLigne';
@@ -26,13 +26,13 @@ export class HorsLigne extends Error {
  * le client n'appelle pas l'API sans jeton.
  */
 export interface JetonEnCours {
-  readonly jeton: string;
-  readonly expireLe: number;
+  readonly token: string;
+  readonly expiresAt: number;
 }
 
 export interface OptionsClient {
   readonly base: string;
-  readonly langue?: Langue;
+  readonly langue?: Language;
   readonly economieDonnees?: boolean;
   readonly session?: () => JetonEnCours | null;
   readonly fetch?: typeof fetch;
@@ -72,16 +72,16 @@ export class ClientApi {
   ): Promise<T> {
     const enTetes: Record<string, string> = {
       'Content-Type': 'application/json',
-      [EN_TETES.langue]: this.options.langue ?? LANGUE_PAR_DEFAUT,
+      [HEADERS.language]: this.options.langue ?? DEFAULT_LANGUAGE,
     };
-    if (this.options.economieDonnees) enTetes[EN_TETES.economieDonnees] = '1';
+    if (this.options.economieDonnees) enTetes[HEADERS.dataSaver] = '1';
 
     const session = this.options.session?.();
-    if (session) enTetes['Authorization'] = `Bearer ${session.jeton}`;
+    if (session) enTetes['Authorization'] = `Bearer ${session.token}`;
 
     // ── Le point qui compte : la clé, posée ici et nulle part ailleurs ──
     if (METHODES_ECRITURE.has(methode.toUpperCase())) {
-      enTetes[EN_TETES.idempotence] = cleIdempotence ?? this.nouvelleCle();
+      enTetes[HEADERS.idempotency] = cleIdempotence ?? this.nouvelleCle();
     }
 
     let reponse: Response;
@@ -97,7 +97,7 @@ export class ClientApi {
     }
 
     const lu: unknown = await reponse.json().catch(() => null);
-    if (!reponse.ok) throw lu as Erreur;
+    if (!reponse.ok) throw lu as ApiError;
     return lu as T;
   }
 

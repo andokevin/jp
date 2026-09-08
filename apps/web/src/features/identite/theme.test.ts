@@ -8,7 +8,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { contraste, CONTRASTE_MIN } from '@jp/ui';
+import { contrast, MIN_CONTRAST } from '@jp/ui';
 
 import { ACTION, IDENTITE, VARIABLES_CSS } from './theme.js';
 
@@ -45,18 +45,23 @@ describe('F0.1 — l’accessibilité des couleurs', () => {
       ['bandeau hors ligne', VARIABLES_CSS['--jp-texte'], VARIABLES_CSS['--jp-fond-2']],
     ];
     const faibles = paires
-      .map(([quoi, a, b]) => [quoi, contraste(a, b)] as const)
-      .filter(([, r]) => r < CONTRASTE_MIN)
+      .map(([quoi, a, b]) => [quoi, contrast(a, b)] as const)
+      .filter(([, r]) => r < MIN_CONTRAST)
       .map(([quoi, r]) => `${quoi} : ${Math.round(r * 100) / 100}:1`);
     expect(faibles, faibles.join('\n')).toEqual([]);
   });
 
-  it('LES DEUX COULEURS DE MARQUE SONT INDISCERNABLES ENTRE ELLES', () => {
+  it('LES DEUX COLORS DE MARQUE SONT INDISCERNABLES ENTRE ELLES', () => {
     // 1,08:1. C'est la raison pour laquelle aucun état de cet écran n'est dit
     // par la couleur seule : la langue active porte un soulignement et une
     // graisse, le bouton désactivé change de forme, l'erreur porte une icône.
     // Ce test échouerait si quelqu'un croyait pouvoir opposer les deux.
-    expect(contraste(ACTION, IDENTITE)).toBeLessThan(1.5);
+    // D'ABORD : ce sont bien DEUX couleurs. Sans cette ligne, l'assertion de
+    // contrast ci-dessous est satisfaite par le pire des cas — deux jetons
+    // identiques donnent 1,00, donc « moins de 1,5 ». Le test passait pendant
+    // que `IDENTITE` valait le framboise.
+    expect(IDENTITE).not.toBe(ACTION);
+    expect(contrast(ACTION, IDENTITE)).toBeLessThan(1.5);
   });
 
   it('la cible tactile ne descend jamais sous celle du design system', () => {

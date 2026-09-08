@@ -1,9 +1,12 @@
 /**
- * Le client d'identité — F0.1, côté web
+ * Le client d'identité — F0.1
  *
- * Même contrat que `apps/mobile/src/noyau/client-api.ts`, réduit aux deux
- * appels du parcours d'authentification. Trois choses qu'il fait, et qu'aucun
- * écran ne refait :
+ * Réduit aux deux appels du parcours d'authentification, et **partagé par les
+ * deux clients** : il n'utilise que `fetch`, que React Native fournit comme le
+ * navigateur. Il a vécu dans `apps/web` le temps d'un sprint ; l'écran natif
+ * aurait dû en écrire un jumeau, avec les mêmes trois pièges à retrouver.
+ *
+ * Trois choses qu'il fait, et qu'aucun écran ne refait :
  *
  *   1. **poser `Idempotency-Key`** sur chaque écriture *(RB10)* ;
  *   2. **annoncer la langue** — le serveur traduit lui-même ses messages, donc
@@ -17,27 +20,27 @@
  * `fetch` et le générateur de clés sont injectables — c'est ce qui rend les
  * tests déterministes sans simulacre de module.
  */
-import { auth, EN_TETES, type Erreur } from '@jp/contracts';
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { auth, HEADERS, type ApiError } from '@jp/contracts';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 /** Levée quand la requête n'est jamais partie. À ne pas confondre avec une erreur du serveur. */
-export class HorsLigne extends Error {
-  override readonly name = 'HorsLigne';
+export class Offline extends Error {
+  override readonly name = 'Offline';
 }
 
-export interface OptionsClientIdentite {
+export interface IdentityClientOptions {
   readonly base: string;
-  readonly langue?: Langue;
+  readonly language?: Language;
   readonly fetch?: typeof fetch;
   /** Injectable pour rendre les tests déterministes. */
-  readonly nouvelleCle?: () => string;
+  readonly newKey?: () => string;
 }
 
-export class ClientIdentite {
+export class IdentityClient {
   private readonly f: typeof fetch;
-  private readonly nouvelleCle: () => string;
+  private readonly newKey: () => string;
 
-  constructor(private readonly options: OptionsClientIdentite) {
+  constructor(private readonly options: IdentityClientOptions) {
     // `.bind(globalThis)` n'est pas décoratif : dans un navigateur, `fetch`
     // appelé avec un autre `this` que la fenêtre lève « Illegal invocation ».
     // Rangé tel quel dans un champ puis appelé en `this.f(…)`, il échouerait à
@@ -45,12 +48,12 @@ export class ClientIdentite {
     // trait pour trait à une coupure réseau. On afficherait « pas de
     // connexion » à quelqu'un de parfaitement connecté.
     this.f = options.fetch ?? globalThis.fetch.bind(globalThis);
-    this.nouvelleCle = options.nouvelleCle ?? (() => crypto.randomUUID());
+    this.newKey = options.newKey ?? (() => crypto.randomUUID());
   }
 
   /** La langue courante, telle qu'elle part dans `Accept-Language`. */
-  get langue(): Langue {
-    return this.options.langue ?? LANGUE_PAR_DEFAUT;
+  get language(): Language {
+    return this.options.language ?? DEFAULT_LANGUAGE;
   }
 
   /**
@@ -59,54 +62,54 @@ export class ClientIdentite {
    * **La réponse est la même que le compte existe ou non** *(R-C9)* : l'écran
    * ne doit donc jamais chercher à y lire l'existence d'un compte.
    */
-  async demanderCode(email: string): Promise<auth.ReponseOtp> {
-    const brut = await this.poster('/identite/otp/emettre', { email });
-    return auth.ReponseOtpSchema.parse(brut);
+  async requestCode(email: string): Promise<auth.OtpResponse> {
+    const brut = await this.post('/identite/otp/emettre', { email });
+    return auth.OtpResponseSchema.parse(brut);
   }
 
   /**
    * Étape 2 — vérification du code, qui ouvre la session et crée le compte si
    * l'adresse est inconnue. `prenom` n'est envoyé qu'à l'inscription.
    */
-  async verifierCode(params: {
+  async verifyCode(params: {
     readonly email: string;
     readonly code: string;
     readonly prenom?: string;
-  }): Promise<auth.ReponseSession> {
-    const corps: Record<string, unknown> = {
+  }): Promise<auth.SessionResponse> {
+    const body: Record<string, unknown> = {
       email: params.email,
       code: params.code,
-      langue: this.langue,
+      langue: this.language,
     };
-    if (params.prenom !== undefined) corps['prenom'] = params.prenom;
+    if (params.prenom !== undefined) body['prenom'] = params.prenom;
 
-    const brut = await this.poster('/identite/otp/verifier', corps);
-    return auth.ReponseSessionSchema.parse(brut);
+    const brut = await this.post('/identite/otp/verifier', body);
+    return auth.SessionResponseSchema.parse(brut);
   }
 
-  private async poster(chemin: string, corps: unknown): Promise<unknown> {
-    let reponse: Response;
+  private async post(path: string, body: unknown): Promise<unknown> {
+    let response: Response;
     try {
-      reponse = await this.f(`${this.options.base}${chemin}`, {
+      response = await this.f(`${this.options.base}${path}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          [EN_TETES.langue]: this.langue,
+          [HEADERS.language]: this.language,
           // La clé est posée ICI et nulle part ailleurs : un écran qui
           // l'oublierait ouvrirait un trou dans RB10, invisible jusqu'au jour
           // où un renvoi de code compterait double.
-          [EN_TETES.idempotence]: this.nouvelleCle(),
+          [HEADERS.idempotency]: this.newKey(),
         },
-        body: JSON.stringify(corps),
+        body: JSON.stringify(body),
       });
     } catch {
-      throw new HorsLigne('pas de connexion');
+      throw new Offline('pas de connexion');
     }
 
-    const lu: unknown = await reponse.json().catch(() => null);
+    const lu: unknown = await response.json().catch(() => null);
     // L'enveloppe est remontée telle quelle : son `message` est déjà traduit
     // par le serveur, dans la langue que nous venons de lui annoncer.
-    if (!reponse.ok) throw lu as Erreur;
+    if (!response.ok) throw lu as ApiError;
     return lu;
   }
 }

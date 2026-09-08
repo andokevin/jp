@@ -10,7 +10,7 @@
  * en ont besoin aussi. Ici, ce qui est propre au serveur : transformer une
  * requête et un tri en page.
  */
-import { decoderCurseur, encoderCurseur, type Page } from '@jp/contracts';
+import { decodeCursor, encodeCursor, type Page } from '@jp/contracts';
 
 /**
  * Découpe un lot en page.
@@ -30,7 +30,7 @@ export function enPage<T>(
   const dernier = elements[elements.length - 1];
   return {
     elements,
-    curseurSuivant: aUneSuite && dernier ? encoderCurseur(position(dernier)) : null,
+    curseurSuivant: aUneSuite && dernier ? encodeCursor(position(dernier)) : null,
   };
 }
 
@@ -40,5 +40,5 @@ export function enPage<T>(
  * fonctionner, même dégradé.
  */
 export function depuisCurseur(curseur: string | undefined): Record<string, string | number> | null {
-  return curseur ? decoderCurseur(curseur) : null;
+  return curseur ? decodeCursor(curseur) : null;
 }

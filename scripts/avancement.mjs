@@ -173,8 +173,11 @@ ${lignes.join('\n')}
 
 - **\`ALTER DEFAULT PRIVILEGES\`** accorde \`UPDATE\`/\`DELETE\` aux tables futures.
   \`ecriture_financiere\` *(migration n° 12)* devra porter son propre \`REVOKE\`.
-- **L'intégration continue n'a jamais tourné** sur GitHub. À confirmer à la
-  première pull request.
+- ~~**L'intégration continue n'a jamais tourné** sur GitHub.~~ Levé le
+  06/09/2026 : les six vérifications sont passées au vert sur la première pull
+  request *(#1479)*. Trois y ont échoué d'abord — format, couverture
+  backlog ↔ plan, audit de sécurité — dont deux qui étaient déjà rouges sur
+  \`master\` sans que personne puisse le savoir.
 - **Deux décisions produit ouvertes**, semées avec une valeur provisoire :
   \`taux_commission_defaut = 80\` *(8 %)* et
   \`duree_reservation_catalogue_s = 1800\` *(30 min)*.

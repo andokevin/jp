@@ -11,10 +11,10 @@
  *   1. **La couleur d'action est le framboise, pas le violet.** Sur ces écrans
  *      le violet appartient au seul wordmark : c'est l'identité, pas une
  *      action. Le framboise vient de `accent('beaute')` — déjà couvert par le
- *      test de contraste de `@jp/ui`, donc jamais un hexadécimal en l'air.
+ *      test de contrast de `@jp/ui`, donc jamais un hexadécimal en l'air.
  *   2. **Les titres sont en serif.** `@jp/ui` ne porte aucun jeton de fonte ;
  *      la maquette demande une serif éditoriale, avec repli sur Georgia.
- *   3. **La bordure de carte est plus claire que `COULEURS.bordure`** — une
+ *   3. **La bordure de carte est plus claire que `COLORS.border`** — une
  *      carte posée sur du blanc n'a pas besoin du même trait qu'un séparateur
  *      de liste.
  *
@@ -23,35 +23,42 @@
  * utilisée par le CSS ne manque à l'appel.
  */
 import type { CSSProperties } from 'react';
-import { accent, CIBLE_TACTILE_MIN, COULEURS, ESPACEMENT, RAYON } from '@jp/ui';
+import { accent, MIN_TAP_TARGET, COLORS, SPACING, RADIUS } from '@jp/ui';
 
 /** Le framboise de la maquette — l'accent « beauté » du design system. */
 export const ACTION = accent('beaute');
 
-/** Le violet des jetons, réservé au wordmark sur ces écrans. */
-export const IDENTITE = COULEURS.action;
+/**
+ * Le violet des jetons, réservé au wordmark sur ces écrans.
+ *
+ * `COLORS.identity`, pas `COLORS.action` : ce sont deux jetons distincts,
+ * et le second est le framboise. La confusion rendait le wordmark framboise et
+ * faisait de `--jp-identite` un alias de `--jp-action` — c'est-à-dire qu'elle
+ * effaçait `D-22` à l'endroit précis où l'en-tête ci-dessus le défend.
+ */
+export const IDENTITE = COLORS.identity;
 
 export const VARIABLES_CSS = {
-  '--jp-fond': COULEURS.fond,
-  '--jp-fond-2': COULEURS.fondSecondaire,
-  '--jp-bordure': COULEURS.bordure,
+  '--jp-fond': COLORS.background,
+  '--jp-fond-2': COLORS.backgroundSecondary,
+  '--jp-bordure': COLORS.border,
   '--jp-bordure-carte': '#E5E5E5',
-  '--jp-texte': COULEURS.texte,
-  '--jp-texte-2': COULEURS.texteSecondaire,
-  '--jp-texte-inverse': COULEURS.texteInverse,
+  '--jp-texte': COLORS.text,
+  '--jp-texte-2': COLORS.textSecondary,
+  '--jp-texte-inverse': COLORS.textInverse,
   '--jp-action': ACTION,
   '--jp-identite': IDENTITE,
-  '--jp-danger': COULEURS.danger,
-  '--jp-espace-s': `${ESPACEMENT.s}px`,
-  '--jp-espace-m': `${ESPACEMENT.m}px`,
-  '--jp-espace-l': `${ESPACEMENT.l}px`,
-  '--jp-espace-xl': `${ESPACEMENT.xl}px`,
-  '--jp-rayon': `${RAYON.grand}px`,
-  '--jp-rayon-champ': `${RAYON.moyen + 6}px`,
-  '--jp-rayon-pilule': `${RAYON.rond}px`,
+  '--jp-danger': COLORS.danger,
+  '--jp-espace-s': `${SPACING.s}px`,
+  '--jp-espace-m': `${SPACING.m}px`,
+  '--jp-espace-l': `${SPACING.l}px`,
+  '--jp-espace-xl': `${SPACING.xl}px`,
+  '--jp-rayon': `${RADIUS.large}px`,
+  '--jp-rayon-champ': `${RADIUS.medium + 6}px`,
+  '--jp-rayon-pilule': `${RADIUS.round}px`,
   /** Jamais sous la cible tactile du design system — 48, plus strict que les 44 de la maquette. */
-  '--jp-cible': `${CIBLE_TACTILE_MIN}px`,
-  '--jp-hauteur-controle': `${Math.max(52, CIBLE_TACTILE_MIN)}px`,
+  '--jp-cible': `${MIN_TAP_TARGET}px`,
+  '--jp-hauteur-controle': `${Math.max(52, MIN_TAP_TARGET)}px`,
   '--jp-serif': 'Newsreader, Georgia, "Times New Roman", serif',
   '--jp-sans': 'Roboto, system-ui, -apple-system, "Helvetica Neue", sans-serif',
 } as const satisfies Record<string, string>;

@@ -34,12 +34,12 @@ export function enregistrerRoutes(app: FastifyInstance, db: PrismaClient) {
 
   // 1. Envoi d'OTP
   app.post('/identite/otp/emettre', async (req, reply) => {
-    const resultat = auth.demanderCodeOptSchema.safeParse(req.body);
+    const resultat = auth.requestOtpSchema.safeParse(req.body);
     if (!resultat.success) throw erreurs.requeteInvalide();
 
     const donnees = {
       email: resultat.data.email,
-      finalite: resultat.data.finalite ?? ('inscription' as const),
+      purpose: resultat.data.purpose ?? ('signup' as const),
     };
 
     const cle = `otp:${donnees.email}`;
@@ -53,7 +53,7 @@ export function enregistrerRoutes(app: FastifyInstance, db: PrismaClient) {
 
   // 2. Vérification OTP et création de compte complet
   app.post('/identite/otp/verifier', async (req, reply) => {
-    const resultat = auth.verifierCodeOptSchema.safeParse(req.body);
+    const resultat = auth.verifyOtpSchema.safeParse(req.body);
     if (!resultat.success) throw erreurs.requeteInvalide();
 
     const cle = `otp-verif:${resultat.data.email}`;
@@ -67,7 +67,7 @@ export function enregistrerRoutes(app: FastifyInstance, db: PrismaClient) {
 
   // 3. Connexion par mot de passe
   app.post('/identite/connexion', async (req, reply) => {
-    const resultat = auth.connexionEmailSchema.safeParse(req.body);
+    const resultat = auth.emailLoginSchema.safeParse(req.body);
     if (!resultat.success) throw erreurs.requeteInvalide();
 
     const reponse = await service.connexionEmailMotDePasse(db, resultat.data);

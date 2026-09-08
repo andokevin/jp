@@ -67,7 +67,14 @@ export default tseslint.config(
     },
   },
 
-  // ── Un paquet partagé ne connaît aucune application ───────────────────────
+  // ── Un paquet partagé ne connaît aucune application, ni aucun moteur de rendu ─
+  // La seconde règle vise `react-dom` et `react-native`, PAS `react`. Importer
+  // un moteur de rendu, c'est choisir son client : le paquet cesse d'être
+  // partageable entre `apps/web` (DOM) et `apps/mobile` (RN). `react` seul ne
+  // choisit rien — `useReducer` se comporte à l'identique sous les deux, et
+  // c'est ce qui permet au hook de `@jp/identite` d'être écrit une seule fois.
+  // Un paquet qui l'importe le déclare en dépendance de PAIR : deux copies de
+  // React dans un même arbre, et tous les hooks lèvent « Invalid hook call ».
   {
     files: ['packages/**/*.{ts,tsx}'],
     rules: {
@@ -79,6 +86,11 @@ export default tseslint.config(
               group: ['**/apps/**', '@jp/api', '@jp/mobile', '@jp/admin', '@jp/web'],
               message:
                 'Un paquet partagé ne dépend jamais d’une application. La dépendance va dans l’autre sens.',
+            },
+            {
+              group: ['react-dom', 'react-dom/*', 'react-native', 'react-native/*'],
+              message:
+                'Un paquet partagé ne connaît aucun moteur de rendu. `react` est permis (il n’en est pas un) et se déclare en peerDependencies ; le rendu vit dans apps/.',
             },
           ],
         },

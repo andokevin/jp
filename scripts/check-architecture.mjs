@@ -34,6 +34,20 @@ const CAS = [
     doitEchouer: false,
   },
   {
+    nom: 'un paquet partagé importe un moteur de rendu',
+    fichier: 'packages/identite/src/__verif_archi.ts',
+    code: `import { View } from 'react-native';\nexport const x = View;\n`,
+    doitEchouer: true,
+  },
+  {
+    // Le contre-cas compte autant : sans lui, une règle écrite `react*` par
+    // mégarde interdirait le hook partagé et paraîtrait pourtant correcte.
+    nom: 'un paquet partagé importe react',
+    fichier: 'packages/identite/src/__verif_archi_ok.ts',
+    code: `import { useReducer } from 'react';\nexport const x = useReducer;\n`,
+    doitEchouer: false,
+  },
+  {
     nom: 'la plateforme importe un module métier',
     fichier: 'apps/api/src/plateforme/__verif_archi.ts',
     code: `import { service } from '../modules/catalogue/service.js';\nexport const x = service;\n`,

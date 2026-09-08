@@ -12,8 +12,8 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
-import { EN_TETES } from '@jp/contracts';
-import { langueDepuisEnTete } from '@jp/i18n';
+import { HEADERS } from '@jp/contracts';
+import { languageFromHeader } from '@jp/i18n';
 import { avecContexte, type Contexte } from './contexte.js';
 import { ErreurMetier, erreurInterne } from './erreurs.js';
 import { jetonDepuisEnTete, verifierJeton, type Identite } from './auth.js';
@@ -39,7 +39,7 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
     // Fastify fabrique son propre identifiant ; on impose le nôtre, qui
     // vient de l'en-tête s'il existe. C'est ce qui permet de suivre une
     // requête depuis l'application mobile jusqu'à la file asynchrone.
-    genReqId: (req) => (req.headers[EN_TETES.correlation.toLowerCase()] as string) ?? randomUUID(),
+    genReqId: (req) => (req.headers[HEADERS.correlation.toLowerCase()] as string) ?? randomUUID(),
     disableRequestLogging: false,
     trustProxy: true,
   });
@@ -57,16 +57,16 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
 
     const contexte: Contexte = {
       correlation: String(req.id),
-      langue: langueDepuisEnTete(req.headers['accept-language']),
+      langue: languageFromHeader(req.headers['accept-language']),
       ...(identite ? { utilisateurId: identite.utilisateurId } : {}),
       ...(req.ip ? { adresseIp: req.ip } : {}),
-      economieDonnees: req.headers[EN_TETES.economieDonnees.toLowerCase()] === '1',
+      economieDonnees: req.headers[HEADERS.dataSaver.toLowerCase()] === '1',
     };
 
     req.contexte = contexte;
     req.identite = identite;
     // Le client peut citer cet identifiant dans un signalement.
-    reply.header(EN_TETES.correlation, contexte.correlation);
+    reply.header(HEADERS.correlation, contexte.correlation);
   });
 
   // `AsyncLocalStorage` doit envelopper le TRAITEMENT, pas seulement le hook :

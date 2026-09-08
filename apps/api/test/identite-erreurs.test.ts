@@ -6,9 +6,9 @@
  * peut donc rattraper un gabarit mal rempli — ce qui sort d'ici est ce que
  * l'utilisatrice lit.
  *
- * `traduire` ne remplace que les jetons dont le nom est présent dans
+ * `translate` ne remplace que les jetons dont le nom est présent dans
  * `variables`, et **laisse le jeton visible sinon** — un choix délibéré, pour
- * qu'un « {restantes} » se remarque en recette plutôt qu'un « undefined » qui
+ * qu'un « {remaining} » se remarque en recette plutôt qu'un « undefined » qui
  * passerait pour du contenu. Encore faut-il que quelqu'un regarde. C'est le
  * rôle de ce fichier.
  *
@@ -19,7 +19,7 @@
  * accepte n'importe quelle clé.
  */
 import { describe, expect, it } from 'vitest';
-import { LANGUES, variablesDe, type CleMessage } from '@jp/i18n';
+import { LANGUAGES, variablesOf, type MessageKey } from '@jp/i18n';
 
 import { ERREURS } from '../src/modules/identite/erreurs.js';
 import { erreurs, ErreurMetier } from '../src/plateforme/erreurs.js';
@@ -53,7 +53,7 @@ describe('F0.1 — aucun message ne part avec un trou dedans', () => {
     // penser.
     const troues: string[] = [];
     for (const [nom, erreur] of TOUTES) {
-      for (const langue of LANGUES) {
+      for (const langue of LANGUAGES) {
         const message = erreur.versReponse(langue).message;
         const restes = [...message.matchAll(/\{(\w+)\}/g)].map((m) => m[1]);
         if (restes.length > 0) {
@@ -70,7 +70,7 @@ describe('F0.1 — aucun message ne part avec un trou dedans', () => {
     // — on la refuse aussi.
     const desaccords: string[] = [];
     for (const [nom, erreur] of TOUTES) {
-      const attendues = [...variablesDe(erreur.cleMessage as CleMessage)].sort();
+      const attendues = [...variablesOf(erreur.cleMessage as MessageKey)].sort();
       const fournies = Object.keys(erreur.options.variables ?? {}).sort();
       if (attendues.join(',') !== fournies.join(',')) {
         desaccords.push(
@@ -83,9 +83,9 @@ describe('F0.1 — aucun message ne part avec un trou dedans', () => {
 
   it('le compte d’essais restants arrive bien jusqu’au message', () => {
     // Le cas concret : c'est ce nombre qui dit à quelqu'un s'il lui reste une
-    // chance ou quatre. Un « {restantes} » à sa place transforme un refus
+    // chance ou quatre. Un « {remaining} » à sa place transforme un refus
     // utile en charabia, sur l'écran le plus fragile du parcours.
-    for (const langue of LANGUES) {
+    for (const langue of LANGUAGES) {
       expect(ERREURS.OTP_INVALIDE(3).versReponse(langue).message, langue).toContain('3');
     }
   });

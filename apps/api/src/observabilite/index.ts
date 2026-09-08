@@ -33,6 +33,7 @@ const A_SUPPRIMER = new Set([
   'stat',
   'msisdn',
   'telephone',
+  'phone',
   'adresse',
   'jetonEmpreinte',
 ]);

@@ -1,126 +1,126 @@
 /**
  * index.test.ts — S7
  *
- * Les deux tests qui comptent : le contraste et la cible tactile. Ils
+ * Les deux tests qui comptent : le contrast et la target tactile. Ils
  * viennent du terrain — un téléphone d'entrée de gamme en plein soleil, un
  * doigt sur un écran de cinq pouces —, pas du goût.
  */
 import { describe, expect, it } from 'vitest';
 import { ariary } from '@jp/money';
 import {
-  aQuelqueChoseAMontrer,
+  hasSomethingToShow,
   badge,
-  BOUTON_PRINCIPAL,
-  CIBLE_TACTILE_MIN,
-  contraste,
-  CONTRASTE_MIN,
-  COULEURS,
-  COULEURS_D22,
-  etatDepuis,
-  etatVide,
-  imageProgressive,
-  ligneListe,
+  PRIMARY_BUTTON,
+  MIN_TAP_TARGET,
+  contrast,
+  MIN_CONTRAST,
+  COLORS,
+  COLORS_D22,
+  stateFrom,
+  emptyState,
+  progressiveImage,
+  listRow,
   luminance,
-  messageEtat,
-  minuteurReservation,
+  stateMessage,
+  reservationTimer,
   PRIMITIVES,
-  prixAriary,
-  respecteRZ1,
-  TYPOGRAPHIE,
+  ariaryPrice,
+  respectsRZ1,
+  TYPOGRAPHY,
   ACCENTS,
   accent,
-  selecteurUnivers,
-  enteteUnivers,
-  pastilleUnivers,
+  universeSelector,
+  universeHeader,
+  universePill,
 } from './index.js';
 
 describe('S7.1 — les jetons, vérifiés par test et non par relecture', () => {
-  it('tout texte sur son fond atteint 4,5:1', () => {
+  it('tout text sur son fond atteint 4,5:1', () => {
     // Un téléphone d'entrée de gamme en plein soleil d'Antananarivo n'est
     // pas un écran de bureau.
     const paires: readonly [string, string, string][] = [
-      ['texte sur fond', COULEURS.texte, COULEURS.fond],
-      ['texte secondaire sur fond', COULEURS.texteSecondaire, COULEURS.fond],
-      ['texte sur fond secondaire', COULEURS.texte, COULEURS.fondSecondaire],
-      ['texte inverse sur action', COULEURS.texteInverse, COULEURS.action],
-      ['texte inverse sur action pressée', COULEURS.texteInverse, COULEURS.actionPressee],
-      // `D-22` — les deux couleurs de la marque portent du texte blanc : le
+      ['text sur fond', COLORS.text, COLORS.background],
+      ['text secondaire sur fond', COLORS.textSecondary, COLORS.background],
+      ['text sur fond secondaire', COLORS.text, COLORS.backgroundSecondary],
+      ['text inverse sur action', COLORS.textInverse, COLORS.action],
+      ['text inverse sur action pressée', COLORS.textInverse, COLORS.actionPressed],
+      // `D-22` — les deux couleurs de la marque portent du text blanc : le
       // framboise sur un bouton, le violet sur un badge vérifié et un fond de
       // facture. Les deux se vérifient, et sur blanc, et en inverse.
-      ['action sur fond', COULEURS.action, COULEURS.fond],
-      ['texte inverse sur identité', COULEURS.texteInverse, COULEURS.identite],
-      ['texte inverse sur identité foncée', COULEURS.texteInverse, COULEURS.identiteFoncee],
-      ['identité sur fond', COULEURS.identite, COULEURS.fond],
-      ['texte inverse sur succès', COULEURS.texteInverse, COULEURS.succes],
-      ['texte inverse sur danger', COULEURS.texteInverse, COULEURS.danger],
-      ['texte inverse sur attention', COULEURS.texteInverse, COULEURS.attention],
-      ['montant sur fond', COULEURS.montant, COULEURS.fond],
+      ['action sur fond', COLORS.action, COLORS.background],
+      ['text inverse sur identité', COLORS.textInverse, COLORS.identity],
+      ['text inverse sur identité foncée', COLORS.textInverse, COLORS.identityDeep],
+      ['identité sur fond', COLORS.identity, COLORS.background],
+      ['text inverse sur succès', COLORS.textInverse, COLORS.success],
+      ['text inverse sur danger', COLORS.textInverse, COLORS.danger],
+      ['text inverse sur attention', COLORS.textInverse, COLORS.warning],
+      ['amount sur fond', COLORS.amount, COLORS.background],
     ];
     const insuffisants: string[] = [];
     for (const [nom, a, b] of paires) {
-      const r = contraste(a, b);
+      const r = contrast(a, b);
       // Pas de `toFixed` : la règle « aucun flottant » vaut ici aussi, même
-      // pour un rapport de contraste. Arrondi à la main, en entier.
-      if (r < CONTRASTE_MIN) insuffisants.push(`${nom} : ${Math.round(r * 100) / 100}:1`);
+      // pour un rapport de contrast. Arrondi à la main, en entier.
+      if (r < MIN_CONTRAST) insuffisants.push(`${nom} : ${Math.round(r * 100) / 100}:1`);
     }
     expect(insuffisants, insuffisants.join('\n')).toEqual([]);
   });
 
-  it('calcule le contraste comme WCAG', () => {
-    expect(contraste('#000000', '#FFFFFF')).toBeCloseTo(21, 0);
-    expect(contraste('#FFFFFF', '#FFFFFF')).toBeCloseTo(1, 2);
+  it('calcule le contrast comme WCAG', () => {
+    expect(contrast('#000000', '#FFFFFF')).toBeCloseTo(21, 0);
+    expect(contrast('#FFFFFF', '#FFFFFF')).toBeCloseTo(1, 2);
     expect(luminance('#FFFFFF')).toBeCloseTo(1, 2);
     expect(luminance('#000000')).toBeCloseTo(0, 2);
   });
 
-  it('une couleur d’action, une couleur d’identité — jamais deux couleurs d’action (D-22)', () => {
-    expect(COULEURS.action).not.toBe(COULEURS.succes);
-    // Le montant n'a PAS la couleur de l'action : un prix ne se touche pas.
-    expect(COULEURS.montant).not.toBe(COULEURS.action);
+  it('une color d’action, une color d’identité — jamais deux couleurs d’action (D-22)', () => {
+    expect(COLORS.action).not.toBe(COLORS.success);
+    // Le amount n'a PAS la color de l'action : un prix ne se touche pas.
+    expect(COLORS.amount).not.toBe(COLORS.action);
     // `D-22` : deux jetons, deux rôles. Le violet a cessé d'être le bouton, il
     // n'est pas devenu un doublon du framboise pour autant.
-    expect(COULEURS.action).toBe('#A31A5B');
-    expect(COULEURS.identite).toBe('#7C2D92');
-    expect(COULEURS.identite).not.toBe(COULEURS.action);
+    expect(COLORS.action).toBe('#A31A5B');
+    expect(COLORS.identity).toBe('#7C2D92');
+    expect(COLORS.identity).not.toBe(COLORS.action);
   });
 
   it('R-Z1 — le framboise et le violet ne portent jamais seuls une différence de sens', () => {
     // La raison d'être de la règle, mesurée : 1,08:1 entre les deux. Elles se
     // distinguent par la teinte, jamais par la luminance — donc pas du tout sur
     // un écran délavé par le soleil, ni pour un œil daltonien.
-    expect(contraste(COULEURS.action, COULEURS.identite)).toBeLessThan(1.2);
-    expect(COULEURS_D22).toHaveLength(2);
+    expect(contrast(COLORS.action, COLORS.identity)).toBeLessThan(1.2);
+    expect(COLORS_D22).toHaveLength(2);
 
-    // Deux états que SEULE la couleur sépare : refusé.
-    expect(respecteRZ1({ couleur: COULEURS.action }, { couleur: COULEURS.identite })).toBe(false);
+    // Deux états que SEULE la color sépare : refusé.
+    expect(respectsRZ1({ color: COLORS.action }, { color: COLORS.identity })).toBe(false);
 
     // La même paire, doublée par un libellé, une icône ou une forme : acceptée.
     expect(
-      respecteRZ1(
-        { couleur: COULEURS.action, libelle: 'En direct' },
-        { couleur: COULEURS.identite, libelle: 'Vérifiée' },
+      respectsRZ1(
+        { color: COLORS.action, label: 'En direct' },
+        { color: COLORS.identity, label: 'Vérifiée' },
       ),
     ).toBe(true);
     expect(
-      respecteRZ1(
-        { couleur: COULEURS.action, icone: 'point' },
-        { couleur: COULEURS.identite, icone: 'coche' },
+      respectsRZ1(
+        { color: COLORS.action, icon: 'point' },
+        { color: COLORS.identity, icon: 'coche' },
       ),
     ).toBe(true);
     expect(
-      respecteRZ1(
-        { couleur: COULEURS.action, forme: 'pastille' },
-        { couleur: COULEURS.identite, forme: 'ecusson' },
+      respectsRZ1(
+        { color: COLORS.action, shape: 'pastille' },
+        { color: COLORS.identity, shape: 'ecusson' },
       ),
     ).toBe(true);
 
     // La règle ne vise QUE ce couple : un vert de succès contre un rouge
     // d'alerte se distingue déjà de 3,4:1, et n'est pas concerné.
-    expect(respecteRZ1({ couleur: COULEURS.succes }, { couleur: COULEURS.danger })).toBe(true);
+    expect(respectsRZ1({ color: COLORS.success }, { color: COLORS.danger })).toBe(true);
   });
 
-  it('trois tailles de texte, pas huit', () => {
-    expect(Object.keys(TYPOGRAPHIE)).toHaveLength(3);
+  it('trois tailles de text, pas huit', () => {
+    expect(Object.keys(TYPOGRAPHY)).toHaveLength(3);
   });
 });
 
@@ -129,124 +129,124 @@ describe('S7.2 — les sept primitives', () => {
     expect(PRIMITIVES).toHaveLength(7);
   });
 
-  it('le bouton principal fait la cible tactile minimale, pleine largeur, en bas', () => {
-    // Une main qui tient un téléphone atteint le bas de l'écran.
-    expect(BOUTON_PRINCIPAL.hauteur).toBeGreaterThanOrEqual(CIBLE_TACTILE_MIN);
-    expect(BOUTON_PRINCIPAL.largeur).toBe('100%');
-    expect(BOUTON_PRINCIPAL.ancrage).toBe('bas');
-    expect(BOUTON_PRINCIPAL.desactiveePendantEnvoi).toBe(true);
+  it('le bouton principal fait la target tactile minimale, pleine width, en bottom', () => {
+    // Une main qui tient un téléphone atteint le bottom de l'écran.
+    expect(PRIMARY_BUTTON.height).toBeGreaterThanOrEqual(MIN_TAP_TARGET);
+    expect(PRIMARY_BUTTON.width).toBe('100%');
+    expect(PRIMARY_BUTTON.anchor).toBe('bottom');
+    expect(PRIMARY_BUTTON.disabledWhileSubmitting).toBe(true);
   });
 
-  it('une ligne de liste ne descend jamais sous la cible tactile', () => {
-    expect(ligneListe({ touchable: true }).hauteurMin).toBeGreaterThanOrEqual(CIBLE_TACTILE_MIN);
+  it('une ligne de liste ne descend jamais sous la target tactile', () => {
+    expect(listRow({ touchable: true }).minHeight).toBeGreaterThanOrEqual(MIN_TAP_TARGET);
   });
 
-  it('le prix passe par @jp/money, jamais par une concaténation', () => {
-    // `formater` sépare par une espace FINE INSÉCABLE (U+202F), pas une
-    // espace ordinaire : un montant ne doit pas se couper en fin de ligne.
-    expect(prixAriary(ariary(50_000), 'fr').texte).toBe('50\u202F000\u202FAr');
-    expect(prixAriary(ariary(50_000)).couleur).toBe(COULEURS.montant);
+  it('le prix past par @jp/money, jamais par une concaténation', () => {
+    // `format` sépare par une espace FINE INSÉCABLE (U+202F), pas une
+    // espace ordinaire : un amount ne doit pas se couper en fin de ligne.
+    expect(ariaryPrice(ariary(50_000), 'fr').text).toBe('50\u202F000\u202FAr');
+    expect(ariaryPrice(ariary(50_000)).color).toBe(COLORS.amount);
   });
 
-  it('l’image garde son substitut en mode économie de données', () => {
-    const eco = imageProgressive({
+  it('l’image garde son placeholder en mode économie de données', () => {
+    const eco = progressiveImage({
       url: 'grande.jpg',
-      substitut: 'flou.jpg',
-      economieDonnees: true,
+      placeholder: 'flou.jpg',
+      dataSaver: true,
     });
-    expect(eco.afficher).toBe('flou.jpg');
-    expect(eco.chargerPleineResolution).toBe(false);
+    expect(eco.show).toBe('flou.jpg');
+    expect(eco.loadFullResolution).toBe(false);
 
-    const normal = imageProgressive({
+    const normal = progressiveImage({
       url: 'grande.jpg',
-      substitut: 'flou.jpg',
-      economieDonnees: false,
+      placeholder: 'flou.jpg',
+      dataSaver: false,
     });
-    expect(normal.afficher).toBe('grande.jpg');
+    expect(normal.show).toBe('grande.jpg');
   });
 
   it('l’état vide propose une action — « aucun résultat » seul est un cul-de-sac', () => {
-    const avec = etatVide({
-      langue: 'fr',
-      action: { libelle: 'Publier', cible: '/articles/neuf' },
+    const avec = emptyState({
+      language: 'fr',
+      action: { label: 'Publier', target: '/articles/neuf' },
     });
     expect(avec.action).not.toBeNull();
-    expect(etatVide({ langue: 'fr' }).action).toBeNull();
+    expect(emptyState({ language: 'fr' }).action).toBeNull();
   });
 
   it('le minuteur ne ment jamais — RB9', () => {
     // Il calcule depuis l'échéance rendue par le SERVEUR, jamais une durée
     // décidée côté client, qui dériverait avec l'horloge du téléphone.
-    const maintenant = new Date('2026-08-19T10:00:00Z');
+    const now = new Date('2026-08-19T10:00:00Z');
     const dans30min = new Date('2026-08-19T10:30:00Z');
-    expect(minuteurReservation(dans30min, maintenant).libelle).toBe('30:00');
-    expect(minuteurReservation(dans30min, maintenant).expire).toBe(false);
+    expect(reservationTimer(dans30min, now).label).toBe('30:00');
+    expect(reservationTimer(dans30min, now).expired).toBe(false);
 
     const dans30s = new Date('2026-08-19T10:00:30Z');
-    expect(minuteurReservation(dans30s, maintenant).couleur).toBe(COULEURS.danger);
+    expect(reservationTimer(dans30s, now).color).toBe(COLORS.danger);
 
-    const passe = new Date('2026-08-19T09:00:00Z');
-    expect(minuteurReservation(passe, maintenant).expire).toBe(true);
-    expect(minuteurReservation(passe, maintenant).restantS).toBe(0); // jamais négatif
+    const past = new Date('2026-08-19T09:00:00Z');
+    expect(reservationTimer(past, now).expired).toBe(true);
+    expect(reservationTimer(past, now).remainingS).toBe(0); // jamais négatif
   });
 
   it('le badge lisible dans les quatre tons', () => {
-    for (const ton of ['neutre', 'succes', 'attention', 'danger'] as const) {
-      const b = badge(ton, 'Payée');
-      expect(contraste(b.couleurTexte, b.fond), ton).toBeGreaterThanOrEqual(CONTRASTE_MIN);
+    for (const tone of ['neutral', 'success', 'warning', 'danger'] as const) {
+      const b = badge(tone, 'Payée');
+      expect(contrast(b.textColor, b.background), tone).toBeGreaterThanOrEqual(MIN_CONTRAST);
     }
   });
 });
 
 describe('S7.3 — les quatre états', () => {
-  it('hors ligne passe AVANT erreur', () => {
+  it('hors ligne past AVANT error', () => {
     // Une requête qui échoue faute de réseau n'est pas une panne du serveur,
     // et ne se raconte pas pareil.
-    const e = etatDepuis({
-      enCours: false,
-      horsLigne: true,
-      erreur: { code: 'X', message: 'boum' },
-      donnees: [1],
+    const e = stateFrom({
+      pending: false,
+      offline: true,
+      error: { code: 'X', message: 'boum' },
+      data: [1],
     });
-    expect(e.nom).toBe('hors-ligne');
+    expect(e.name).toBe('hors-ligne');
   });
 
   it('garde les données périmées quand le réseau tombe', () => {
-    const e = etatDepuis({ enCours: false, horsLigne: true, donnees: [1, 2] });
-    expect(aQuelqueChoseAMontrer(e)).toBe(true); // on montre ce qu'on avait
+    const e = stateFrom({ pending: false, offline: true, data: [1, 2] });
+    expect(hasSomethingToShow(e)).toBe(true); // on montre ce qu'on avait
   });
 
   it('une liste vide est « vide », pas « en chargement »', () => {
-    expect(etatDepuis({ enCours: false, horsLigne: false, donnees: [] }).nom).toBe('vide');
-    expect(etatDepuis({ enCours: false, horsLigne: false, donnees: [1] }).nom).toBe('charge');
+    expect(stateFrom({ pending: false, offline: false, data: [] }).name).toBe('vide');
+    expect(stateFrom({ pending: false, offline: false, data: [1] }).name).toBe('charge');
   });
 
   it('rend un message traduit pour chaque état sauf « chargé »', () => {
-    expect(messageEtat({ nom: 'chargement' }, 'fr')).toBe('Chargement…');
-    expect(messageEtat({ nom: 'vide' }, 'en')).toBe('Nothing here yet.');
-    expect(messageEtat({ nom: 'hors-ligne' }, 'fr')).toContain('Hors ligne');
-    expect(messageEtat({ nom: 'charge', donnees: [1] }, 'fr')).toBeNull();
+    expect(stateMessage({ name: 'chargement' }, 'fr')).toBe('Chargement…');
+    expect(stateMessage({ name: 'vide' }, 'en')).toBe('Nothing here yet.');
+    expect(stateMessage({ name: 'hors-ligne' }, 'fr')).toContain('Hors ligne');
+    expect(stateMessage({ name: 'charge', data: [1] }, 'fr')).toBeNull();
   });
 
-  it('sans données ni erreur, on est en chargement', () => {
-    expect(etatDepuis({ enCours: true, horsLigne: false }).nom).toBe('chargement');
-    expect(etatDepuis({ enCours: false, horsLigne: false }).nom).toBe('chargement');
+  it('sans données ni error, on est en chargement', () => {
+    expect(stateFrom({ pending: true, offline: false }).name).toBe('chargement');
+    expect(stateFrom({ pending: false, offline: false }).name).toBe('chargement');
   });
 });
 
 describe('les univers dans l’interface — les décisions UX', () => {
   const deuxOuverts = [
-    { cle: 'mode', onglet: 'Mode' },
-    { cle: 'beaute', onglet: 'Beauté' },
+    { key: 'mode', tab: 'Mode' },
+    { key: 'beaute', tab: 'Beauté' },
   ];
 
-  it('chaque accent d’univers est lisible sur texte blanc', () => {
+  it('chaque accent d’univers est lisible sur text blanc', () => {
     // Un seul design system, un seul accent qui change : assez pour savoir où
     // l'on est, trop peu pour se sentir ailleurs.
     const insuffisants: string[] = [];
-    for (const [cle, couleur] of Object.entries(ACCENTS)) {
-      const r = contraste(COULEURS.texteInverse, couleur);
-      if (r < CONTRASTE_MIN) insuffisants.push(`${cle} : ${Math.round(r * 100) / 100}:1`);
+    for (const [cle, color] of Object.entries(ACCENTS)) {
+      const r = contrast(COLORS.textInverse, color);
+      if (r < MIN_CONTRAST) insuffisants.push(`${cle} : ${Math.round(r * 100) / 100}:1`);
     }
     expect(insuffisants, insuffisants.join('\n')).toEqual([]);
   });
@@ -255,40 +255,38 @@ describe('les univers dans l’interface — les décisions UX', () => {
     // L'accent d'univers est un repère d'identité, pas un bouton : depuis
     // `D-22`, le repli est le jeton d'identité, et sa valeur rendue est la même
     // qu'avant la scission.
-    expect(accent('inexistant')).toBe(COULEURS.identite);
+    expect(accent('inexistant')).toBe(COLORS.identity);
     expect(accent('inexistant')).toBe('#7C2D92');
   });
 
   it('le sélecteur ne s’affiche PAS s’il n’y a qu’un univers', () => {
     // Un sélecteur à une entrée n'est pas une aide : c'est du bruit qui
-    // occupe 48 dp de hauteur utile.
-    expect(selecteurUnivers({ ouverts: [deuxOuverts[0]!], courant: 'mode' }).visible).toBe(false);
-    expect(selecteurUnivers({ ouverts: deuxOuverts, courant: 'mode' }).visible).toBe(true);
+    // occupe 48 dp de height utile.
+    expect(universeSelector({ open: [deuxOuverts[0]!], current: 'mode' }).visible).toBe(false);
+    expect(universeSelector({ open: deuxOuverts, current: 'mode' }).visible).toBe(true);
   });
 
-  it('le sélecteur marque l’univers courant', () => {
-    const s = selecteurUnivers({ ouverts: deuxOuverts, courant: 'beaute' });
-    expect(s.entrees.find((e) => e.cle === 'beaute')!.actif).toBe(true);
-    expect(s.entrees.find((e) => e.cle === 'mode')!.actif).toBe(false);
+  it('le sélecteur marque l’univers current', () => {
+    const s = universeSelector({ open: deuxOuverts, current: 'beaute' });
+    expect(s.entrees.find((e) => e.key === 'beaute')!.active).toBe(true);
+    expect(s.entrees.find((e) => e.key === 'mode')!.active).toBe(false);
   });
 
   it('la signature ne s’affiche qu’à la première visite', () => {
     // La répéter à chaque ouverture la rendrait invisible.
-    const params = { nom: 'JP Beauté', signature: 'Vrai produit, prix vrai', cle: 'beaute' };
-    expect(enteteUnivers({ ...params, premiereVisite: true }).signature).toBe(
+    const params = { name: 'JP Beauté', signature: 'Vrai produit, prix vrai', key: 'beaute' };
+    expect(universeHeader({ ...params, firstVisit: true }).signature).toBe(
       'Vrai produit, prix vrai',
     );
-    expect(enteteUnivers({ ...params, premiereVisite: false }).signature).toBeNull();
+    expect(universeHeader({ ...params, firstVisit: false }).signature).toBeNull();
   });
 
-  it('la pastille ne s’affiche que HORS de l’univers courant', () => {
+  it('la pastille ne s’affiche que HORS de l’univers current', () => {
     // Dans son propre univers, elle n'apprendrait rien et volerait la place.
-    expect(
-      pastilleUnivers({ cle: 'beaute', onglet: 'Beauté', universCourant: 'mode' }).visible,
-    ).toBe(true);
-    expect(pastilleUnivers({ cle: 'mode', onglet: 'Mode', universCourant: 'mode' }).visible).toBe(
-      false,
+    expect(universePill({ key: 'beaute', tab: 'Beauté', currentUniverse: 'mode' }).visible).toBe(
+      true,
     );
+    expect(universePill({ key: 'mode', tab: 'Mode', currentUniverse: 'mode' }).visible).toBe(false);
   });
 
   it('les trois univers ont leur accent, y compris Tech qui est fermé', () => {

@@ -10,23 +10,23 @@
  * la pagination, l'enveloppe d'erreur, et les en-têtes.
  */
 import { z } from 'zod';
-import { LANGUES } from '@jp/i18n';
+import { LANGUAGES } from '@jp/i18n';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // En-têtes
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const EN_TETES = {
+export const HEADERS = {
   /** Obligatoire sur toute écriture financière — RB10. */
-  idempotence: 'Idempotency-Key',
+  idempotency: 'Idempotency-Key',
   /** Suit une requête à travers l'API, les files et le WebSocket. */
   correlation: 'X-Correlation-Id',
-  langue: 'Accept-Language',
+  language: 'Accept-Language',
   /** Le client demande des images dégradées et pas de préchargement vidéo. */
-  economieDonnees: 'X-Economie-Donnees',
+  dataSaver: 'X-Data-Saver',
 } as const;
 
-export const langueSchema = z.enum(LANGUES);
+export const languageSchema = z.enum(LANGUAGES);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Pagination par CURSEUR, jamais par numéro de page
@@ -42,14 +42,14 @@ export const langueSchema = z.enum(LANGUES);
  * l'interpréter. Cela nous laisse changer sa composition — clé, horodatage,
  * les deux — sans casser un seul client.
  */
-export const TAILLE_PAGE_DEFAUT = 20;
+export const DEFAULT_PAGE_SIZE = 20;
 
 /** Plafond volontairement bas : réseau lent et Android d'entrée de gamme (C1, C2). */
-export const TAILLE_PAGE_MAX = 50;
+export const MAX_PAGE_SIZE = 50;
 
 export const paginationSchema = z.object({
   curseur: z.string().min(1).optional(),
-  taille: z.coerce.number().int().min(1).max(TAILLE_PAGE_MAX).default(TAILLE_PAGE_DEFAUT),
+  taille: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });
 
 export type Pagination = z.infer<typeof paginationSchema>;
@@ -72,8 +72,8 @@ export type Page<T> = {
 };
 
 /** Encode un curseur opaque. Base64URL : sûr dans une adresse, sans échappement. */
-export function encoderCurseur(valeur: Readonly<Record<string, string | number>>): string {
-  return Buffer.from(JSON.stringify(valeur), 'utf8').toString('base64url');
+export function encodeCursor(value: Readonly<Record<string, string | number>>): string {
+  return Buffer.from(JSON.stringify(value), 'utf8').toString('base64url');
 }
 
 /**
@@ -81,11 +81,11 @@ export function encoderCurseur(valeur: Readonly<Record<string, string | number>>
  * lever : un curseur trafiqué ou périmé doit rendre la première page, pas une
  * erreur 500.
  */
-export function decoderCurseur(curseur: string): Record<string, string | number> | null {
+export function decodeCursor(curseur: string): Record<string, string | number> | null {
   try {
-    const brut: unknown = JSON.parse(Buffer.from(curseur, 'base64url').toString('utf8'));
-    if (typeof brut !== 'object' || brut === null || Array.isArray(brut)) return null;
-    return brut as Record<string, string | number>;
+    const raw: unknown = JSON.parse(Buffer.from(curseur, 'base64url').toString('utf8'));
+    if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return null;
+    return raw as Record<string, string | number>;
   } catch {
     return null;
   }
@@ -101,13 +101,13 @@ export function decoderCurseur(curseur: string): Record<string, string | number>
  *   `code`    STABLE, en majuscules. Les clients s'y fient pour décider quoi
  *             faire. Il ne change jamais, même si le message change.
  *   `message` déjà traduit par le serveur, qui connaît la langue. Un client
- *             qui devrait traduire des codes d'erreur dupliquerait les
+ *             qui devrait translate des codes d'erreur dupliquerait les
  *             catalogues.
  *   `action`  ce que la personne PEUT faire. C'est ce qui distingue un refus
  *             utile d'un mur. « Code invalide » sans motif ni suite est un
  *             défaut, pas une simplification.
  */
-export const erreurSchema = z.object({
+export const errorSchema = z.object({
   code: z
     .string()
     .regex(/^[A-Z][A-Z0-9_]*$/, 'Un code d’erreur est en MAJUSCULES_AVEC_UNDERSCORES'),
@@ -119,7 +119,7 @@ export const erreurSchema = z.object({
   correlation: z.string().optional(),
 });
 
-export type Erreur = z.infer<typeof erreurSchema>;
+export type ApiError = z.infer<typeof errorSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Identifiants
@@ -136,10 +136,10 @@ export const emailSchema = z.string().trim().toLowerCase().email().max(254); // 
  * Ce n'est PAS un identifiant de compte — c'est un contact de livraison
  * (R-C15). Le compte est identifié par l'adresse électronique.
  */
-export const telephoneSchema = z
+export const phoneSchema = z
   .string()
   .trim()
   .regex(/^\+261[23]\d{8}$/, 'Attendu un numéro malgache au format +261XXXXXXXXX');
 
 /** La clé d'idempotence, telle que le client la fabrique — RB10. */
-export const cleIdempotenceSchema = z.string().trim().min(16).max(128);
+export const idempotencyKeySchema = z.string().trim().min(16).max(128);

@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { exploitation } from '@jp/contracts';
 import { demarrerBase, type BaseDeTest } from './conteneur.js';
 
-const { PARAMETRES, valider } = exploitation;
+const { PARAMETERS, validate } = exploitation;
 
 let base: BaseDeTest;
 
@@ -201,20 +201,20 @@ describe('le registre des paramètres', () => {
   it('chaque valeur par défaut respecte ses propres bornes', () => {
     // Une borne codée qui exclut sa propre valeur par défaut est une faute de
     // frappe qu'on découvrirait sinon dans le back-office, des mois plus tard.
-    for (const p of PARAMETRES) {
-      expect(valider(p.cle, p.defaut), `${p.cle} = ${p.defaut}`).toBeNull();
+    for (const p of PARAMETERS) {
+      expect(validate(p.key, p.default), `${p.key} = ${p.default}`).toBeNull();
     }
   });
 
   it('refuse une valeur hors bornes, avec le motif', () => {
-    expect(valider('duree_reservation_catalogue_s', '10')).toMatch(/Minimum 300/);
-    expect(valider('duree_reservation_catalogue_s', '99999')).toMatch(/Maximum 7200/);
-    expect(valider('duree_reservation_catalogue_s', 'trente minutes')).toMatch(/entier/);
-    expect(valider('cle_inexistante', '1')).toMatch(/inconnu/);
+    expect(validate('duree_reservation_catalogue_s', '10')).toMatch(/Minimum 300/);
+    expect(validate('duree_reservation_catalogue_s', '99999')).toMatch(/Maximum 7200/);
+    expect(validate('duree_reservation_catalogue_s', 'trente minutes')).toMatch(/entier/);
+    expect(validate('cle_inexistante', '1')).toMatch(/inconnu/);
   });
 
   it('les clés sont uniques', () => {
-    const cles = PARAMETRES.map((p) => p.cle);
+    const cles = PARAMETERS.map((p) => p.key);
     expect(new Set(cles).size).toBe(cles.length);
   });
 });

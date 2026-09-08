@@ -7,6 +7,13 @@ build/
 .env.*
 !.env.example
 
+# Natif GÉNÉRÉ par `expo prebuild`, jamais écrit à la main.
+# Les committer figerait la configuration : prebuild ne réécrit pas un dossier
+# existant sans `--clean`, et les greffons d'`app.json` deviendraient décoratifs.
+# Ils se régénèrent à la construction, depuis `app.json` qui est la source.
+apps/mobile/android/
+apps/mobile/ios/
+
 # Outillage
 .turbo/
 *.tsbuildinfo
