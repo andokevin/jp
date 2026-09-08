@@ -208,18 +208,18 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     // toutes les deux la clé unique, et le stock se dédoublerait.
     const article = await creerArticle();
     await base.appli.query(
-      `INSERT INTO variante (id, article_id, quantite_stock) VALUES (gen_random_uuid(), $1, 5)`,
+      `INSERT INTO variant (id, article_id, stock_quantity) VALUES (gen_random_uuid(), $1, 5)`,
       [article],
     );
     const { rows } = await base.appli.query<{ taille: string }>(
-      `SELECT taille FROM variante WHERE article_id = $1`,
+      `SELECT taille FROM variant WHERE article_id = $1`,
       [article],
     );
     expect(rows[0]!.taille).toBe('taille_unique');
 
     await expect(
       base.appli.query(
-        `INSERT INTO variante (id, article_id, quantite_stock) VALUES (gen_random_uuid(), $1, 3)`,
+        `INSERT INTO variant (id, article_id, stock_quantity) VALUES (gen_random_uuid(), $1, 3)`,
         [article],
       ),
     ).rejects.toMatchObject({ code: DOUBLON });
@@ -229,13 +229,13 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const article = await creerArticle();
     for (const taille of ['S', 'M', 'L']) {
       await base.appli.query(
-        `INSERT INTO variante (id, article_id, taille, quantite_stock)
+        `INSERT INTO variant (id, article_id, taille, stock_quantity)
          VALUES (gen_random_uuid(), $1, $2, 2)`,
         [article, taille],
       );
     }
     const { rows } = await base.appli.query<{ n: string }>(
-      `SELECT count(*)::text AS n FROM variante WHERE article_id = $1`,
+      `SELECT count(*)::text AS n FROM variant WHERE article_id = $1`,
       [article],
     );
     expect(rows[0]!.n).toBe('3');
@@ -245,7 +245,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const article = await creerArticle();
     await expect(
       base.appli.query(
-        `INSERT INTO variante (id, article_id, quantite_stock, quantite_reservee)
+        `INSERT INTO variant (id, article_id, stock_quantity, reserved_quantity)
          VALUES (gen_random_uuid(), $1, 2, 3)`,
         [article],
       ),
@@ -258,7 +258,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const article = await creerArticle({ pieceUnique: true });
     await expect(
       base.appli.query(
-        `INSERT INTO variante (id, article_id, quantite_stock) VALUES (gen_random_uuid(), $1, 2)`,
+        `INSERT INTO variant (id, article_id, stock_quantity) VALUES (gen_random_uuid(), $1, 2)`,
         [article],
       ),
     ).rejects.toMatchObject({ code: LEVEE_PLPGSQL });
@@ -313,7 +313,7 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     const moi = await creerUtilisateur();
     const article = await creerArticle();
     const { rows: v } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, 10) RETURNING id`,
       [article],
     );
@@ -323,13 +323,13 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     );
 
     await base.appli.query(
-      `INSERT INTO ligne_panier (id, panier_id, variante_id, quantite)
+      `INSERT INTO ligne_panier (id, panier_id, variant_id, quantite)
        VALUES (gen_random_uuid(), $1, $2, 1)`,
       [p[0]!.id, v[0]!.id],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO ligne_panier (id, panier_id, variante_id, quantite)
+        `INSERT INTO ligne_panier (id, panier_id, variant_id, quantite)
          VALUES (gen_random_uuid(), $1, $2, 1)`,
         [p[0]!.id, v[0]!.id],
       ),
@@ -342,7 +342,7 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     const moi = await creerUtilisateur();
     const article = await creerArticle();
     const { rows: v } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, 7) RETURNING id`,
       [article],
     );
@@ -351,21 +351,21 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
       [moi],
     );
     await base.appli.query(
-      `INSERT INTO ligne_panier (id, panier_id, variante_id, quantite)
+      `INSERT INTO ligne_panier (id, panier_id, variant_id, quantite)
        VALUES (gen_random_uuid(), $1, $2, 4)`,
       [p[0]!.id, v[0]!.id],
     );
 
-    const { rows } = await base.appli.query<{ quantite_stock: number; quantite_reservee: number }>(
-      `SELECT quantite_stock, quantite_reservee FROM variante WHERE id = $1`,
+    const { rows } = await base.appli.query<{ stock_quantity: number; reserved_quantity: number }>(
+      `SELECT stock_quantity, reserved_quantity FROM variant WHERE id = $1`,
       [v[0]!.id],
     );
-    expect(rows[0]).toEqual({ quantite_stock: 7, quantite_reservee: 0 });
+    expect(rows[0]).toEqual({ stock_quantity: 7, reserved_quantity: 0 });
   });
 });
 
 describe('suppression douce — le REVOKE, pas le commentaire', () => {
-  const douces = ['app_user', 'boutique', 'article', 'variante', 'extrait_boutique'] as const;
+  const douces = ['app_user', 'boutique', 'article', 'variant', 'extrait_boutique'] as const;
 
   it.each(douces)('jp_app ne peut PAS supprimer une ligne de %s', async (table) => {
     await expect(base.appli.query(`DELETE FROM "${table}"`)).rejects.toMatchObject({

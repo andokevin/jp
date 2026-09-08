@@ -1120,7 +1120,7 @@ model Article {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
   majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
-  variantes      Variante[]
+  variantes      Variant[]
   questions      QuestionArticle[]
   directs        DirectArticle[]
   contenus       ContenuArticle[]
@@ -1138,7 +1138,7 @@ model Article {
 }
 
 /// La déclinaison vendable — c'est elle qui porte le stock, jamais l'article.
-model Variante {
+model Variant {
   id String @id @default(uuid(7)) @db.Uuid
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict)
@@ -1154,14 +1154,14 @@ model Variante {
   sku String?
 
   /// **LA vérité** (D2). Aucune autre table ne dit ce qui reste.
-  quantiteStock    Int @default(0) @map("quantite_stock")
-  /// `CHECK (>= 0)` et `CHECK (<= quantite_stock)` — le dernier filet contre la
+  stockQuantity    Int @default(0) @map("stock_quantity")
+  /// `CHECK (>= 0)` et `CHECK (<= stock_quantity)` — le dernier filet contre la
   /// survente, même en cas de bogue applicatif.
-  quantiteReservee Int @default(0) @map("quantite_reservee")
-  seuilAlerte      Int @default(0) @map("seuil_alerte")
+  reservedQuantity Int @default(0) @map("reserved_quantity")
+  alertThreshold   Int @default(0) @map("alert_threshold")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   lignesPanier LignePanier[]
 
@@ -1171,7 +1171,7 @@ model Variante {
   lignesCommande LigneCommande[]
 
   @@unique([articleId, taille, couleur])
-  @@map("variante")
+  @@map("variant")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1213,8 +1213,8 @@ model LignePanier {
   panier   Panier @relation(fields: [panierId], references: [id], onDelete: Restrict)
   panierId String @map("panier_id") @db.Uuid
 
-  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
-  varianteId String   @map("variante_id") @db.Uuid
+  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String   @map("variant_id") @db.Uuid
 
   quantite Int @default(1)
 
@@ -1222,7 +1222,7 @@ model LignePanier {
 
   /// Rajouter le même article augmente la quantité au lieu d'empiler une
   /// seconde ligne.
-  @@unique([panierId, varianteId])
+  @@unique([panierId, variantId])
   @@map("ligne_panier")
 }
 
@@ -1488,8 +1488,8 @@ model Category {
 model MouvementStock {
   id String @id @default(uuid(7)) @db.Uuid
 
-  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
-  varianteId String   @map("variante_id") @db.Uuid
+  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String   @map("variant_id") @db.Uuid
 
   type          StockMovementType
   /// Signé : négatif pour une vente, positif pour une entrée.
@@ -1499,7 +1499,7 @@ model MouvementStock {
 
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
-  @@index([varianteId, creeLe])
+  @@index([variantId, creeLe])
   @@map("mouvement_stock")
 }
 
@@ -1527,8 +1527,8 @@ model QuestionArticle {
 /// « Prévenez-moi quand ça revient. » Clé primaire composite : une alerte par
 /// personne et par variante, sans ligne en double possible.
 model AlerteStock {
-  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
-  varianteId String   @map("variante_id") @db.Uuid
+  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String   @map("variant_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
@@ -1536,7 +1536,7 @@ model AlerteStock {
   notifieLe DateTime? @map("notifie_le") @db.Timestamptz(6)
   creeLe    DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
 
-  @@id([varianteId, userId])
+  @@id([variantId, userId])
   @@map("alerte_stock")
 }
 
@@ -1886,8 +1886,8 @@ model PromotionArticle {
 model Reservation {
   id String @id @default(uuid(7)) @db.Uuid
 
-  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
-  varianteId String   @map("variante_id") @db.Uuid
+  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String   @map("variant_id") @db.Uuid
 
   /// `NULL` pour une session invitée : on peut réserver avant d'avoir un
   /// compte, sinon la création de compte s'intercale au pire moment.
@@ -1914,7 +1914,7 @@ model Reservation {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
   majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
-  @@index([varianteId, statut])
+  @@index([variantId, statut])
   @@index([userId, statut])
   @@map("reservation")
 }
@@ -2039,8 +2039,8 @@ model LigneCommande {
   commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String   @map("commande_id") @db.Uuid
 
-  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
-  varianteId String   @map("variante_id") @db.Uuid
+  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String   @map("variant_id") @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid

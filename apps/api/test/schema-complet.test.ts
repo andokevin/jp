@@ -182,7 +182,7 @@ describe('ecriture_financiere — le cœur de la conformité (C4, D3)', () => {
 describe('réservation — ce qui porte RB1', () => {
   async function variante(stock = 5): Promise<string> {
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
       [await article(), stock],
     );
@@ -194,7 +194,7 @@ describe('réservation — ce qui porte RB1', () => {
     // ni payer ni libérer.
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variante_id, expire_le)
+        `INSERT INTO reservation (id, variant_id, expire_le)
          VALUES (gen_random_uuid(), $1, now() + interval '10 min')`,
         [await variante()],
       ),
@@ -202,7 +202,7 @@ describe('réservation — ce qui porte RB1', () => {
 
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variante_id, utilisateur_id, session_invitee_id, expire_le)
+        `INSERT INTO reservation (id, variant_id, utilisateur_id, session_invitee_id, expire_le)
          VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), now() + interval '10 min')`,
         [await variante(), await utilisateur()],
       ),
@@ -239,14 +239,14 @@ describe('D4 — le cumul de promotions est impossible par la FORME de la table'
 
   it('une remise ne peut pas dépasser ce qu’elle remise', async () => {
     const { rows: v } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, 5) RETURNING id`,
       [await article()],
     );
     await expect(
       base.appli.query(
         `INSERT INTO ligne_commande
-           (id, commande_id, variante_id, boutique_id, quantite, prix_unitaire, remise_ligne)
+           (id, commande_id, variant_id, boutique_id, quantite, prix_unitaire, remise_ligne)
          VALUES (gen_random_uuid(), $1, $2, $3, 2, 10000, 25000)`,
         [await commande(), v[0]!.id, await boutique()],
       ),
