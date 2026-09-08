@@ -13,7 +13,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { EN_TETES } from '@jp/contracts';
-import { langueDepuisEnTete } from '@jp/i18n';
+import { languageFromHeader } from '@jp/i18n';
 import { avecContexte, type Contexte } from './contexte.js';
 import { ErreurMetier, erreurInterne } from './erreurs.js';
 import { jetonDepuisEnTete, verifierJeton, type Identite } from './auth.js';
@@ -57,7 +57,7 @@ export async function creerServeur(options: OptionsServeur): Promise<FastifyInst
 
     const contexte: Contexte = {
       correlation: String(req.id),
-      langue: langueDepuisEnTete(req.headers['accept-language']),
+      langue: languageFromHeader(req.headers['accept-language']),
       ...(identite ? { utilisateurId: identite.utilisateurId } : {}),
       ...(req.ip ? { adresseIp: req.ip } : {}),
       economieDonnees: req.headers[EN_TETES.economieDonnees.toLowerCase()] === '1',

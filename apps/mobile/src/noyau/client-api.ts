@@ -7,12 +7,12 @@
  *      écran qui l'oublierait ouvrirait un trou dans RB10 — et ça ne se
  *      verrait qu'en production, sur un double prélèvement.
  *   2. **remonter l'enveloppe d'erreur telle quelle**. Le message est déjà
- *      traduit par le serveur : le traduire ici dupliquerait les catalogues.
+ *      traduit par le serveur : le translate ici dupliquerait les catalogues.
  *   3. **détecter le hors ligne** et le distinguer d'une panne serveur. Ce
  *      n'est pas la même chose et ça ne se raconte pas pareil.
  */
 import { EN_TETES, type Erreur } from '@jp/contracts';
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 export class HorsLigne extends Error {
   override readonly name = 'HorsLigne';
@@ -32,7 +32,7 @@ export interface JetonEnCours {
 
 export interface OptionsClient {
   readonly base: string;
-  readonly langue?: Langue;
+  readonly langue?: Language;
   readonly economieDonnees?: boolean;
   readonly session?: () => JetonEnCours | null;
   readonly fetch?: typeof fetch;
@@ -72,7 +72,7 @@ export class ClientApi {
   ): Promise<T> {
     const enTetes: Record<string, string> = {
       'Content-Type': 'application/json',
-      [EN_TETES.langue]: this.options.langue ?? LANGUE_PAR_DEFAUT,
+      [EN_TETES.langue]: this.options.langue ?? DEFAULT_LANGUAGE,
     };
     if (this.options.economieDonnees) enTetes[EN_TETES.economieDonnees] = '1';
 

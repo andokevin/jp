@@ -12,7 +12,7 @@
 import { useMemo } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
-import type { Langue } from '@jp/i18n';
+import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
 import { estEnLigne } from '../../../noyau/reseau.js';
@@ -51,7 +51,7 @@ const ecouterNetInfo: AbonnementReseau = ({ surCoupure, surRetour }) => {
 
 export interface OptionsParcoursNatif {
   readonly base: string;
-  readonly langue: Langue;
+  readonly langue: Language;
   /** Injectable pour les tests. */
   readonly fetch?: typeof fetch;
   /** Injectable pour les tests — `undefined` désactive l'écoute. */

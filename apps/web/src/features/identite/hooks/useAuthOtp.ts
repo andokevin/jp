@@ -11,7 +11,7 @@
  */
 import { useMemo } from 'react';
 import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
-import type { Langue } from '@jp/i18n';
+import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
 /**
@@ -36,7 +36,7 @@ const ecouterNavigateur: AbonnementReseau = ({ surCoupure, surRetour }) => {
 
 export interface OptionsParcoursWeb {
   readonly base: string;
-  readonly langue: Langue;
+  readonly langue: Language;
   /** Injectable pour les tests et pour un futur rendu serveur. */
   readonly fetch?: typeof fetch;
   /** Appelé une fois la session ouverte ET le prénom connu. */

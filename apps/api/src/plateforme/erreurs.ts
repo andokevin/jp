@@ -12,7 +12,7 @@
  *
  * « Code invalide » sans motif ni suite est un défaut, pas une simplification.
  */
-import { traduire, type CleMessage, type Langue } from '@jp/i18n';
+import { translate, type MessageKey, type Language } from '@jp/i18n';
 import type { Erreur } from '@jp/contracts';
 
 /**
@@ -27,7 +27,7 @@ export class ErreurMetier extends Error {
   constructor(
     readonly code: string,
     readonly statut: number,
-    readonly cleMessage: CleMessage,
+    readonly cleMessage: MessageKey,
     readonly options: {
       readonly variables?: Readonly<Record<string, string | number>>;
       readonly champs?: Readonly<Record<string, string>>;
@@ -38,10 +38,10 @@ export class ErreurMetier extends Error {
   }
 
   /** Met l'erreur en forme pour la réponse, dans la langue de l'appelant. */
-  versReponse(langue: Langue, correlation?: string): Erreur {
+  versReponse(langue: Language, correlation?: string): Erreur {
     const enveloppe: Erreur = {
       code: this.code,
-      message: traduire(this.cleMessage, langue, this.options.variables),
+      message: translate(this.cleMessage, langue, this.options.variables),
     };
     if (this.options.action !== undefined) enveloppe.action = this.options.action;
     if (this.options.champs !== undefined) enveloppe.champs = { ...this.options.champs };
@@ -85,10 +85,10 @@ export const erreurs = {
 } as const;
 
 /** Une erreur inattendue : on ne divulgue rien de son contenu au client. */
-export function erreurInterne(correlation: string, langue: Langue): Erreur {
+export function erreurInterne(correlation: string, langue: Language): Erreur {
   return {
     code: 'ERREUR_INTERNE',
-    message: traduire('erreur.indisponible', langue),
+    message: translate('erreur.indisponible', langue),
     correlation,
   };
 }

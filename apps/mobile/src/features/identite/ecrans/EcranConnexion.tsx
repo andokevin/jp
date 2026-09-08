@@ -26,8 +26,8 @@ import { useMemo } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { getLocales } from 'expo-localization';
 import { langueEcran, LIBELLES, avecTemps, type LangueEcran } from '@jp/identite';
-import { minuteurReservation } from '@jp/ui';
-import type { Langue } from '@jp/i18n';
+import { reservationTimer } from '@jp/ui';
+import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
 import { CasesCode } from '../composants/CasesCode.js';
@@ -48,7 +48,7 @@ import { langueDepuisEtiquettes } from '../../../noyau/langue.js';
 
 export function EcranConnexion(props: {
   readonly base: string;
-  readonly langueInitiale?: Langue;
+  readonly langueInitiale?: Language;
   /**
    * Pourquoi cet écran s'ouvre.
    *
@@ -179,7 +179,7 @@ export function EcranConnexion(props: {
  * L'écran du code — le seul qui porte un minuteur.
  *
  * Le décompte se calcule depuis l'échéance rendue par le SERVEUR
- * (`minuteurReservation`), jamais depuis une durée décidée ici : une horloge
+ * (`reservationTimer`), jamais depuis une durée décidée ici : une horloge
  * locale dérive, et un minuteur qui ment sur un code encore valide fait
  * redemander un code pour rien.
  */
@@ -194,8 +194,8 @@ function EtapeCode({
   const t = LIBELLES[langue];
   const erreur = etat.horsLigne ? null : etat.panne;
 
-  const minuteur = etat.expireLe
-    ? minuteurReservation(new Date(etat.expireLe), new Date(parcours.maintenant))
+  const timer = etat.expireLe
+    ? reservationTimer(new Date(etat.expireLe), new Date(parcours.maintenant))
     : null;
 
   return (
@@ -229,11 +229,11 @@ function EtapeCode({
        * la taille de police du système change — et la maquette dessine bien
        * une rangée flex.
        */}
-      {minuteur ? (
-        <View style={styles.minuteur}>
-          <IconeHorloge taille={15} couleur={minuteur.couleur} />
-          <Text style={[styles.minuteurTexte, { color: minuteur.couleur }]}>
-            {avecTemps(t.ecran2Validite, minuteur.libelle)}
+      {timer ? (
+        <View style={styles.timer}>
+          <IconeHorloge taille={15} couleur={timer.color} />
+          <Text style={[styles.timerText, { color: timer.color }]}>
+            {avecTemps(t.ecran2Validite, timer.label)}
           </Text>
         </View>
       ) : null}
@@ -266,6 +266,6 @@ const styles = StyleSheet.create({
   defilement: { flexGrow: 1 },
   adresse: { fontWeight: '500', color: PALETTE.texte },
   modifier: { color: PALETTE.action, textDecorationLine: 'underline' },
-  minuteur: { flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 14 },
-  minuteurTexte: { fontSize: 13, lineHeight: 17 },
+  timer: { flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 14 },
+  timerText: { fontSize: 13, lineHeight: 17 },
 });

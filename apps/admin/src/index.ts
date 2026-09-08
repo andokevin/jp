@@ -8,7 +8,7 @@
  * journal d'audit visible. Les écrans arrivent avec l'épique 11.
  */
 import { EN_TETES, type Erreur, type Page } from '@jp/contracts';
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 export const ECRANS = [
   { chemin: '/verifications', titre: 'File de vérification des vendeurs', issue: 'F11.1' },
@@ -23,7 +23,7 @@ export const ECRANS = [
 
 export interface Session {
   readonly jeton: string;
-  readonly langue: Langue;
+  readonly langue: Language;
 }
 
 /**
@@ -46,7 +46,7 @@ export class ClientApi {
   private enTetes(): Record<string, string> {
     const h: Record<string, string> = {
       'Content-Type': 'application/json',
-      [EN_TETES.langue]: this.session?.langue ?? LANGUE_PAR_DEFAUT,
+      [EN_TETES.langue]: this.session?.langue ?? DEFAULT_LANGUAGE,
     };
     if (this.session) h['Authorization'] = `Bearer ${this.session.jeton}`;
     return h;

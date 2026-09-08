@@ -5,19 +5,19 @@
  * imposent deux choses que ces chaînes-là ne peuvent pas tenir : un équivalent
  * ANGLAIS pour chaque clé, et une longueur mesurée contre lui. Or ces textes
  * n'existent qu'en malgache et en français — ce sont les mots de la maquette,
- * et les traduire en anglais pour satisfaire un test inventerait une langue
+ * et les translate en anglais pour satisfaire un test inventerait une langue
  * que personne ne lira sur cet écran. Les messages d'ERREUR, eux, restent dans
  * `@jp/i18n` : c'est le serveur qui les rend, déjà traduits.
  *
  * La bascule n'offre que MG et FR. Une personne arrivée en anglais lit le
  * français — la langue écrite courante à Madagascar.
  */
-import type { Langue } from '@jp/i18n';
+import type { Language } from '@jp/i18n';
 
 export const LANGUES_ECRAN = ['mg', 'fr'] as const;
 export type LangueEcran = (typeof LANGUES_ECRAN)[number];
 
-export function langueEcran(langue: Langue): LangueEcran {
+export function langueEcran(langue: Language): LangueEcran {
   return langue === 'mg' ? 'mg' : 'fr';
 }
 
@@ -111,7 +111,7 @@ const FR: Libelles = {
 
 export const LIBELLES: Readonly<Record<LangueEcran, Libelles>> = { mg: MG, fr: FR };
 
-/** Remplace `{temps}` — même convention que `traduire` de `@jp/i18n`. */
+/** Remplace `{temps}` — même convention que `translate` de `@jp/i18n`. */
 export function avecTemps(gabarit: string, temps: string): string {
   return gabarit.replace('{temps}', temps);
 }

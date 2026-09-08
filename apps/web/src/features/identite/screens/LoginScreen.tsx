@@ -13,8 +13,8 @@
  */
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { minuteurReservation } from '@jp/ui';
-import type { Langue } from '@jp/i18n';
+import { reservationTimer } from '@jp/ui';
+import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
 import '../auth.css';
@@ -29,7 +29,7 @@ const ID_AIDE = 'jp-aide-auth';
 
 export function LoginScreen(props: {
   readonly base: string;
-  readonly langueInitiale?: Langue;
+  readonly langueInitiale?: Language;
   readonly surSession?: (session: auth.ReponseSession) => void;
 }) {
   const [langue, setLangue] = useState<LangueEcran>(() =>
@@ -124,7 +124,7 @@ export function LoginScreen(props: {
  * L'écran du code — le seul qui porte un minuteur.
  *
  * Le décompte se calcule depuis l'échéance rendue par le SERVEUR
- * (`minuteurReservation`), jamais depuis une durée décidée ici : une horloge
+ * (`reservationTimer`), jamais depuis une durée décidée ici : une horloge
  * locale dérive, et un minuteur qui ment sur un code encore valide fait
  * redemander un code pour rien.
  */
@@ -139,8 +139,8 @@ function EtapeCode({
   const t = LIBELLES[langue];
   const erreur = etat.horsLigne ? null : etat.panne;
 
-  const minuteur = etat.expireLe
-    ? minuteurReservation(new Date(etat.expireLe), new Date(parcours.maintenant))
+  const timer = etat.expireLe
+    ? reservationTimer(new Date(etat.expireLe), new Date(parcours.maintenant))
     : null;
 
   return (
@@ -168,10 +168,10 @@ function EtapeCode({
 
       {erreur ? <MessageErreur id={ID_ERREUR} texte={erreur.message} /> : null}
 
-      {minuteur ? (
-        <p className="jp-minuteur" style={{ color: minuteur.couleur }}>
+      {timer ? (
+        <p className="jp-minuteur" style={{ color: timer.color }}>
           <IconeHorloge />
-          <span>{avecTemps(t.ecran2Validite, minuteur.libelle)}</span>
+          <span>{avecTemps(t.ecran2Validite, timer.label)}</span>
         </p>
       ) : null}
 

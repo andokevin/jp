@@ -10,11 +10,11 @@
  * pour quarante langues dont nous n'en parlons que deux. Deux fonctions
  * suffisent.
  */
-import type { Langue } from './langues.js';
+import type { Language } from './languages.js';
 
-export type FormesPluriel = {
-  readonly un: string;
-  readonly plusieurs: string;
+export type PluralForms = {
+  readonly one: string;
+  readonly many: string;
 };
 
 /**
@@ -23,13 +23,13 @@ export type FormesPluriel = {
  *
  * Français : singulier pour 0 et 1. Anglais : singulier pour 1 seulement.
  */
-export function forme(langue: Langue, nombre: number, formes: FormesPluriel): string {
-  const n = Math.abs(nombre);
-  if (langue === 'fr') return n < 2 ? formes.un : formes.plusieurs;
-  return n === 1 ? formes.un : formes.plusieurs;
+export function form(language: Language, count: number, forms: PluralForms): string {
+  const n = Math.abs(count);
+  if (language === 'fr') return n < 2 ? forms.one : forms.many;
+  return n === 1 ? forms.one : forms.many;
 }
 
 /** « 2 articles » · « 1 article » · « 0 article » — et « 0 items » en anglais. */
-export function accorder(langue: Langue, nombre: number, formes: FormesPluriel): string {
-  return `${nombre} ${forme(langue, nombre, formes)}`;
+export function agree(language: Language, count: number, forms: PluralForms): string {
+  return `${count} ${form(language, count, forms)}`;
 }

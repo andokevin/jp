@@ -18,11 +18,11 @@
  * tôt ou tard.
  */
 
-export const LANGUES = ['en', 'fr', 'mg'] as const;
+export const LANGUAGES = ['en', 'fr', 'mg'] as const;
 
-export type Langue = (typeof LANGUES)[number];
+export type Language = (typeof LANGUAGES)[number];
 
-export const LANGUE_PAR_DEFAUT: Langue = 'fr';
+export const DEFAULT_LANGUAGE: Language = 'fr';
 
 /**
  * Marge de largeur à prévoir sur toute chaîne traduite.
@@ -32,7 +32,7 @@ export const LANGUE_PAR_DEFAUT: Langue = 'fr';
  * est vérifiée par un test sur les catalogues : un libellé français qui
  * dépasse cette marge fait échouer la construction.
  */
-export const RALLONGEMENT_FRANCAIS = 1.2;
+export const FRENCH_EXPANSION = 1.2;
 
 /**
  * Même marge, pour le malgache : **30 %**.
@@ -42,10 +42,10 @@ export const RALLONGEMENT_FRANCAIS = 1.2;
  * décide de la largeur des boutons : une maquette dessinée à la longueur
  * malgache tient en français, l'inverse tronque *(EP00 §6)*.
  */
-export const RALLONGEMENT_MALGACHE = 1.3;
+export const MALAGASY_EXPANSION = 1.3;
 
-export function estLangue(valeur: unknown): valeur is Langue {
-  return typeof valeur === 'string' && (LANGUES as readonly string[]).includes(valeur);
+export function isLanguage(value: unknown): value is Language {
+  return typeof value === 'string' && (LANGUAGES as readonly string[]).includes(value);
 }
 
 /**
@@ -59,11 +59,11 @@ export function estLangue(valeur: unknown): valeur is Langue {
  * erreur : un en-tête absent ou mal formé ne doit pas empêcher quelqu'un
  * d'utiliser l'application.
  */
-export function langueDepuisEnTete(enTete: string | undefined | null): Langue {
-  if (!enTete) return LANGUE_PAR_DEFAUT;
-  for (const morceau of enTete.split(',')) {
-    const code = morceau.split(';')[0]?.trim().toLowerCase().slice(0, 2);
-    if (estLangue(code)) return code;
+export function languageFromHeader(header: string | undefined | null): Language {
+  if (!header) return DEFAULT_LANGUAGE;
+  for (const piece of header.split(',')) {
+    const code = piece.split(';')[0]?.trim().toLowerCase().slice(0, 2);
+    if (isLanguage(code)) return code;
   }
-  return LANGUE_PAR_DEFAUT;
+  return DEFAULT_LANGUAGE;
 }

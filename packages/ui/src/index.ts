@@ -9,7 +9,7 @@
  * éléments ni les mêmes styles ; une abstraction qui prétendrait les unifier
  * coûterait plus qu'elle ne rapporte.
  */
-export * from './jetons.js';
-export * from './etats.js';
+export * from './tokens.js';
+export * from './states.js';
 export * from './primitives.js';
-export * from './univers.js';
+export * from './universes.js';

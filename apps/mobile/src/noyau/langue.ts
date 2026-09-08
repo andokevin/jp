@@ -9,19 +9,19 @@
  *
  * **Aucun analyseur n'est écrit ici.** Une liste de locales ordonnée par
  * préférence a exactement la forme d'un `Accept-Language` — « la première que
- * tu connais gagne » — et `langueDepuisEnTete` de `@jp/i18n` sait déjà le
+ * tu connais gagne » — et `languageFromHeader` de `@jp/i18n` sait déjà le
  * faire, poids `q=` ignorés compris. Le seul travail est de joindre les
  * étiquettes par des virgules. Écrire un second analyseur pour la même
  * décision, c'est signer pour deux réponses différentes à
  * « quelle langue ? » : une côté serveur, une côté appareil.
  */
-import { langueDepuisEnTete, LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { languageFromHeader, DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 /**
  * @param etiquettes les locales de l'appareil, **dans l'ordre de préférence** —
  *        `['mg-MG', 'fr-FR']` tel que `Localization.getLocales()` les rend.
  */
-export function langueDepuisEtiquettes(etiquettes: readonly string[]): Langue {
-  if (etiquettes.length === 0) return LANGUE_PAR_DEFAUT;
-  return langueDepuisEnTete(etiquettes.join(','));
+export function langueDepuisEtiquettes(etiquettes: readonly string[]): Language {
+  if (etiquettes.length === 0) return DEFAULT_LANGUAGE;
+  return languageFromHeader(etiquettes.join(','));
 }

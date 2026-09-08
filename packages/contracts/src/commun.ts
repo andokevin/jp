@@ -10,7 +10,7 @@
  * la pagination, l'enveloppe d'erreur, et les en-têtes.
  */
 import { z } from 'zod';
-import { LANGUES } from '@jp/i18n';
+import { LANGUAGES } from '@jp/i18n';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // En-têtes
@@ -26,7 +26,7 @@ export const EN_TETES = {
   economieDonnees: 'X-Economie-Donnees',
 } as const;
 
-export const langueSchema = z.enum(LANGUES);
+export const langueSchema = z.enum(LANGUAGES);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Pagination par CURSEUR, jamais par numéro de page
@@ -101,7 +101,7 @@ export function decoderCurseur(curseur: string): Record<string, string | number>
  *   `code`    STABLE, en majuscules. Les clients s'y fient pour décider quoi
  *             faire. Il ne change jamais, même si le message change.
  *   `message` déjà traduit par le serveur, qui connaît la langue. Un client
- *             qui devrait traduire des codes d'erreur dupliquerait les
+ *             qui devrait translate des codes d'erreur dupliquerait les
  *             catalogues.
  *   `action`  ce que la personne PEUT faire. C'est ce qui distingue un refus
  *             utile d'un mur. « Code invalide » sans motif ni suite est un

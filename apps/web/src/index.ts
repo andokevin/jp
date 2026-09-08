@@ -31,7 +31,7 @@
  * partageables restent cinq — l'authentification n'en est pas une, elle ne
  * s'envoie pas dans une conversation.
  */
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 /**
  * La locale Open Graph de chaque langue.
@@ -41,7 +41,7 @@ import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
  * comme il compile, personne ne le voit. Ici, une langue de plus dans
  * `@jp/i18n` casse le typage jusqu'à ce qu'on ait décidé de sa locale.
  */
-const LOCALES: Record<Langue, string> = {
+const LOCALES: Record<Language, string> = {
   en: 'en_US',
   fr: 'fr_MG',
   mg: 'mg_MG',
@@ -67,7 +67,7 @@ export interface Apercu {
   readonly image: string;
   readonly url: string;
   readonly type: 'website' | 'product' | 'video.other';
-  readonly langue: Langue;
+  readonly langue: Language;
 }
 
 /**
@@ -98,4 +98,4 @@ export function balisesApercu(a: Apercu): string {
   ].join('\n');
 }
 
-export const LANGUE_DEFAUT: Langue = LANGUE_PAR_DEFAUT;
+export const LANGUE_DEFAUT: Language = DEFAULT_LANGUAGE;

@@ -4,7 +4,7 @@
  * **Un seul objet, les trois langues côte à côte.** Deux fichiers séparés
  * dérivent : on ajoute une clé dans l'un, on oublie l'autre, et le trou ne se
  * voit qu'en production. Ici, une clé manquante fait échouer la compilation —
- * `CATALOGUES` est contraint à `Record<Langue, Messages>`.
+ * `CATALOGS` est contraint à `Record<Language, Messages>`.
  *
  * Le contenu est volontairement maigre : ce sont les messages transverses dont
  * la plateforme (`S3`) a besoin. Chaque domaine apportera les siens avec sa
@@ -14,7 +14,7 @@
  * du genre « une erreur est survenue » : un refus sans motif ni action possible
  * est un défaut, pas une simplification.
  */
-import { LANGUE_PAR_DEFAUT, type Langue } from './langues.js';
+import { DEFAULT_LANGUAGE, type Language } from './languages.js';
 
 const EN = {
   // ── Transverse ────────────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ const FR: Messages = {
 };
 
 /**
- * Le malgache — la langue parlée, celle que les écrans proposent en premier.
+ * Le malgache — la language parlée, celle que les écrans proposent en premier.
  *
  * Traductions à FAIRE RELIRE par un locuteur avant mise en production : elles
  * sont proposées ici pour que le type tienne et que les écrans aient de quoi
@@ -139,32 +139,32 @@ const MG: Messages = {
   'erreur.email_non_verifie': 'Hamarino aloha ny mailakao vao manohy.',
 };
 
-export const CATALOGUES: Record<Langue, Messages> = { en: EN, fr: FR, mg: MG };
+export const CATALOGS: Record<Language, Messages> = { en: EN, fr: FR, mg: MG };
 
-export type CleMessage = keyof typeof EN;
+export type MessageKey = keyof typeof EN;
 
-export const CLES = Object.keys(EN) as readonly CleMessage[];
+export const KEYS = Object.keys(EN) as readonly MessageKey[];
 
 /**
- * Traduit une clé, en remplaçant les variables `{nom}` par leur valeur.
+ * Traduit une clé, en remplaçant les variables `{name}` par leur valeur.
  *
  * Ne renvoie JAMAIS `undefined` : une clé inconnue retombe sur le français,
  * puis sur la clé elle-même. Un écran doit afficher quelque chose de moche
- * plutôt que rien — mais le typage de `CleMessage` rend le cas presque
+ * plutôt que rien — mais le typage de `MessageKey` rend le cas presque
  * impossible à atteindre depuis notre propre code.
  */
-export function traduire(
-  cle: CleMessage,
-  langue: Langue = LANGUE_PAR_DEFAUT,
+export function translate(
+  key: MessageKey,
+  language: Language = DEFAULT_LANGUAGE,
   variables: Readonly<Record<string, string | number>> = {},
 ): string {
-  const gabarit = CATALOGUES[langue][cle] ?? CATALOGUES[LANGUE_PAR_DEFAUT][cle] ?? cle;
-  return gabarit.replace(/\{(\w+)\}/g, (entier, nom: string) =>
-    nom in variables ? String(variables[nom]) : entier,
+  const template = CATALOGS[language][key] ?? CATALOGS[DEFAULT_LANGUAGE][key] ?? key;
+  return template.replace(/\{(\w+)\}/g, (whole, name: string) =>
+    name in variables ? String(variables[name]) : whole,
   );
 }
 
-/** Les variables `{nom}` attendues par un message donné. */
-export function variablesDe(cle: CleMessage): readonly string[] {
-  return [...CATALOGUES.en[cle].matchAll(/\{(\w+)\}/g)].map((m) => m[1] as string);
+/** Les variables `{name}` attendues par un message donné. */
+export function variablesOf(key: MessageKey): readonly string[] {
+  return [...CATALOGS.en[key].matchAll(/\{(\w+)\}/g)].map((m) => m[1] as string);
 }

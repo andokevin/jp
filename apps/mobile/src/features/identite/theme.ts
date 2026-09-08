@@ -27,13 +27,13 @@
  * `#52525B` : plus sombre, donc plus contrasté, et c'est le sens dans lequel
  * on accepte de dévier *(C2)*.
  */
-import { accent, CIBLE_TACTILE_MIN, COULEURS, ESPACEMENT, RAYON } from '@jp/ui';
+import { accent, MIN_TAP_TARGET, COLORS, SPACING, RADIUS } from '@jp/ui';
 
 /** Le framboise de la maquette — l'accent « beauté » du design system. */
 export const ACTION = accent('beaute');
 
 /** Le violet des jetons, réservé au wordmark. Jamais un bouton *(D-22)*. */
-export const IDENTITE = COULEURS.identite;
+export const IDENTITE = COLORS.identity;
 
 /**
  * La hauteur des contrôles : 56, au-dessus des 48 du design system.
@@ -41,25 +41,25 @@ export const IDENTITE = COULEURS.identite;
  * `Math.max` plutôt que `56` en dur — si la cible minimale du design system
  * montait un jour à 60, cette ligne suivrait au lieu de devenir un mensonge.
  */
-export const HAUTEUR_CONTROLE = Math.max(56, CIBLE_TACTILE_MIN);
+export const HAUTEUR_CONTROLE = Math.max(56, MIN_TAP_TARGET);
 
 /** Les six cases : plus étroites que hautes, pour tenir sur 360 dp de large. */
-export const CASE = { largeur: 48, hauteur: 56, ecart: ESPACEMENT.s } as const;
+export const CASE = { largeur: 48, hauteur: 56, ecart: SPACING.s } as const;
 
 export const PALETTE = {
-  fond: COULEURS.fond,
-  fondBandeau: COULEURS.fondSecondaire,
-  bordure: COULEURS.bordure,
-  texte: COULEURS.texte,
-  texteSecondaire: COULEURS.texteSecondaire,
-  texteInverse: COULEURS.texteInverse,
+  fond: COLORS.background,
+  fondBandeau: COLORS.backgroundSecondary,
+  bordure: COLORS.border,
+  texte: COLORS.text,
+  texteSecondaire: COLORS.textSecondary,
+  texteInverse: COLORS.textInverse,
   action: ACTION,
   identite: IDENTITE,
-  danger: COULEURS.danger,
+  danger: COLORS.danger,
 } as const;
 
-export const ESPACE = ESPACEMENT;
-export const RAYONS = { champ: RAYON.grand, case: 14, pilule: RAYON.rond } as const;
+export const ESPACE = SPACING;
+export const RAYONS = { champ: RADIUS.large, case: 14, pilule: RADIUS.round } as const;
 
 /**
  * La serif éditoriale du wordmark et des titres.

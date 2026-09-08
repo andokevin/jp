@@ -21,7 +21,7 @@
  * tests déterministes sans simulacre de module.
  */
 import { auth, EN_TETES, type Erreur } from '@jp/contracts';
-import { LANGUE_PAR_DEFAUT, type Langue } from '@jp/i18n';
+import { DEFAULT_LANGUAGE, type Language } from '@jp/i18n';
 
 /** Levée quand la requête n'est jamais partie. À ne pas confondre avec une erreur du serveur. */
 export class HorsLigne extends Error {
@@ -30,7 +30,7 @@ export class HorsLigne extends Error {
 
 export interface OptionsClientIdentite {
   readonly base: string;
-  readonly langue?: Langue;
+  readonly langue?: Language;
   readonly fetch?: typeof fetch;
   /** Injectable pour rendre les tests déterministes. */
   readonly nouvelleCle?: () => string;
@@ -52,8 +52,8 @@ export class ClientIdentite {
   }
 
   /** La langue courante, telle qu'elle part dans `Accept-Language`. */
-  get langue(): Langue {
-    return this.options.langue ?? LANGUE_PAR_DEFAUT;
+  get langue(): Language {
+    return this.options.langue ?? DEFAULT_LANGUAGE;
   }
 
   /**

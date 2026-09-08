@@ -12,11 +12,11 @@
  */
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { randomUUID } from 'node:crypto';
-import type { Langue } from '@jp/i18n';
+import type { Language } from '@jp/i18n';
 
 export interface Contexte {
   readonly correlation: string;
-  readonly langue: Langue;
+  readonly langue: Language;
   readonly utilisateurId?: string;
   readonly adresseIp?: string;
   readonly economieDonnees: boolean;

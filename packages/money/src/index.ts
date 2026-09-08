@@ -2,38 +2,38 @@
  * @jp/money — l'Ariary en entiers.
  *
  * **Aucun flottant, ni en base, ni en transport, ni en calcul.** L'ariary n'a
- * pas de subdivision en usage : un montant est un entier, point. Le reste du
+ * pas de subdivision en usage : un amount est un whole, point. Le remainder du
  * dépôt n'a pas le droit d'appeler `toFixed` ni `parseFloat` — la règle est
  * appliquée par ESLint, et ce paquet est la seule exception.
  *
  * Deux choix qui méritent d'être lus avant d'être utilisés :
  *
  * 1. **L'arrondi est nommé par son bénéficiaire.** Il n'existe pas de fonction
- *    « appliquer un pourcentage » : il y a `commissionSur` qui arrondit vers le
- *    bas, et `remiseSur` qui arrondit vers le haut. Dans les deux cas, l'ariary
+ *    « appliquer un pourcentage » : il y a `commissionOn` qui arrondit vers le
+ *    low, et `discountOn` qui arrondit vers le high. Dans les deux cas, l'ariary
  *    contesté va à l'utilisateur, jamais à JP. Une fonction neutre obligerait
  *    chaque appelant à trancher, et un appelant sur dix trancherait mal.
  *
- * 2. **`repartir` conserve la somme.** Répartir 1 000 Ar en trois donne
+ * 2. **`distribute` conserve la somme.** Répartir 1 000 Ar en trois donne
  *    334 + 333 + 333, jamais 333 × 3. C'est ce qui empêche un ariary de
  *    disparaître au partage entre la commission et le vendeur.
  *
  * Voir `plan/PLAN_SOCLE.md` §4 et `JP_CDC_TECHNIQUE.md` §6.2.
  */
 
-import type { Langue } from '@jp/i18n';
+import type { Language } from '@jp/i18n';
 
-/** Un montant en ariary. Toujours un entier, jamais un flottant. */
+/** Un amount en ariary. Toujours un whole, jamais un flottant. */
 export type Ariary = number & { readonly __ariary: unique symbol };
 
-/** Un taux en pour mille : `25` vaut 2,5 %. Toujours un entier. */
-export type PourMille = number & { readonly __pourMille: unique symbol };
+/** Un rate en pour mille : `25` vaut 2,5 %. Toujours un whole. */
+export type PerMille = number & { readonly __perMille: unique symbol };
 
-export class MontantInvalide extends Error {
-  override readonly name = 'MontantInvalide';
+export class InvalidAmount extends Error {
+  override readonly name = 'InvalidAmount';
   constructor(
     message: string,
-    readonly valeur: unknown,
+    readonly value: unknown,
   ) {
     super(message);
   }
@@ -42,187 +42,187 @@ export class MontantInvalide extends Error {
 // ── Construction ────────────────────────────────────────────────────────────
 
 /**
- * Construit un montant. Refuse tout ce qui n'est pas un entier fini.
+ * Construit un amount. Refuse tout ce qui n'est pas un whole fini.
  *
- * Le refus est volontairement brutal : un montant flottant qui traverse cette
+ * Le refus est volontairement brutal : un amount flottant qui traverse cette
  * frontière ressort en écriture comptable, et une écriture comptable ne se
  * corrige pas — elle s'annule par une écriture inverse.
  */
-export function ariary(valeur: number): Ariary {
-  if (!Number.isFinite(valeur)) {
-    throw new MontantInvalide('Un montant doit être un nombre fini.', valeur);
+export function ariary(value: number): Ariary {
+  if (!Number.isFinite(value)) {
+    throw new InvalidAmount('Un amount doit être un nombre fini.', value);
   }
-  if (!Number.isInteger(valeur)) {
-    throw new MontantInvalide(
-      "Un montant en ariary est un entier. Aucun arrondi implicite n'est fait ici : " +
-        'utilisez commissionSur, remiseSur ou repartir.',
-      valeur,
+  if (!Number.isInteger(value)) {
+    throw new InvalidAmount(
+      "Un amount en ariary est un whole. Aucun arrondi implicite n'est fait ici : " +
+        'utilisez commissionOn, discountOn ou distribute.',
+      value,
     );
   }
-  if (!Number.isSafeInteger(valeur)) {
-    throw new MontantInvalide('Montant hors des entiers sûrs.', valeur);
+  if (!Number.isSafeInteger(value)) {
+    throw new InvalidAmount('Montant hors des entiers sûrs.', value);
   }
-  return valeur as Ariary;
+  return value as Ariary;
 }
 
-export function pourMille(valeur: number): PourMille {
-  if (!Number.isInteger(valeur) || valeur < 0 || valeur > 1000) {
-    throw new MontantInvalide('Un taux en pour mille est un entier de 0 à 1000.', valeur);
+export function perMille(value: number): PerMille {
+  if (!Number.isInteger(value) || value < 0 || value > 1000) {
+    throw new InvalidAmount('Un rate en pour mille est un whole de 0 à 1000.', value);
   }
-  return valeur as PourMille;
+  return value as PerMille;
 }
 
 export const ZERO = ariary(0);
 
 /**
- * Lit un montant saisi par une personne : « 50 000 », « 50.000 », « 50 000 Ar ».
+ * Lit un amount saisi par une personne : « 50 000 », « 50.000 », « 50 000 Ar ».
  *
  * Le point et la virgule sont ambigus : séparateur de milliers ici, séparateur
  * décimal ailleurs. On les distingue par ce qui les suit — **un séparateur de
- * milliers est toujours suivi d'exactement trois chiffres**. « 50.000 » vaut
+ * milliers est toujours suivi d'exactement trois digits**. « 50.000 » vaut
  * donc 50 000, tandis que « 1500,50 » est refusé.
  *
- * Le refus est volontaire : il n'y a pas de centime d'ariary, donc une saisie
- * décimale est une erreur de la personne qui tape, pas une valeur à arrondir en
+ * Le refus est volontaire : il n'y a pas de centime d'ariary, donc une input
+ * décimale est une erreur de la personne qui tape, pas une value à arrondir en
  * silence. Mieux vaut le lui dire que deviner.
  */
-export function depuisTexte(saisie: string): Ariary {
-  const nettoye = saisie
-    // U+00A0 insécable, U+202F fine insécable — celle que formater() produit.
+export function fromText(input: string): Ariary {
+  const cleaned = input
+    // U+00A0 insécable, U+202F fine insécable — celle que format() produit.
     // En échappement : littérales, elles sont invisibles à la relecture.
     .replace(/[\s\u00A0\u202F]/g, '')
     .replace(/ar$/i, '')
     .trim();
 
-  if (nettoye === '') throw new MontantInvalide('Montant vide.', saisie);
+  if (cleaned === '') throw new InvalidAmount('Montant vide.', input);
 
-  // Uniquement des chiffres : rien à interpréter.
-  if (/^-?\d+$/.test(nettoye)) return ariary(Number(nettoye));
+  // Uniquement des digits : rien à interpréter.
+  if (/^-?\d+$/.test(cleaned)) return ariary(Number(cleaned));
 
-  // Groupes de trois chiffres : ce sont des séparateurs de milliers.
-  if (/^-?\d{1,3}([.,]\d{3})+$/.test(nettoye)) {
-    return ariary(Number(nettoye.replace(/[.,]/g, '')));
+  // Groupes de trois digits : ce sont des séparateurs de milliers.
+  if (/^-?\d{1,3}([.,]\d{3})+$/.test(cleaned)) {
+    return ariary(Number(cleaned.replace(/[.,]/g, '')));
   }
 
-  if (/[.,]/.test(nettoye)) {
-    throw new MontantInvalide("L'ariary n'a pas de décimale. Saisissez un montant entier.", saisie);
+  if (/[.,]/.test(cleaned)) {
+    throw new InvalidAmount("L'ariary n'a pas de décimale. Saisissez un amount whole.", input);
   }
 
-  throw new MontantInvalide('Montant illisible.', saisie);
+  throw new InvalidAmount('Montant illisible.', input);
 }
 
 // ── Arithmétique ────────────────────────────────────────────────────────────
 
-export function additionner(...montants: readonly Ariary[]): Ariary {
-  return ariary(montants.reduce<number>((total, m) => total + m, 0));
+export function add(...amounts: readonly Ariary[]): Ariary {
+  return ariary(amounts.reduce<number>((total, m) => total + m, 0));
 }
 
-export function soustraire(a: Ariary, b: Ariary): Ariary {
+export function subtract(a: Ariary, b: Ariary): Ariary {
   return ariary(a - b);
 }
 
-/** Multiplie par une quantité entière — un nombre d'articles, jamais un taux. */
-export function multiplier(montant: Ariary, quantite: number): Ariary {
-  if (!Number.isInteger(quantite) || quantite < 0) {
-    throw new MontantInvalide('Une quantité est un entier positif.', quantite);
+/** Multiplie par une quantité entière — un nombre d'articles, jamais un rate. */
+export function multiply(amount: Ariary, quantity: number): Ariary {
+  if (!Number.isInteger(quantity) || quantity < 0) {
+    throw new InvalidAmount('Une quantité est un whole positif.', quantity);
   }
-  return ariary(montant * quantite);
+  return ariary(amount * quantity);
 }
 
 /** Le plus petit des deux — la remise la plus favorable, par exemple. */
-export function minimum(a: Ariary, b: Ariary): Ariary {
+export function min(a: Ariary, b: Ariary): Ariary {
   return a <= b ? a : b;
 }
 
-export function maximum(a: Ariary, b: Ariary): Ariary {
+export function max(a: Ariary, b: Ariary): Ariary {
   return a >= b ? a : b;
 }
 
-/** Borne un montant dans un intervalle. Utile pour les plafonds de remise. */
-export function borner(montant: Ariary, bas: Ariary, haut: Ariary): Ariary {
-  if (bas > haut) throw new MontantInvalide('Bornes inversées.', { bas, haut });
-  return minimum(maximum(montant, bas), haut);
+/** Borne un amount dans un intervalle. Utile pour les plafonds de remise. */
+export function clamp(amount: Ariary, low: Ariary, high: Ariary): Ariary {
+  if (low > high) throw new InvalidAmount('Bornes inversées.', { low, high });
+  return min(max(amount, low), high);
 }
 
 // ── Taux ────────────────────────────────────────────────────────────────────
 
 /**
- * La commission prélevée par JP, arrondie **vers le bas**.
+ * La commission prélevée par JP, arrondie **vers le low**.
  *
- * L'ariary contesté reste au vendeur. C'est un choix économique minuscule et un
+ * L'ariary contesté remainder au vendeur. C'est un choix économique minuscule et un
  * choix de confiance qui ne l'est pas : un vendeur qui recompte sa commission ne
  * doit jamais trouver un ariary de trop du côté de la plateforme.
  */
-export function commissionSur(montant: Ariary, taux: PourMille): Ariary {
-  verifierPositif(montant);
-  return ariary(Math.floor((montant * taux) / 1000));
+export function commissionOn(amount: Ariary, rate: PerMille): Ariary {
+  requirePositive(amount);
+  return ariary(Math.floor((amount * rate) / 1000));
 }
 
 /**
- * Une remise accordée à l'acheteuse, arrondie **vers le haut**, puis plafonnée
- * au montant lui-même — une remise ne rend jamais un prix négatif.
+ * Une remise accordée à l'acheteuse, arrondie **vers le high**, puis plafonnée
+ * au amount lui-même — une remise ne rend jamais un prix négatif.
  */
-export function remiseSur(montant: Ariary, taux: PourMille): Ariary {
-  verifierPositif(montant);
-  return minimum(ariary(Math.ceil((montant * taux) / 1000)), montant);
+export function discountOn(amount: Ariary, rate: PerMille): Ariary {
+  requirePositive(amount);
+  return min(ariary(Math.ceil((amount * rate) / 1000)), amount);
 }
 
 /** Ce qui revient au vendeur, une fois la commission prélevée. */
-export function netVendeur(montant: Ariary, taux: PourMille): Ariary {
-  return soustraire(montant, commissionSur(montant, taux));
+export function sellerNet(amount: Ariary, rate: PerMille): Ariary {
+  return subtract(amount, commissionOn(amount, rate));
 }
 
 // ── Répartition ─────────────────────────────────────────────────────────────
 
 /**
- * Répartit un montant selon des poids entiers, **en conservant la somme**.
+ * Répartit un amount selon des weights entiers, **en conservant la somme**.
  *
- * Méthode du plus fort reste : chaque part reçoit son plancher, puis les ariary
+ * Méthode du plus fort remainder : chaque part reçoit son plancher, puis les ariary
  * restants sont distribués aux parts dont la fraction perdue est la plus
- * grande. À égalité de reste, la part la plus à gauche est servie d'abord — le
+ * grande. À égalité de remainder, la part la plus à gauche est servie d'abord — le
  * résultat est donc déterministe, ce qui rend le test reproductible.
  *
- *     repartir(1000, [1, 1, 1])  →  [334, 333, 333]
- *     repartir(100,  [70, 30])   →  [70, 30]
+ *     distribute(1000, [1, 1, 1])  →  [334, 333, 333]
+ *     distribute(100,  [70, 30])   →  [70, 30]
  *
- * `somme(repartir(m, poids)) === m` est un invariant, vérifié par test de
+ * `somme(distribute(m, weights)) === m` est un invariant, vérifié par test de
  * propriété. Sans lui, un ariary disparaît une fois sur trois au partage.
  */
-export function repartir(montant: Ariary, poids: readonly number[]): Ariary[] {
-  if (poids.length === 0) throw new MontantInvalide('Aucune part à servir.', poids);
-  if (poids.some((p) => !Number.isInteger(p) || p < 0)) {
-    throw new MontantInvalide('Les poids sont des entiers positifs.', poids);
+export function distribute(amount: Ariary, weights: readonly number[]): Ariary[] {
+  if (weights.length === 0) throw new InvalidAmount('Aucune part à servir.', weights);
+  if (weights.some((p) => !Number.isInteger(p) || p < 0)) {
+    throw new InvalidAmount('Les weights sont des entiers positifs.', weights);
   }
 
-  const total = poids.reduce((a, b) => a + b, 0);
-  if (total === 0) throw new MontantInvalide('La somme des poids est nulle.', poids);
+  const total = weights.reduce((a, b) => a + b, 0);
+  if (total === 0) throw new InvalidAmount('La somme des weights est nulle.', weights);
 
-  const negatif = montant < 0;
-  const absolu = Math.abs(montant);
+  const negative = amount < 0;
+  const absolute = Math.abs(amount);
 
-  const planchers = poids.map((p) => Math.floor((absolu * p) / total));
-  let reste = absolu - planchers.reduce((a, b) => a + b, 0);
+  const floors = weights.map((p) => Math.floor((absolute * p) / total));
+  let remainder = absolute - floors.reduce((a, b) => a + b, 0);
 
-  const ordre = poids
-    .map((p, i) => ({ i, fraction: (absolu * p) % total }))
+  const order = weights
+    .map((p, i) => ({ i, fraction: (absolute * p) % total }))
     .sort((a, b) => b.fraction - a.fraction || a.i - b.i);
 
-  for (const { i } of ordre) {
-    if (reste <= 0) break;
-    planchers[i] = (planchers[i] ?? 0) + 1;
-    reste--;
+  for (const { i } of order) {
+    if (remainder <= 0) break;
+    floors[i] = (floors[i] ?? 0) + 1;
+    remainder--;
   }
 
-  return planchers.map((v) => ariary(negatif ? -v : v));
+  return floors.map((v) => ariary(negative ? -v : v));
 }
 
 /** Répartit à parts égales. Le surplus va aux premières parts. */
-export function repartirEgalement(montant: Ariary, parts: number): Ariary[] {
+export function distributeEqually(amount: Ariary, parts: number): Ariary[] {
   if (!Number.isInteger(parts) || parts <= 0) {
-    throw new MontantInvalide('Le nombre de parts est un entier strictement positif.', parts);
+    throw new InvalidAmount('Le nombre de parts est un whole strictement positif.', parts);
   }
-  return repartir(
-    montant,
+  return distribute(
+    amount,
     Array.from({ length: parts }, () => 1),
   );
 }
@@ -230,11 +230,11 @@ export function repartirEgalement(montant: Ariary, parts: number): Ariary[] {
 // ── Affichage ───────────────────────────────────────────────────────────────
 
 /**
- * L'espace fine insécable sépare les milliers. Insécable, parce qu'un montant
+ * L'espace fine insécable sépare les milliers. Insécable, parce qu'un amount
  * coupé en fin de ligne — « 50 » puis « 000 Ar » — se lit de travers sur un
  * écran de cinq pouces.
  */
-const SEPARATEUR = ' ';
+const SEPARATOR = ' ';
 
 /**
  * « 50 000 Ar ». Identique en malgache et en français : le séparateur est le
@@ -243,57 +243,57 @@ const SEPARATEUR = ' ';
  * Le paramètre de langue existe pour le signe négatif et les libellés qui
  * viendront, pas pour le nombre lui-même.
  */
-export function formater(montant: Ariary, _langue: Langue = 'fr'): string {
-  const negatif = montant < 0;
-  const chiffres = Math.abs(montant)
+export function format(amount: Ariary, _language: Language = 'fr'): string {
+  const negative = amount < 0;
+  const digits = Math.abs(amount)
     .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, SEPARATEUR);
-  return `${negatif ? '−' : ''}${chiffres}${SEPARATEUR}Ar`;
+    .replace(/\B(?=(\d{3})+(?!\d))/g, SEPARATOR);
+  return `${negative ? '−' : ''}${digits}${SEPARATOR}Ar`;
 }
 
 /** Sans l'unité : pour les colonnes de tableau où « Ar » est déjà en en-tête. */
-export function formaterNu(montant: Ariary): string {
-  return Math.abs(montant)
+export function formatBare(amount: Ariary): string {
+  return Math.abs(amount)
     .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, SEPARATEUR);
+    .replace(/\B(?=(\d{3})+(?!\d))/g, SEPARATOR);
 }
 
 /**
- * Le taux, tel qu'on le montre à un vendeur : `25` → « 2,5 % ».
+ * Le rate, tel qu'on le montre à un vendeur : `25` → « 2,5 % ».
  *
  * La virgule décimale est la même en anglais britannique et en français —
- * d'où l'absence de branchement sur la langue. Le paramètre reste dans la
+ * d'où l'absence de branchement sur la langue. Le paramètre remainder dans la
  * signature parce que l'anglais américain, s'il arrivait, utiliserait un
  * point ; le supprimer obligerait alors à modifier tous les appelants.
  */
-export function formaterTaux(taux: PourMille, _langue: Langue = 'fr'): string {
-  const entier = Math.floor(taux / 10);
-  const decimale = taux % 10;
-  return decimale === 0 ? `${entier} %` : `${entier},${decimale} %`;
+export function formatRate(rate: PerMille, _language: Language = 'fr'): string {
+  const whole = Math.floor(rate / 10);
+  const decimal = rate % 10;
+  return decimal === 0 ? `${whole} %` : `${whole},${decimal} %`;
 }
 
 // ── Sérialisation ───────────────────────────────────────────────────────────
 
 /**
- * Un montant traverse le réseau en entier JSON, jamais en chaîne ni en
- * flottant. `depuisJSON` refuse tout le reste — c'est la frontière où une
+ * Un amount traverse le réseau en whole JSON, jamais en chaîne ni en
+ * flottant. `fromJSON` refuse tout le remainder — c'est la frontière où une
  * erreur de type se détecte encore à peu de frais.
  */
-export function versJSON(montant: Ariary): number {
-  return montant;
+export function toJSON(amount: Ariary): number {
+  return amount;
 }
 
-export function depuisJSON(valeur: unknown): Ariary {
-  if (typeof valeur !== 'number') {
-    throw new MontantInvalide('Un montant transporté est un entier JSON.', valeur);
+export function fromJSON(value: unknown): Ariary {
+  if (typeof value !== 'number') {
+    throw new InvalidAmount('Un amount transporté est un whole JSON.', value);
   }
-  return ariary(valeur);
+  return ariary(value);
 }
 
 // ── Interne ─────────────────────────────────────────────────────────────────
 
-function verifierPositif(montant: Ariary): void {
-  if (montant < 0) {
-    throw new MontantInvalide("Un taux ne s'applique pas à un montant négatif.", montant);
+function requirePositive(amount: Ariary): void {
+  if (amount < 0) {
+    throw new InvalidAmount("Un rate ne s'applique pas à un amount négatif.", amount);
   }
 }
