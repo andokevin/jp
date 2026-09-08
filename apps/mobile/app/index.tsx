@@ -55,7 +55,7 @@ export default function Accueil() {
     };
   }, []);
 
-  const surSession = useCallback((session: auth.SessionResponse) => {
+  const onSession = useCallback((session: auth.SessionResponse) => {
     /*
      * Le rangement est lancé sans être attendu, et c'est assumé : `secret`
      * avale ses erreurs *(voir `stockage.ts`)*. Un trousseau indisponible —
@@ -73,7 +73,7 @@ export default function Accueil() {
   return (
     <EcranConnexion
       base={BASE}
-      surSession={surSession}
+      onSession={onSession}
       {...(depart.motif === 'perimee' ? ({ motif: 'session-expiree' } as const) : {})}
     />
   );

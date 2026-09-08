@@ -1,5 +1,5 @@
 /**
- * Le parcours d'authentification web — F0.1
+ * Le flow d'authentification web — F0.1
  *
  * **Un seul écran pour l'inscription ET la connexion.** Entrer une adresse
  * ouvre un compte existant ou en crée un ; il n'y a donc ni onglet, ni lien
@@ -21,97 +21,97 @@ import '../auth.css';
 import { BoutonPrincipal, ChampTexte, IconeHorloge, MessageErreur } from '../components/champs.js';
 import { OtpInputForm } from '../components/OtpInputForm.js';
 import { PageAuth } from '../components/chrome.js';
-import { avecTemps, langueEcran, LIBELLES, type LangueEcran } from '@jp/identite';
+import { withTime, screenLanguage, LABELS, type ScreenLanguage } from '@jp/identite';
 import { useAuthOtp } from '../hooks/useAuthOtp.js';
 
-const ID_ERREUR = 'jp-erreur-auth';
+const ID_ERREUR = 'jp-error-auth';
 const ID_AIDE = 'jp-aide-auth';
 
 export function LoginScreen(props: {
   readonly base: string;
-  readonly langueInitiale?: Language;
-  readonly surSession?: (session: auth.SessionResponse) => void;
+  readonly initialLanguage?: Language;
+  readonly onSession?: (session: auth.SessionResponse) => void;
 }) {
-  const [langue, setLangue] = useState<LangueEcran>(() =>
-    props.langueInitiale ? langueEcran(props.langueInitiale) : 'mg',
+  const [language, setLanguage] = useState<ScreenLanguage>(() =>
+    props.initialLanguage ? screenLanguage(props.initialLanguage) : 'mg',
   );
 
-  const parcours = useAuthOtp({
+  const flow = useAuthOtp({
     base: props.base,
-    langue,
-    ...(props.surSession ? { surSession: props.surSession } : {}),
+    language,
+    ...(props.onSession ? { onSession: props.onSession } : {}),
   });
-  const { etat, envoyer } = parcours;
-  const t = LIBELLES[langue];
+  const { state, dispatch } = flow;
+  const t = LABELS[language];
 
-  // Hors ligne masque l'erreur : la préséance est portée par le réducteur,
+  // Hors ligne masque l'error : la préséance est portée par le réducteur,
   // on ne fait que la refléter.
-  const erreur = etat.horsLigne ? null : etat.panne;
-  const decritPar = erreur ? ID_ERREUR : undefined;
+  const error = state.offline ? null : state.failure;
+  const decritPar = error ? ID_ERREUR : undefined;
 
   const soumettre = (e: FormEvent) => {
     e.preventDefault();
-    parcours.soumettre();
+    flow.submit();
   };
 
   return (
-    <PageAuth langue={langue} horsLigne={etat.horsLigne} surLangue={setLangue}>
+    <PageAuth language={language} offline={state.offline} onLanguage={setLanguage}>
       <form onSubmit={soumettre} noValidate>
-        {etat.etape === 'email' || etat.etape === 'termine' ? (
+        {state.step === 'email' || state.step === 'done' ? (
           <>
-            <h1 className="jp-titre">{t.ecran1Titre}</h1>
-            <p className="jp-soutien">{t.ecran1Soutien}</p>
+            <h1 className="jp-titre">{t.screen1Title}</h1>
+            <p className="jp-soutien">{t.screen1Support}</p>
             <ChampTexte
               id="jp-email"
               type="email"
               autoComplete="email"
-              label={t.ecran1Label}
-              exemple={t.ecran1Exemple}
-              valeur={etat.email}
-              enErreur={erreur !== null}
+              label={t.screen1Label}
+              exemple={t.screen1Example}
+              valeur={state.email}
+              enErreur={error !== null}
               decritPar={decritPar ?? ID_AIDE}
-              surSaisie={(valeur) => envoyer({ type: 'saisirEmail', valeur })}
+              surSaisie={(value) => dispatch({ type: 'setEmail', value })}
             />
-            {erreur ? <MessageErreur id={ID_ERREUR} texte={erreur.message} /> : null}
+            {error ? <MessageErreur id={ID_ERREUR} texte={error.message} /> : null}
             <p className="jp-aide" id={ID_AIDE}>
-              {t.ecran1Aide}
+              {t.screen1Help}
             </p>
             <BoutonPrincipal
-              libelle={t.ecran1Bouton}
-              libelleAttente={t.attente}
-              enCours={etat.enCours}
-              actif={parcours.peutEnvoyer}
-              surAppui={parcours.soumettre}
+              libelle={t.screen1Button}
+              libelleAttente={t.waiting}
+              enCours={state.pending}
+              actif={flow.canSubmit}
+              surAppui={flow.submit}
             />
           </>
         ) : null}
 
-        {etat.etape === 'code' ? <EtapeCode parcours={parcours} langue={langue} /> : null}
+        {state.step === 'code' ? <EtapeCode flow={flow} language={language} /> : null}
 
-        {etat.etape === 'prenom' ? (
+        {state.step === 'firstName' ? (
           <>
-            <h1 className="jp-titre">{t.ecran3Titre}</h1>
+            <h1 className="jp-titre">{t.screen3Title}</h1>
             <ChampTexte
               id="jp-prenom"
               type="text"
               autoComplete="given-name"
-              label={t.ecran3Label}
-              exemple={t.ecran3Exemple}
-              valeur={etat.prenom}
-              enErreur={erreur !== null}
+              label={t.screen3Label}
+              exemple={t.screen3Example}
+              valeur={state.firstName}
+              enErreur={error !== null}
               decritPar={decritPar ?? ID_AIDE}
-              surSaisie={(valeur) => envoyer({ type: 'saisirPrenom', valeur })}
+              surSaisie={(value) => dispatch({ type: 'setFirstName', value })}
             />
-            {erreur ? <MessageErreur id={ID_ERREUR} texte={erreur.message} /> : null}
+            {error ? <MessageErreur id={ID_ERREUR} texte={error.message} /> : null}
             <p className="jp-aide" id={ID_AIDE}>
-              {t.ecran3Aide}
+              {t.screen3Help}
             </p>
             <BoutonPrincipal
-              libelle={t.ecran3Bouton}
-              libelleAttente={t.attente}
-              enCours={etat.enCours}
-              actif={parcours.peutEnvoyer}
-              surAppui={parcours.soumettre}
+              libelle={t.screen3Button}
+              libelleAttente={t.waiting}
+              enCours={state.pending}
+              actif={flow.canSubmit}
+              surAppui={flow.submit}
             />
           </>
         ) : null}
@@ -129,67 +129,62 @@ export function LoginScreen(props: {
  * redemander un code pour rien.
  */
 function EtapeCode({
-  parcours,
-  langue,
+  flow,
+  language,
 }: {
-  readonly parcours: ReturnType<typeof useAuthOtp>;
-  readonly langue: LangueEcran;
+  readonly flow: ReturnType<typeof useAuthOtp>;
+  readonly language: ScreenLanguage;
 }) {
-  const { etat, envoyer } = parcours;
-  const t = LIBELLES[langue];
-  const erreur = etat.horsLigne ? null : etat.panne;
+  const { state, dispatch } = flow;
+  const t = LABELS[language];
+  const error = state.offline ? null : state.failure;
 
-  const timer = etat.expireLe
-    ? reservationTimer(new Date(etat.expireLe), new Date(parcours.maintenant))
+  const timer = state.expiresAt
+    ? reservationTimer(new Date(state.expiresAt), new Date(flow.now))
     : null;
 
   return (
     <>
-      <h1 className="jp-titre">{t.ecran2Titre}</h1>
+      <h1 className="jp-titre">{t.screen2Title}</h1>
       <p className="jp-soutien">
-        {t.ecran2Envoye} <strong>{etat.email}</strong>{' '}
+        {t.screen2Sent} <strong>{state.email}</strong>{' '}
         <button
           type="button"
           className="jp-modifier"
-          onClick={() => envoyer({ type: 'changerEmail' })}
+          onClick={() => dispatch({ type: 'changeEmail' })}
         >
-          {t.modifier}
+          {t.edit}
         </button>
       </p>
 
       <OtpInputForm
-        cases={etat.cases}
-        label={t.ecran2Label}
-        enErreur={erreur !== null}
-        {...(erreur ? { decritPar: ID_ERREUR } : {})}
-        surPose={(index, texte) => envoyer({ type: 'poserCode', index, texte })}
-        surEffacement={(index) => envoyer({ type: 'effacerCase', index })}
+        cases={state.boxes}
+        label={t.screen2Label}
+        enErreur={error !== null}
+        {...(error ? { decritPar: ID_ERREUR } : {})}
+        surPose={(index, text) => dispatch({ type: 'setCodeBox', index, text })}
+        surEffacement={(index) => dispatch({ type: 'clearCodeBox', index })}
       />
 
-      {erreur ? <MessageErreur id={ID_ERREUR} texte={erreur.message} /> : null}
+      {error ? <MessageErreur id={ID_ERREUR} texte={error.message} /> : null}
 
       {timer ? (
         <p className="jp-minuteur" style={{ color: timer.color }}>
           <IconeHorloge />
-          <span>{avecTemps(t.ecran2Validite, timer.label)}</span>
+          <span>{withTime(t.screen2Validity, timer.label)}</span>
         </p>
       ) : null}
 
-      <button
-        type="button"
-        className="jp-renvoi"
-        disabled={!parcours.peutRenvoyer}
-        onClick={parcours.renvoyer}
-      >
-        {t.ecran2Renvoi}
+      <button type="button" className="jp-renvoi" disabled={!flow.canResend} onClick={flow.resend}>
+        {t.screen2Resend}
       </button>
 
       <BoutonPrincipal
-        libelle={t.ecran2Bouton}
-        libelleAttente={t.attente}
-        enCours={etat.enCours}
-        actif={parcours.peutEnvoyer}
-        surAppui={parcours.soumettre}
+        libelle={t.screen2Button}
+        libelleAttente={t.waiting}
+        enCours={state.pending}
+        actif={flow.canSubmit}
+        surAppui={flow.submit}
       />
     </>
   );

@@ -1,5 +1,5 @@
 /**
- * L'adaptateur web du parcours — F0.1
+ * L'adaptateur web du flow — F0.1
  *
  * Le hook lui-même vit dans `@jp/identite` et ne connaît ni le DOM ni React
  * Native. Ce fichier ne fournit que les deux choses qui sont propres au
@@ -10,7 +10,7 @@
  * place — et pas une ligne de la machine à états.
  */
 import { useMemo } from 'react';
-import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
+import { IdentityClient, useAuthOtp as useFlow, type NetworkSubscription } from '@jp/identite';
 import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
@@ -22,43 +22,43 @@ import type { auth } from '@jp/contracts';
  *
  * `navigator.onLine` est consulté une fois au montage : un onglet ouvert alors
  * que la connexion est déjà tombée ne recevra jamais d'événement `offline`,
- * et afficherait un bouton actif menant à une erreur.
+ * et afficherait un bouton actif menant à une error.
  */
-const ecouterNavigateur: AbonnementReseau = ({ surCoupure, surRetour }) => {
-  globalThis.addEventListener('offline', surCoupure);
-  globalThis.addEventListener('online', surRetour);
-  if (globalThis.navigator?.onLine === false) surCoupure();
+const listenBrowser: NetworkSubscription = ({ onOffline, onOnline }) => {
+  globalThis.addEventListener('offline', onOffline);
+  globalThis.addEventListener('online', onOnline);
+  if (globalThis.navigator?.onLine === false) onOffline();
   return () => {
-    globalThis.removeEventListener('offline', surCoupure);
-    globalThis.removeEventListener('online', surRetour);
+    globalThis.removeEventListener('offline', onOffline);
+    globalThis.removeEventListener('online', onOnline);
   };
 };
 
-export interface OptionsParcoursWeb {
+export interface WebFlowOptions {
   readonly base: string;
-  readonly langue: Language;
+  readonly language: Language;
   /** Injectable pour les tests et pour un futur rendu serveur. */
   readonly fetch?: typeof fetch;
   /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (session: auth.SessionResponse) => void;
+  readonly onSession?: (session: auth.SessionResponse) => void;
 }
 
-export function useAuthOtp(options: OptionsParcoursWeb) {
+export function useAuthOtp(options: WebFlowOptions) {
   const client = useMemo(
     () =>
-      new ClientIdentite({
+      new IdentityClient({
         base: options.base,
-        langue: options.langue,
+        language: options.language,
         ...(options.fetch ? { fetch: options.fetch } : {}),
       }),
-    [options.base, options.langue, options.fetch],
+    [options.base, options.language, options.fetch],
   );
 
-  return useParcours({
+  return useFlow({
     client,
-    abonnerReseau: ecouterNavigateur,
-    ...(options.surSession ? { surSession: options.surSession } : {}),
+    subscribeNetwork: listenBrowser,
+    ...(options.onSession ? { onSession: options.onSession } : {}),
   });
 }
 
-export type { Parcours, EtatParcours } from '@jp/identite';
+export type { Flow, FlowState } from '@jp/identite';

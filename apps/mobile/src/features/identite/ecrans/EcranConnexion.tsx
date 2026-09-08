@@ -1,5 +1,5 @@
 /**
- * Le parcours d'authentification natif — F0.1
+ * Le flow d'authentification natif — F0.1
  *
  * **Un seul écran pour l'inscription ET la connexion.** Entrer une adresse
  * ouvre un compte existant ou en crée un ; il n'y a donc ni onglet, ni lien
@@ -11,21 +11,21 @@
  * rien à mémoriser ici, et un retour arrière au milieu d'un code à usage
  * unique ne mènerait nulle part.
  *
- * **Pas de bascule de langue**, contrairement au web. La maquette n'en met
+ * **Pas de bascule de language**, contrairement au web. La maquette n'en met
  * pas : l'appareil en porte déjà une, et un second sélecteur dans
  * l'application donnerait deux réponses à la même question. L'écran LIT donc
- * la langue de l'appareil — et `langueInitiale` reste là pour qu'un appelant
+ * la language de l'appareil — et `initialLanguage` reste là pour qu'un appelant
  * puisse forcer, en test comme dans un futur réglage.
  *
  * Conséquence à connaître : un téléphone réglé en français affiche le
- * français, ce qui sera le cas de la plupart. Le malgache est la langue
+ * français, ce qui sera le cas de la plupart. Le malgache est la language
  * d'AUTORITÉ de la maquette — celle sur laquelle les boîtes sont dimensionnées
  * — pas un défaut d'affichage imposé à quelqu'un qui a choisi autre chose.
  */
 import { useMemo } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { getLocales } from 'expo-localization';
-import { langueEcran, LIBELLES, avecTemps, type LangueEcran } from '@jp/identite';
+import { screenLanguage, LABELS, withTime, type ScreenLanguage } from '@jp/identite';
 import { reservationTimer } from '@jp/ui';
 import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
@@ -48,17 +48,17 @@ import { langueDepuisEtiquettes } from '../../../noyau/langue.js';
 
 export function EcranConnexion(props: {
   readonly base: string;
-  readonly langueInitiale?: Language;
+  readonly initialLanguage?: Language;
   /**
    * Pourquoi cet écran s'ouvre.
    *
    * Une union fermée, pas une chaîne libre : l'écran rend des motifs qu'il
-   * CONNAÎT, donc dans la langue courante. Un texte passé par l'appelant
-   * arriverait dans la langue de l'appelant — c'est-à-dire en français, quoi
+   * CONNAÎT, donc dans la language courante. Un texte passé par l'appelant
+   * arriverait dans la language de l'appelant — c'est-à-dire en français, quoi
    * qu'affiche le reste de l'écran.
    */
   readonly motif?: 'session-expiree';
-  readonly surSession?: (session: auth.SessionResponse) => void;
+  readonly onSession?: (session: auth.SessionResponse) => void;
 }) {
   /*
    * `getLocales()` est synchrone et rend les locales DANS L'ORDRE de
@@ -67,27 +67,27 @@ export function EcranConnexion(props: {
    * réutilise l'analyseur d'`Accept-Language` plutôt que d'en écrire un
    * second.
    */
-  const langue: LangueEcran = useMemo(
+  const language: ScreenLanguage = useMemo(
     () =>
-      langueEcran(
-        props.langueInitiale ?? langueDepuisEtiquettes(getLocales().map((l) => l.languageTag)),
+      screenLanguage(
+        props.initialLanguage ?? langueDepuisEtiquettes(getLocales().map((l) => l.languageTag)),
       ),
-    [props.langueInitiale],
+    [props.initialLanguage],
   );
-  const parcours = useAuthOtp({
+  const flow = useAuthOtp({
     base: props.base,
-    langue,
-    ...(props.surSession ? { surSession: props.surSession } : {}),
+    language,
+    ...(props.onSession ? { onSession: props.onSession } : {}),
   });
-  const { etat, envoyer } = parcours;
-  const t = LIBELLES[langue];
+  const { state, dispatch } = flow;
+  const t = LABELS[language];
 
-  // Hors ligne masque l'erreur : la préséance est portée par le réducteur,
+  // Hors ligne masque l'error : la préséance est portée par le réducteur,
   // l'écran ne fait que la refléter.
-  const erreur = etat.horsLigne ? null : etat.panne;
+  const error = state.offline ? null : state.failure;
 
   return (
-    <PageAuth horsLigne={etat.horsLigne} texteHorsLigne={t.horsLigne}>
+    <PageAuth horsLigne={state.offline} texteHorsLigne={t.offline}>
       {/*
        * Le clavier ne doit jamais recouvrir le champ en cours : sur iOS il se
        * pose PAR-DESSUS la vue, sur Android il redimensionne la fenêtre — d'où
@@ -103,9 +103,9 @@ export function EcranConnexion(props: {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {etat.etape === 'email' || etat.etape === 'termine' ? (
+          {state.step === 'email' || state.step === 'done' ? (
             <>
-              <Titre texte={t.ecran1Titre} />
+              <Titre texte={t.screen1Title} />
               {/*
                * L'avis PREND LA PLACE du soutien, il ne s'y ajoute pas. Les
                * deux ne sont jamais utiles ensemble : « nous vous enverrons un
@@ -114,58 +114,58 @@ export function EcranConnexion(props: {
                * réserve déjà deux lignes, donc l'échange ne décale rien.
                */}
               <Soutien>
-                {props.motif === 'session-expiree' ? t.sessionExpiree : t.ecran1Soutien}
+                {props.motif === 'session-expiree' ? t.sessionExpired : t.screen1Support}
               </Soutien>
               <ChampTexte
-                label={t.ecran1Label}
-                exemple={t.ecran1Exemple}
-                valeur={etat.email}
-                enErreur={erreur !== null}
-                surSaisie={(valeur) => envoyer({ type: 'saisirEmail', valeur })}
+                label={t.screen1Label}
+                exemple={t.screen1Example}
+                valeur={state.email}
+                enErreur={error !== null}
+                surSaisie={(value) => dispatch({ type: 'setEmail', value })}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
                 textContentType="emailAddress"
-                onSubmitEditing={parcours.soumettre}
+                onSubmitEditing={flow.submit}
               />
-              {erreur ? <MessageErreur texte={erreur.message} /> : null}
-              <Aide texte={t.ecran1Aide} />
+              {error ? <MessageErreur texte={error.message} /> : null}
+              <Aide texte={t.screen1Help} />
               <Ressort />
               <BoutonPrincipal
-                libelle={t.ecran1Bouton}
-                libelleAttente={t.attente}
-                enCours={etat.enCours}
-                actif={parcours.peutEnvoyer}
-                surAppui={parcours.soumettre}
+                libelle={t.screen1Button}
+                libelleAttente={t.waiting}
+                enCours={state.pending}
+                actif={flow.canSubmit}
+                surAppui={flow.submit}
               />
             </>
           ) : null}
 
-          {etat.etape === 'code' ? <EtapeCode parcours={parcours} langue={langue} /> : null}
+          {state.step === 'code' ? <EtapeCode flow={flow} language={language} /> : null}
 
-          {etat.etape === 'prenom' ? (
+          {state.step === 'firstName' ? (
             <>
-              <Titre texte={t.ecran3Titre} />
+              <Titre texte={t.screen3Title} />
               <ChampTexte
-                label={t.ecran3Label}
-                exemple={t.ecran3Exemple}
-                valeur={etat.prenom}
-                enErreur={erreur !== null}
-                surSaisie={(valeur) => envoyer({ type: 'saisirPrenom', valeur })}
+                label={t.screen3Label}
+                exemple={t.screen3Example}
+                valeur={state.firstName}
+                enErreur={error !== null}
+                surSaisie={(value) => dispatch({ type: 'setFirstName', value })}
                 autoCapitalize="words"
                 autoComplete="given-name"
                 textContentType="givenName"
-                onSubmitEditing={parcours.soumettre}
+                onSubmitEditing={flow.submit}
               />
-              {erreur ? <MessageErreur texte={erreur.message} /> : null}
-              <Aide texte={t.ecran3Aide} />
+              {error ? <MessageErreur texte={error.message} /> : null}
+              <Aide texte={t.screen3Help} />
               <Ressort />
               <BoutonPrincipal
-                libelle={t.ecran3Bouton}
-                libelleAttente={t.attente}
-                enCours={etat.enCours}
-                actif={parcours.peutEnvoyer}
-                surAppui={parcours.soumettre}
+                libelle={t.screen3Button}
+                libelleAttente={t.waiting}
+                enCours={state.pending}
+                actif={flow.canSubmit}
+                surAppui={flow.submit}
               />
             </>
           ) : null}
@@ -184,44 +184,44 @@ export function EcranConnexion(props: {
  * redemander un code pour rien.
  */
 function EtapeCode({
-  parcours,
-  langue,
+  flow,
+  language,
 }: {
-  readonly parcours: ReturnType<typeof useAuthOtp>;
-  readonly langue: LangueEcran;
+  readonly flow: ReturnType<typeof useAuthOtp>;
+  readonly language: ScreenLanguage;
 }) {
-  const { etat, envoyer } = parcours;
-  const t = LIBELLES[langue];
-  const erreur = etat.horsLigne ? null : etat.panne;
+  const { state, dispatch } = flow;
+  const t = LABELS[language];
+  const error = state.offline ? null : state.failure;
 
-  const timer = etat.expireLe
-    ? reservationTimer(new Date(etat.expireLe), new Date(parcours.maintenant))
+  const timer = state.expiresAt
+    ? reservationTimer(new Date(state.expiresAt), new Date(flow.now))
     : null;
 
   return (
     <>
-      <Titre texte={t.ecran2Titre} />
+      <Titre texte={t.screen2Title} />
       <Soutien>
-        {t.ecran2Envoye} <Text style={styles.adresse}>{etat.email}</Text>
+        {t.screen2Sent} <Text style={styles.adresse}>{state.email}</Text>
         {' · '}
         <Text
           style={styles.modifier}
-          onPress={() => envoyer({ type: 'changerEmail' })}
+          onPress={() => dispatch({ type: 'changeEmail' })}
           accessibilityRole="button"
         >
-          {t.modifier}
+          {t.edit}
         </Text>
       </Soutien>
 
       <CasesCode
-        cases={etat.cases}
-        label={t.ecran2Label}
-        enErreur={erreur !== null}
-        surPose={(index, texte) => envoyer({ type: 'poserCode', index, texte })}
-        surEffacement={(index) => envoyer({ type: 'effacerCase', index })}
+        cases={state.boxes}
+        label={t.screen2Label}
+        enErreur={error !== null}
+        surPose={(index, text) => dispatch({ type: 'setCodeBox', index, text })}
+        surEffacement={(index) => dispatch({ type: 'clearCodeBox', index })}
       />
 
-      {erreur ? <MessageErreur texte={erreur.message} /> : null}
+      {error ? <MessageErreur texte={error.message} /> : null}
 
       {/*
        * Une RANGÉE, pas une icône imbriquée dans le texte. React Native
@@ -233,25 +233,21 @@ function EtapeCode({
         <View style={styles.timer}>
           <IconeHorloge taille={15} couleur={timer.color} />
           <Text style={[styles.timerText, { color: timer.color }]}>
-            {avecTemps(t.ecran2Validite, timer.label)}
+            {withTime(t.screen2Validity, timer.label)}
           </Text>
         </View>
       ) : null}
 
-      <LienRenvoi
-        texte={t.ecran2Renvoi}
-        ouvert={parcours.peutRenvoyer}
-        surAppui={parcours.renvoyer}
-      />
+      <LienRenvoi texte={t.screen2Resend} ouvert={flow.canResend} surAppui={flow.resend} />
 
       <Ressort />
 
       <BoutonPrincipal
-        libelle={t.ecran2Bouton}
-        libelleAttente={t.attente}
-        enCours={etat.enCours}
-        actif={parcours.peutEnvoyer}
-        surAppui={parcours.soumettre}
+        libelle={t.screen2Button}
+        libelleAttente={t.waiting}
+        enCours={state.pending}
+        actif={flow.canSubmit}
+        surAppui={flow.submit}
       />
     </>
   );

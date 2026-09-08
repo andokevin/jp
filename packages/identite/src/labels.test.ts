@@ -10,11 +10,11 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { LANGUES_ECRAN, LIBELLES, langueEcran } from './libelles.js';
+import { SCREEN_LANGUAGES, LABELS, screenLanguage } from './labels.js';
 
 const chaines = (langue: 'mg' | 'fr'): Record<string, string> =>
   Object.fromEntries(
-    Object.entries(LIBELLES[langue]).filter(([, v]) => typeof v === 'string'),
+    Object.entries(LABELS[langue]).filter(([, v]) => typeof v === 'string'),
   ) as Record<string, string>;
 
 const MG = chaines('mg');
@@ -64,7 +64,7 @@ describe('F0.1 — les deux catalogues disent la même chose', () => {
 const BUDGET_TITRE = 48;
 
 describe('F0.1 — les titres tiennent dans leurs deux lignes', () => {
-  it.each(['ecran1Titre', 'ecran2Titre', 'ecran3Titre'])('%s, dans les deux langues', (cle) => {
+  it.each(['screen1Title', 'screen2Title', 'screen3Title'])('%s, dans les deux langues', (cle) => {
     expect((MG[cle] as string).length, `mg.${cle}`).toBeLessThanOrEqual(BUDGET_TITRE);
     expect((FR[cle] as string).length, `fr.${cle}`).toBeLessThanOrEqual(BUDGET_TITRE);
   });
@@ -72,15 +72,15 @@ describe('F0.1 — les titres tiennent dans leurs deux lignes', () => {
 
 describe('F0.1 — la bascule de langue', () => {
   it('n’offre que le malgache et le français', () => {
-    expect(LANGUES_ECRAN).toEqual(['mg', 'fr']);
+    expect(SCREEN_LANGUAGES).toEqual(['mg', 'fr']);
   });
 
   it('renvoie l’anglais vers le français, jamais vers un écran vide', () => {
     // Le français est la langue ÉCRITE courante à Madagascar. Une personne
     // arrivée en anglais la lit ; lui rendre `undefined` la laisserait devant
     // un écran sans mots.
-    expect(langueEcran('en')).toBe('fr');
-    expect(langueEcran('fr')).toBe('fr');
-    expect(langueEcran('mg')).toBe('mg');
+    expect(screenLanguage('en')).toBe('fr');
+    expect(screenLanguage('fr')).toBe('fr');
+    expect(screenLanguage('mg')).toBe('mg');
   });
 });

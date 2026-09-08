@@ -1,22 +1,22 @@
 /**
  * Les six cases du code — la version native
  *
- * **La logique n'est pas réécrite** : `chiffresDe`, `caseSuivante` et
- * `NB_CHIFFRES` viennent de `@jp/identite`, les mêmes que le web. Ce fichier
+ * **La logique n'est pas réécrite** : `digitsOf`, `nextBox` et
+ * `DIGIT_COUNT` viennent de `@jp/identite`, les mêmes que le web. Ce fichier
  * n'ajoute que ce qu'un `TextInput` impose — les références pour déplacer le
  * curseur, et le retour arrière sur une case déjà vide.
  *
  * L'affordance change de nature, pas de code. Sur un ordinateur, le code se
  * COLLE depuis la boîte mail ; sur un téléphone, il arrive par SMS et le
  * système le propose au-dessus du clavier. Les deux livrent six caractères
- * d'un coup dans une seule case — et `poser` les répartit déjà. C'est
+ * d'un coup dans une seule case — et `setBox` les répartit déjà. C'est
  * précisément ce que le partage fait gagner : l'autoremplissage marche ici
  * sans qu'on ait écrit une ligne pour lui.
  */
 import { useRef } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { caseSuivante, chiffresDe, NB_CHIFFRES, type Cases } from '@jp/identite';
+import { nextBox, digitsOf, DIGIT_COUNT, type Boxes } from '@jp/identite';
 import { CASE, PALETTE, RAYONS } from '../theme.js';
 
 export function CasesCode({
@@ -26,22 +26,22 @@ export function CasesCode({
   surPose,
   surEffacement,
 }: {
-  readonly cases: Cases;
+  readonly cases: Boxes;
   readonly label: string;
   readonly enErreur: boolean;
-  readonly surPose: (index: number, texte: string) => void;
+  readonly surPose: (index: number, text: string) => void;
   readonly surEffacement: (index: number) => void;
 }) {
   const refs = useRef<(TextInput | null)[]>([]);
 
-  const poser = (index: number, texte: string) => {
-    const chiffres = chiffresDe(texte);
+  const setBox = (index: number, text: string) => {
+    const chiffres = digitsOf(text);
     if (chiffres.length === 0) return;
     surPose(index, chiffres);
-    refs.current[caseSuivante(index, chiffres)]?.focus();
+    refs.current[nextBox(index, chiffres)]?.focus();
   };
 
-  const retourArriere = (index: number) => {
+  const backspace = (index: number) => {
     // Sur une case DÉJÀ vide, le retour arrière recule d'une case et efface
     // celle-là. Sans ça, on reste bloqué sur une case vide à marteler la
     // touche sans que rien ne bouge.
@@ -68,22 +68,22 @@ export function CasesCode({
             }}
             style={[styles.case, enErreur && styles.caseFautive]}
             value={chiffre}
-            onChangeText={(texte) => poser(index, texte)}
+            onChangeText={(text) => setBox(index, text)}
             onKeyPress={({ nativeEvent }) => {
-              if (nativeEvent.key === 'Backspace') retourArriere(index);
+              if (nativeEvent.key === 'Backspace') backspace(index);
             }}
             keyboardType="number-pad"
             // Les deux autoremplissages du code à usage unique : `sms-otp` sur
             // Android, `oneTimeCode` sur iOS. Posés sur la PREMIÈRE case
-            // seulement — le système y verse les six chiffres, que `poser`
+            // seulement — le système y verse les six chiffres, que `setBox`
             // répartit ensuite.
             {...(index === 0
               ? ({ autoComplete: 'sms-otp', textContentType: 'oneTimeCode' } as const)
               : {})}
             // `maxLength` suit le contrat, il n'est pas écrit ici : la
             // première case doit pouvoir recevoir les six chiffres d'un coup.
-            maxLength={index === 0 ? NB_CHIFFRES : 1}
-            accessibilityLabel={`${label} — ${index + 1} / ${NB_CHIFFRES}`}
+            maxLength={index === 0 ? DIGIT_COUNT : 1}
+            accessibilityLabel={`${label} — ${index + 1} / ${DIGIT_COUNT}`}
             selectTextOnFocus
           />
         ))}

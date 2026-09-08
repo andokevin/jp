@@ -8,23 +8,23 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { ClientIdentite, HorsLigne } from './api.js';
+import { IdentityClient, Offline } from './api.js';
 
 // ── Un faux `fetch`, injecté plutôt que simulé ───────────────────────────────
-function fauxFetch(reponses: readonly { statut: number; corps: unknown }[]) {
-  const appels: { url: string; enTetes: Record<string, string>; corps: unknown }[] = [];
+function fauxFetch(reponses: readonly { statut: number; body: unknown }[]) {
+  const appels: { url: string; headers: Record<string, string>; body: unknown }[] = [];
   let i = 0;
   const f = (async (url: string | URL, init?: RequestInit) => {
     appels.push({
       url: String(url),
-      enTetes: (init?.headers ?? {}) as Record<string, string>,
-      corps: JSON.parse(String(init?.body ?? 'null')),
+      headers: (init?.headers ?? {}) as Record<string, string>,
+      body: JSON.parse(String(init?.body ?? 'null')),
     });
-    const r = reponses[Math.min(i++, reponses.length - 1)] as { statut: number; corps: unknown };
+    const r = reponses[Math.min(i++, reponses.length - 1)] as { statut: number; body: unknown };
     return {
       ok: r.statut >= 200 && r.statut < 300,
       status: r.statut,
-      json: async () => r.corps,
+      json: async () => r.body,
     } as Response;
   }) as unknown as typeof fetch;
   return { f, appels };
@@ -44,23 +44,23 @@ const SESSION_NOUVELLE = {
 
 describe('F0.1 — le client d’identité', () => {
   it('annonce la langue et pose une clé d’idempotence', async () => {
-    const { f, appels } = fauxFetch([{ statut: 202, corps: { ok: true, expireDansS: 600 } }]);
-    const client = new ClientIdentite({
+    const { f, appels } = fauxFetch([{ statut: 202, body: { ok: true, expireDansS: 600 } }]);
+    const client = new IdentityClient({
       base: 'https://api.jp.mg',
-      langue: 'mg',
+      language: 'mg',
       fetch: f,
-      nouvelleCle: () => 'cle-fixe',
+      newKey: () => 'cle-fixe',
     });
 
-    const r = await client.demanderCode('hanta.r@gmail.com');
+    const r = await client.requestCode('hanta.r@gmail.com');
 
     expect(r.expireDansS).toBe(600);
     const appel = appels[0] as (typeof appels)[number];
     expect(appel.url).toBe('https://api.jp.mg/identite/otp/emettre');
     // Le serveur traduit lui-même ses messages : c'est cet en-tête, et lui
     // seul, qui fait revenir les erreurs en malgache.
-    expect(appel.enTetes['Accept-Language']).toBe('mg');
-    expect(appel.enTetes['Idempotency-Key']).toBe('cle-fixe');
+    expect(appel.headers['Accept-Language']).toBe('mg');
+    expect(appel.headers['Idempotency-Key']).toBe('cle-fixe');
   });
 
   it('appelle `fetch` avec le bon `this` — sinon tout ressemble à une coupure', async () => {
@@ -82,8 +82,8 @@ describe('F0.1 — le client d’identité', () => {
     } as unknown as typeof fetch;
 
     try {
-      const client = new ClientIdentite({ base: 'https://api.jp.mg' });
-      await expect(client.demanderCode('hanta.r@gmail.com')).resolves.toMatchObject({ ok: true });
+      const client = new IdentityClient({ base: 'https://api.jp.mg' });
+      await expect(client.requestCode('hanta.r@gmail.com')).resolves.toMatchObject({ ok: true });
       expect(appeleCorrectement).toBe(true);
     } finally {
       globalThis.fetch = vrai;
@@ -94,28 +94,28 @@ describe('F0.1 — le client d’identité', () => {
     const coupe = (async () => {
       throw new TypeError('Failed to fetch');
     }) as unknown as typeof fetch;
-    const client = new ClientIdentite({ base: 'https://api.jp.mg', fetch: coupe });
+    const client = new IdentityClient({ base: 'https://api.jp.mg', fetch: coupe });
 
-    await expect(client.demanderCode('hanta.r@gmail.com')).rejects.toBeInstanceOf(HorsLigne);
+    await expect(client.requestCode('hanta.r@gmail.com')).rejects.toBeInstanceOf(Offline);
   });
 
   it('remonte l’enveloppe d’erreur telle quelle, déjà traduite', async () => {
     const { f } = fauxFetch([
-      { statut: 400, corps: { code: 'OTP_INVALIDE', message: 'Diso ny kaody.' } },
+      { statut: 400, body: { code: 'OTP_INVALIDE', message: 'Diso ny kaody.' } },
     ]);
-    const client = new ClientIdentite({ base: 'https://api.jp.mg', langue: 'mg', fetch: f });
+    const client = new IdentityClient({ base: 'https://api.jp.mg', language: 'mg', fetch: f });
 
     await expect(
-      client.verifierCode({ email: 'hanta.r@gmail.com', code: '482153' }),
+      client.verifyCode({ email: 'hanta.r@gmail.com', code: '482153' }),
     ).rejects.toMatchObject({ code: 'OTP_INVALIDE' });
   });
 
   it('n’envoie le prénom que quand il y en a un', async () => {
-    const { f, appels } = fauxFetch([{ statut: 200, corps: SESSION_NOUVELLE }]);
-    const client = new ClientIdentite({ base: 'https://api.jp.mg', fetch: f });
+    const { f, appels } = fauxFetch([{ statut: 200, body: SESSION_NOUVELLE }]);
+    const client = new IdentityClient({ base: 'https://api.jp.mg', fetch: f });
 
-    await client.verifierCode({ email: 'hanta.r@gmail.com', code: '482153' });
-    expect(appels[0]?.corps).toEqual({
+    await client.verifyCode({ email: 'hanta.r@gmail.com', code: '482153' });
+    expect(appels[0]?.body).toEqual({
       email: 'hanta.r@gmail.com',
       code: '482153',
       langue: 'fr',

@@ -20,20 +20,20 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { auth } from '@jp/contracts';
 
-import { HorsLigne, type ClientIdentite } from './api.js';
-import { codeAssemble, estComplet } from './code-otp.js';
+import { Offline, type IdentityClient } from './api.js';
+import { assembledCode, isComplete } from './otp-boxes.js';
 import {
-  etatInitial,
-  peutEnvoyer,
-  peutRenvoyer,
-  reduire,
-  type EtatParcours,
-  type Panne,
-} from './parcours.js';
+  initialState,
+  canSubmit,
+  canResend,
+  reduce,
+  type FlowState,
+  type Failure,
+} from './flow.js';
 
-/** L'enveloppe d'erreur du serveur, telle qu'elle arrive. */
-function panneDepuis(erreur: unknown): Panne {
-  const e = erreur as { code?: unknown; message?: unknown };
+/** L'enveloppe d'error du serveur, telle qu'elle arrive. */
+function failureFrom(error: unknown): Failure {
+  const e = error as { code?: unknown; message?: unknown };
   return {
     code: typeof e?.code === 'string' ? e.code : 'INDISPONIBLE',
     message: typeof e?.message === 'string' ? e.message : '',
@@ -47,18 +47,18 @@ function panneDepuis(erreur: unknown): Panne {
  * Le web écoute les événements `online`/`offline` de la fenêtre ; React Native
  * passerait NetInfo. Rien de tout cela n'existe des deux côtés, donc c'est
  * injecté. Omettre l'abonnement reste correct : une coupure se découvre alors
- * au premier appel qui échoue, le client lève `HorsLigne` et le réducteur
+ * au premier appel qui échoue, le client lève `Offline` et le réducteur
  * bascule pareil. On perd la détection AVANT le geste, pas la bascule.
  */
-export type AbonnementReseau = (evenements: {
-  readonly surCoupure: () => void;
-  readonly surRetour: () => void;
+export type NetworkSubscription = (evenements: {
+  readonly onOffline: () => void;
+  readonly onOnline: () => void;
 }) => () => void;
 
-export interface OptionsParcours {
+export interface FlowOptions {
   /** Construit par l'application — c'est elle qui connaît l'URL de base. */
-  readonly client: Pick<ClientIdentite, 'demanderCode' | 'verifierCode'>;
-  readonly abonnerReseau?: AbonnementReseau;
+  readonly client: Pick<IdentityClient, 'requestCode' | 'verifyCode'>;
+  readonly subscribeNetwork?: NetworkSubscription;
   /**
    * Appelé une fois la session ouverte ET le prénom connu.
    *
@@ -68,17 +68,17 @@ export interface OptionsParcours {
    * le jeton obligeait l'appelant à redemander au serveur ce qu'il venait de
    * recevoir, ou à inventer une échéance.
    */
-  readonly surSession?: (session: auth.SessionResponse) => void;
+  readonly onSession?: (session: auth.SessionResponse) => void;
 }
 
-export function useAuthOtp(options: OptionsParcours) {
-  const [etat, envoyer] = useReducer(reduire, undefined, etatInitial);
-  const [maintenant, setMaintenant] = useState(() => Date.now());
+export function useAuthOtp(options: FlowOptions) {
+  const [state, dispatch] = useReducer(reduce, undefined, initialState);
+  const [now, setMaintenant] = useState(() => Date.now());
 
   /**
    * Les options sont lues à TRAVERS une référence, jamais mises en dépendance.
    *
-   * Un appelant qui écrit `useAuthOtp({ client, abonnerReseau: (e) => … })`
+   * Un appelant qui écrit `useAuthOtp({ client, subscribeNetwork: (e) => … })`
    * fabrique un objet neuf à chaque rendu. En dépendance d'effet, cet objet
    * réabonnerait le réseau à chaque frappe — et l'effet de nettoyage
    * désabonnerait juste après. Le piège est classique et silencieux : ça
@@ -89,17 +89,17 @@ export function useAuthOtp(options: OptionsParcours) {
 
   // ── La connexion, écoutée plutôt que devinée ───────────────────────────────
   useEffect(() => {
-    const abonner = ref.current.abonnerReseau;
+    const abonner = ref.current.subscribeNetwork;
     if (!abonner) return undefined;
     return abonner({
-      surCoupure: () => envoyer({ type: 'coupure' }),
-      surRetour: () => envoyer({ type: 'reseauRevenu' }),
+      onOffline: () => dispatch({ type: 'wentOffline' }),
+      onOnline: () => dispatch({ type: 'cameOnline' }),
     });
   }, []);
 
   // ── L'horloge du décompte — une seconde, et seulement quand elle sert ──────
   useEffect(() => {
-    if (etat.etape !== 'code') return undefined;
+    if (state.step !== 'code') return undefined;
     // Recalage IMMÉDIAT : sans lui, l'affichage garde jusqu'à la première
     // seconde la valeur figée au montage du hook, et un code de dix minutes
     // s'annonce « 10:01 » — un minuteur qui se trompe d'un cran fait douter
@@ -107,78 +107,78 @@ export function useAuthOtp(options: OptionsParcours) {
     setMaintenant(Date.now());
     const t = setInterval(() => setMaintenant(Date.now()), 1000);
     return () => clearInterval(t);
-  }, [etat.etape]);
+  }, [state.step]);
 
-  const demanderCode = useCallback(async () => {
-    envoyer({ type: 'envoiCommence' });
+  const requestCode = useCallback(async () => {
+    dispatch({ type: 'submitStarted' });
     try {
-      const r = await ref.current.client.demanderCode(etat.email.trim());
-      envoyer({ type: 'codeDemande', expireDansS: r.expireDansS, maintenant: Date.now() });
-    } catch (erreur) {
-      if (erreur instanceof HorsLigne) envoyer({ type: 'coupure' });
-      else envoyer({ type: 'echec', panne: panneDepuis(erreur) });
+      const r = await ref.current.client.requestCode(state.email.trim());
+      dispatch({ type: 'codeRequested', expiresInS: r.expireDansS, now: Date.now() });
+    } catch (error) {
+      if (error instanceof Offline) dispatch({ type: 'wentOffline' });
+      else dispatch({ type: 'failed', failure: failureFrom(error) });
     }
-  }, [etat.email]);
+  }, [state.email]);
 
-  const verifierCode = useCallback(
+  const verifyCode = useCallback(
     async (prenom?: string) => {
-      envoyer({ type: 'envoiCommence' });
+      dispatch({ type: 'submitStarted' });
       try {
-        const session = await ref.current.client.verifierCode({
-          email: etat.email.trim(),
-          code: codeAssemble(etat.cases),
+        const session = await ref.current.client.verifyCode({
+          email: state.email.trim(),
+          code: assembledCode(state.boxes),
           ...(prenom ? { prenom: prenom.trim() } : {}),
         });
-        envoyer({ type: 'sessionOuverte', session });
-        if (session.utilisateur.prenom !== null) ref.current.surSession?.(session);
-      } catch (erreur) {
-        if (erreur instanceof HorsLigne) envoyer({ type: 'coupure' });
-        else envoyer({ type: 'echec', panne: panneDepuis(erreur) });
+        dispatch({ type: 'sessionOpened', session });
+        if (session.utilisateur.prenom !== null) ref.current.onSession?.(session);
+      } catch (error) {
+        if (error instanceof Offline) dispatch({ type: 'wentOffline' });
+        else dispatch({ type: 'failed', failure: failureFrom(error) });
       }
     },
-    [etat.email, etat.cases],
+    [state.email, state.boxes],
   );
 
   // ── Auto-vérification au sixième chiffre (EP00 §4) ────────────────────────
   // Le garde-fou est le code lui-même : tant qu'il n'a pas changé, on ne
   // renvoie pas. Sans lui, un code refusé serait renvoyé en boucle.
-  const dernierEnvoye = useRef<string>('');
+  const lastSent = useRef<string>('');
   useEffect(() => {
-    const code = codeAssemble(etat.cases);
-    if (etat.etape !== 'code') return;
-    if (!estComplet(etat.cases) || etat.enCours || etat.horsLigne) return;
-    if (code === dernierEnvoye.current) return;
-    dernierEnvoye.current = code;
-    void verifierCode();
-  }, [etat.cases, etat.etape, etat.enCours, etat.horsLigne, verifierCode]);
+    const code = assembledCode(state.boxes);
+    if (state.step !== 'code') return;
+    if (!isComplete(state.boxes) || state.pending || state.offline) return;
+    if (code === lastSent.current) return;
+    lastSent.current = code;
+    void verifyCode();
+  }, [state.boxes, state.step, state.pending, state.offline, verifyCode]);
 
-  const soumettre = useCallback(() => {
-    if (!peutEnvoyer(etat)) return;
-    if (etat.etape === 'email') void demanderCode();
-    else if (etat.etape === 'code') void verifierCode();
-    else if (etat.etape === 'prenom') void verifierCode(etat.prenom);
-  }, [etat, demanderCode, verifierCode]);
+  const submit = useCallback(() => {
+    if (!canSubmit(state)) return;
+    if (state.step === 'email') void requestCode();
+    else if (state.step === 'code') void verifyCode();
+    else if (state.step === 'firstName') void verifyCode(state.firstName);
+  }, [state, requestCode, verifyCode]);
 
-  const renvoyer = useCallback(() => {
-    if (!peutRenvoyer(etat, Date.now())) return;
-    dernierEnvoye.current = '';
-    void demanderCode();
-  }, [etat, demanderCode]);
+  const resend = useCallback(() => {
+    if (!canResend(state, Date.now())) return;
+    lastSent.current = '';
+    void requestCode();
+  }, [state, requestCode]);
 
   return useMemo(
     () =>
       ({
-        etat,
-        maintenant,
-        envoyer,
-        soumettre,
-        renvoyer,
-        peutEnvoyer: peutEnvoyer(etat),
-        peutRenvoyer: peutRenvoyer(etat, maintenant),
+        state,
+        now,
+        dispatch,
+        submit,
+        resend,
+        canSubmit: canSubmit(state),
+        canResend: canResend(state, now),
       }) as const,
-    [etat, maintenant, soumettre, renvoyer],
+    [state, now, submit, resend],
   );
 }
 
-export type Parcours = ReturnType<typeof useAuthOtp>;
-export type { EtatParcours };
+export type Flow = ReturnType<typeof useAuthOtp>;
+export type { FlowState };

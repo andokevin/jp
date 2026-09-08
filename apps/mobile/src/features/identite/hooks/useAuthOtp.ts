@@ -1,5 +1,5 @@
 /**
- * L'adaptateur natif du parcours — F0.1
+ * L'adaptateur natif du flow — F0.1
  *
  * Le jumeau exact de `apps/web/src/features/identite/hooks/useAuthOtp.ts`, et
  * c'est le but : les deux font une vingtaine de lignes parce que les cent
@@ -11,7 +11,7 @@
  */
 import { useMemo } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import { ClientIdentite, useAuthOtp as useParcours, type AbonnementReseau } from '@jp/identite';
+import { IdentityClient, useAuthOtp as useFlow, type NetworkSubscription } from '@jp/identite';
 import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
@@ -38,44 +38,44 @@ import { estEnLigne } from '../../../noyau/reseau.js';
  * à chaque battement de NetInfo : une action `coupure` répétée reconstruirait
  * l'état à l'identique, mais rendrait l'écran pour rien.
  */
-const ecouterNetInfo: AbonnementReseau = ({ surCoupure, surRetour }) => {
+const listenNetInfo: NetworkSubscription = ({ onOffline, onOnline }) => {
   let precedent: boolean | null = null;
   return NetInfo.addEventListener((etat) => {
     const enLigne = estEnLigne(etat);
     if (enLigne === precedent) return;
     precedent = enLigne;
-    if (enLigne) surRetour();
-    else surCoupure();
+    if (enLigne) onOnline();
+    else onOffline();
   });
 };
 
-export interface OptionsParcoursNatif {
+export interface NativeFlowOptions {
   readonly base: string;
-  readonly langue: Language;
+  readonly language: Language;
   /** Injectable pour les tests. */
   readonly fetch?: typeof fetch;
   /** Injectable pour les tests — `undefined` désactive l'écoute. */
-  readonly abonnerReseau?: AbonnementReseau;
+  readonly subscribeNetwork?: NetworkSubscription;
   /** Appelé une fois la session ouverte ET le prénom connu. */
-  readonly surSession?: (session: auth.SessionResponse) => void;
+  readonly onSession?: (session: auth.SessionResponse) => void;
 }
 
-export function useAuthOtp(options: OptionsParcoursNatif) {
+export function useAuthOtp(options: NativeFlowOptions) {
   const client = useMemo(
     () =>
-      new ClientIdentite({
+      new IdentityClient({
         base: options.base,
-        langue: options.langue,
+        language: options.language,
         ...(options.fetch ? { fetch: options.fetch } : {}),
       }),
-    [options.base, options.langue, options.fetch],
+    [options.base, options.language, options.fetch],
   );
 
-  return useParcours({
+  return useFlow({
     client,
-    abonnerReseau: options.abonnerReseau ?? ecouterNetInfo,
-    ...(options.surSession ? { surSession: options.surSession } : {}),
+    subscribeNetwork: options.subscribeNetwork ?? listenNetInfo,
+    ...(options.onSession ? { onSession: options.onSession } : {}),
   });
 }
 
-export type { Parcours, EtatParcours } from '@jp/identite';
+export type { Flow, FlowState } from '@jp/identite';

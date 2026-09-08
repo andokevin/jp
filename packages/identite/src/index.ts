@@ -22,8 +22,8 @@
  *
  * Aucune dépendance à `document`, à une vue, ni à une application.
  */
-export * from './parcours.js';
-export * from './code-otp.js';
-export * from './libelles.js';
+export * from './flow.js';
+export * from './otp-boxes.js';
+export * from './labels.js';
 export * from './api.js';
 export * from './hook.js';

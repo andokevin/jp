@@ -1,5 +1,5 @@
 /**
- * Le cadre commun aux trois écrans : bandeau, bascule de langue, carte.
+ * Le cadre commun aux trois écrans : bandeau, bascule de language, carte.
  *
  * Rien de spécifique à une étape ici — ces trois pièces sont identiques du
  * premier écran au dernier, et c'est ce qui fait qu'on reconnaît le même
@@ -7,7 +7,7 @@
  */
 import type { ReactNode } from 'react';
 
-import { LANGUES_ECRAN, LIBELLES, type LangueEcran } from '@jp/identite';
+import { SCREEN_LANGUAGES, LABELS, type ScreenLanguage } from '@jp/identite';
 import { styleRacine } from '../theme.js';
 
 /** Le pictogramme « pas de réseau » — l'icône EN PLUS du texte, jamais à la place. */
@@ -31,18 +31,18 @@ function IconeHorsLigne() {
 /**
  * Le bandeau hors ligne, épinglé en haut de la page.
  *
- * **Il prend le pas sur le message d'erreur** : une requête qui n'est jamais
+ * **Il prend le pas sur le message d'error** : une requête qui n'est jamais
  * partie n'est pas un refus du serveur, et afficher les deux ferait accuser la
  * personne d'une faute qu'elle n'a pas commise.
  *
  * `role="status"` plutôt que `alert` : c'est un changement d'état de
  * l'environnement, pas une urgence à interrompre la saisie en cours.
  */
-export function BandeauHorsLigne({ langue }: { readonly langue: LangueEcran }) {
+export function BandeauHorsLigne({ language }: { readonly language: ScreenLanguage }) {
   return (
     <div className="jp-bandeau" role="status">
       <IconeHorsLigne />
-      <span>{LIBELLES[langue].horsLigne}</span>
+      <span>{LABELS[language].offline}</span>
     </div>
   );
 }
@@ -55,24 +55,24 @@ export function BandeauHorsLigne({ langue }: { readonly langue: LangueEcran }) {
  * la marque.
  */
 export function BasculeLangue({
-  langue,
+  language,
   surChangement,
 }: {
-  readonly langue: LangueEcran;
-  readonly surChangement: (l: LangueEcran) => void;
+  readonly language: ScreenLanguage;
+  readonly surChangement: (l: ScreenLanguage) => void;
 }) {
   return (
     <div className="jp-langues">
-      {LANGUES_ECRAN.map((l) => (
+      {SCREEN_LANGUAGES.map((l) => (
         <button
           key={l}
           type="button"
-          className="jp-langue"
+          className="jp-language"
           lang={l}
-          aria-current={l === langue}
+          aria-current={l === language}
           onClick={() => surChangement(l)}
         >
-          {LIBELLES[langue].langueDe[l]}
+          {LABELS[language].languageOf[l]}
         </button>
       ))}
     </div>
@@ -87,25 +87,25 @@ export function BasculeLangue({
  * donner exactement l'application native, pas une carte flottante rétrécie.
  */
 export function PageAuth({
-  langue,
-  horsLigne,
-  surLangue,
+  language,
+  offline,
+  onLanguage,
   children,
 }: {
-  readonly langue: LangueEcran;
-  readonly horsLigne: boolean;
-  readonly surLangue: (l: LangueEcran) => void;
+  readonly language: ScreenLanguage;
+  readonly offline: boolean;
+  readonly onLanguage: (l: ScreenLanguage) => void;
   readonly children: ReactNode;
 }) {
   return (
-    <div className="jp-auth" style={styleRacine()} lang={langue}>
-      {horsLigne ? <BandeauHorsLigne langue={langue} /> : null}
+    <div className="jp-auth" style={styleRacine()} lang={language}>
+      {offline ? <BandeauHorsLigne language={language} /> : null}
       <header className="jp-entete">
-        <BasculeLangue langue={langue} surChangement={surLangue} />
+        <BasculeLangue language={language} surChangement={onLanguage} />
       </header>
       <main className="jp-centre">
         <div className="jp-marque">
-          JP<span>{LIBELLES[langue].marqueSuite}</span>
+          JP<span>{LABELS[language].brandTail}</span>
         </div>
         <div className="jp-carte">{children}</div>
       </main>
