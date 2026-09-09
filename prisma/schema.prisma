@@ -101,13 +101,13 @@ enum TeamRole {
 /// fonctionnel (R-B3) : une boutique qui ne peut rien vendre sans payer ne
 /// s'inscrit pas, et le pilote n'apprend rien.
 /// ⚠️ Montants non arrêtés (`PO-6`).
-enum PalierAbonnement {
-  gratuit
-  essentiel
+enum SubscriptionTier {
+  free
+  essential
   pro
   premium
 
-  @@map("palier_abonnement")
+  @@map("subscription_tier")
 }
 
 enum StatutAbonnementBoutique {
@@ -154,23 +154,23 @@ enum StatutEcart {
   @@map("statut_ecart")
 }
 
-enum StatutPrecommande {
-  ouverte
-  seuil_atteint
-  expiree
-  remboursee
-  livree
+enum PreorderStatus {
+  open
+  threshold_reached
+  expired
+  refunded
+  delivered
 
-  @@map("statut_precommande")
+  @@map("preorder_status")
 }
 
-enum StatutEngagement {
-  engage
-  converti
-  annule
-  rembourse
+enum CommitmentStatus {
+  committed
+  converted
+  cancelled
+  refunded
 
-  @@map("statut_engagement")
+  @@map("commitment_status")
 }
 
 enum TypeMouvementCagnotte {
@@ -446,72 +446,72 @@ enum StatutMessage {
 
 /// Un événement JP rassemble plusieurs boutiques ; un événement de boutique
 /// n'engage qu'elle (R-W8). La portée change qui peut y inscrire quoi.
-enum PorteeEvenement {
+enum EventScope {
   jp
-  boutique
+  shop
 
-  @@map("portee_evenement")
+  @@map("event_scope")
 }
 
-enum StatutEvenement {
-  brouillon
-  annonce
-  en_cours
-  termine
-  annule
+enum EventStatus {
+  draft
+  announced
+  ongoing
+  ended
+  cancelled
 
-  @@map("statut_evenement")
+  @@map("event_status")
 }
 
-enum RoleParticipation {
-  boutique
-  createur
+enum ParticipationRole {
+  shop
+  creator
 
-  @@map("role_participation")
+  @@map("participation_role")
 }
 
-enum StatutParticipation {
+enum ParticipationStatus {
   candidate
-  acceptee
-  refusee
-  refusee_sans_reponse
+  accepted
+  rejected
+  auto_rejected
 
-  @@map("statut_participation")
+  @@map("participation_status")
 }
 
-enum TypePromotion {
-  pourcentage
-  montant
-  livraison_offerte
+enum PromotionType {
+  percentage
+  amount
+  free_shipping
 
-  @@map("type_promotion")
+  @@map("promotion_type")
 }
 
-enum PerimetrePromotion {
-  boutique
-  categorie
+enum PromotionScope {
+  shop
+  category
   selection
 
-  @@map("perimetre_promotion")
+  @@map("promotion_scope")
 }
 
-enum CiblePromotion {
-  tous
-  abonnes
-  palier
-  clients_nommes
+enum PromotionAudience {
+  everyone
+  followers
+  loyalty_tier
+  named_customers
 
-  @@map("cible_promotion")
+  @@map("promotion_audience")
 }
 
-enum StatutPromotion {
-  brouillon
-  programmee
+enum PromotionStatus {
+  draft
+  scheduled
   active
-  terminee
-  annulee
+  ended
+  cancelled
 
-  @@map("statut_promotion")
+  @@map("promotion_status")
 }
 
 enum StockMovementType {
@@ -661,14 +661,14 @@ model User {
   abonnementsSuivis       Abonnement[]             @relation("suiveur")
   abonnes                 Abonnement[]             @relation("suivi")
   messagesDirect          MessageDirect[]
-  evenementsPossedes      Evenement[]              @relation("proprietaire_evenement")
-  participations          EvenementParticipation[] @relation("participant")
-  participationsDecidees  EvenementParticipation[] @relation("decideur_participation")
-  rappelsEvenement        EvenementRappel[]
+  evenementsPossedes      Event[]              @relation("proprietaire_evenement")
+  participations          EventParticipation[] @relation("participant")
+  participationsDecidees  EventParticipation[] @relation("decideur_participation")
+  rappelsEvenement        EventReminder[]
   reservations            Reservation[]
   commandes               SalesOrder[]               @relation("acheteur")
   commandesGenerees       SalesOrder[]               @relation("createur_attribue")
-  promotionsNominatives   PromotionBeneficiaire[]
+  promotionsNominatives   PromotionBeneficiary[]
   evenementsLivraison     ShipmentEvent[]
   contenus                Content[]
   interactions            Interaction[]
@@ -683,10 +683,10 @@ model User {
   blocagesEmis            Blocage[]                @relation("bloqueur")
   blocagesSubis           Blocage[]                @relation("bloque")
   motsBloques             MotBloquePersonnel[]
-  clicsAffiliation        ClicAffiliation[]
+  clicsAffiliation        AffiliateClick[]
   rangsClient             RangClient[]
   notesClient             NoteClient[]
-  ventesConfirmees        VenteConfirmeeJournal[]
+  ventesConfirmees        ConfirmedSaleLog[]
   cagnotte                Cagnotte?
   mouvementsCagnotte      MouvementCagnotte[]
   piecesDressing          PieceDressing[]
@@ -813,7 +813,7 @@ model Boutique {
   extraits         ExtraitBoutique[]
   membres          MembreEquipe[]
   directs          Direct[]
-  paliers          PalierFidelite[]
+  paliers          LoyaltyTier[]
   promotions       Promotion[]
   lignesVendues    OrderLine[]
   tarifs           DeliveryRate[]
@@ -822,7 +822,7 @@ model Boutique {
   score            ScoreConfiance?
   rangsClient      RangClient[]
   notesClient      NoteClient[]
-  ventesConfirmees VenteConfirmeeJournal[]
+  ventesConfirmees ConfirmedSaleLog[]
   abonnements      AbonnementBoutique[]
   misesEnAvant     MiseEnAvant[]
   agregats         AgregatBoutique[]
@@ -1126,8 +1126,8 @@ model Article {
   contenus       ContentArticle[]
   avis           Avis[]
   selections     SelectionArticle[]
-  clics          ClicAffiliation[]
-  precommande    Precommande?
+  clics          AffiliateClick[]
+  precommande    Preorder?
   piecesDressing PieceDressing[]
   aLecranDans    Direct[]           @relation("article_a_lecran")
 
@@ -1343,8 +1343,8 @@ model CreatorProfile {
   updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   selections   Selection[]
-  clics        ClicAffiliation[]
-  precommandes Precommande[]
+  clics        AffiliateClick[]
+  precommandes Preorder[]
 
   @@map("creator_profile")
 }
@@ -1668,64 +1668,64 @@ model DirectBilan {
 // Événements (F20.1)
 // ─────────────────────────────────────────────────────────────────────────
 
-model Evenement {
+model Event {
   id String @id @default(uuid(7)) @db.Uuid
 
-  portee         PorteeEvenement @default(boutique)
+  scope   EventScope @default(shop)
   /// `NULL` quand la portée est `jp` : l'événement appartient à la plateforme.
-  proprietaire   User?           @relation("proprietaire_evenement", fields: [proprietaireId], references: [id], onDelete: Restrict)
-  proprietaireId String?         @map("proprietaire_id") @db.Uuid
+  owner   User?      @relation("proprietaire_evenement", fields: [ownerId], references: [id], onDelete: Restrict)
+  ownerId String?    @map("owner_id") @db.Uuid
 
-  nom           String
-  theme         String?
-  slug          String  @unique
-  visuelUrl     String? @map("visuel_url")
-  couleurAccent String? @map("couleur_accent")
-  hashtag       String?
+  name        String
+  theme       String?
+  slug        String  @unique
+  visualUrl   String? @map("visual_url")
+  accentColor String? @map("accent_color")
+  hashtag     String?
 
-  debutLe DateTime @map("debut_le") @db.Timestamptz(6)
-  finLe   DateTime @map("fin_le") @db.Timestamptz(6)
+  startsAt DateTime @map("starts_at") @db.Timestamptz(6)
+  endsAt   DateTime @map("ends_at") @db.Timestamptz(6)
 
-  statut               StatutEvenement @default(brouillon)
-  candidaturesOuvertes Boolean         @default(false) @map("candidatures_ouvertes")
+  status            EventStatus @default(draft)
+  applicationsOpen  Boolean     @default(false) @map("applications_open")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  participations EvenementParticipation[]
-  elements       EvenementElement[]
+  participations EventParticipation[]
+  elements       EventElement[]
   commandes      SalesOrder[]
-  rappels        EvenementRappel[]
-  bilans         EvenementBilan[]
+  rappels        EventReminder[]
+  bilans         EventReport[]
   promotions     Promotion[]
 
-  @@index([statut, debutLe])
-  @@map("evenement")
+  @@index([status, startsAt])
+  @@map("event")
 }
 
-model EvenementParticipation {
+model EventParticipation {
   id String @id @default(uuid(7)) @db.Uuid
 
-  evenement   Evenement @relation(fields: [evenementId], references: [id], onDelete: Restrict)
-  evenementId String    @map("evenement_id") @db.Uuid
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  eventId String @map("event_id") @db.Uuid
 
   participant   User   @relation("participant", fields: [participantId], references: [id], onDelete: Restrict)
   participantId String @map("participant_id") @db.Uuid
 
-  role       RoleParticipation
-  statut     StatutParticipation @default(candidate)
+  role            ParticipationRole
+  status          ParticipationStatus @default(candidate)
   /// Un refus sans motif est un défaut, pas une simplification.
-  motifRefus String?             @map("motif_refus")
+  rejectionReason String?             @map("rejection_reason")
 
-  decidePar   User?   @relation("decideur_participation", fields: [decideParId], references: [id], onDelete: Restrict)
-  decideParId String? @map("decide_par_id") @db.Uuid
+  decidedBy   User?   @relation("decideur_participation", fields: [decidedById], references: [id], onDelete: Restrict)
+  decidedById String? @map("decided_by_id") @db.Uuid
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  elements EvenementElement[]
+  elements EventElement[]
 
-  @@unique([evenementId, participantId])
-  @@map("evenement_participation")
+  @@unique([eventId, participantId])
+  @@map("event_participation")
 }
 
 /// Ce qu'un participant expose dans un événement — un article, une promotion,
@@ -1735,86 +1735,86 @@ model EvenementParticipation {
 /// L'intégrité référentielle est applicative. L'alternative — quatre tables de
 /// liaison — donnerait l'intégrité en base mais quatre requêtes pour composer
 /// la page, sur un réseau lent.
-model EvenementElement {
-  evenement   Evenement @relation(fields: [evenementId], references: [id], onDelete: Restrict)
-  evenementId String    @map("evenement_id") @db.Uuid
+model EventElement {
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  eventId String @map("event_id") @db.Uuid
 
-  cibleType String @map("cible_type")
-  cibleId   String @map("cible_id") @db.Uuid
+  targetType String @map("target_type")
+  targetId   String @map("target_id") @db.Uuid
 
-  participation   EvenementParticipation? @relation(fields: [participationId], references: [id], onDelete: SetNull)
-  participationId String?                 @map("participation_id") @db.Uuid
+  participation   EventParticipation? @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  participationId String?             @map("participation_id") @db.Uuid
 
   position Int @default(0)
 
-  @@id([evenementId, cibleType, cibleId])
-  @@index([cibleType, cibleId])
-  @@map("evenement_element")
+  @@id([eventId, targetType, targetId])
+  @@index([targetType, targetId])
+  @@map("event_element")
 }
 
 /// « Prévenez-moi. » Le compteur porte le plafond de 3 notifications (R-W9) :
 /// au-delà, le rappel devient du harcèlement et on perd la personne.
-model EvenementRappel {
-  evenement   Evenement @relation(fields: [evenementId], references: [id], onDelete: Restrict)
-  evenementId String    @map("evenement_id") @db.Uuid
+model EventReminder {
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  eventId String @map("event_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  notificationsEnvoyees Int @default(0) @map("notifications_envoyees")
+  notificationsSent Int @default(0) @map("notifications_sent")
 
-  @@id([evenementId, userId])
-  @@map("evenement_rappel")
+  @@id([eventId, userId])
+  @@map("event_reminder")
 }
 
 /// `participantId` à `NULL` = le bilan global de l'événement.
-model EvenementBilan {
+model EventReport {
   id String @id @default(uuid(7)) @db.Uuid
 
-  evenement   Evenement @relation(fields: [evenementId], references: [id], onDelete: Restrict)
-  evenementId String    @map("evenement_id") @db.Uuid
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  eventId String @map("event_id") @db.Uuid
 
   participantId String? @map("participant_id") @db.Uuid
 
-  nbArticlesVendus  Int @default(0) @map("nb_articles_vendus")
-  caAriary          Int @default(0) @map("ca_ariary")
+  articlesSoldCount     Int @default(0) @map("articles_sold_count")
+  revenueAriary         Int @default(0) @map("revenue_ariary")
   /// La période équivalente hors événement. Sans elle, un chiffre d'affaires
   /// ne dit pas si l'événement a servi à quelque chose.
-  caReferenceAriary Int @default(0) @map("ca_reference_ariary")
-  nouveauxAbonnes   Int @default(0) @map("nouveaux_abonnes")
-  traficPage        Int @default(0) @map("trafic_page")
+  referenceRevenueAriary Int @default(0) @map("reference_revenue_ariary")
+  newFollowers          Int @default(0) @map("new_followers")
+  pageTraffic           Int @default(0) @map("page_traffic")
 
-  calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
-  @@unique([evenementId, participantId])
-  @@map("evenement_bilan")
+  @@unique([eventId, participantId])
+  @@map("event_report")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
 // Fidélité — les paliers, et les promotions (F7.6, F7.22)
 // ─────────────────────────────────────────────────────────────────────────
 
-model PalierFidelite {
+model LoyaltyTier {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  nom       String
-  rangOrdre Int    @map("rang_ordre")
+  name      String
+  rankOrder Int    @map("rank_order")
 
-  seuilMontant   Int @default(0) @map("seuil_montant")
-  seuilCommandes Int @default(0) @map("seuil_commandes")
+  amountThreshold Int @default(0) @map("amount_threshold")
+  ordersThreshold Int @default(0) @map("orders_threshold")
 
-  avantageTexte String? @map("avantage_texte")
+  benefitText String? @map("benefit_text")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   promotionsReservees Promotion[]  @relation("palier_min")
   rangsClient         RangClient[]
 
-  @@unique([boutiqueId, rangOrdre])
-  @@map("palier_fidelite")
+  @@unique([boutiqueId, rankOrder])
+  @@map("loyalty_tier")
 }
 
 model Promotion {
@@ -1823,43 +1823,43 @@ model Promotion {
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  evenement   Evenement? @relation(fields: [evenementId], references: [id], onDelete: SetNull)
-  evenementId String?    @map("evenement_id") @db.Uuid
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  eventId String? @map("event_id") @db.Uuid
 
-  type   TypePromotion
+  type  PromotionType
   /// `CHECK > 0`. Une remise de zéro n'est pas une remise.
-  valeur Int
+  value Int
 
-  perimetre   PerimetrePromotion @default(boutique)
-  categoryId  String?            @map("category_id") @db.Uuid
+  scope      PromotionScope @default(shop)
+  categoryId String?        @map("category_id") @db.Uuid
 
-  cible       CiblePromotion  @default(tous)
-  palierMin   PalierFidelite? @relation("palier_min", fields: [palierMinId], references: [id], onDelete: SetNull)
-  palierMinId String?         @map("palier_min_id") @db.Uuid
+  audience  PromotionAudience @default(everyone)
+  minTier   LoyaltyTier?      @relation("palier_min", fields: [minTierId], references: [id], onDelete: SetNull)
+  minTierId String?           @map("min_tier_id") @db.Uuid
 
   code String? @unique
 
-  plafondUtilisation Int? @map("plafond_utilisation")
-  utilisations       Int  @default(0)
+  usageCap   Int? @map("usage_cap")
+  usageCount Int  @default(0) @map("usage_count")
 
-  debutLe DateTime @map("debut_le") @db.Timestamptz(6)
-  finLe   DateTime @map("fin_le") @db.Timestamptz(6)
+  startsAt DateTime @map("starts_at") @db.Timestamptz(6)
+  endsAt   DateTime @map("ends_at") @db.Timestamptz(6)
 
-  statut          StatutPromotion @default(brouillon)
-  notifierAbonnes Boolean         @default(false) @map("notifier_abonnes")
+  status          PromotionStatus @default(draft)
+  notifyFollowers Boolean         @default(false) @map("notify_followers")
   /// **Un verrou d'idempotence, pas une donnée d'affichage** (R-U3). Après un
   /// incident du planificateur, la promotion démarre en retard mais **ne
   /// renotifie jamais**.
-  notifieeLe      DateTime?       @map("notifiee_le") @db.Timestamptz(6)
+  notifiedAt      DateTime?       @map("notified_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   articles       PromotionArticle[]
-  beneficiaires  PromotionBeneficiaire[]
+  beneficiaires  PromotionBeneficiary[]
   lignesRemisees OrderLine[]
 
-  @@index([boutiqueId, statut, debutLe])
+  @@index([boutiqueId, status, startsAt])
   @@map("promotion")
 }
 
@@ -1973,7 +1973,7 @@ model SalesOrder {
   attributedCreator   User?   @relation("createur_attribue", fields: [attributedCreatorId], references: [id], onDelete: Restrict)
   attributedCreatorId String? @map("attributed_creator_id") @db.Uuid
 
-  evenement   Evenement? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  evenement   Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
   eventId String?    @map("event_id") @db.Uuid
 
   direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
@@ -2018,12 +2018,12 @@ model SalesOrder {
   facture             Invoice?
   expedition          Shipment?
   filRemise           HandoverThread?
-  promotionsUtilisees PromotionBeneficiaire[]
+  promotionsUtilisees PromotionBeneficiary[]
   signalements        SignalementCommande[]
   avis                Avis?
   contenusUnboxing    Content[]
-  venteConfirmee      VenteConfirmeeJournal?
-  engagements         PrecommandeEngagement[]
+  venteConfirmee      ConfirmedSaleLog?
+  engagements         PreorderCommitment[]
   piecesDressing      PieceDressing[]
   panierCadeau        PanierCadeau?
 
@@ -2071,21 +2071,21 @@ model OrderLine {
 }
 
 /// Le code nominatif à usage unique (R-U6).
-model PromotionBeneficiaire {
+model PromotionBeneficiary {
   promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Restrict)
   promotionId String    @map("promotion_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  codePersonnel String    @unique @map("code_personnel")
-  utiliseLe     DateTime? @map("utilise_le") @db.Timestamptz(6)
+  personalCode String    @unique @map("personal_code")
+  usedAt       DateTime? @map("used_at") @db.Timestamptz(6)
 
-  commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: SetNull)
-  commandeId String?   @map("commande_id") @db.Uuid
+  order   SalesOrder? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  orderId String?     @map("order_id") @db.Uuid
 
   @@id([promotionId, userId])
-  @@map("promotion_beneficiaire")
+  @@map("promotion_beneficiary")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -2644,17 +2644,17 @@ model RepublicationSuspectee {
 model Selection {
   id String @id @default(uuid(7)) @db.Uuid
 
-  createur   CreatorProfile @relation(fields: [createurId], references: [id], onDelete: Restrict)
-  createurId String         @map("createur_id") @db.Uuid
+  creator   CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Restrict)
+  creatorId String         @map("creator_id") @db.Uuid
 
-  nomTheme String @map("nom_theme")
-  position Int    @default(0)
+  themeName String @map("theme_name")
+  position  Int    @default(0)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   articles SelectionArticle[]
 
-  @@index([createurId, position])
+  @@index([creatorId, position])
   @@map("selection")
 }
 
@@ -2674,11 +2674,11 @@ model SelectionArticle {
 /// La fenêtre d'attribution (R-N2). `expireLe` est ce qui décide si une vente
 /// revient à la créatrice : sans date, l'attribution serait éternelle et la
 /// boutique paierait une commission pour un clic d'il y a six mois.
-model ClicAffiliation {
+model AffiliateClick {
   id String @id @default(uuid(7)) @db.Uuid
 
-  createur   CreatorProfile @relation(fields: [createurId], references: [id], onDelete: Restrict)
-  createurId String         @map("createur_id") @db.Uuid
+  creator   CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Restrict)
+  creatorId String         @map("creator_id") @db.Uuid
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String  @map("article_id") @db.Uuid
@@ -2686,59 +2686,59 @@ model ClicAffiliation {
   user   User?   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String? @map("utilisateur_id") @db.Uuid
 
-  expireLe DateTime @map("expire_le") @db.Timestamptz(6)
-  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([userId, articleId, expireLe])
-  @@map("clic_affiliation")
+  @@index([userId, articleId, expiresAt])
+  @@map("affiliate_click")
 }
 
 /// La précommande porte RB3 : on ne garde pas indéfiniment l'argent de gens qui
 /// attendent. `dateExpeditionMax` est la promesse ; la dépasser rembourse.
-model Precommande {
+model Preorder {
   id String @id @default(uuid(7)) @db.Uuid
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String  @unique @map("article_id") @db.Uuid
 
-  organisateur   CreatorProfile @relation(fields: [organisateurId], references: [id], onDelete: Restrict)
-  organisateurId String         @map("organisateur_id") @db.Uuid
+  organizer   CreatorProfile @relation(fields: [organizerId], references: [id], onDelete: Restrict)
+  organizerId String         @map("organizer_id") @db.Uuid
 
   /// `CHECK > 0` — une précommande sans seuil est une vente ordinaire.
-  seuil          Int
-  dateLimite     DateTime @map("date_limite") @db.Timestamptz(6)
-  compteurActuel Int      @default(0) @map("compteur_actuel")
+  threshold    Int
+  deadline     DateTime @map("deadline") @db.Timestamptz(6)
+  currentCount Int      @default(0) @map("current_count")
 
-  statut StatutPrecommande @default(ouverte)
+  status PreorderStatus @default(open)
 
   /// Paramétré (R-N9) : la part libérée avant livraison, pour que la créatrice
   /// puisse produire.
-  avanceLiberee     Int      @default(0) @map("avance_liberee")
-  dateExpeditionMax DateTime @map("date_expedition_max") @db.Timestamptz(6)
+  releasedAdvance  Int      @default(0) @map("released_advance")
+  maxShippingDate  DateTime @map("max_shipping_date") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  engagements PrecommandeEngagement[]
+  engagements PreorderCommitment[]
 
-  @@map("precommande")
+  @@map("preorder")
 }
 
-model PrecommandeEngagement {
+model PreorderCommitment {
   id String @id @default(uuid(7)) @db.Uuid
 
-  precommande   Precommande @relation(fields: [precommandeId], references: [id], onDelete: Restrict)
-  precommandeId String      @map("precommande_id") @db.Uuid
+  preorder   Preorder @relation(fields: [preorderId], references: [id], onDelete: Restrict)
+  preorderId String   @map("preorder_id") @db.Uuid
 
-  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @unique @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @unique @map("order_id") @db.Uuid
 
-  statut StatutEngagement @default(engage)
+  status CommitmentStatus @default(committed)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([precommandeId, statut])
-  @@map("precommande_engagement")
+  @@index([preorderId, status])
+  @@map("preorder_commitment")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -2752,7 +2752,7 @@ model PrecommandeEngagement {
 ///
 /// `UNIQUE(commande_id)` rend le rattrapage **idempotent** : on peut rejouer le
 /// journal sur tout l'historique sans compter deux fois.
-model VenteConfirmeeJournal {
+model ConfirmedSaleLog {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
@@ -2761,14 +2761,14 @@ model VenteConfirmeeJournal {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @unique @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @unique @map("order_id") @db.Uuid
 
-  montantConfirme Int      @map("montant_confirme")
-  confirmeLe      DateTime @default(now()) @map("confirme_le") @db.Timestamptz(6)
+  confirmedAmount Int      @map("confirmed_amount")
+  confirmedAt     DateTime @default(now()) @map("confirmed_at") @db.Timestamptz(6)
 
   @@index([boutiqueId, userId])
-  @@map("vente_confirmee_journal")
+  @@map("confirmed_sale_log")
 }
 
 model RangClient {
@@ -2780,7 +2780,7 @@ model RangClient {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  palier   PalierFidelite? @relation(fields: [palierId], references: [id], onDelete: SetNull)
+  palier   LoyaltyTier? @relation(fields: [palierId], references: [id], onDelete: SetNull)
   palierId String?         @map("palier_id") @db.Uuid
 
   score         Int @default(0)
@@ -2946,7 +2946,7 @@ model AbonnementBoutique {
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  palier PalierAbonnement         @default(gratuit)
+  palier SubscriptionTier         @default(gratuit)
   statut StatutAbonnementBoutique @default(actif)
 
   /// Portent R-B4. `NULL` = illimité.
@@ -3232,7 +3232,7 @@ model BaremeCommission {
   id String @id @default(uuid(7)) @db.Uuid
 
   universeKey String           @map("universe_key")
-  palier      PalierAbonnement @default(gratuit)
+  palier      SubscriptionTier @default(gratuit)
 
   /// En pour mille. 80 = 8 % (D6).
   tauxPourMille Int @map("taux_pour_mille")
