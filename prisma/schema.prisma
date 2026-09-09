@@ -243,66 +243,66 @@ enum InteractionStatus {
   @@map("interaction_status")
 }
 
-enum MotifLitige {
-  non_recu
-  abime
-  non_conforme
-  mauvaise_taille
-  autre
+enum DisputeReason {
+  not_received
+  damaged
+  not_as_described
+  wrong_size
+  other
 
-  @@map("motif_litige")
+  @@map("dispute_reason")
 }
 
-enum StatutSignalementCommande {
-  ouvert
-  en_discussion
-  resolu
+enum OrderDisputeStatus {
+  open
+  discussing
+  resolved
 
-  @@map("statut_signalement_commande")
+  @@map("order_dispute_status")
 }
 
-enum ConformiteTaille {
-  conforme
-  petit
-  grand
+enum SizeFit {
+  true_to_size
+  runs_small
+  runs_large
 
-  @@map("conformite_taille")
+  @@map("size_fit")
 }
 
 /// Un signalement de menace traité comme le reste est un échec du produit, pas
 /// un retard (R-X4).
-enum NiveauSignalement {
-  ordinaire
-  urgence
+enum ReportLevel {
+  ordinary
+  urgent
 
-  @@map("niveau_signalement")
+  @@map("report_level")
 }
 
-enum StatutSignalement {
-  nouveau
-  en_cours
-  traite
-  classe
+enum ReportStatus {
+  new
+  in_progress
+  handled
+  archived
 
-  @@map("statut_signalement")
+  @@map("report_status")
 }
 
-enum TypeSanction {
-  avertissement
-  retrait
+enum SanctionType {
+  warning
+  removal
   restriction
   suspension
-  exclusion
+  ban
 
-  @@map("type_sanction")
+  @@map("sanction_type")
 }
 
-enum StatutRepublication {
-  a_examiner
-  confirmee
-  ecartee
+enum RepostStatus {
+  to_review
+  confirmed
+  dismissed
 
-  @@map("statut_republication")
+  @@map("repost_status")
 }
 
 enum SaleOrigin {
@@ -672,17 +672,17 @@ model User {
   evenementsLivraison     ShipmentEvent[]
   contenus                Content[]
   interactions            Interaction[]
-  signalementsCommande    SignalementCommande[]    @relation("ouvreur_signalement")
-  messagesLitige          MessageLitige[]
-  avisEcrits              Avis[]
-  signalementsEmis        Signalement[]            @relation("signaleur")
-  signalementsAffectes    Signalement[]            @relation("affecte_signalement")
-  signalementsTraites     Signalement[]            @relation("traiteur_signalement")
+  signalementsCommande    OrderDispute[]    @relation("ouvreur_signalement")
+  messagesLitige          DisputeMessage[]
+  avisEcrits              Review[]
+  signalementsEmis        Report[]            @relation("signaleur")
+  signalementsAffectes    Report[]            @relation("affecte_signalement")
+  signalementsTraites     Report[]            @relation("traiteur_signalement")
   sanctionsSubies         Sanction[]               @relation("sanctionne")
   sanctionsAppliquees     Sanction[]               @relation("applicateur_sanction")
-  blocagesEmis            Blocage[]                @relation("bloqueur")
-  blocagesSubis           Blocage[]                @relation("bloque")
-  motsBloques             MotBloquePersonnel[]
+  blocagesEmis            UserBlock[]                @relation("bloqueur")
+  blocagesSubis           UserBlock[]                @relation("bloque")
+  motsBloques             BlockedWord[]
   clicsAffiliation        AffiliateClick[]
   rangsClient             RangClient[]
   notesClient             NoteClient[]
@@ -818,8 +818,8 @@ model Boutique {
   lignesVendues    OrderLine[]
   tarifs           DeliveryRate[]
   expeditions      Shipment[]
-  avis             Avis[]
-  score            ScoreConfiance?
+  avis             Review[]
+  score            TrustScore?
   rangsClient      RangClient[]
   notesClient      NoteClient[]
   ventesConfirmees ConfirmedSaleLog[]
@@ -1124,7 +1124,7 @@ model Article {
   questions      ArticleQuestion[]
   directs        DirectArticle[]
   contenus       ContentArticle[]
-  avis           Avis[]
+  avis           Review[]
   selections     SelectionArticle[]
   clics          AffiliateClick[]
   precommande    Preorder?
@@ -2019,8 +2019,8 @@ model SalesOrder {
   expedition          Shipment?
   filRemise           HandoverThread?
   promotionsUtilisees PromotionBeneficiary[]
-  signalements        SignalementCommande[]
-  avis                Avis?
+  signalements        OrderDispute[]
+  avis                Review?
   contenusUnboxing    Content[]
   venteConfirmee      ConfirmedSaleLog?
   engagements         PreorderCommitment[]
@@ -2317,9 +2317,9 @@ model Content {
   statistique           ContentStatistic?
   interactions          Interaction[]
   hashtags              ContentHashtag[]
-  avis                  Avis[]
-  republications        RepublicationSuspectee[] @relation("contenu_suspecte")
-  republicationsOrigine RepublicationSuspectee[] @relation("contenu_origine")
+  avis                  Review[]
+  republications        SuspectedRepost[] @relation("contenu_suspecte")
+  republicationsOrigine SuspectedRepost[] @relation("contenu_origine")
 
   @@index([authorId, publishedAt])
   @@index([status, publishedAt])
@@ -2418,67 +2418,67 @@ model ContentHashtag {
 /// **`compteDansLeScore` est TOUTE la sanction du produit** (R-T8). Il n'y a
 /// plus ni séquestre, ni arbitre, ni argent retenu (`DP-07`) : un signalement
 /// ouvert pèse sur la réputation, et c'est le seul levier.
-model SignalementCommande {
+model OrderDispute {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @map("order_id") @db.Uuid
 
-  ouvertPar   User   @relation("ouvreur_signalement", fields: [ouvertParId], references: [id], onDelete: Restrict)
-  ouvertParId String @map("ouvert_par_id") @db.Uuid
+  openedBy   User   @relation("ouvreur_signalement", fields: [openedById], references: [id], onDelete: Restrict)
+  openedById String @map("opened_by_id") @db.Uuid
 
   /// **Filtré par univers** : « pas ma taille » n'a aucun sens pour un
   /// téléphone, « batterie morte » aucun pour une robe. D'où l'univers figé ici
   /// plutôt qu'un motif universel qui ne parlerait à personne.
-  universeKey String                    @map("universe_key")
-  motif       MotifLitige
-  statut      StatutSignalementCommande @default(ouvert)
+  universeKey String             @map("universe_key")
+  reason      DisputeReason
+  status      OrderDisputeStatus @default(open)
 
-  /// `CHECK (compte_dans_le_score = (statut <> 'resolu'))`. La résolution
+  /// `CHECK (counts_in_score = (status <> 'resolved'))`. La résolution
   /// décrémente le compteur, et aucun code ne peut les désynchroniser.
-  compteDansLeScore Boolean @default(true) @map("compte_dans_le_score")
+  countsInScore Boolean @default(true) @map("counts_in_score")
 
-  resoluLe DateTime? @map("resolu_le") @db.Timestamptz(6)
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  messages MessageLitige[]
+  messages DisputeMessage[]
 
-  @@index([commandeId])
-  @@index([statut, creeLe])
-  @@map("signalement_commande")
+  @@index([orderId])
+  @@index([status, createdAt])
+  @@map("order_dispute")
 }
 
-model MessageLitige {
+model DisputeMessage {
   id String @id @default(uuid(7)) @db.Uuid
 
-  signalement   SignalementCommande @relation(fields: [signalementId], references: [id], onDelete: Restrict)
-  signalementId String              @map("signalement_id") @db.Uuid
+  dispute   OrderDispute @relation(fields: [disputeId], references: [id], onDelete: Restrict)
+  disputeId String       @map("dispute_id") @db.Uuid
 
-  auteur   User   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
-  auteurId String @map("auteur_id") @db.Uuid
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String @map("author_id") @db.Uuid
 
-  texte         String
-  piecesJointes Json?  @map("pieces_jointes")
+  text        String
+  attachments Json?  @map("attachments")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([signalementId, creeLe])
-  @@map("message_litige")
+  @@index([disputeId, createdAt])
+  @@map("dispute_message")
 }
 
 /// Un seul avis par commande. `morphologieAutrice` est **figée au moment de
 /// l'avis** (F6.10) : sinon un changement de profil réécrirait le sens d'un
 /// avis passé — « taille petit » ne veut rien dire sans savoir pour qui.
-model Avis {
+model Review {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @unique @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @unique @map("order_id") @db.Uuid
 
-  auteur   User   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
-  auteurId String @map("auteur_id") @db.Uuid
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String @map("author_id") @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
@@ -2488,77 +2488,77 @@ model Avis {
 
   /// `CHECK 1..5`.
   note     Int
-  texte    String?
+  text     String?
   photoUrl String? @map("photo_url")
 
-  conformiteTaille   ConformiteTaille? @map("conformite_taille")
-  morphologieAutrice Json?             @map("morphologie_autrice")
+  sizeFit         SizeFit? @map("size_fit")
+  authorBodyShape Json?    @map("author_body_shape")
 
   /// L'avis né d'un déballage (R-T7).
-  contenu   Content? @relation(fields: [contenuId], references: [id], onDelete: SetNull)
-  contenuId String?  @map("contenu_id") @db.Uuid
+  content   Content? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  contentId String?  @map("content_id") @db.Uuid
 
   /// **Une seule fois** (F6.9) : le droit de réponse n'est pas un fil de
   /// discussion.
-  reponseTexte String?   @map("reponse_texte")
-  reponseLe    DateTime? @map("reponse_le") @db.Timestamptz(6)
+  replyText String?   @map("reply_text")
+  repliedAt DateTime? @map("replied_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([boutiqueId, creeLe])
-  @@map("avis")
+  @@index([boutiqueId, createdAt])
+  @@map("review")
 }
 
 /// Public, calculé sur des faits. `decomposition` porte la contribution de
 /// chaque composante (R-T10) : un score qu'on ne peut pas expliquer à la
 /// boutique concernée est un score qu'elle contestera.
-model ScoreConfiance {
+model TrustScore {
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @id @map("boutique_id") @db.Uuid
 
-  score                Decimal @default(0) @db.Decimal(4, 2)
-  nbVentesHonorees     Int     @default(0) @map("nb_ventes_honorees")
-  delaiExpeditionReelH Int?    @map("delai_expedition_reel_h")
-  tauxAnnulation       Decimal @default(0) @map("taux_annulation") @db.Decimal(5, 4)
-  tauxLitige           Decimal @default(0) @map("taux_litige") @db.Decimal(5, 4)
-  decomposition        Json?
+  score                  Decimal @default(0) @db.Decimal(4, 2)
+  honoredSalesCount      Int     @default(0) @map("honored_sales_count")
+  actualShippingDelayH   Int?    @map("actual_shipping_delay_h")
+  cancellationRate       Decimal @default(0) @map("cancellation_rate") @db.Decimal(5, 4)
+  disputeRate            Decimal @default(0) @map("dispute_rate") @db.Decimal(5, 4)
+  breakdown              Json?
 
-  calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
-  @@map("score_confiance")
+  @@map("trust_score")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
 // Modération — la protection des personnes (F19.1)
 // ─────────────────────────────────────────────────────────────────────────
 
-model Signalement {
+model Report {
   id String @id @default(uuid(7)) @db.Uuid
 
-  cibleType String @map("cible_type")
-  cibleId   String @map("cible_id") @db.Uuid
+  targetType String @map("target_type")
+  targetId   String @map("target_id") @db.Uuid
 
-  signalePar   User   @relation("signaleur", fields: [signaleParId], references: [id], onDelete: Restrict)
-  signaleParId String @map("signale_par_id") @db.Uuid
+  reportedBy   User   @relation("signaleur", fields: [reportedById], references: [id], onDelete: Restrict)
+  reportedById String @map("reported_by_id") @db.Uuid
 
-  motif  String
-  niveau NiveauSignalement @default(ordinaire)
-  statut StatutSignalement @default(nouveau)
+  reason String
+  level  ReportLevel  @default(ordinary)
+  status ReportStatus @default(new)
 
-  affecteA   User?   @relation("affecte_signalement", fields: [affecteAId], references: [id], onDelete: Restrict)
-  affecteAId String? @map("affecte_a_id") @db.Uuid
+  assignedTo   User?   @relation("affecte_signalement", fields: [assignedToId], references: [id], onDelete: Restrict)
+  assignedToId String? @map("assigned_to_id") @db.Uuid
 
-  traitePar   User?   @relation("traiteur_signalement", fields: [traiteParId], references: [id], onDelete: Restrict)
-  traiteParId String? @map("traite_par_id") @db.Uuid
+  handledBy   User?   @relation("traiteur_signalement", fields: [handledById], references: [id], onDelete: Restrict)
+  handledById String? @map("handled_by_id") @db.Uuid
   decision    String?
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   /// L'urgence en tête de file (R-X4). L'ordre des colonnes de l'index n'est
   /// pas décoratif : c'est lui qui met les menaces devant.
-  @@index([niveau, statut, creeLe])
-  @@index([cibleType, cibleId])
-  @@map("signalement")
+  @@index([level, status, createdAt])
+  @@index([targetType, targetId])
+  @@map("report")
 }
 
 /// `resultatContestation` est **instruit par une autre personne** que celle qui
@@ -2570,69 +2570,69 @@ model Sanction {
   user   User   @relation("sanctionne", fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  type       TypeSanction
-  motifTexte String       @map("motif_texte")
+  type        SanctionType
+  reasonText  String       @map("reason_text")
   /// En jours. `NULL` = définitive.
-  duree      Int?
+  duration    Int?
 
-  appliquePar   User   @relation("applicateur_sanction", fields: [appliqueParId], references: [id], onDelete: Restrict)
-  appliqueParId String @map("applique_par_id") @db.Uuid
+  appliedBy   User   @relation("applicateur_sanction", fields: [appliedById], references: [id], onDelete: Restrict)
+  appliedById String @map("applied_by_id") @db.Uuid
 
-  conteste             Boolean @default(false)
-  resultatContestation String? @map("resultat_contestation")
-  instruitParId        String? @map("instruit_par_id") @db.Uuid
+  contested            Boolean @default(false)
+  contestationOutcome  String? @map("contestation_outcome")
+  investigatedById     String? @map("investigated_by_id") @db.Uuid
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([userId, creeLe])
+  @@index([userId, createdAt])
   @@map("sanction")
 }
 
 /// Bloquer quelqu'un. `IDX(bloque_id)` sert le sens inverse : « qui m'a
 /// bloqué » doit être aussi rapide que « qui j'ai bloqué », sinon le filtrage
 /// du fil coûte un balayage complet.
-model Blocage {
-  bloqueur   User   @relation("bloqueur", fields: [bloqueurId], references: [id], onDelete: Restrict)
-  bloqueurId String @map("bloqueur_id") @db.Uuid
+model UserBlock {
+  blocker   User   @relation("bloqueur", fields: [blockerId], references: [id], onDelete: Restrict)
+  blockerId String @map("blocker_id") @db.Uuid
 
-  bloque   User   @relation("bloque", fields: [bloqueId], references: [id], onDelete: Restrict)
-  bloqueId String @map("bloque_id") @db.Uuid
+  blocked   User   @relation("bloque", fields: [blockedId], references: [id], onDelete: Restrict)
+  blockedId String @map("blocked_id") @db.Uuid
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@id([bloqueurId, bloqueId])
-  @@index([bloqueId])
-  @@map("blocage")
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+  @@map("user_block")
 }
 
 /// Les mots qu'une personne ne veut plus voir dans ses commentaires. Personnel
 /// et non global : la liste noire de l'une n'est pas celle de l'autre.
-model MotBloquePersonnel {
+model BlockedWord {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  mot String
+  word String
 
-  @@id([userId, mot])
-  @@map("mot_bloque_personnel")
+  @@id([userId, word])
+  @@map("blocked_word")
 }
 
-model RepublicationSuspectee {
+model SuspectedRepost {
   id String @id @default(uuid(7)) @db.Uuid
 
-  contenu   Content @relation("contenu_suspecte", fields: [contenuId], references: [id], onDelete: Restrict)
-  contenuId String  @map("contenu_id") @db.Uuid
+  content   Content @relation("contenu_suspecte", fields: [contentId], references: [id], onDelete: Restrict)
+  contentId String  @map("content_id") @db.Uuid
 
-  contenuOrigine   Content @relation("contenu_origine", fields: [contenuOrigineId], references: [id], onDelete: Restrict)
-  contenuOrigineId String  @map("contenu_origine_id") @db.Uuid
+  originalContent   Content @relation("contenu_origine", fields: [originalContentId], references: [id], onDelete: Restrict)
+  originalContentId String  @map("original_content_id") @db.Uuid
 
-  proximite Decimal             @db.Decimal(5, 4)
-  statut    StatutRepublication @default(a_examiner)
+  similarity Decimal      @db.Decimal(5, 4)
+  status     RepostStatus @default(to_review)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([statut, proximite])
-  @@map("republication_suspectee")
+  @@index([status, similarity])
+  @@map("suspected_repost")
 }
 
 // ─────────────────────────────────────────────────────────────────────────

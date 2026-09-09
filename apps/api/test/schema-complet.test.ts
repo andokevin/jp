@@ -117,15 +117,15 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
   });
 });
 
-describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', () => {
-  it('`compte_dans_le_score` ne peut pas diverger du statut', async () => {
+describe('order_dispute — le compteur EST la sanction (R-T8, DP-05)', () => {
+  it('`counts_in_score` ne peut pas diverger du statut', async () => {
     // Depuis DP-07 il n'y a plus ni séquestre ni arbitre : si ce booléen peut
     // mentir, un signalement ouvert cesse d'avoir la moindre conséquence.
     await expect(
       base.appli.query(
-        `INSERT INTO signalement_commande
-           (id, commande_id, ouvert_par_id, universe_key, motif, statut, compte_dans_le_score)
-         VALUES (gen_random_uuid(), $1, $2, 'mode', 'non_recu', 'ouvert', false)`,
+        `INSERT INTO order_dispute
+           (id, order_id, opened_by_id, universe_key, reason, status, counts_in_score)
+         VALUES (gen_random_uuid(), $1, $2, 'mode', 'not_received', 'open', false)`,
         [await commande(), await utilisateur()],
       ),
     ).rejects.toMatchObject({ constraint: 'compteur_coherent' });
@@ -134,7 +134,7 @@ describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', (
   it("l'instruction a disparu : plus de colonne `decide_par_id`", async () => {
     const { rows } = await base.appli.query(
       `SELECT column_name FROM information_schema.columns
-       WHERE table_name = 'signalement_commande'
+       WHERE table_name = 'order_dispute'
          AND column_name IN ('decide_par_id', 'decision_texte', 'affecte_a_id')`,
     );
     expect(rows).toHaveLength(0);
@@ -143,8 +143,8 @@ describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', (
   it('RB4 a déménagé : une sanction sans motif écrit est refusée', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO sanction (id, utilisateur_id, type, motif_texte, applique_par_id)
-         VALUES (gen_random_uuid(), $1, 'avertissement', '   ', $2)`,
+        `INSERT INTO sanction (id, utilisateur_id, type, reason_text, applied_by_id)
+         VALUES (gen_random_uuid(), $1, 'warning', '   ', $2)`,
         [await utilisateur(), await utilisateur()],
       ),
     ).rejects.toMatchObject({ constraint: 'sanction_motif_ecrit' });
@@ -308,7 +308,7 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     await expect(
       base.appli.query(
         `INSERT INTO abonnement_boutique (id, boutique_id, palier, montant, echeance_le)
-         VALUES (gen_random_uuid(), $1, 'gratuit', 50000, now() + interval '30 days')`,
+         VALUES (gen_random_uuid(), $1, 'free', 50000, now() + interval '30 days')`,
         [await boutique()],
       ),
     ).rejects.toMatchObject({ constraint: 'abonnement_montant_coherent' });
