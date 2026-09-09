@@ -57,7 +57,7 @@ async function article(): Promise<string> {
 
 async function commande(acheteurId?: string): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO commande (id, numero, acheteur_id, universe_key, sous_total, total)
+    `INSERT INTO sales_order (id, numero, buyer_id, universe_key, subtotal, total)
      VALUES (gen_random_uuid(), $1, $2, 'mode', 40000, 40000) RETURNING id`,
     [unique('CMD'), acheteurId ?? (await utilisateur())],
   );
@@ -151,20 +151,20 @@ describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', (
   });
 });
 
-describe('ecriture_financiere — le cœur de la conformité (C4, D3)', () => {
+describe('ledger_entry — le cœur de la conformité (C4, D3)', () => {
   it('jp_app peut insérer', async () => {
     const { rowCount } = await base.appli.query(
-      `INSERT INTO ecriture_financiere (id, type, montant, sens, compte)
-       VALUES (gen_random_uuid(), 'essai', 1000, 'credit', 'boutique')`,
+      `INSERT INTO ledger_entry (id, type, amount, direction, account)
+       VALUES (gen_random_uuid(), 'essai', 1000, 'credit', 'shop')`,
     );
     expect(rowCount).toBe(1);
   });
 
   it('jp_app ne peut ni modifier ni supprimer', async () => {
     await expect(
-      base.appli.query(`UPDATE ecriture_financiere SET montant = 1`),
+      base.appli.query(`UPDATE ledger_entry SET amount = 1`),
     ).rejects.toMatchObject({ code: DROITS_REFUSES });
-    await expect(base.appli.query(`DELETE FROM ecriture_financiere`)).rejects.toMatchObject({
+    await expect(base.appli.query(`DELETE FROM ledger_entry`)).rejects.toMatchObject({
       code: DROITS_REFUSES,
     });
   });
@@ -172,8 +172,8 @@ describe('ecriture_financiere — le cœur de la conformité (C4, D3)', () => {
   it('un montant nul est refusé — une écriture de zéro ne trace rien', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO ecriture_financiere (id, type, montant, sens, compte)
-         VALUES (gen_random_uuid(), 'essai', 0, 'debit', 'commission_jp')`,
+        `INSERT INTO ledger_entry (id, type, amount, direction, account)
+         VALUES (gen_random_uuid(), 'essai', 0, 'debit', 'jp_commission')`,
       ),
     ).rejects.toMatchObject({ constraint: 'ecriture_montant_positif' });
   });
@@ -220,19 +220,19 @@ describe('réservation — ce qui porte RB1', () => {
 });
 
 describe('D4 — le cumul de promotions est impossible par la FORME de la table', () => {
-  it('`ligne_commande.promotion_id` est scalaire, pas une table de liaison', async () => {
+  it('`order_line.promotion_id` est scalaire, pas une table de liaison', async () => {
     // La décision de modélisation la plus importante du domaine commercial
     // (R-U7). Une table de liaison rouvrirait le cumul ; une colonne ne le peut
     // pas, quel que soit le code écrit au-dessus.
     const { rows } = await base.appli.query<{ data_type: string }>(
       `SELECT data_type FROM information_schema.columns
-       WHERE table_name = 'ligne_commande' AND column_name = 'promotion_id'`,
+       WHERE table_name = 'order_line' AND column_name = 'promotion_id'`,
     );
     expect(rows).toHaveLength(1);
 
     const { rows: liaison } = await base.appli.query(
       `SELECT table_name FROM information_schema.tables
-       WHERE table_schema = 'public' AND table_name = 'ligne_commande_promotion'`,
+       WHERE table_schema = 'public' AND table_name = 'order_line_promotion'`,
     );
     expect(liaison).toHaveLength(0);
   });
@@ -245,8 +245,8 @@ describe('D4 — le cumul de promotions est impossible par la FORME de la table'
     );
     await expect(
       base.appli.query(
-        `INSERT INTO ligne_commande
-           (id, commande_id, variant_id, boutique_id, quantite, prix_unitaire, remise_ligne)
+        `INSERT INTO order_line
+           (id, order_id, variant_id, boutique_id, quantity, unit_price, line_discount)
          VALUES (gen_random_uuid(), $1, $2, $3, 2, 10000, 25000)`,
         [await commande(), v[0]!.id, await boutique()],
       ),

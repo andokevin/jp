@@ -325,100 +325,100 @@ enum ReservationStatus {
   @@map("reservation_status")
 }
 
-enum StatutCommande {
-  brouillon
-  en_attente_paiement
-  payee
-  en_attente_seuil
-  en_preparation
-  expediee
-  livree
-  confirmee
-  annulee
-  remboursee
+enum OrderStatus {
+  draft
+  awaiting_payment
+  paid
+  awaiting_threshold
+  preparing
+  shipped
+  delivered
+  confirmed
+  cancelled
+  refunded
 
-  @@map("statut_commande")
+  @@map("order_status")
 }
 
-enum ModeLivraison {
-  domicile
-  relais
+enum DeliveryMode {
+  home
+  pickup_point
 
-  @@map("mode_livraison")
+  @@map("delivery_mode")
 }
 
 /// Figé à la commande (R-B5) : changer de formule ne réécrit pas ce qui a
 /// déjà été facturé.
-enum ModeRemuneration {
-  abonnement
+enum PaymentTermsMode {
+  subscription
   commission
 
-  @@map("mode_remuneration")
+  @@map("payment_terms_mode")
 }
 
 /// Un débit de l'acheteuse produit **1 à 3 crédits** (`DP-16`). `pivot` est
-/// celui qui doit passer ; les `secondaire` sont rejouables (R-M4, R-M5).
-enum RangPaiement {
+/// celui qui doit passer ; les `secondary` sont rejouables (R-M4, R-M5).
+enum PaymentRank {
   pivot
-  secondaire
+  secondary
 
-  @@map("rang_paiement")
+  @@map("payment_rank")
 }
 
-enum BeneficiaireType {
-  boutique
+enum BeneficiaryType {
+  shop
   jp
-  createur
+  creator
 
-  @@map("beneficiaire_type")
+  @@map("beneficiary_type")
 }
 
-enum MoyenPaiement {
+enum PaymentMethod {
   mvola
   orange
   airtel
-  carte
+  card
 
-  @@map("moyen_paiement")
+  @@map("payment_method")
 }
 
-enum StatutPaiement {
-  initie
-  en_attente_operateur
-  confirme
-  echoue
-  expire
-  rembourse
+enum PaymentStatus {
+  initiated
+  awaiting_operator
+  confirmed
+  failed
+  expired
+  refunded
 
-  @@map("statut_paiement")
+  @@map("payment_status")
 }
 
-enum SensEcriture {
+enum LedgerDirection {
   debit
   credit
 
-  @@map("sens_ecriture")
+  @@map("ledger_direction")
 }
 
-enum CompteEcriture {
-  boutique
-  createur
-  cagnotte
-  commission_jp
-  abonnement_jp
+enum LedgerAccount {
+  shop
+  creator
+  wallet
+  jp_commission
+  jp_subscription
 
-  @@map("compte_ecriture")
+  @@map("ledger_account")
 }
 
 /// **JP n'opère aucune logistique** (`DP-04`). Ces états sont ce que la
 /// boutique déclare et ce que l'acheteur confirme — pas le trajet d'un colis.
-enum StatutExpedition {
-  en_preparation
-  expediee
-  livree
-  confirmee
+enum ShipmentStatus {
+  preparing
+  shipped
+  delivered
+  confirmed
 
-  @@map("statut_expedition")
+  @@map("shipment_status")
 }
 
 enum TypeAbonnement {
@@ -666,10 +666,10 @@ model User {
   participationsDecidees  EvenementParticipation[] @relation("decideur_participation")
   rappelsEvenement        EvenementRappel[]
   reservations            Reservation[]
-  commandes               Commande[]               @relation("acheteur")
-  commandesGenerees       Commande[]               @relation("createur_attribue")
+  commandes               SalesOrder[]               @relation("acheteur")
+  commandesGenerees       SalesOrder[]               @relation("createur_attribue")
   promotionsNominatives   PromotionBeneficiaire[]
-  evenementsLivraison     EvenementLivraison[]
+  evenementsLivraison     ShipmentEvent[]
   contenus                Contenu[]
   interactions            Interaction[]
   signalementsCommande    SignalementCommande[]    @relation("ouvreur_signalement")
@@ -815,9 +815,9 @@ model Boutique {
   directs          Direct[]
   paliers          PalierFidelite[]
   promotions       Promotion[]
-  lignesVendues    LigneCommande[]
-  tarifs           TarifLivraison[]
-  expeditions      Expedition[]
+  lignesVendues    OrderLine[]
+  tarifs           DeliveryRate[]
+  expeditions      Shipment[]
   avis             Avis[]
   score            ScoreConfiance?
   rangsClient      RangClient[]
@@ -1168,7 +1168,7 @@ model Variant {
   mouvements     StockMovement[]
   alertes        StockAlert[]
   reservations   Reservation[]
-  lignesCommande LigneCommande[]
+  lignesCommande OrderLine[]
 
   @@unique([articleId, taille, couleur])
   @@map("variant")
@@ -1453,7 +1453,7 @@ model Adresse {
   creeLe      DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
   majLe       DateTime  @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
-  commandes Commande[]
+  commandes SalesOrder[]
 
   @@index([userId])
   @@map("adresse")
@@ -1597,7 +1597,7 @@ model Direct {
   articles     DirectArticle[]
   messages     MessageDirect[]
   reservations Reservation[]
-  commandes    Commande[]
+  commandes    SalesOrder[]
   bilan        DirectBilan?
   extraits     ExtraitBoutique[]
 
@@ -1694,7 +1694,7 @@ model Evenement {
 
   participations EvenementParticipation[]
   elements       EvenementElement[]
-  commandes      Commande[]
+  commandes      SalesOrder[]
   rappels        EvenementRappel[]
   bilans         EvenementBilan[]
   promotions     Promotion[]
@@ -1857,7 +1857,7 @@ model Promotion {
 
   articles       PromotionArticle[]
   beneficiaires  PromotionBeneficiaire[]
-  lignesRemisees LigneCommande[]
+  lignesRemisees OrderLine[]
 
   @@index([boutiqueId, statut, debutLe])
   @@map("promotion")
@@ -1923,101 +1923,101 @@ model Reservation {
 // Livraison — zones et tarifs (F3.3). JP n'opère rien (DP-04)
 // ─────────────────────────────────────────────────────────────────────────
 
-model ZoneLivraison {
+model DeliveryZone {
   id String @id @default(uuid(7)) @db.Uuid
 
-  nom             String
-  quartiers       Json
-  delaiTransportJ Int    @default(1) @map("delai_transport_j")
+  name          String
+  neighborhoods Json
+  transitDays   Int    @default(1) @map("transit_days")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  tarifs TarifLivraison[]
+  rates DeliveryRate[]
 
-  @@map("zone_livraison")
+  @@map("delivery_zone")
 }
 
 /// **Le tarif est fixé par la boutique** (`DP-04`), pas par JP. Clé primaire
 /// composite : un tarif par boutique et par zone, sans doublon possible.
-model TarifLivraison {
+model DeliveryRate {
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  zone   ZoneLivraison @relation(fields: [zoneId], references: [id], onDelete: Restrict)
-  zoneId String        @map("zone_id") @db.Uuid
+  zone   DeliveryZone @relation(fields: [zoneId], references: [id], onDelete: Restrict)
+  zoneId String       @map("zone_id") @db.Uuid
 
-  montant Int
+  amount Int
 
-  majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@id([boutiqueId, zoneId])
-  @@map("tarif_livraison")
+  @@map("delivery_rate")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Commande — l'engagement écrit, figé (F3.7)
+// SalesOrder — l'engagement écrit, figé (F3.7)
 // ─────────────────────────────────────────────────────────────────────────
 
 /// **Tout y est figé.** Prix, taux de commission, part créatrice, code promo :
 /// recopiés à la création, jamais relus depuis leur source. Un changement de
 /// tarif ne réécrit pas une facture émise.
-model Commande {
+model SalesOrder {
   id     String @id @default(uuid(7)) @db.Uuid
   /// Lisible et prononçable : on le donne au téléphone.
   numero String @unique
 
-  acheteur   User   @relation("acheteur", fields: [acheteurId], references: [id], onDelete: Restrict)
-  acheteurId String @map("acheteur_id") @db.Uuid
+  buyer   User   @relation("acheteur", fields: [buyerId], references: [id], onDelete: Restrict)
+  buyerId String @map("buyer_id") @db.Uuid
 
   /// L'attribution d'affiliation (R-N1), figée elle aussi.
-  createur   User?   @relation("createur_attribue", fields: [createurId], references: [id], onDelete: Restrict)
-  createurId String? @map("createur_id") @db.Uuid
+  attributedCreator   User?   @relation("createur_attribue", fields: [attributedCreatorId], references: [id], onDelete: Restrict)
+  attributedCreatorId String? @map("attributed_creator_id") @db.Uuid
 
-  evenement   Evenement? @relation(fields: [evenementId], references: [id], onDelete: SetNull)
-  evenementId String?    @map("evenement_id") @db.Uuid
+  evenement   Evenement? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  eventId String?    @map("event_id") @db.Uuid
 
   direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("direct_id") @db.Uuid
 
   /// La commande cadeau (RB8). **Une référence, pas une clé étrangère** : le
   /// donateur ne doit jamais pouvoir remonter à l'adresse de livraison.
-  donateurRef String? @map("donateur_ref")
+  donorRef String? @map("donor_ref")
 
-  statut  StatutCommande @default(brouillon)
+  status OrderStatus @default(draft)
   /// **Une file de commandes unique** (R-H2) : deux files signifieraient deux
   /// logistiques, et la boutique en oublierait une.
-  origine SaleOrigin     @default(catalogue)
+  origin SaleOrigin  @default(catalogue)
 
   /// Figé (R-Y3) : changer l'univers changerait les règles de litige et la
   /// commission après coup.
   universeKey String @map("universe_key")
 
-  modeLivraison ModeLivraison @default(domicile) @map("mode_livraison")
-  adresse       Adresse?      @relation(fields: [adresseId], references: [id], onDelete: Restrict)
-  adresseId     String?       @map("adresse_id") @db.Uuid
+  deliveryMode DeliveryMode @default(home) @map("delivery_mode")
+  adresse      Adresse?     @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  addressId    String?      @map("address_id") @db.Uuid
 
   /// Figé à la commande (R-U9) : le code, pas la promotion. Si elle est
   /// modifiée demain, la commande garde ce qui a été promis aujourd'hui.
-  codePromo String? @map("code_promo")
+  promoCode String? @map("promo_code")
 
   /// **Entiers en Ariary** (D6).
-  sousTotal             Int @map("sous_total")
-  fraisLivraison        Int @default(0) @map("frais_livraison")
-  remise                Int @default(0)
-  remiseLivraison       Int @default(0) @map("remise_livraison")
-  creditCagnotteUtilise Int @default(0) @map("credit_cagnotte_utilise")
-  total                 Int
+  subtotal          Int @map("subtotal")
+  shippingFee       Int @default(0) @map("shipping_fee")
+  discount          Int @default(0)
+  shippingDiscount  Int @default(0) @map("shipping_discount")
+  walletCreditUsed  Int @default(0) @map("wallet_credit_used")
+  total             Int
 
-  noteAcheteur String? @map("note_acheteur")
+  buyerNote String? @map("buyer_note")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  lignes              LigneCommande[]
-  paiements           Paiement[]
-  facture             Facture?
-  expedition          Expedition?
-  filRemise           FilRemise?
+  lignes              OrderLine[]
+  paiements           Payment[]
+  facture             Invoice?
+  expedition          Shipment?
+  filRemise           HandoverThread?
   promotionsUtilisees PromotionBeneficiaire[]
   signalements        SignalementCommande[]
   avis                Avis?
@@ -2027,29 +2027,29 @@ model Commande {
   piecesDressing      PieceDressing[]
   panierCadeau        PanierCadeau?
 
-  @@index([acheteurId, creeLe])
-  @@index([origine, creeLe])
-  @@index([statut, creeLe])
-  @@map("commande")
+  @@index([buyerId, createdAt])
+  @@index([origin, createdAt])
+  @@index([status, createdAt])
+  @@map("sales_order")
 }
 
-model LigneCommande {
+model OrderLine {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @map("order_id") @db.Uuid
 
-  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  variantId String   @map("variant_id") @db.Uuid
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String  @map("variant_id") @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  quantite     Int
+  quantity     Int
   /// **FIGÉ à la commande.**
-  prixUnitaire Int @map("prix_unitaire")
-  /// `CHECK <= prix_unitaire * quantite`.
-  remiseLigne  Int @default(0) @map("remise_ligne")
+  unitPrice    Int @map("unit_price")
+  /// `CHECK <= unit_price * quantity`.
+  lineDiscount Int @default(0) @map("line_discount")
 
   /// **SCALAIRE, et c'est la décision de modélisation la plus importante du
   /// domaine commercial** (D4, R-U7) : une ligne porte AU PLUS une promotion.
@@ -2059,15 +2059,15 @@ model LigneCommande {
   promotionId String?    @map("promotion_id") @db.Uuid
 
   /// Figées à la commande (`DP-09`, R-G3, `DP-15`, R-B5).
-  partCreateur            Int              @default(0) @map("part_createur")
-  tauxCommissionPourMille Int              @default(0) @map("taux_commission_pour_mille")
-  modeRemuneration        ModeRemuneration @default(commission) @map("mode_remuneration")
+  creatorShare       Int              @default(0) @map("creator_share")
+  commissionPerMille Int              @default(0) @map("commission_per_mille")
+  paymentTermsMode   PaymentTermsMode @default(commission) @map("payment_terms_mode")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([commandeId])
-  @@index([boutiqueId, creeLe])
-  @@map("ligne_commande")
+  @@index([orderId])
+  @@index([boutiqueId, createdAt])
+  @@map("order_line")
 }
 
 /// Le code nominatif à usage unique (R-U6).
@@ -2081,7 +2081,7 @@ model PromotionBeneficiaire {
   codePersonnel String    @unique @map("code_personnel")
   utiliseLe     DateTime? @map("utilise_le") @db.Timestamptz(6)
 
-  commande   Commande? @relation(fields: [commandeId], references: [id], onDelete: SetNull)
+  commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: SetNull)
   commandeId String?   @map("commande_id") @db.Uuid
 
   @@id([promotionId, userId])
@@ -2089,57 +2089,57 @@ model PromotionBeneficiaire {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Paiement et argent — JP ne détient aucun fonds (DP-07, DP-16)
+// Payment et argent — JP ne détient aucun fonds (DP-07, DP-16)
 // ─────────────────────────────────────────────────────────────────────────
 
 /// Un crédit vers un bénéficiaire. **1 à 3 par commande** (`DP-16`) : la
 /// boutique, la commission JP, la créatrice.
 ///
 /// L'acheteuse ne voit rien de cet éclatement — un débit, une confirmation.
-model Paiement {
+model Payment {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @map("order_id") @db.Uuid
 
-  rang RangPaiement @default(pivot)
+  rank PaymentRank @default(pivot)
 
-  beneficiaireType BeneficiaireType @map("beneficiaire_type")
-  beneficiaireId   String?          @map("beneficiaire_id") @db.Uuid
+  beneficiaryType BeneficiaryType @map("beneficiary_type")
+  beneficiaryId   String?         @map("beneficiary_id") @db.Uuid
 
   /// **Figé, jamais saisissable** (`DP-16`). Le numéro vient de la boutique
   /// vérifiée ; le laisser saisir à la volée serait la faille la plus simple à
   /// exploiter de tout le produit.
-  msisdnDestination String @map("msisdn_destination")
+  destinationMsisdn String @map("destination_msisdn")
 
-  moyen   MoyenPaiement
+  method PaymentMethod
   /// `CHECK > 0`.
-  montant Int
-  statut  StatutPaiement @default(initie)
+  amount Int
+  status PaymentStatus @default(initiated)
 
-  referenceExterne String? @map("reference_externe")
+  externalReference String? @map("external_reference")
   /// Porte RB10 : un rejeu renvoie le résultat initial sans nouveau
   /// prélèvement (R-M2).
-  cleIdempotence   String  @unique @map("cle_idempotence")
-  motifEchec       String? @map("motif_echec")
+  idempotencyKey    String  @unique @map("idempotency_key")
+  failureReason     String? @map("failure_reason")
 
-  nbRejeux        Int       @default(0) @map("nb_rejeux")
-  prochainRejeuLe DateTime? @map("prochain_rejeu_le") @db.Timestamptz(6)
+  retryCount   Int       @default(0) @map("retry_count")
+  nextRetryAt  DateTime? @map("next_retry_at") @db.Timestamptz(6)
 
   /// La diaspora paie depuis l'étranger : on garde ce qu'elle a réellement vu.
-  payerUserId          String?  @map("payeur_utilisateur_id") @db.Uuid
-  payeurPays           String?  @map("payeur_pays")
-  montantDeviseOrigine Int?     @map("montant_devise_origine")
-  deviseOrigine        String?  @map("devise_origine")
-  tauxIndicatif        Decimal? @map("taux_indicatif") @db.Decimal(12, 6)
+  payerUserId           String?  @map("payer_user_id") @db.Uuid
+  payerCountry          String?  @map("payer_country")
+  amountSourceCurrency  Int?     @map("amount_source_currency")
+  sourceCurrency        String?  @map("source_currency")
+  indicativeRate        Decimal? @map("indicative_rate") @db.Decimal(12, 6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  ecritures EcritureFinanciere[]
+  ecritures LedgerEntry[]
 
-  @@index([commandeId, rang])
-  @@map("paiement")
+  @@index([orderId, rank])
+  @@map("payment")
 }
 
 /// **Le cœur de la conformité** (C4). AJOUT SEUL, garanti par `REVOKE` dans la
@@ -2148,39 +2148,39 @@ model Paiement {
 /// JP ne détient aucun fonds (`DP-07`) : ce journal ne tient pas un solde, il
 /// trace un mouvement qui a eu lieu ailleurs. C'est ce qu'on fournit quand le
 /// recours est externe.
-model EcritureFinanciere {
+model LedgerEntry {
   id String @id @default(uuid(7)) @db.Uuid
 
-  paiement   Paiement? @relation(fields: [paiementId], references: [id], onDelete: Restrict)
-  paiementId String?   @map("paiement_id") @db.Uuid
+  payment   Payment? @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  paymentId String?  @map("payment_id") @db.Uuid
 
   type      String
   reference String?
-  montant   Int
-  sens      SensEcriture
-  compte    CompteEcriture
+  amount    Int
+  direction LedgerDirection
+  account   LedgerAccount
 
-  titulaireId String? @map("titulaire_id") @db.Uuid
+  holderId String? @map("holder_id") @db.Uuid
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([titulaireId, compte, creeLe])
-  @@map("ecriture_financiere")
+  @@index([holderId, account, createdAt])
+  @@map("ledger_entry")
 }
 
 /// `emiseLe` est **inaltérable** (R-F1). La numérotation est continue : un trou
 /// dans une série de factures est un problème comptable, pas un détail.
-model Facture {
+model Invoice {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @unique @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @unique @map("order_id") @db.Uuid
 
-  numero  String   @unique
-  urlPdf  String?  @map("url_pdf")
-  emiseLe DateTime @default(now()) @map("emise_le") @db.Timestamptz(6)
+  number   String   @unique
+  pdfUrl   String?  @map("pdf_url")
+  issuedAt DateTime @default(now()) @map("issued_at") @db.Timestamptz(6)
 
-  @@map("facture")
+  @@map("invoice")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -2191,52 +2191,52 @@ model Facture {
 /// tiers neutre ne constate la remise : ni preuve, ni arbitre (`DP-05`), ni
 /// argent retenu (`DP-07`). C'est un invariant que ce modèle **ne peut pas**
 /// garantir, et qu'il ne faut donc pas supposer ailleurs.
-model Expedition {
+model Shipment {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @unique @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @unique @map("order_id") @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  statut           StatutExpedition @default(en_preparation)
+  status          ShipmentStatus @default(preparing)
   /// `coursier`, `transporteur`, `main propre` — **non vérifié**.
-  moyenDeclare     String?          @map("moyen_declare")
+  declaredMethod  String?        @map("declared_method")
   /// Figé à la création : savoir après coup si le numéro était vérifié change
   /// la lecture d'un litige.
-  telephoneVerifie Boolean          @default(false) @map("telephone_verifie")
+  verifiedPhone   Boolean        @default(false) @map("verified_phone")
 
-  nbTentatives Int     @default(0) @map("nb_tentatives")
-  motifEchec   String? @map("motif_echec")
+  attemptCount  Int     @default(0) @map("attempt_count")
+  failureReason String? @map("failure_reason")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  evenements EvenementLivraison[]
+  events ShipmentEvent[]
 
-  @@index([boutiqueId, statut])
-  @@map("expedition")
+  @@index([boutiqueId, status])
+  @@map("shipment")
 }
 
 /// **Porte l'auteur de chaque transition.** L'arbitrage a disparu (`DP-05`) —
 /// la trace reste, et c'est elle qu'on fournit quand le recours est externe.
-model EvenementLivraison {
+model ShipmentEvent {
   id String @id @default(uuid(7)) @db.Uuid
 
-  expedition   Expedition @relation(fields: [expeditionId], references: [id], onDelete: Restrict)
-  expeditionId String     @map("expedition_id") @db.Uuid
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Restrict)
+  shipmentId String   @map("shipment_id") @db.Uuid
 
-  statut StatutExpedition
+  status ShipmentStatus
 
-  auteur   User?   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
-  auteurId String? @map("auteur_id") @db.Uuid
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String? @map("author_id") @db.Uuid
 
-  horodatage  DateTime @default(now()) @db.Timestamptz(6)
-  commentaire String?
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  comment    String?
 
-  @@index([expeditionId, horodatage])
-  @@map("evenement_livraison")
+  @@index([shipmentId, occurredAt])
+  @@map("shipment_event")
 }
 
 /// La remise d'un cadeau se négocie **entre l'acheteuse ou la bénéficiaire et
@@ -2244,21 +2244,21 @@ model EvenementLivraison {
 ///
 /// Il fallait autrefois cacher activement l'adresse au donateur ; désormais il
 /// ne la manipule jamais. La règle est devenue structurelle.
-model FilRemise {
+model HandoverThread {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String   @unique @map("commande_id") @db.Uuid
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  orderId String     @unique @map("order_id") @db.Uuid
 
-  participants  Json
-  pointConvenu  String?   @map("point_convenu")
-  momentConvenu DateTime? @map("moment_convenu") @db.Timestamptz(6)
+  participants    Json
+  agreedLocation  String?   @map("agreed_location")
+  agreedTime      DateTime? @map("agreed_time") @db.Timestamptz(6)
   /// Débloque le paiement du cadeau (`DP-10`).
-  accordLe      DateTime? @map("accord_le") @db.Timestamptz(6)
+  agreedAt        DateTime? @map("agreed_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@map("fil_remise")
+  @@map("handover_thread")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -2286,7 +2286,7 @@ model Contenu {
 
   /// Obligatoire si `type = unboxing` (R-K2) : un déballage sans commande est
   /// une publicité déguisée.
-  commandeSource   Commande? @relation(fields: [commandeSourceId], references: [id], onDelete: Restrict)
+  commandeSource   SalesOrder? @relation(fields: [commandeSourceId], references: [id], onDelete: Restrict)
   commandeSourceId String?   @map("commande_source_id") @db.Uuid
 
   commentairesOuverts CommentairesOuverts @default(tous) @map("commentaires_ouverts")
@@ -2421,7 +2421,7 @@ model ContenuHashtag {
 model SignalementCommande {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String   @map("commande_id") @db.Uuid
 
   ouvertPar   User   @relation("ouvreur_signalement", fields: [ouvertParId], references: [id], onDelete: Restrict)
@@ -2474,7 +2474,7 @@ model MessageLitige {
 model Avis {
   id String @id @default(uuid(7)) @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String   @unique @map("commande_id") @db.Uuid
 
   auteur   User   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
@@ -2730,7 +2730,7 @@ model PrecommandeEngagement {
   precommande   Precommande @relation(fields: [precommandeId], references: [id], onDelete: Restrict)
   precommandeId String      @map("precommande_id") @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String   @unique @map("commande_id") @db.Uuid
 
   statut StatutEngagement @default(engage)
@@ -2761,7 +2761,7 @@ model VenteConfirmeeJournal {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  commande   Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  commande   SalesOrder @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String   @unique @map("commande_id") @db.Uuid
 
   montantConfirme Int      @map("montant_confirme")
@@ -2858,7 +2858,7 @@ model PieceDressing {
 
   origine OriginePieceDressing @default(ajout_manuel)
 
-  commande   Commande? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String?   @map("commande_id") @db.Uuid
 
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Restrict)
@@ -2919,7 +2919,7 @@ model PanierCadeau {
   compositrice   User   @relation("compositrice", fields: [compositriceId], references: [id], onDelete: Restrict)
   compositriceId String @map("compositrice_id") @db.Uuid
 
-  commande   Commande? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String?   @unique @map("commande_id") @db.Uuid
 
   lienPartage String             @unique @map("lien_partage")
