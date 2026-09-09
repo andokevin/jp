@@ -71,8 +71,8 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
     // immédiat refuserait une transaction pourtant valide.
     await base.appli.query('BEGIN');
     await base.appli.query(
-      `INSERT INTO contenu (id, auteur_id, type, media_url, statut)
-       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'publie')`,
+      `INSERT INTO content (id, auteur_id, type, media_url, status)
+       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'published')`,
       [await utilisateur()],
     );
     await expect(base.appli.query('COMMIT')).rejects.toMatchObject({ code: LEVEE_PLPGSQL });
@@ -86,11 +86,11 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
     const art = await article();
     await base.appli.query('BEGIN');
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO contenu (id, auteur_id, type, media_url, statut)
-       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'publie') RETURNING id`,
+      `INSERT INTO content (id, auteur_id, type, media_url, status)
+       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'published') RETURNING id`,
       [auteur],
     );
-    await base.appli.query(`INSERT INTO contenu_article (contenu_id, article_id) VALUES ($1, $2)`, [
+    await base.appli.query(`INSERT INTO content_article (content_id, article_id) VALUES ($1, $2)`, [
       rows[0]!.id,
       art,
     ]);
@@ -99,8 +99,8 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
 
   it('un brouillon sans article passe — la règle ne porte que sur le publié', async () => {
     const { rowCount } = await base.appli.query(
-      `INSERT INTO contenu (id, auteur_id, type, media_url, statut)
-       VALUES (gen_random_uuid(), $1, 'photo', 'img://x', 'brouillon')`,
+      `INSERT INTO content (id, auteur_id, type, media_url, status)
+       VALUES (gen_random_uuid(), $1, 'photo', 'img://x', 'draft')`,
       [await utilisateur()],
     );
     expect(rowCount).toBe(1);
@@ -109,7 +109,7 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
   it('un déballage sans commande source est refusé (R-K2)', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO contenu (id, auteur_id, type, media_url)
+        `INSERT INTO content (id, auteur_id, type, media_url)
          VALUES (gen_random_uuid(), $1, 'unboxing', 'video://x')`,
         [await utilisateur()],
       ),

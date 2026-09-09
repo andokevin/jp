@@ -198,49 +198,49 @@ enum StatutPanierCadeau {
   @@map("statut_panier_cadeau")
 }
 
-enum TypeContenu {
+enum ContentType {
   story
   clip
   photo
   unboxing
 
-  @@map("type_contenu")
+  @@map("content_type")
 }
 
-enum StatutContenu {
-  brouillon
-  publie
-  retire
+enum ContentStatus {
+  draft
+  published
+  withdrawn
 
-  @@map("statut_contenu")
+  @@map("content_status")
 }
 
 /// Le réglage par contenu, pas par compte (R-X2) : on n'ouvre pas les mêmes
 /// commentaires sous une vente et sous un déballage.
-enum CommentairesOuverts {
-  tous
-  abonnes
-  aucun
+enum CommentsOpen {
+  everyone
+  followers
+  none
 
-  @@map("commentaires_ouverts")
+  @@map("comments_open")
 }
 
-enum TypeInteraction {
-  vue
+enum InteractionType {
+  view
   reaction
-  commentaire
-  partage
-  favori
+  comment
+  share
+  favorite
 
-  @@map("type_interaction")
+  @@map("interaction_type")
 }
 
-enum StatutInteraction {
-  publie
-  masque_auto
-  masque_autrice
+enum InteractionStatus {
+  published
+  auto_hidden
+  author_hidden
 
-  @@map("statut_interaction")
+  @@map("interaction_status")
 }
 
 enum MotifLitige {
@@ -670,7 +670,7 @@ model User {
   commandesGenerees       SalesOrder[]               @relation("createur_attribue")
   promotionsNominatives   PromotionBeneficiaire[]
   evenementsLivraison     ShipmentEvent[]
-  contenus                Contenu[]
+  contenus                Content[]
   interactions            Interaction[]
   signalementsCommande    SignalementCommande[]    @relation("ouvreur_signalement")
   messagesLitige          MessageLitige[]
@@ -1123,7 +1123,7 @@ model Article {
   variantes      Variant[]
   questions      ArticleQuestion[]
   directs        DirectArticle[]
-  contenus       ContenuArticle[]
+  contenus       ContentArticle[]
   avis           Avis[]
   selections     SelectionArticle[]
   clics          ClicAffiliation[]
@@ -2021,7 +2021,7 @@ model SalesOrder {
   promotionsUtilisees PromotionBeneficiaire[]
   signalements        SignalementCommande[]
   avis                Avis?
-  contenusUnboxing    Contenu[]
+  contenusUnboxing    Content[]
   venteConfirmee      VenteConfirmeeJournal?
   engagements         PrecommandeEngagement[]
   piecesDressing      PieceDressing[]
@@ -2262,7 +2262,7 @@ model HandoverThread {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Contenu — la boutique dont le catalogue est fait de vidéos (F14.5)
+// Content — la boutique dont le catalogue est fait de vidéos (F14.5)
 // ─────────────────────────────────────────────────────────────────────────
 
 /// **Un contenu publié DOIT porter au moins un article** (R-K1, RB5). C'est la
@@ -2271,138 +2271,138 @@ model HandoverThread {
 ///
 /// Appliquée par transaction **et** par déclencheur de contrainte **différé** —
 /// ce qui permet d'insérer le contenu puis ses articles dans le même bloc.
-model Contenu {
+model Content {
   id String @id @default(uuid(7)) @db.Uuid
 
-  auteur   User   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
-  auteurId String @map("auteur_id") @db.Uuid
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String @map("auteur_id") @db.Uuid
 
-  type         TypeContenu
-  mediaUrl     String      @map("media_url")
-  miniatureUrl String?     @map("miniature_url")
-  dureeS       Int?        @map("duree_s")
+  type          ContentType
+  mediaUrl      String       @map("media_url")
+  thumbnailUrl  String?      @map("thumbnail_url")
+  durationS     Int?         @map("duration_s")
 
-  statut StatutContenu @default(brouillon)
+  status ContentStatus @default(draft)
 
   /// Obligatoire si `type = unboxing` (R-K2) : un déballage sans commande est
   /// une publicité déguisée.
-  commandeSource   SalesOrder? @relation(fields: [commandeSourceId], references: [id], onDelete: Restrict)
-  commandeSourceId String?   @map("commande_source_id") @db.Uuid
+  sourceOrder   SalesOrder? @relation(fields: [sourceOrderId], references: [id], onDelete: Restrict)
+  sourceOrderId String?     @map("source_order_id") @db.Uuid
 
-  commentairesOuverts CommentairesOuverts @default(tous) @map("commentaires_ouverts")
+  commentsOpen CommentsOpen @default(everyone) @map("comments_open")
 
-  publieLe DateTime? @map("publie_le") @db.Timestamptz(6)
+  publishedAt DateTime? @map("published_at") @db.Timestamptz(6)
   /// Une story : +24 h.
-  expireLe DateTime? @map("expire_le") @db.Timestamptz(6)
+  expiresAt   DateTime? @map("expires_at") @db.Timestamptz(6)
 
   /// Détection de republication (R-X7).
-  empreinteVideo String? @map("empreinte_video")
+  videoFingerprint String? @map("video_fingerprint")
 
   /// **L'étiquette de sponsoring est CALCULÉE, jamais saisie** (F18.8) — donc
   /// non retirable par l'autrice. Les identifiants restent scalaires tant que
   /// les tables de monétisation ne sont pas posées.
-  partenariatId     String? @map("partenariat_id") @db.Uuid
-  campagneId        String? @map("campagne_id") @db.Uuid
-  sponsoriseDeclare Boolean @default(false) @map("sponsorise_declare")
+  partnershipId     String? @map("partnership_id") @db.Uuid
+  campaignId        String? @map("campaign_id") @db.Uuid
+  declaredSponsored Boolean @default(false) @map("declared_sponsored")
 
   /// Figé à la publication (RB6). Recalculer l'âge après coup changerait la
   /// légalité d'une publication passée.
-  auteurMajeur Boolean @default(false) @map("auteur_majeur")
+  authorAdult Boolean @default(false) @map("author_adult")
 
-  supprimeLe DateTime? @map("supprime_le") @db.Timestamptz(6)
-  creeLe     DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe      DateTime  @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  articles              ContenuArticle[]
-  statistique           StatistiqueContenu?
+  articles              ContentArticle[]
+  statistique           ContentStatistic?
   interactions          Interaction[]
-  hashtags              ContenuHashtag[]
+  hashtags              ContentHashtag[]
   avis                  Avis[]
   republications        RepublicationSuspectee[] @relation("contenu_suspecte")
   republicationsOrigine RepublicationSuspectee[] @relation("contenu_origine")
 
-  @@index([auteurId, publieLe])
-  @@index([statut, publieLe])
-  @@map("contenu")
+  @@index([authorId, publishedAt])
+  @@index([status, publishedAt])
+  @@map("content")
 }
 
-model ContenuArticle {
-  contenu   Contenu @relation(fields: [contenuId], references: [id], onDelete: Restrict)
-  contenuId String  @map("contenu_id") @db.Uuid
+model ContentArticle {
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Restrict)
+  contentId String  @map("content_id") @db.Uuid
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String  @map("article_id") @db.Uuid
 
   /// Porte l'affiliation (R-N1) : c'est cette ligne qui dit quelle créatrice a
   /// amené la vente, et donc qui sera payée.
-  createurId String? @map("createur_id") @db.Uuid
+  creatorId String? @map("creator_id") @db.Uuid
 
   position Int @default(0)
 
-  @@id([contenuId, articleId])
-  @@map("contenu_article")
+  @@id([contentId, articleId])
+  @@map("content_article")
 }
 
-/// `gains` est **le chiffre le plus important** (R-K15) : c'est le seul qui
+/// `earnings` est **le chiffre le plus important** (R-K15) : c'est le seul qui
 /// répond à « est-ce que publier m'a rapporté quelque chose ».
-model StatistiqueContenu {
-  contenu   Contenu @relation(fields: [contenuId], references: [id], onDelete: Restrict)
-  contenuId String  @id @map("contenu_id") @db.Uuid
+model ContentStatistic {
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Restrict)
+  contentId String  @id @map("content_id") @db.Uuid
 
-  vues          Int @default(0)
-  dureeMoyenneS Int @default(0) @map("duree_moyenne_s")
-  clicsArticle  Int @default(0) @map("clics_article")
-  jePrends      Int @default(0) @map("je_prends")
-  ventes        Int @default(0)
-  gains         Int @default(0)
+  views          Int @default(0)
+  avgDurationS   Int @default(0) @map("avg_duration_s")
+  articleClicks  Int @default(0) @map("article_clicks")
+  takeItClicks   Int @default(0) @map("take_it_clicks")
+  sales          Int @default(0)
+  earnings       Int @default(0)
 
-  calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
-  @@map("statistique_contenu")
+  @@map("content_statistic")
 }
 
 model Interaction {
   id String @id @default(uuid(7)) @db.Uuid
 
-  contenu   Contenu @relation(fields: [contenuId], references: [id], onDelete: Restrict)
-  contenuId String  @map("contenu_id") @db.Uuid
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Restrict)
+  contentId String  @map("content_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  type   TypeInteraction
-  texte  String?
-  statut StatutInteraction @default(publie)
+  type   InteractionType
+  text   String?
+  status InteractionStatus @default(published)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([contenuId, type, creeLe])
+  @@index([contentId, type, createdAt])
   @@index([userId, type])
   @@map("interaction")
 }
 
 model Hashtag {
-  id  String @id @default(uuid(7)) @db.Uuid
-  mot String @unique
+  id   String @id @default(uuid(7)) @db.Uuid
+  word String @unique
 
-  nbContenus Int @default(0) @map("nb_contenus")
+  contentCount Int @default(0) @map("content_count")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  contenus ContenuHashtag[]
+  contenus ContentHashtag[]
 
   @@map("hashtag")
 }
 
-model ContenuHashtag {
-  contenu   Contenu @relation(fields: [contenuId], references: [id], onDelete: Restrict)
-  contenuId String  @map("contenu_id") @db.Uuid
+model ContentHashtag {
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Restrict)
+  contentId String  @map("content_id") @db.Uuid
 
   hashtag   Hashtag @relation(fields: [hashtagId], references: [id], onDelete: Restrict)
   hashtagId String  @map("hashtag_id") @db.Uuid
 
-  @@id([contenuId, hashtagId])
-  @@map("contenu_hashtag")
+  @@id([contentId, hashtagId])
+  @@map("content_hashtag")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -2495,7 +2495,7 @@ model Avis {
   morphologieAutrice Json?             @map("morphologie_autrice")
 
   /// L'avis né d'un déballage (R-T7).
-  contenu   Contenu? @relation(fields: [contenuId], references: [id], onDelete: SetNull)
+  contenu   Content? @relation(fields: [contenuId], references: [id], onDelete: SetNull)
   contenuId String?  @map("contenu_id") @db.Uuid
 
   /// **Une seule fois** (F6.9) : le droit de réponse n'est pas un fil de
@@ -2620,10 +2620,10 @@ model MotBloquePersonnel {
 model RepublicationSuspectee {
   id String @id @default(uuid(7)) @db.Uuid
 
-  contenu   Contenu @relation("contenu_suspecte", fields: [contenuId], references: [id], onDelete: Restrict)
+  contenu   Content @relation("contenu_suspecte", fields: [contenuId], references: [id], onDelete: Restrict)
   contenuId String  @map("contenu_id") @db.Uuid
 
-  contenuOrigine   Contenu @relation("contenu_origine", fields: [contenuOrigineId], references: [id], onDelete: Restrict)
+  contenuOrigine   Content @relation("contenu_origine", fields: [contenuOrigineId], references: [id], onDelete: Restrict)
   contenuOrigineId String  @map("contenu_origine_id") @db.Uuid
 
   proximite Decimal             @db.Decimal(5, 4)
