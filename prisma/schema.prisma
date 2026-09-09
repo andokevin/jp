@@ -656,8 +656,8 @@ model User {
   buyerProfile            BuyerProfile?
   boutique                Boutique?
   paniers                 Panier[]
-  questionsPosees         QuestionArticle[]
-  alertesStock            AlerteStock[]
+  questionsPosees         ArticleQuestion[]
+  alertesStock            StockAlert[]
   abonnementsSuivis       Abonnement[]             @relation("suiveur")
   abonnes                 Abonnement[]             @relation("suivi")
   messagesDirect          MessageDirect[]
@@ -1121,7 +1121,7 @@ model Article {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   variantes      Variant[]
-  questions      QuestionArticle[]
+  questions      ArticleQuestion[]
   directs        DirectArticle[]
   contenus       ContenuArticle[]
   avis           Avis[]
@@ -1165,8 +1165,8 @@ model Variant {
 
   lignesPanier LignePanier[]
 
-  mouvements     MouvementStock[]
-  alertes        AlerteStock[]
+  mouvements     StockMovement[]
+  alertes        StockAlert[]
   reservations   Reservation[]
   lignesCommande LigneCommande[]
 
@@ -1485,59 +1485,59 @@ model Category {
 /// **Toute variation de `quantite_stock` produit un mouvement.** C'est la seule
 /// façon d'expliquer un écart trois semaines plus tard — et sans elle, un stock
 /// faux ne se distingue pas d'un stock volé.
-model MouvementStock {
+model StockMovement {
   id String @id @default(uuid(7)) @db.Uuid
 
-  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  variantId String   @map("variant_id") @db.Uuid
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String  @map("variant_id") @db.Uuid
 
   type          StockMovementType
   /// Signé : négatif pour une vente, positif pour une entrée.
-  quantiteDelta Int                @map("quantite_delta")
+  quantityDelta Int                @map("quantity_delta")
   reference     String?
-  auteurId      String?            @map("auteur_id") @db.Uuid
+  authorId      String?            @map("author_id") @db.Uuid
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([variantId, creeLe])
+  @@index([variantId, createdAt])
   @@map("mouvement_stock")
 }
 
 /// Les questions publiques sous une fiche. Publiques et non privées : la
 /// réponse sert aussi aux suivantes.
-model QuestionArticle {
+model ArticleQuestion {
   id String @id @default(uuid(7)) @db.Uuid
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String  @map("article_id") @db.Uuid
 
-  auteur   User   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
-  auteurId String @map("auteur_id") @db.Uuid
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String @map("author_id") @db.Uuid
 
-  texte        String
-  reponseTexte String?        @map("reponse_texte")
-  statut       QuestionStatus @default(published)
+  text      String
+  replyText String?        @map("reply_text")
+  status    QuestionStatus @default(published)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([articleId, statut, creeLe])
-  @@map("question_article")
+  @@index([articleId, status, createdAt])
+  @@map("article_question")
 }
 
 /// « Prévenez-moi quand ça revient. » Clé primaire composite : une alerte par
 /// personne et par variante, sans ligne en double possible.
-model AlerteStock {
-  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  variantId String   @map("variant_id") @db.Uuid
+model StockAlert {
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String  @map("variant_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  notifieLe DateTime? @map("notifie_le") @db.Timestamptz(6)
-  creeLe    DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
+  notifiedAt DateTime? @map("notified_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@id([variantId, userId])
-  @@map("alerte_stock")
+  @@map("stock_alert")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1886,36 +1886,36 @@ model PromotionArticle {
 model Reservation {
   id String @id @default(uuid(7)) @db.Uuid
 
-  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  variantId String   @map("variant_id") @db.Uuid
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String  @map("variant_id") @db.Uuid
 
   /// `NULL` pour une session invitée : on peut réserver avant d'avoir un
   /// compte, sinon la création de compte s'intercale au pire moment.
-  user             User?   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId           String? @map("utilisateur_id") @db.Uuid
-  sessionInviteeId String? @map("session_invitee_id") @db.Uuid
+  user           User?   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userId         String? @map("utilisateur_id") @db.Uuid
+  guestSessionId String? @map("guest_session_id") @db.Uuid
 
-  quantite Int @default(1)
+  quantity Int @default(1)
 
-  statut  ReservationStatus @default(active)
-  origine SaleOrigin        @default(catalogue)
+  status ReservationStatus @default(active)
+  origin SaleOrigin        @default(catalogue)
 
   direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("direct_id") @db.Uuid
 
   /// Le rang dans la file d'attente (R-S7). Quand une réservation expire, c'est
   /// le suivant qui est prévenu — pas tout le monde en même temps.
-  rang Int @default(0)
+  rank Int @default(0)
 
-  expireLe       DateTime  @map("expire_le") @db.Timestamptz(6)
+  expiresAt       DateTime  @map("expires_at") @db.Timestamptz(6)
   /// Suspension pendant un incident réseau (R-S5) : le temps ne court plus.
-  suspenduDepuis DateTime? @map("suspendu_depuis") @db.Timestamptz(6)
+  suspendedSince  DateTime? @map("suspended_since") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([variantId, statut])
-  @@index([userId, statut])
+  @@index([variantId, status])
+  @@index([userId, status])
   @@map("reservation")
 }
 

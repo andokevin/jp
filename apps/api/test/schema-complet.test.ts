@@ -194,7 +194,7 @@ describe('réservation — ce qui porte RB1', () => {
     // ni payer ni libérer.
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variant_id, expire_le)
+        `INSERT INTO reservation (id, variant_id, expires_at)
          VALUES (gen_random_uuid(), $1, now() + interval '10 min')`,
         [await variante()],
       ),
@@ -202,7 +202,7 @@ describe('réservation — ce qui porte RB1', () => {
 
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variant_id, utilisateur_id, session_invitee_id, expire_le)
+        `INSERT INTO reservation (id, variant_id, utilisateur_id, guest_session_id, expires_at)
          VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), now() + interval '10 min')`,
         [await variante(), await utilisateur()],
       ),
@@ -215,7 +215,7 @@ describe('réservation — ce qui porte RB1', () => {
     const { rows } = await base.appli.query<{ indexdef: string }>(
       `SELECT indexdef FROM pg_indexes WHERE indexname = 'reservation_active_expire'`,
     );
-    expect(rows[0]!.indexdef).toContain("WHERE (statut = 'active'");
+    expect(rows[0]!.indexdef).toContain("WHERE (status = 'active'");
   });
 });
 
