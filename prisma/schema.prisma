@@ -843,12 +843,12 @@ model IdentityDocument {
   userId String @map("user_id") @db.Uuid
 
   type        IdentityDocumentType
-  urlChiffree String               @map("url_chiffree")
+  urlChiffree String               @map("encrypted_url")
   /// Empreinte SHA-256 du fichier : détecte le même document redéposé sous
   /// deux comptes.
   empreinte   String
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   /// Une pièce de chaque type par personne. Redéposer remplace la ligne au
   /// lieu d'en empiler une seconde.
@@ -870,8 +870,8 @@ model Setting {
   description String
 
   modifiePar   User?    @relation(fields: [modifieParId], references: [id], onDelete: SetNull)
-  modifieParId String?  @map("modifie_par_id") @db.Uuid
-  modifieLe    DateTime @default(now()) @map("modifie_le") @db.Timestamptz(6)
+  modifieParId String?  @map("modified_by_id") @db.Uuid
+  modifieLe    DateTime @default(now()) @map("modified_at") @db.Timestamptz(6)
 
   modifications ParametreModification[]
 
@@ -890,15 +890,15 @@ model ParametreModification {
   motif          String
 
   proposePar   User     @relation("propose", fields: [proposeParId], references: [id])
-  proposeParId String   @map("propose_par_id") @db.Uuid
-  proposeLe    DateTime @default(now()) @map("propose_le") @db.Timestamptz(6)
+  proposeParId String   @map("proposed_by_id") @db.Uuid
+  proposeLe    DateTime @default(now()) @map("proposed_at") @db.Timestamptz(6)
 
   /// `Restrict` et non `SetNull` : on n'efface pas la trace de qui a validé un
   /// changement de taux de commission. Un compte se ferme par
   /// `statut = supprime`, jamais par DELETE.
   confirmePar   User?     @relation("confirme", fields: [confirmeParId], references: [id], onDelete: Restrict)
-  confirmeParId String?   @map("confirme_par_id") @db.Uuid
-  confirmeLe    DateTime? @map("confirme_le") @db.Timestamptz(6)
+  confirmeParId String?   @map("confirmed_by_id") @db.Uuid
+  confirmeLe    DateTime? @map("confirmed_at") @db.Timestamptz(6)
 
   @@index([cle, proposeLe])
   @@map("setting_change")
@@ -1249,8 +1249,8 @@ model ShopSnippet {
   videoUrl   String  @map("video_url")
   /// L'image fixe affichée avant lecture. Sur un réseau lent, c'est elle qu'on
   /// voit — souvent la seule chose qu'on verra.
-  afficheUrl String? @map("affiche_url")
-  dureeS     Int?    @map("duree_s")
+  afficheUrl String? @map("poster_url")
+  dureeS     Int?    @map("duration_s")
 
   /// `NULL` = brouillon, jamais montré.
   /// Le direct annoncé, s'il y en a un. **Facultatif** : l'extrait existe
@@ -1258,11 +1258,11 @@ model ShopSnippet {
   direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("live_stream_id") @db.Uuid
 
-  publieLe   DateTime? @map("publie_le") @db.Timestamptz(6)
-  supprimeLe DateTime? @map("supprime_le") @db.Timestamptz(6)
+  publieLe   DateTime? @map("published_at") @db.Timestamptz(6)
+  supprimeLe DateTime? @map("deleted_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  majLe  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([shopId, publieLe])
   @@map("shop_snippet")
@@ -1310,10 +1310,10 @@ model ExternalIdentity {
   fournisseur  ExternalProvider
   /// L'identifiant **stable** du fournisseur (R-C12). Surtout pas l'adresse
   /// électronique : elle change, et le compte suivrait le mauvais sujet.
-  sujetExterne String           @map("sujet_externe")
-  emailVerifie Boolean          @default(false) @map("email_verifie")
+  sujetExterne String           @map("external_subject")
+  emailVerifie Boolean          @default(false) @map("email_verified")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@unique([fournisseur, sujetExterne])
   @@map("external_identity")
@@ -1361,7 +1361,7 @@ model TeamMember {
 
   role TeamRole @default(fulfiller)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@unique([shopId, userId])
   @@map("team_member")
@@ -1373,17 +1373,17 @@ model VerificationRequest {
   id String @id @default(uuid(7)) @db.Uuid
 
   demandeur   User   @relation("demandeur", fields: [demandeurId], references: [id], onDelete: Restrict)
-  demandeurId String @map("demandeur_id") @db.Uuid
+  demandeurId String @map("requester_id") @db.Uuid
 
   statut        RequestState @default(pending)
-  motifDecision String?     @map("motif_decision")
+  motifDecision String?     @map("decision_reason")
 
   /// `Restrict` : on n'efface pas la trace de qui a vérifié une identité.
   decidePar   User?     @relation("decideur_verification", fields: [decideParId], references: [id], onDelete: Restrict)
-  decideParId String?   @map("decide_par_id") @db.Uuid
-  decideLe    DateTime? @map("decide_le") @db.Timestamptz(6)
+  decideParId String?   @map("decided_by_id") @db.Uuid
+  decideLe    DateTime? @map("decided_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([statut, creeLe])
   @@map("verification_request")
@@ -1398,18 +1398,18 @@ model PasswordRecoveryRequest {
   numero String @unique
 
   userTarget   User   @relation("cible_recuperation", fields: [userTargetId], references: [id], onDelete: Restrict)
-  userTargetId String @map("utilisateur_cible_id") @db.Uuid
+  userTargetId String @map("target_user_id") @db.Uuid
 
-  emailAncien   String      @map("email_ancien")
-  emailNouveau  String      @map("email_nouveau")
+  emailAncien   String      @map("old_email")
+  emailNouveau  String      @map("new_email")
   statut        RequestState @default(pending)
-  motifDecision String?     @map("motif_decision")
+  motifDecision String?     @map("decision_reason")
 
   decidePar   User?     @relation("decideur_recuperation", fields: [decideParId], references: [id], onDelete: Restrict)
-  decideParId String?   @map("decide_par_id") @db.Uuid
-  decideLe    DateTime? @map("decide_le") @db.Timestamptz(6)
+  decideParId String?   @map("decided_by_id") @db.Uuid
+  decideLe    DateTime? @map("decided_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([statut, creeLe])
   @@map("password_recovery_request")
@@ -1423,11 +1423,11 @@ model EmailChangeRequest {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("user_id") @db.Uuid
 
-  nouvelEmail String          @map("nouvel_email")
+  nouvelEmail String          @map("new_email")
   etape       EmailChangeStep @default(old_verified)
-  expireLe    DateTime        @map("expire_le") @db.Timestamptz(6)
+  expireLe    DateTime        @map("expires_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([userId, expireLe])
   @@map("email_change_request")
@@ -1447,11 +1447,11 @@ model Address {
   reperes               String?
   /// Le téléphone du destinataire, qui n'est pas forcément le titulaire du
   /// compte (R-C15) — un foyer partage un numéro.
-  telephoneDestinataire String? @map("telephone_destinataire")
+  telephoneDestinataire String? @map("recipient_phone")
 
-  supprimeeLe DateTime? @map("supprimee_le") @db.Timestamptz(6)
-  creeLe      DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe       DateTime  @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  supprimeeLe DateTime? @map("deleted_at") @db.Timestamptz(6)
+  creeLe      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  majLe       DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   commandes SalesOrder[]
 
@@ -2825,7 +2825,7 @@ model Wallet {
 
   solde Int @default(0)
 
-  majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  majLe DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("wallet")
 }
@@ -2842,7 +2842,7 @@ model WalletMovement {
   /// fois le même déballage, même si la tâche est rejouée.
   reference String?
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([userId, creeLe])
   @@map("wallet_movement")
@@ -2867,7 +2867,7 @@ model WardrobeItem {
   photoUrl  String? @map("photo_url")
   categorie String?
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   looks LookPiece[]
 
@@ -2884,7 +2884,7 @@ model Look {
   nom       String
   contenuId String? @map("content_id") @db.Uuid
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   pieces LookPiece[]
 
@@ -2897,7 +2897,7 @@ model LookPiece {
   lookId String @map("look_id") @db.Uuid
 
   piece   WardrobeItem @relation(fields: [pieceId], references: [id], onDelete: Restrict)
-  pieceId String        @map("piece_id") @db.Uuid
+  pieceId String        @map("wardrobe_item_id") @db.Uuid
 
   /// La position dans la composition visuelle.
   position Json?
@@ -2917,17 +2917,17 @@ model GiftCart {
   id String @id @default(uuid(7)) @db.Uuid
 
   compositrice   User   @relation("compositrice", fields: [compositriceId], references: [id], onDelete: Restrict)
-  compositriceId String @map("compositrice_id") @db.Uuid
+  compositriceId String @map("composer_id") @db.Uuid
 
   commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String?   @unique @map("sales_order_id") @db.Uuid
 
-  lienPartage String             @unique @map("lien_partage")
+  lienPartage String             @unique @map("share_link")
   statut      GiftCartStatus @default(composed)
   message     String?
 
-  expireLe DateTime @map("expire_le") @db.Timestamptz(6)
-  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  expireLe DateTime @map("expires_at") @db.Timestamptz(6)
+  creeLe   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([statut, expireLe])
   @@map("gift_cart")
@@ -3038,9 +3038,9 @@ model ExchangeRate {
   id String @id @default(uuid(7)) @db.Uuid
 
   devise     String
-  versAriary Decimal @map("vers_ariary") @db.Decimal(14, 6)
+  versAriary Decimal @map("to_ariary") @db.Decimal(14, 6)
 
-  constateLe DateTime @default(now()) @map("constate_le") @db.Timestamptz(6)
+  constateLe DateTime @default(now()) @map("observed_at") @db.Timestamptz(6)
 
   @@index([devise, constateLe])
   @@map("exchange_rate")
@@ -3132,14 +3132,14 @@ model Reconciliation {
   id String @id @default(uuid(7)) @db.Uuid
 
   operateur String
-  periodeLe DateTime @map("periode_le") @db.Date
+  periodeLe DateTime @map("period_at") @db.Date
 
-  nbLignes         Int @default(0) @map("nb_lignes")
-  montantOperateur Int @default(0) @map("montant_operateur")
-  montantJp        Int @default(0) @map("montant_jp")
+  nbLignes         Int @default(0) @map("line_count")
+  montantOperateur Int @default(0) @map("operator_amount")
+  montantJp        Int @default(0) @map("jp_amount")
 
-  closeLe DateTime? @map("close_le") @db.Timestamptz(6)
-  creeLe  DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
+  closeLe DateTime? @map("closed_at") @db.Timestamptz(6)
+  creeLe  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   ecarts Discrepancy[]
 
@@ -3155,17 +3155,17 @@ model Discrepancy {
   reconciliation   Reconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Restrict)
   reconciliationId String         @map("reconciliation_id") @db.Uuid
 
-  referenceExterne String? @map("reference_externe")
+  referenceExterne String? @map("external_reference")
   paiementId       String? @map("paiement_id") @db.Uuid
 
-  montantEcart Int         @map("montant_ecart")
+  montantEcart Int         @map("discrepancy_amount")
   statut       DiscrepancyStatus @default(open)
   commentaire  String?
 
-  ecritureCorrectiveId String?   @map("ecriture_corrective_id") @db.Uuid
-  resoluLe             DateTime? @map("resolu_le") @db.Timestamptz(6)
+  ecritureCorrectiveId String?   @map("corrective_entry_id") @db.Uuid
+  resoluLe             DateTime? @map("resolved_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  creeLe DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([statut, creeLe])
   @@map("discrepancy")
@@ -3195,10 +3195,10 @@ model DailyAggregate {
 
   visiteurs       Int @default(0)
   inscriptions    Int @default(0)
-  commandesPayees Int @default(0) @map("commandes_payees")
-  caAriary        Int @default(0) @map("ca_ariary")
+  commandesPayees Int @default(0) @map("paid_orders")
+  caAriary        Int @default(0) @map("revenue_ariary")
 
-  calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
+  calculeLe DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
   @@map("daily_aggregate")
 }
@@ -3214,10 +3214,10 @@ model ShopAggregate {
 
   vues            Int @default(0)
   reservations    Int @default(0)
-  commandesPayees Int @default(0) @map("commandes_payees")
-  caAriary        Int @default(0) @map("ca_ariary")
+  commandesPayees Int @default(0) @map("paid_orders")
+  caAriary        Int @default(0) @map("revenue_ariary")
 
-  calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
+  calculeLe DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
   @@id([shopId, jour, origine])
   @@map("shop_aggregate")
