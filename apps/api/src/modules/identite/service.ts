@@ -99,7 +99,7 @@ export const service = {
     await journaliser(db, {
       action: estNouveau ? EMIS[0] : EMIS[1],
       cibleType: 'utilisateur',
-      cibleId: utilisateur.id,
+      targetId: utilisateur.id,
     });
 
     return {
@@ -138,7 +138,7 @@ export const service = {
     await journaliser(db, {
       action: EMIS[1],
       cibleType: 'utilisateur',
-      cibleId: utilisateur.id,
+      targetId: utilisateur.id,
     });
 
     return {

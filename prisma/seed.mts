@@ -61,9 +61,9 @@ try {
     // présent. C'est ce qui rend le seed rejouable sans écraser un réglage
     // qu'on aurait ajusté à la main pendant le pilote.
     const { rowCount } = await client.query(
-      `INSERT INTO parametre (cle, valeur, type, description)
-       VALUES ($1, $2, $3::type_parametre, $4)
-       ON CONFLICT (cle) DO NOTHING`,
+      `INSERT INTO setting (key, value, type, description)
+       VALUES ($1, $2, $3::setting_type, $4)
+       ON CONFLICT (key) DO NOTHING`,
       [p.key, p.default, p.type, `${p.description} [${p.source}]`],
     );
     if (rowCount === 1) poses++;

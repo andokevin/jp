@@ -166,7 +166,7 @@ describe("document_identite — la CIN suffit, le NIF-STAT n'est jamais exigé",
     const moi = await creerUtilisateur();
     for (const type of ['cin_recto', 'cin_verso', 'selfie']) {
       const { rowCount } = await base.appli.query(
-        `INSERT INTO document_identite (id, utilisateur_id, type, url_chiffree, empreinte)
+        `INSERT INTO identity_document (id, utilisateur_id, type, encrypted_url, fingerprint)
          VALUES (gen_random_uuid(), $1, $2, 'chiffre://x', $3)`,
         [moi, type, unique('h')],
       );
@@ -177,13 +177,13 @@ describe("document_identite — la CIN suffit, le NIF-STAT n'est jamais exigé",
   it('redéposer la même pièce ne l’empile pas', async () => {
     const moi = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO document_identite (id, utilisateur_id, type, url_chiffree, empreinte)
+      `INSERT INTO identity_document (id, utilisateur_id, type, encrypted_url, fingerprint)
        VALUES (gen_random_uuid(), $1, 'cin_recto', 'chiffre://a', 'a')`,
       [moi],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO document_identite (id, utilisateur_id, type, url_chiffree, empreinte)
+        `INSERT INTO identity_document (id, utilisateur_id, type, encrypted_url, fingerprint)
          VALUES (gen_random_uuid(), $1, 'cin_recto', 'chiffre://b', 'b')`,
         [moi],
       ),
@@ -280,11 +280,11 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
   it('un seul panier ACTIF par personne', async () => {
     const moi = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`,
+      `INSERT INTO cart (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`,
       [moi],
     );
     await expect(
-      base.appli.query(`INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`, [
+      base.appli.query(`INSERT INTO cart (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`, [
         moi,
       ]),
     ).rejects.toMatchObject({ constraint: 'panier_actif_unique' });
@@ -295,15 +295,15 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     // contrainte ne porte que sur `statut = 'actif'`.
     const moi = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id, statut) VALUES (gen_random_uuid(), $1, 'valide')`,
+      `INSERT INTO cart (id, utilisateur_id, status) VALUES (gen_random_uuid(), $1, 'checked_out')`,
       [moi],
     );
     await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id, statut) VALUES (gen_random_uuid(), $1, 'abandonne')`,
+      `INSERT INTO cart (id, utilisateur_id, status) VALUES (gen_random_uuid(), $1, 'abandoned')`,
       [moi],
     );
     const { rowCount } = await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`,
+      `INSERT INTO cart (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`,
       [moi],
     );
     expect(rowCount).toBe(1);
@@ -318,18 +318,18 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
       [article],
     );
     const { rows: p } = await base.appli.query<{ id: string }>(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO cart (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [moi],
     );
 
     await base.appli.query(
-      `INSERT INTO ligne_panier (id, panier_id, variant_id, quantite)
+      `INSERT INTO cart_line (id, cart_id, variant_id, quantity)
        VALUES (gen_random_uuid(), $1, $2, 1)`,
       [p[0]!.id, v[0]!.id],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO ligne_panier (id, panier_id, variant_id, quantite)
+        `INSERT INTO cart_line (id, cart_id, variant_id, quantity)
          VALUES (gen_random_uuid(), $1, $2, 1)`,
         [p[0]!.id, v[0]!.id],
       ),
@@ -347,11 +347,11 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
       [article],
     );
     const { rows: p } = await base.appli.query<{ id: string }>(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO cart (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [moi],
     );
     await base.appli.query(
-      `INSERT INTO ligne_panier (id, panier_id, variant_id, quantite)
+      `INSERT INTO cart_line (id, cart_id, variant_id, quantity)
        VALUES (gen_random_uuid(), $1, $2, 4)`,
       [p[0]!.id, v[0]!.id],
     );
@@ -365,7 +365,7 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
 });
 
 describe('suppression douce — le REVOKE, pas le commentaire', () => {
-  const douces = ['app_user', 'boutique', 'article', 'variant', 'extrait_boutique'] as const;
+  const douces = ['app_user', 'boutique', 'article', 'variant', 'shop_snippet'] as const;
 
   it.each(douces)('jp_app ne peut PAS supprimer une ligne de %s', async (table) => {
     await expect(base.appli.query(`DELETE FROM "${table}"`)).rejects.toMatchObject({
@@ -403,12 +403,12 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer un extrait supprimé passe, lui', async () => {
     const boutique = await creerBoutique();
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO extrait_boutique (id, boutique_id, type, video_url)
-       VALUES (gen_random_uuid(), $1, 'annonce', 'video://x') RETURNING id`,
+      `INSERT INTO shop_snippet (id, boutique_id, type, video_url)
+       VALUES (gen_random_uuid(), $1, 'announcement', 'video://x') RETURNING id`,
       [boutique],
     );
     const { rowCount } = await base.appli.query(
-      `UPDATE extrait_boutique SET supprime_le = now() WHERE id = $1`,
+      `UPDATE shop_snippet SET deleted_at = now() WHERE id = $1`,
       [rows[0]!.id],
     );
     expect(rowCount).toBe(1);
@@ -427,10 +427,10 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('panier et ligne_panier gardent DELETE — retirer un article est une vraie suppression', async () => {
     const moi = await creerUtilisateur();
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO cart (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [moi],
     );
-    const { rowCount } = await base.appli.query(`DELETE FROM panier WHERE id = $1`, [rows[0]!.id]);
+    const { rowCount } = await base.appli.query(`DELETE FROM cart WHERE id = $1`, [rows[0]!.id]);
     expect(rowCount).toBe(1);
   });
 });

@@ -282,16 +282,16 @@ describe('pagination par curseur', () => {
 // ═══════════════════════════════════════════════════════════════════════════
 describe('journal d’audit', () => {
   it('écrit une entrée', async () => {
-    const acteurId = await unUtilisateur();
+    const actorId = await unUtilisateur();
     await journaliser(base.prisma, {
       action: 'exploitation.parametre.modifie',
       cibleType: 'parametre',
-      cibleId: 'taux_commission_defaut',
+      targetId: 'taux_commission_defaut',
       avant: { valeur: '80' },
       apres: { valeur: '90' },
-      acteurId,
+      actorId,
     });
-    const n = await base.prisma.journalAudit.count({ where: { acteurId } });
+    const n = await base.prisma.auditLog.count({ where: { actorId } });
     expect(n).toBe(1);
   });
 
@@ -301,7 +301,7 @@ describe('journal d’audit', () => {
       journaliser(base.prisma, {
         action: 'x',
         cibleType: 'y',
-        acteurId: '00000000-0000-0000-0000-000000000000',
+        actorId: '00000000-0000-0000-0000-000000000000',
       }),
     ).resolves.toBeUndefined();
   });

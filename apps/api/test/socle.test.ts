@@ -26,7 +26,7 @@ const DROITS_REFUSES = '42501';
 describe('journal_audit — ajout seul (D3)', () => {
   it('jp_app peut insérer', async () => {
     const { rowCount } = await base.appli.query(
-      `INSERT INTO journal_audit (id, action, cible_type)
+      `INSERT INTO audit_log (id, action, target_type)
        VALUES (gen_random_uuid(), 'essai', 'test')`,
     );
     expect(rowCount).toBe(1);
@@ -34,12 +34,12 @@ describe('journal_audit — ajout seul (D3)', () => {
 
   it('jp_app ne peut PAS modifier', async () => {
     await expect(
-      base.appli.query(`UPDATE journal_audit SET action = 'falsifie'`),
+      base.appli.query(`UPDATE audit_log SET action = 'falsifie'`),
     ).rejects.toMatchObject({ code: DROITS_REFUSES });
   });
 
   it('jp_app ne peut PAS supprimer', async () => {
-    await expect(base.appli.query('DELETE FROM journal_audit')).rejects.toMatchObject({
+    await expect(base.appli.query('DELETE FROM audit_log')).rejects.toMatchObject({
       code: DROITS_REFUSES,
     });
   });
@@ -49,16 +49,16 @@ describe('journal_audit — ajout seul (D3)', () => {
     // donneraient exactement le même vert. Il prouve que les trois tests
     // ci-dessus mesurent bien le RÔLE, et pas une faute de frappe.
     const { rowCount } = await base.proprietaire.query(
-      `UPDATE journal_audit SET action = 'corrige-par-le-proprietaire'`,
+      `UPDATE audit_log SET action = 'corrige-par-le-proprietaire'`,
     );
     expect(rowCount).toBeGreaterThan(0);
-    await base.proprietaire.query('DELETE FROM journal_audit');
+    await base.proprietaire.query('DELETE FROM audit_log');
   });
 
   it('les droits accordés se limitent à INSERT et SELECT', async () => {
     const { rows } = await base.appli.query<{ privilege_type: string }>(
       `SELECT privilege_type FROM information_schema.table_privileges
-       WHERE grantee = 'jp_app' AND table_name = 'journal_audit'
+       WHERE grantee = 'jp_app' AND table_name = 'audit_log'
        ORDER BY privilege_type`,
     );
     expect(rows.map((r) => r.privilege_type)).toEqual(['INSERT', 'SELECT']);
@@ -77,15 +77,15 @@ describe('parametre_modification — double validation', () => {
   it('refuse une modification proposée ET confirmée par la même personne', async () => {
     const moi = await utilisateur(`solo-${Date.now()}@jp.mg`);
     await base.proprietaire.query(
-      `INSERT INTO parametre (cle, valeur, type, description)
-       VALUES ('essai_solo', '1', 'entier', 'essai')`,
+      `INSERT INTO setting (key, value, type, description)
+       VALUES ('essai_solo', '1', 'integer', 'essai')`,
     );
 
     await expect(
       base.proprietaire.query(
-        `INSERT INTO parametre_modification
-           (id, cle, ancienne_valeur, nouvelle_valeur, motif,
-            propose_par_id, confirme_par_id, confirme_le)
+        `INSERT INTO setting_change
+           (id, setting_key, old_value, new_value, reason,
+            proposed_by_id, confirmed_by_id, confirmed_at)
          VALUES (gen_random_uuid(), 'essai_solo', '1', '2', 'essai', $1, $1, now())`,
         [moi],
       ),
@@ -95,16 +95,16 @@ describe('parametre_modification — double validation', () => {
   it('refuse une confirmation à moitié renseignée', async () => {
     const un = await utilisateur(`propose-${Date.now()}@jp.mg`);
     await base.proprietaire.query(
-      `INSERT INTO parametre (cle, valeur, type, description)
-       VALUES ('essai_moitie', '1', 'entier', 'essai')`,
+      `INSERT INTO setting (key, value, type, description)
+       VALUES ('essai_moitie', '1', 'integer', 'essai')`,
     );
 
     // Un confirmateur, mais pas de date : ni confirmé, ni pas confirmé.
     await expect(
       base.proprietaire.query(
-        `INSERT INTO parametre_modification
-           (id, cle, ancienne_valeur, nouvelle_valeur, motif,
-            propose_par_id, confirme_par_id)
+        `INSERT INTO setting_change
+           (id, setting_key, old_value, new_value, reason,
+            proposed_by_id, confirmed_by_id)
          VALUES (gen_random_uuid(), 'essai_moitie', '1', '2', 'essai', $1, $1)`,
         [un],
       ),
@@ -115,14 +115,14 @@ describe('parametre_modification — double validation', () => {
     const proposeur = await utilisateur(`a-${Date.now()}@jp.mg`);
     const confirmeur = await utilisateur(`b-${Date.now()}@jp.mg`);
     await base.proprietaire.query(
-      `INSERT INTO parametre (cle, valeur, type, description)
-       VALUES ('essai_duo', '1', 'entier', 'essai')`,
+      `INSERT INTO setting (key, value, type, description)
+       VALUES ('essai_duo', '1', 'integer', 'essai')`,
     );
 
     const { rowCount } = await base.proprietaire.query(
-      `INSERT INTO parametre_modification
-         (id, cle, ancienne_valeur, nouvelle_valeur, motif,
-          propose_par_id, confirme_par_id, confirme_le)
+      `INSERT INTO setting_change
+         (id, setting_key, old_value, new_value, reason,
+          proposed_by_id, confirmed_by_id, confirmed_at)
        VALUES (gen_random_uuid(), 'essai_duo', '1', '2', 'essai', $1, $2, now())`,
       [proposeur, confirmeur],
     );
@@ -166,7 +166,7 @@ describe('utilisateur — R-C1 et R-C15', () => {
     );
     const id = rows[0]!.id;
     await base.appli.query(
-      `INSERT INTO journal_audit (id, acteur_id, action, cible_type)
+      `INSERT INTO audit_log (id, actor_id, action, target_type)
        VALUES (gen_random_uuid(), $1, 'essai', 'test')`,
       [id],
     );
@@ -183,7 +183,7 @@ describe('utilisateur — R-C1 et R-C15', () => {
       base.proprietaire.query('DELETE FROM app_user WHERE id = $1', [id]),
     ).rejects.toMatchObject({ code: '23001' });
 
-    await base.proprietaire.query('DELETE FROM journal_audit WHERE acteur_id = $1', [id]);
+    await base.proprietaire.query('DELETE FROM audit_log WHERE actor_id = $1', [id]);
   });
 });
 

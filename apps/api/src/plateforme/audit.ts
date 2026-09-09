@@ -16,10 +16,10 @@ import { contexte } from './contexte.js';
 export interface EntreeAudit {
   readonly action: string;
   readonly cibleType: string;
-  readonly cibleId?: string;
+  readonly targetId?: string;
   readonly avant?: unknown;
   readonly apres?: unknown;
-  readonly acteurId?: string;
+  readonly actorId?: string;
 }
 
 /**
@@ -38,17 +38,17 @@ export async function journaliser(db: PrismaClient, entree: EntreeAudit): Promis
   // refuse. L'objet mutable évite la gymnastique de types.
   const donnees: Record<string, unknown> = {
     action: entree.action,
-    cibleType: entree.cibleType,
+    targetType: entree.cibleType,
   };
-  const acteurId = entree.acteurId ?? ctx?.userId;
-  if (entree.cibleId !== undefined) donnees['cibleId'] = entree.cibleId;
-  if (entree.avant !== undefined) donnees['avant'] = entree.avant;
-  if (entree.apres !== undefined) donnees['apres'] = entree.apres;
-  if (acteurId !== undefined) donnees['acteurId'] = acteurId;
-  if (ctx?.ipAddress !== undefined) donnees['adresseIp'] = ctx.ipAddress;
+  const actorId = entree.actorId ?? ctx?.userId;
+  if (entree.targetId !== undefined) donnees['targetId'] = entree.targetId;
+  if (entree.avant !== undefined) donnees['before'] = entree.avant;
+  if (entree.apres !== undefined) donnees['after'] = entree.apres;
+  if (actorId !== undefined) donnees['actorId'] = actorId;
+  if (ctx?.ipAddress !== undefined) donnees['ipAddress'] = ctx.ipAddress;
 
   try {
-    await db.journalAudit.create({ data: donnees as never });
+    await db.auditLog.create({ data: donnees as never });
   } catch (e) {
     console.error(
       `[audit] échec d'écriture — action=${entree.action} correlation=${ctx?.correlation ?? '—'}`,

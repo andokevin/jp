@@ -42,23 +42,23 @@ enum Gender {
 /// Le verrou de la mise en vente (`DP-07`). Une boutique non vérifiée existe,
 /// mais ne publie rien : l'argent partant directement à la boutique, vérifier
 /// APRÈS la vente n'aurait plus aucun sens.
-enum StatutPanier {
-  actif
-  valide
-  abandonne
+enum CartStatus {
+  active
+  checked_out
+  abandoned
 
-  @@map("statut_panier")
+  @@map("cart_status")
 }
 
 /// Ce que la boutique publie AVANT le direct : un extrait des articles, une
 /// publicité, ou une annonce (« il y aura une surprise »). Trois intentions
 /// différentes, un même objet vidéo — d'où un énuméré plutôt que trois tables.
-enum TypeExtrait {
-  extrait
-  publicite
-  annonce
+enum SnippetType {
+  excerpt
+  ad
+  announcement
 
-  @@map("type_extrait")
+  @@map("snippet_type")
 }
 
 enum ExternalProvider {
@@ -69,13 +69,13 @@ enum ExternalProvider {
 }
 
 /// Le cycle d'une demande instruite par un humain du back-office.
-enum EtatDemande {
-  en_attente
-  en_cours
-  acceptee
-  refusee
+enum RequestState {
+  pending
+  in_progress
+  accepted
+  rejected
 
-  @@map("etat_demande")
+  @@map("request_state")
 }
 
 enum EmailChangeStep {
@@ -146,12 +146,12 @@ enum FeaturedType {
   @@map("featured_type")
 }
 
-enum StatutEcart {
-  ouvert
-  resolu
-  ignore
+enum DiscrepancyStatus {
+  open
+  resolved
+  ignored
 
-  @@map("statut_ecart")
+  @@map("discrepancy_status")
 }
 
 enum PreorderStatus {
@@ -173,29 +173,29 @@ enum CommitmentStatus {
   @@map("commitment_status")
 }
 
-enum TypeMouvementCagnotte {
+enum WalletMovementType {
   credit_unboxing
-  credit_parrainage
-  utilisation
-  reprise
+  referral_credit
+  spend
+  reclaim
 
-  @@map("type_mouvement_cagnotte")
+  @@map("wallet_movement_type")
 }
 
-enum OriginePieceDressing {
-  achat_jp
-  ajout_manuel
+enum WardrobeItemOrigin {
+  jp_purchase
+  manual
 
-  @@map("origine_piece_dressing")
+  @@map("wardrobe_item_origin")
 }
 
-enum StatutPanierCadeau {
-  compose
-  partage
-  paye
-  expire
+enum GiftCartStatus {
+  composed
+  shared
+  paid
+  expired
 
-  @@map("statut_panier_cadeau")
+  @@map("gift_cart_status")
 }
 
 enum ContentType {
@@ -593,14 +593,14 @@ enum UserStatus {
 /// Le type dit comment lire `parametre.valeur`, qui est toujours du texte.
 /// `pour_mille` existe séparément d'`entier` parce que 25 y signifie 2,5 %
 /// et qu'un affichage naïf tromperait le vendeur.
-enum TypeParametre {
-  entier
-  texte
-  booleen
-  duree_s
-  pour_mille
+enum SettingType {
+  integer
+  text
+  boolean
+  duration_s
+  per_mille
 
-  @@map("type_parametre")
+  @@map("setting_type")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -655,7 +655,7 @@ model User {
 
   buyerProfile            BuyerProfile?
   boutique                Boutique?
-  paniers                 Panier[]
+  paniers                 Cart[]
   questionsPosees         ArticleQuestion[]
   alertesStock            StockAlert[]
   abonnementsSuivis       Follow[]             @relation("suiveur")
@@ -687,29 +687,29 @@ model User {
   rangsClient             CustomerRank[]
   notesClient             CustomerNote[]
   ventesConfirmees        ConfirmedSaleLog[]
-  cagnotte                Cagnotte?
-  mouvementsCagnotte      MouvementCagnotte[]
-  piecesDressing          PieceDressing[]
+  cagnotte                Wallet?
+  mouvementsCagnotte      WalletMovement[]
+  piecesDressing          WardrobeItem[]
   looks                   Look[]
-  paniersCadeauComposes   PanierCadeau[]           @relation("compositrice")
+  paniersCadeauComposes   GiftCart[]           @relation("compositrice")
   notifications           Notification[]
   compteursNotification   NotificationCounter[]
   preferencesNotification NotificationPreference[]
   adhesionClub            ClubMembership?
   liensPartage            ShareLink[]
-  documentsIdentite       DocumentIdentite[]
-  identitesExternes       IdentiteExterne[]
+  documentsIdentite       IdentityDocument[]
+  identitesExternes       ExternalIdentity[]
   creatorProfile          CreatorProfile?
-  membresEquipe           MembreEquipe[]
-  adresses                Adresse[]
-  demandesVerification    DemandeVerification[]    @relation("demandeur")
-  verificationsDecidees   DemandeVerification[]    @relation("decideur_verification")
-  recuperationsCiblees    DemandeRecuperation[]    @relation("cible_recuperation")
-  recuperationsDecidees   DemandeRecuperation[]    @relation("decideur_recuperation")
-  demandesChangementEmail DemandeChangementEmail[]
+  membresEquipe           TeamMember[]
+  adresses                Address[]
+  demandesVerification    VerificationRequest[]    @relation("demandeur")
+  verificationsDecidees   VerificationRequest[]    @relation("decideur_verification")
+  recuperationsCiblees    PasswordRecoveryRequest[]    @relation("cible_recuperation")
+  recuperationsDecidees   PasswordRecoveryRequest[]    @relation("decideur_recuperation")
+  demandesChangementEmail EmailChangeRequest[]
   sessions                Session[]
-  journauxAudit           JournalAudit[]
-  parametresModifies      Parametre[]
+  journauxAudit           AuditLog[]
+  parametresModifies      Setting[]
   modificationsProposees  ParametreModification[]  @relation("propose")
   modificationsConfirmees ParametreModification[]  @relation("confirme")
 
@@ -810,8 +810,8 @@ model Boutique {
   majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
   articles         Article[]
-  extraits         ExtraitBoutique[]
-  membres          MembreEquipe[]
+  extraits         ShopSnippet[]
+  membres          TeamMember[]
   directs          LiveStream[]
   paliers          LoyaltyTier[]
   promotions       Promotion[]
@@ -825,7 +825,7 @@ model Boutique {
   ventesConfirmees ConfirmedSaleLog[]
   abonnements      ShopSubscription[]
   misesEnAvant     Featured[]
-  agregats         AgregatBoutique[]
+  agregats         ShopAggregate[]
 
   @@index([statutVerification])
   @@map("boutique")
@@ -836,7 +836,7 @@ model Boutique {
 /// `urlChiffree` est **chiffrée au repos** (R-V5) : ce sont des pièces
 /// d'identité, et une fuite de cette table serait une fuite d'identités, pas
 /// un incident technique.
-model DocumentIdentite {
+model IdentityDocument {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -853,7 +853,7 @@ model DocumentIdentite {
   /// Une pièce de chaque type par personne. Redéposer remplace la ligne au
   /// lieu d'en empiler une seconde.
   @@unique([userId, type])
-  @@map("document_identite")
+  @@map("identity_document")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -863,10 +863,10 @@ model DocumentIdentite {
 /// Tous les réglages économiques : durée de réservation, taux de commission,
 /// délais, plafonds. Modifiables sans déploiement — sinon aucun essai n'a
 /// lieu pendant le pilote.
-model Parametre {
+model Setting {
   cle         String        @id
   valeur      String
-  type        TypeParametre
+  type        SettingType
   description String
 
   modifiePar   User?    @relation(fields: [modifieParId], references: [id], onDelete: SetNull)
@@ -875,7 +875,7 @@ model Parametre {
 
   modifications ParametreModification[]
 
-  @@map("parametre")
+  @@map("setting")
 }
 
 /// Double validation : proposé par l'un, confirmé par l'autre.
@@ -884,7 +884,7 @@ model ParametreModification {
   id  String @id @default(uuid(7)) @db.Uuid
   cle String
 
-  parametre      Parametre @relation(fields: [cle], references: [cle], onDelete: Cascade)
+  parametre      Setting @relation(fields: [cle], references: [cle], onDelete: Cascade)
   ancienneValeur String    @map("ancienne_valeur")
   nouvelleValeur String    @map("nouvelle_valeur")
   motif          String
@@ -901,7 +901,7 @@ model ParametreModification {
   confirmeLe    DateTime? @map("confirme_le") @db.Timestamptz(6)
 
   @@index([cle, proposeLe])
-  @@map("parametre_modification")
+  @@map("setting_change")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -910,26 +910,26 @@ model ParametreModification {
 
 /// AJOUT SEUL. La garantie n'est pas ici — elle est dans la migration,
 /// sous forme de REVOKE. Prisma ne sait pas l'exprimer.
-model JournalAudit {
+model AuditLog {
   id String @id @default(uuid(7)) @db.Uuid
 
   /// `Restrict` et non `SetNull` : voir l'explication sous ce bloc.
-  acteur   User?   @relation(fields: [acteurId], references: [id], onDelete: Restrict)
-  acteurId String? @map("acteur_id") @db.Uuid
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  actorId String? @map("actor_id") @db.Uuid
 
-  action    String
-  cibleType String  @map("cible_type")
-  cibleId   String? @map("cible_id")
+  action     String
+  targetType String  @map("target_type")
+  targetId   String? @map("target_id")
 
-  avant Json?
-  apres Json?
+  before Json?
+  after  Json?
 
-  adresseIp  String?  @map("adresse_ip") @db.Inet
-  horodatage DateTime @default(now()) @db.Timestamptz(6)
+  ipAddress  String?  @map("ip_address") @db.Inet
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
 
-  @@index([cibleType, cibleId, horodatage])
-  @@index([acteurId, horodatage])
-  @@map("journal_audit")
+  @@index([targetType, targetId, occurredAt])
+  @@index([actorId, occurredAt])
+  @@map("audit_log")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -945,26 +945,26 @@ model JournalAudit {
 /// `empreinteRequete` garde contre le pire cas : la même clé réutilisée pour
 /// une requête DIFFÉRENTE. Sans elle, un client bogué pourrait recevoir la
 /// réponse d'une commande pour une autre.
-model CleIdempotence {
-  cle String @id
+model IdempotencyKey {
+  key String @id
 
-  userId           String? @map("utilisateur_id") @db.Uuid
-  methode          String
-  chemin           String
+  userId             String? @map("utilisateur_id") @db.Uuid
+  method             String  @map("method")
+  path               String
   /// Empreinte SHA-256 du corps de la requête.
-  empreinteRequete String  @map("empreinte_requete")
+  requestFingerprint String  @map("request_fingerprint")
 
   /// `NULL` tant que la requête est EN COURS. C'est ce qui permet de
   /// distinguer « rejeu d'une requête terminée » de « deux requêtes
   /// simultanées avec la même clé ».
-  statut  Int?
-  reponse Json?
+  status   Int?
+  response Json?
 
-  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  expireLe DateTime @map("expire_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
 
-  @@index([expireLe])
-  @@map("cle_idempotence")
+  @@index([expiresAt])
+  @@map("idempotency_key")
 }
 
 /// Une session ouverte, sur un appareil.
@@ -1128,7 +1128,7 @@ model Article {
   selections     SelectionArticle[]
   clics          AffiliateClick[]
   precommande    Preorder?
-  piecesDressing PieceDressing[]
+  piecesDressing WardrobeItem[]
   aLecranDans    LiveStream[]           @relation("article_a_lecran")
 
   @@index([boutiqueId, status])
@@ -1163,7 +1163,7 @@ model Variant {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  lignesPanier LignePanier[]
+  lignesPanier CartLine[]
 
   mouvements     StockMovement[]
   alertes        StockAlert[]
@@ -1175,7 +1175,7 @@ model Variant {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Panier hors direct — D7 révisé
+// Cart hors direct — D7 révisé
 // ─────────────────────────────────────────────────────────────────────────
 
 /// Le panier de la vente **hors direct**.
@@ -1189,41 +1189,41 @@ model Variant {
 /// rien. Le stock n'est bloqué qu'au passage en caisse, par une `reservation`,
 /// et c'est là seulement qu'un article peut manquer. En direct, rien ne change :
 /// on réserve immédiatement, sans panier.
-model Panier {
+model Cart {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  statut StatutPanier @default(actif)
+  status CartStatus @default(active)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  lignes LignePanier[]
+  lignes CartLine[]
 
-  @@index([userId, statut])
-  @@map("panier")
+  @@index([userId, status])
+  @@map("cart")
 }
 
 /// Une intention d'achat. **Ne bloque rien.**
-model LignePanier {
+model CartLine {
   id String @id @default(uuid(7)) @db.Uuid
 
-  panier   Panier @relation(fields: [panierId], references: [id], onDelete: Restrict)
-  panierId String @map("panier_id") @db.Uuid
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Restrict)
+  cartId String @map("cart_id") @db.Uuid
 
-  variant    Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  variantId String   @map("variant_id") @db.Uuid
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  variantId String  @map("variant_id") @db.Uuid
 
-  quantite Int @default(1)
+  quantity Int @default(1)
 
-  ajouteLe DateTime @default(now()) @map("ajoute_le") @db.Timestamptz(6)
+  addedAt DateTime @default(now()) @map("added_at") @db.Timestamptz(6)
 
   /// Rajouter le même article augmente la quantité au lieu d'empiler une
   /// seconde ligne.
-  @@unique([panierId, variantId])
-  @@map("ligne_panier")
+  @@unique([cartId, variantId])
+  @@map("cart_line")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1236,13 +1236,13 @@ model LignePanier {
 /// Elle n'est **pas** rattachée à un direct : elle existe avant lui, et elle
 /// survit s'il est annulé. Le lien vers `direct` viendra avec le domaine
 /// LiveStream, en colonne facultative.
-model ExtraitBoutique {
+model ShopSnippet {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  type    TypeExtrait @default(extrait)
+  type    SnippetType @default(excerpt)
   titre   String?
   legende String?
 
@@ -1265,7 +1265,7 @@ model ExtraitBoutique {
   majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
   @@index([boutiqueId, publieLe])
-  @@map("extrait_boutique")
+  @@map("shop_snippet")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1301,7 +1301,7 @@ model OtpCode {
 }
 
 /// Le rattachement à un compte Google (F0.13).
-model IdentiteExterne {
+model ExternalIdentity {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -1316,7 +1316,7 @@ model IdentiteExterne {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@unique([fournisseur, sujetExterne])
-  @@map("identite_externe")
+  @@map("external_identity")
 }
 
 /// La créatrice : audience, palier, ventes générées. **Vendre sans capital.**
@@ -1350,7 +1350,7 @@ model CreatorProfile {
 }
 
 /// Une boutique tenue à plusieurs mains.
-model MembreEquipe {
+model TeamMember {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
@@ -1364,18 +1364,18 @@ model MembreEquipe {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@unique([boutiqueId, userId])
-  @@map("membre_equipe")
+  @@map("team_member")
 }
 
 /// Le dossier de vérification d'une boutique — **le verrou de la mise en
 /// vente** (`DP-07`).
-model DemandeVerification {
+model VerificationRequest {
   id String @id @default(uuid(7)) @db.Uuid
 
   demandeur   User   @relation("demandeur", fields: [demandeurId], references: [id], onDelete: Restrict)
   demandeurId String @map("demandeur_id") @db.Uuid
 
-  statut        EtatDemande @default(en_attente)
+  statut        RequestState @default(pending)
   motifDecision String?     @map("motif_decision")
 
   /// `Restrict` : on n'efface pas la trace de qui a vérifié une identité.
@@ -1386,14 +1386,14 @@ model DemandeVerification {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@index([statut, creeLe])
-  @@map("demande_verification")
+  @@map("verification_request")
 }
 
 /// « J'ai perdu l'accès à mon adresse électronique. »
 ///
 /// `numero` est **lisible et prononçable** : la personne le donne au support
 /// par téléphone, souvent depuis un autre appareil que le sien.
-model DemandeRecuperation {
+model PasswordRecoveryRequest {
   id     String @id @default(uuid(7)) @db.Uuid
   numero String @unique
 
@@ -1402,7 +1402,7 @@ model DemandeRecuperation {
 
   emailAncien   String      @map("email_ancien")
   emailNouveau  String      @map("email_nouveau")
-  statut        EtatDemande @default(en_attente)
+  statut        RequestState @default(pending)
   motifDecision String?     @map("motif_decision")
 
   decidePar   User?     @relation("decideur_recuperation", fields: [decideParId], references: [id], onDelete: Restrict)
@@ -1412,12 +1412,12 @@ model DemandeRecuperation {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@index([statut, creeLe])
-  @@map("demande_recuperation")
+  @@map("password_recovery_request")
 }
 
 /// Changer d'adresse en deux temps : l'ancienne confirme, puis la nouvelle.
 /// Une seule étape suffirait à voler un compte dont la session est ouverte.
-model DemandeChangementEmail {
+model EmailChangeRequest {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -1430,13 +1430,13 @@ model DemandeChangementEmail {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@index([userId, expireLe])
-  @@map("demande_changement_email")
+  @@map("email_change_request")
 }
 
 /// Une adresse de livraison. **Pas de code postal** (R-L2) : il n'est pas
 /// utilisé à Madagascar, et un champ obligatoire vide se remplit de « 000 ».
 /// Ce sont `quartier` et `reperes` qui font arriver le colis.
-model Adresse {
+model Address {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -1456,7 +1456,7 @@ model Adresse {
   commandes SalesOrder[]
 
   @@index([userId])
-  @@map("adresse")
+  @@map("address")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1599,7 +1599,7 @@ model LiveStream {
   reservations Reservation[]
   commandes    SalesOrder[]
   bilan        LiveStreamReport?
-  extraits     ExtraitBoutique[]
+  extraits     ShopSnippet[]
 
   @@index([boutiqueId, scheduledStartAt])
   @@index([status, scheduledStartAt])
@@ -1993,7 +1993,7 @@ model SalesOrder {
   universeKey String @map("universe_key")
 
   deliveryMode DeliveryMode @default(home) @map("delivery_mode")
-  adresse      Adresse?     @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  adresse      Address?     @relation(fields: [addressId], references: [id], onDelete: Restrict)
   addressId    String?      @map("address_id") @db.Uuid
 
   /// Figé à la commande (R-U9) : le code, pas la promotion. Si elle est
@@ -2024,8 +2024,8 @@ model SalesOrder {
   contenusUnboxing    Content[]
   venteConfirmee      ConfirmedSaleLog?
   engagements         PreorderCommitment[]
-  piecesDressing      PieceDressing[]
-  panierCadeau        PanierCadeau?
+  piecesDressing      WardrobeItem[]
+  panierCadeau        GiftCart?
 
   @@index([buyerId, createdAt])
   @@index([origin, createdAt])
@@ -2819,7 +2819,7 @@ model CustomerNote {
 /// `solde` est **dérivé** des mouvements. Il est stocké pour l'affichage, et un
 /// test le recalcule par relecture du journal : un solde qu'on ne sait pas
 /// reconstituer est un solde qu'on ne peut pas défendre.
-model Cagnotte {
+model Wallet {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @id @map("utilisateur_id") @db.Uuid
 
@@ -2827,16 +2827,16 @@ model Cagnotte {
 
   majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
-  @@map("cagnotte")
+  @@map("wallet")
 }
 
-model MouvementCagnotte {
+model WalletMovement {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  type      TypeMouvementCagnotte
+  type      WalletMovementType
   montant   Int
   /// Unique **partiellement** pour `credit_unboxing` : on ne crédite pas deux
   /// fois le même déballage, même si la tâche est rejouée.
@@ -2845,18 +2845,18 @@ model MouvementCagnotte {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@index([userId, creeLe])
-  @@map("mouvement_cagnotte")
+  @@map("wallet_movement")
 }
 
 /// La garde-robe. `articleId` **rend la pièce achetable dans un look** : c'est
 /// ce qui relie le dressing au catalogue au lieu d'en faire un album photo.
-model PieceDressing {
+model WardrobeItem {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  origine OriginePieceDressing @default(ajout_manuel)
+  origine WardrobeItemOrigin @default(manual)
 
   commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
   commandeId String?   @map("commande_id") @db.Uuid
@@ -2872,7 +2872,7 @@ model PieceDressing {
   looks LookPiece[]
 
   @@index([userId, categorie])
-  @@map("piece_dressing")
+  @@map("wardrobe_item")
 }
 
 model Look {
@@ -2896,7 +2896,7 @@ model LookPiece {
   look   Look   @relation(fields: [lookId], references: [id], onDelete: Restrict)
   lookId String @map("look_id") @db.Uuid
 
-  piece   PieceDressing @relation(fields: [pieceId], references: [id], onDelete: Restrict)
+  piece   WardrobeItem @relation(fields: [pieceId], references: [id], onDelete: Restrict)
   pieceId String        @map("piece_id") @db.Uuid
 
   /// La position dans la composition visuelle.
@@ -2913,7 +2913,7 @@ model LookPiece {
 /// Un panier composé par l'une, payé par un autre. **Le donateur ne voit jamais
 /// l'adresse** (RB8) : elle se négocie dans `fil_remise`, dont il ne fait pas
 /// partie.
-model PanierCadeau {
+model GiftCart {
   id String @id @default(uuid(7)) @db.Uuid
 
   compositrice   User   @relation("compositrice", fields: [compositriceId], references: [id], onDelete: Restrict)
@@ -2923,14 +2923,14 @@ model PanierCadeau {
   commandeId String?   @unique @map("commande_id") @db.Uuid
 
   lienPartage String             @unique @map("lien_partage")
-  statut      StatutPanierCadeau @default(compose)
+  statut      GiftCartStatus @default(composed)
   message     String?
 
   expireLe DateTime @map("expire_le") @db.Timestamptz(6)
   creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@index([statut, expireLe])
-  @@map("panier_cadeau")
+  @@map("gift_cart")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -3034,7 +3034,7 @@ model ShareLink {
 
 /// Conversion **indicative**. `constateLe` existe pour qu'aucun taux périmé ne
 /// soit affiché sans mention : un taux sans date est une promesse implicite.
-model TauxChange {
+model ExchangeRate {
   id String @id @default(uuid(7)) @db.Uuid
 
   devise     String
@@ -3043,7 +3043,7 @@ model TauxChange {
   constateLe DateTime @default(now()) @map("constate_le") @db.Timestamptz(6)
 
   @@index([devise, constateLe])
-  @@map("taux_change")
+  @@map("exchange_rate")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -3141,7 +3141,7 @@ model Reconciliation {
   closeLe DateTime? @map("close_le") @db.Timestamptz(6)
   creeLe  DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
 
-  ecarts Ecart[]
+  ecarts Discrepancy[]
 
   @@unique([operateur, periodeLe])
   @@map("reconciliation")
@@ -3149,7 +3149,7 @@ model Reconciliation {
 
 /// Un écart se résout **par une écriture inverse**, jamais par une correction
 /// de l'écriture d'origine : `ecriture_financiere` est en ajout seul.
-model Ecart {
+model Discrepancy {
   id String @id @default(uuid(7)) @db.Uuid
 
   reconciliation   Reconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Restrict)
@@ -3159,7 +3159,7 @@ model Ecart {
   paiementId       String? @map("paiement_id") @db.Uuid
 
   montantEcart Int         @map("montant_ecart")
-  statut       StatutEcart @default(ouvert)
+  statut       DiscrepancyStatus @default(open)
   commentaire  String?
 
   ecritureCorrectiveId String?   @map("ecriture_corrective_id") @db.Uuid
@@ -3168,12 +3168,12 @@ model Ecart {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
   @@index([statut, creeLe])
-  @@map("ecart")
+  @@map("discrepancy")
 }
 
 /// Événements d'usage bruts. **Rétention 90 jours**, puis agrégés : garder le
 /// détail indéfiniment coûte cher et ne sert plus au bout d'un trimestre.
-model EvenementUsage {
+model UsageEvent {
   id String @id @default(uuid(7)) @db.Uuid
 
   nom        String
@@ -3185,12 +3185,12 @@ model EvenementUsage {
 
   @@index([nom, horodatage])
   @@index([horodatage])
-  @@map("evenement_usage")
+  @@map("usage_event")
 }
 
 /// **Les quatre mesures fondatrices** (F11.7), précalculées. Une page de
 /// pilotage qui recalcule tout à chaque ouverture n'est pas consultée.
-model AgregatQuotidien {
+model DailyAggregate {
   jour DateTime @id @db.Date
 
   visiteurs       Int @default(0)
@@ -3200,12 +3200,12 @@ model AgregatQuotidien {
 
   calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
 
-  @@map("agregat_quotidien")
+  @@map("daily_aggregate")
 }
 
 /// Statistiques de boutique par jour **et par origine** : sans l'origine, on ne
 /// sait pas si c'est le direct ou le catalogue qui vend, donc où investir.
-model AgregatBoutique {
+model ShopAggregate {
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
@@ -3220,7 +3220,7 @@ model AgregatBoutique {
   calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
 
   @@id([boutiqueId, jour, origine])
-  @@map("agregat_boutique")
+  @@map("shop_aggregate")
 }
 
 /// ♻️ **Rétablie** (`DP-15`). Le taux en pour mille, **historisé**.

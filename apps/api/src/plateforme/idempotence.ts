@@ -64,54 +64,54 @@ export async function executerUneSeuleFois(
   // suivi d'un `create` laisserait passer deux requêtes simultanées entre les
   // deux appels.
   try {
-    await db.cleIdempotence.create({
+    await db.idempotencyKey.create({
       data: {
-        cle: params.cle,
-        methode: params.methode,
-        chemin: params.chemin,
-        empreinteRequete: trace,
-        ...(params.utilisateurId !== undefined ? { utilisateurId: params.utilisateurId } : {}),
-        expireLe: new Date(Date.now() + CONSERVATION_MS),
+        key: params.cle,
+        method: params.methode,
+        path: params.chemin,
+        requestFingerprint: trace,
+        ...(params.utilisateurId !== undefined ? { userId: params.utilisateurId } : {}),
+        expiresAt: new Date(Date.now() + CONSERVATION_MS),
       },
     });
   } catch {
     // La clé existe. Reste à savoir dans quel état.
-    const existante = await db.cleIdempotence.findUnique({ where: { cle: params.cle } });
+    const existante = await db.idempotencyKey.findUnique({ where: { key: params.cle } });
     if (!existante) throw erreurs.conflit();
 
-    if (existante.empreinteRequete !== trace) {
+    if (existante.requestFingerprint !== trace) {
       // Le pire cas : même clé, requête différente. On refuse plutôt que de
       // rendre la réponse d'une autre opération.
       throw erreurs.cleIdempotenceReutilisee();
     }
-    if (existante.statut === null) {
+    if (existante.status === null) {
       // La première requête n'a pas encore répondu.
       throw erreurs.requeteEnCours();
     }
-    return { status: existante.statut, corps: existante.reponse };
+    return { status: existante.status, corps: existante.response };
   }
 
   // La clé est à nous : on exécute.
   try {
     const resultat = await action();
-    await db.cleIdempotence.update({
-      where: { cle: params.cle },
-      data: { statut: resultat.status, reponse: resultat.corps as never },
+    await db.idempotencyKey.update({
+      where: { key: params.cle },
+      data: { status: resultat.status, response: resultat.corps as never },
     });
     return resultat;
   } catch (e) {
     // L'action a échoué : on retire la clé pour que le client PUISSE
     // réessayer. La garder marquerait un échec comme définitif, ce qui est
     // le contraire du but.
-    await db.cleIdempotence.delete({ where: { cle: params.cle } }).catch(() => undefined);
+    await db.idempotencyKey.delete({ where: { key: params.cle } }).catch(() => undefined);
     throw e;
   }
 }
 
 /** Purge les clés expirées. Appelée par un travail quotidien — `S5`. */
 export async function purger(db: PrismaClient): Promise<number> {
-  const { count } = await db.cleIdempotence.deleteMany({
-    where: { expireLe: { lt: new Date() } },
+  const { count } = await db.idempotencyKey.deleteMany({
+    where: { expiresAt: { lt: new Date() } },
   });
   return count;
 }
