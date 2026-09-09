@@ -39,7 +39,7 @@ async function utilisateur(): Promise<string> {
 
 async function boutique(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO boutique (id, utilisateur_id, nom, slug)
+    `INSERT INTO shop (id, user_id, name, slug)
      VALUES (gen_random_uuid(), $1, 'B', $2) RETURNING id`,
     [await utilisateur(), unique('slug')],
   );
@@ -48,7 +48,7 @@ async function boutique(): Promise<string> {
 
 async function article(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, universe_key, name, price_ariary)
+    `INSERT INTO article (id, shop_id, universe_key, name, price_ariary)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 40000) RETURNING id`,
     [await boutique()],
   );
@@ -71,7 +71,7 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
     // immédiat refuserait une transaction pourtant valide.
     await base.appli.query('BEGIN');
     await base.appli.query(
-      `INSERT INTO content (id, auteur_id, type, media_url, status)
+      `INSERT INTO content (id, author_id, type, media_url, status)
        VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'published')`,
       [await utilisateur()],
     );
@@ -86,7 +86,7 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
     const art = await article();
     await base.appli.query('BEGIN');
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO content (id, auteur_id, type, media_url, status)
+      `INSERT INTO content (id, author_id, type, media_url, status)
        VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'published') RETURNING id`,
       [auteur],
     );
@@ -99,7 +99,7 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
 
   it('un brouillon sans article passe — la règle ne porte que sur le publié', async () => {
     const { rowCount } = await base.appli.query(
-      `INSERT INTO content (id, auteur_id, type, media_url, status)
+      `INSERT INTO content (id, author_id, type, media_url, status)
        VALUES (gen_random_uuid(), $1, 'photo', 'img://x', 'draft')`,
       [await utilisateur()],
     );
@@ -109,7 +109,7 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
   it('un déballage sans commande source est refusé (R-K2)', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO content (id, auteur_id, type, media_url)
+        `INSERT INTO content (id, author_id, type, media_url)
          VALUES (gen_random_uuid(), $1, 'unboxing', 'video://x')`,
         [await utilisateur()],
       ),
@@ -143,7 +143,7 @@ describe('order_dispute — le compteur EST la sanction (R-T8, DP-05)', () => {
   it('RB4 a déménagé : une sanction sans motif écrit est refusée', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO sanction (id, utilisateur_id, type, reason_text, applied_by_id)
+        `INSERT INTO sanction (id, user_id, type, reason_text, applied_by_id)
          VALUES (gen_random_uuid(), $1, 'warning', '   ', $2)`,
         [await utilisateur(), await utilisateur()],
       ),
@@ -202,7 +202,7 @@ describe('réservation — ce qui porte RB1', () => {
 
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variant_id, utilisateur_id, guest_session_id, expires_at)
+        `INSERT INTO reservation (id, variant_id, user_id, guest_session_id, expires_at)
          VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), now() + interval '10 min')`,
         [await variante(), await utilisateur()],
       ),
@@ -246,7 +246,7 @@ describe('D4 — le cumul de promotions est impossible par la FORME de la table'
     await expect(
       base.appli.query(
         `INSERT INTO order_line
-           (id, order_id, variant_id, boutique_id, quantity, unit_price, line_discount)
+           (id, order_id, variant_id, shop_id, quantity, unit_price, line_discount)
          VALUES (gen_random_uuid(), $1, $2, $3, 2, 10000, 25000)`,
         [await commande(), v[0]!.id, await boutique()],
       ),
@@ -294,7 +294,7 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     const b = await boutique();
     const poser = () =>
       base.appli.query(
-        `INSERT INTO shop_subscription (id, boutique_id, due_at)
+        `INSERT INTO shop_subscription (id, shop_id, due_at)
          VALUES (gen_random_uuid(), $1, now() + interval '30 days')`,
         [b],
       );
@@ -307,7 +307,7 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     // modèle économique — invisible en relecture de code.
     await expect(
       base.appli.query(
-        `INSERT INTO shop_subscription (id, boutique_id, tier, amount, due_at)
+        `INSERT INTO shop_subscription (id, shop_id, tier, amount, due_at)
          VALUES (gen_random_uuid(), $1, 'free', 50000, now() + interval '30 days')`,
         [await boutique()],
       ),

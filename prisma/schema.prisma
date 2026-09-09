@@ -654,7 +654,7 @@ model User {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   buyerProfile            BuyerProfile?
-  boutique                Boutique?
+  boutique                Shop?
   paniers                 Cart[]
   questionsPosees         ArticleQuestion[]
   alertesStock            StockAlert[]
@@ -731,7 +731,7 @@ model BuyerProfile {
   /// transforme un `DELETE` accidentel en erreur bruyante plutôt qu'en
   /// effacement silencieux.
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @id @map("utilisateur_id") @db.Uuid
+  userId String @id @map("user_id") @db.Uuid
 
   /// Les types de vêtements préférés — `robe`, `jean`, `jupe`… Trois au plus,
   /// borné par un CHECK écrit à la main dans la migration.
@@ -748,7 +748,7 @@ model BuyerProfile {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Boutique et pièces d'identité — DP-01, DP-07
+// Shop et pièces d'identité — DP-01, DP-07
 // ─────────────────────────────────────────────────────────────────────────
 
 /// La boutique. **C'est la table qui décide si un article peut être mis en
@@ -757,14 +757,14 @@ model BuyerProfile {
 /// **Pas de `typeBoutique`** : il distinguait `boutique` de `particulier`, et
 /// le vendeur particulier n'existe plus (`DP-01`). Un attribut supprimé est
 /// plus sûr qu'un attribut dont une seule valeur reste utilisée.
-model Boutique {
+model Shop {
   id String @id @default(uuid(7)) @db.Uuid
 
   /// `@unique` : un compte, au plus une boutique (`DP-02`).
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @unique @map("utilisateur_id") @db.Uuid
+  userId String @unique @map("user_id") @db.Uuid
 
-  nom  String
+  name String
   /// Dans les URL publiques. Ne change pas sans redirection.
   slug String @unique
 
@@ -773,41 +773,41 @@ model Boutique {
   /// L'affichage retombe sur l'initiale du nom.
   logoUrl String? @map("logo_url")
 
-  statutVerification VerificationStatus @default(unverified) @map("statut_verification")
+  verificationStatus VerificationStatus @default(unverified) @map("verification_status")
 
   /// Le numéro vérifié — **seule destination possible d'un crédit** (`DP-16`).
-  msisdnMobileMoney String? @map("msisdn_mobile_money")
+  mobileMoneyMsisdn String? @map("mobile_money_msisdn")
 
   /// La boutique accepte-t-elle les créatrices ? (R-N3)
-  affiliationAutorisee   Boolean @default(false) @map("affiliation_autorisee")
+  affiliationAllowed    Boolean @default(false) @map("affiliation_allowed")
   /// Le taux offert aux créatrices, **sur son prix** (`DP-09`, R-N4). Connu de
   /// la créatrice AVANT qu'elle attache l'article.
-  tauxCommissionCreateur Int     @default(0) @map("taux_commission_createur")
+  creatorCommissionRate Int     @default(0) @map("creator_commission_rate")
 
   /// Gel automatique au-delà du seuil de signalements (R-T8). *(Anciennement
   /// `encaissement_gele` — il n'y a plus d'encaissement à geler, `DP-07`.)*
-  venteGelee Boolean @default(false) @map("vente_gelee")
+  salesFrozen Boolean @default(false) @map("sales_frozen")
 
   /// **Dénormalisés**, remis à zéro au cycle. Portent les quotas de R-B4.
-  ventesDuMois  Int @default(0) @map("ventes_du_mois")
-  directsDuMois Int @default(0) @map("directs_du_mois")
+  monthlySales       Int @default(0) @map("monthly_sales")
+  monthlyLiveStreams Int @default(0) @map("monthly_live_streams")
 
   /// Public, calculé sur des faits. **Devenue la seule protection de
   /// l'acheteuse** (`DP-07`) — il n'y a plus ni séquestre ni arbitre.
-  scoreConfiance       Decimal @default(0) @map("score_confiance") @db.Decimal(4, 2)
-  tauxSignalement      Decimal @default(0) @map("taux_signalement") @db.Decimal(5, 4)
+  trustScore           Decimal @default(0) @map("trust_score") @db.Decimal(4, 2)
+  reportRate           Decimal @default(0) @map("report_rate") @db.Decimal(5, 4)
   /// **Dénormalisé**, tâche quotidienne — affiché AVANT achat (F5.9).
-  delaiExpeditionMoyen Int?    @map("delai_expedition_moyen")
+  averageShippingDelay Int?    @map("average_shipping_delay")
   /// **Dénormalisé** — abonnés au sens social, pas l'abonnement payant.
-  nbAbonnes            Int     @default(0) @map("nb_abonnes")
-  fideliteActivee      Boolean @default(false) @map("fidelite_activee")
+  followersCount       Int     @default(0) @map("followers_count")
+  loyaltyEnabled       Boolean @default(false) @map("loyalty_enabled")
 
   /// Suppression douce. `NULL` = vivante. Aucun `DELETE` n'est jamais émis :
   /// une boutique supprimée garde ses commandes, ses avis et ses litiges.
-  supprimeeLe DateTime? @map("supprimee_le") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   articles         Article[]
   extraits         ShopSnippet[]
@@ -827,8 +827,8 @@ model Boutique {
   misesEnAvant     Featured[]
   agregats         ShopAggregate[]
 
-  @@index([statutVerification])
-  @@map("boutique")
+  @@index([verificationStatus])
+  @@map("shop")
 }
 
 /// Les pièces du dossier de vérification.
@@ -840,7 +840,7 @@ model IdentityDocument {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   type        IdentityDocumentType
   urlChiffree String               @map("url_chiffree")
@@ -948,7 +948,7 @@ model AuditLog {
 model IdempotencyKey {
   key String @id
 
-  userId             String? @map("utilisateur_id") @db.Uuid
+  userId             String? @map("user_id") @db.Uuid
   method             String  @map("method")
   path               String
   /// Empreinte SHA-256 du corps de la requête.
@@ -979,7 +979,7 @@ model Session {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   tokenHash String @unique @map("token_hash")
   family    String @db.Uuid
@@ -1059,8 +1059,8 @@ model Universe {
 model Article {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   /// **Immuable** (R-Y1) : changer l'univers changerait les règles de litige et
   /// la commission APRÈS une commande.
@@ -1131,7 +1131,7 @@ model Article {
   piecesDressing WardrobeItem[]
   aLecranDans    LiveStream[]           @relation("article_a_lecran")
 
-  @@index([boutiqueId, status])
+  @@index([shopId, status])
   @@index([expiryDate])
   @@index([universeKey, status])
   @@map("article")
@@ -1193,7 +1193,7 @@ model Cart {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   status CartStatus @default(active)
 
@@ -1239,8 +1239,8 @@ model CartLine {
 model ShopSnippet {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   type    SnippetType @default(excerpt)
   titre   String?
@@ -1256,7 +1256,7 @@ model ShopSnippet {
   /// Le direct annoncé, s'il y en a un. **Facultatif** : l'extrait existe
   /// avant lui, et il survit s'il est annulé.
   direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
-  directId String? @map("direct_id") @db.Uuid
+  directId String? @map("live_stream_id") @db.Uuid
 
   publieLe   DateTime? @map("publie_le") @db.Timestamptz(6)
   supprimeLe DateTime? @map("supprime_le") @db.Timestamptz(6)
@@ -1264,7 +1264,7 @@ model ShopSnippet {
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
   majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
 
-  @@index([boutiqueId, publieLe])
+  @@index([shopId, publieLe])
   @@map("shop_snippet")
 }
 
@@ -1305,7 +1305,7 @@ model ExternalIdentity {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   fournisseur  ExternalProvider
   /// L'identifiant **stable** du fournisseur (R-C12). Surtout pas l'adresse
@@ -1324,7 +1324,7 @@ model CreatorProfile {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @unique @map("utilisateur_id") @db.Uuid
+  userId String @unique @map("user_id") @db.Uuid
 
   publicName String @map("public_name")
   slug       String @unique
@@ -1353,17 +1353,17 @@ model CreatorProfile {
 model TeamMember {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   role TeamRole @default(fulfiller)
 
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
-  @@unique([boutiqueId, userId])
+  @@unique([shopId, userId])
   @@map("team_member")
 }
 
@@ -1421,7 +1421,7 @@ model EmailChangeRequest {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   nouvelEmail String          @map("nouvel_email")
   etape       EmailChangeStep @default(old_verified)
@@ -1440,7 +1440,7 @@ model Address {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   libelle               String
   quartier              String
@@ -1531,7 +1531,7 @@ model StockAlert {
   variantId String  @map("variant_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   notifiedAt DateTime? @map("notified_at") @db.Timestamptz(6)
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -1569,8 +1569,8 @@ model Follow {
 model LiveStream {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   title     String
   posterUrl String?    @map("poster_url")
@@ -1601,7 +1601,7 @@ model LiveStream {
   bilan        LiveStreamReport?
   extraits     ShopSnippet[]
 
-  @@index([boutiqueId, scheduledStartAt])
+  @@index([shopId, scheduledStartAt])
   @@index([status, scheduledStartAt])
   @@map("live_stream")
 }
@@ -1759,7 +1759,7 @@ model EventReminder {
   eventId String @map("event_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   notificationsSent Int @default(0) @map("notifications_sent")
 
@@ -1797,8 +1797,8 @@ model EventReport {
 model LoyaltyTier {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   name      String
   rankOrder Int    @map("rank_order")
@@ -1813,15 +1813,15 @@ model LoyaltyTier {
   promotionsReservees Promotion[]  @relation("palier_min")
   rangsClient         CustomerRank[]
 
-  @@unique([boutiqueId, rankOrder])
+  @@unique([shopId, rankOrder])
   @@map("loyalty_tier")
 }
 
 model Promotion {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull)
   eventId String? @map("event_id") @db.Uuid
@@ -1859,7 +1859,7 @@ model Promotion {
   beneficiaires  PromotionBeneficiary[]
   lignesRemisees OrderLine[]
 
-  @@index([boutiqueId, status, startsAt])
+  @@index([shopId, status, startsAt])
   @@map("promotion")
 }
 
@@ -1892,7 +1892,7 @@ model Reservation {
   /// `NULL` pour une session invitée : on peut réserver avant d'avoir un
   /// compte, sinon la création de compte s'intercale au pire moment.
   user           User?   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId         String? @map("utilisateur_id") @db.Uuid
+  userId         String? @map("user_id") @db.Uuid
   guestSessionId String? @map("guest_session_id") @db.Uuid
 
   quantity Int @default(1)
@@ -1901,7 +1901,7 @@ model Reservation {
   origin SaleOrigin        @default(catalogue)
 
   direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
-  directId String? @map("direct_id") @db.Uuid
+  directId String? @map("live_stream_id") @db.Uuid
 
   /// Le rang dans la file d'attente (R-S7). Quand une réservation expire, c'est
   /// le suivant qui est prévenu — pas tout le monde en même temps.
@@ -1940,8 +1940,8 @@ model DeliveryZone {
 /// **Le tarif est fixé par la boutique** (`DP-04`), pas par JP. Clé primaire
 /// composite : un tarif par boutique et par zone, sans doublon possible.
 model DeliveryRate {
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   zone   DeliveryZone @relation(fields: [zoneId], references: [id], onDelete: Restrict)
   zoneId String       @map("zone_id") @db.Uuid
@@ -1950,7 +1950,7 @@ model DeliveryRate {
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@id([boutiqueId, zoneId])
+  @@id([shopId, zoneId])
   @@map("delivery_rate")
 }
 
@@ -1977,7 +1977,7 @@ model SalesOrder {
   eventId String?    @map("event_id") @db.Uuid
 
   direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
-  directId String? @map("direct_id") @db.Uuid
+  directId String? @map("live_stream_id") @db.Uuid
 
   /// La commande cadeau (RB8). **Une référence, pas une clé étrangère** : le
   /// donateur ne doit jamais pouvoir remonter à l'adresse de livraison.
@@ -2042,8 +2042,8 @@ model OrderLine {
   variant   Variant @relation(fields: [variantId], references: [id], onDelete: Restrict)
   variantId String  @map("variant_id") @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   quantity     Int
   /// **FIGÉ à la commande.**
@@ -2066,7 +2066,7 @@ model OrderLine {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([orderId])
-  @@index([boutiqueId, createdAt])
+  @@index([shopId, createdAt])
   @@map("order_line")
 }
 
@@ -2076,7 +2076,7 @@ model PromotionBeneficiary {
   promotionId String    @map("promotion_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   personalCode String    @unique @map("personal_code")
   usedAt       DateTime? @map("used_at") @db.Timestamptz(6)
@@ -2197,8 +2197,8 @@ model Shipment {
   order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
   orderId String     @unique @map("order_id") @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   status          ShipmentStatus @default(preparing)
   /// `coursier`, `transporteur`, `main propre` — **non vérifié**.
@@ -2215,7 +2215,7 @@ model Shipment {
 
   events ShipmentEvent[]
 
-  @@index([boutiqueId, status])
+  @@index([shopId, status])
   @@map("shipment")
 }
 
@@ -2275,7 +2275,7 @@ model Content {
   id String @id @default(uuid(7)) @db.Uuid
 
   author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
-  authorId String @map("auteur_id") @db.Uuid
+  authorId String @map("author_id") @db.Uuid
 
   type          ContentType
   mediaUrl      String       @map("media_url")
@@ -2368,7 +2368,7 @@ model Interaction {
   contentId String  @map("content_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   type   InteractionType
   text   String?
@@ -2480,8 +2480,8 @@ model Review {
   author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
   authorId String @map("author_id") @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String?  @map("article_id") @db.Uuid
@@ -2505,7 +2505,7 @@ model Review {
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([boutiqueId, createdAt])
+  @@index([shopId, createdAt])
   @@map("review")
 }
 
@@ -2513,8 +2513,8 @@ model Review {
 /// chaque composante (R-T10) : un score qu'on ne peut pas expliquer à la
 /// boutique concernée est un score qu'elle contestera.
 model TrustScore {
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @id @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @id @map("shop_id") @db.Uuid
 
   score                  Decimal @default(0) @db.Decimal(4, 2)
   honoredSalesCount      Int     @default(0) @map("honored_sales_count")
@@ -2568,7 +2568,7 @@ model Sanction {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation("sanctionne", fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   type        SanctionType
   reasonText  String       @map("reason_text")
@@ -2609,7 +2609,7 @@ model UserBlock {
 /// et non global : la liste noire de l'une n'est pas celle de l'autre.
 model BlockedWord {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   word String
 
@@ -2684,7 +2684,7 @@ model AffiliateClick {
   articleId String  @map("article_id") @db.Uuid
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String? @map("utilisateur_id") @db.Uuid
+  userId String? @map("user_id") @db.Uuid
 
   expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -2755,11 +2755,11 @@ model PreorderCommitment {
 model ConfirmedSaleLog {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
   orderId String     @unique @map("order_id") @db.Uuid
@@ -2767,18 +2767,18 @@ model ConfirmedSaleLog {
   confirmedAmount Int      @map("confirmed_amount")
   confirmedAt     DateTime @default(now()) @map("confirmed_at") @db.Timestamptz(6)
 
-  @@index([boutiqueId, userId])
+  @@index([shopId, userId])
   @@map("confirmed_sale_log")
 }
 
 model CustomerRank {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   tier   LoyaltyTier? @relation(fields: [tierId], references: [id], onDelete: SetNull)
   tierId String?      @map("tier_id") @db.Uuid
@@ -2793,26 +2793,26 @@ model CustomerRank {
 
   computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
-  @@unique([boutiqueId, userId])
-  @@index([boutiqueId, score])
-  @@index([boutiqueId, lastOrderAt])
+  @@unique([shopId, userId])
+  @@index([shopId, score])
+  @@index([shopId, lastOrderAt])
   @@map("customer_rank")
 }
 
 /// **Jamais visible du client.** C'est une note interne de boutique ; la rendre
 /// visible transformerait un outil de suivi en insulte publique.
 model CustomerNote {
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   text String
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@id([boutiqueId, userId])
+  @@id([shopId, userId])
   @@map("customer_note")
 }
 
@@ -2821,7 +2821,7 @@ model CustomerNote {
 /// reconstituer est un solde qu'on ne peut pas défendre.
 model Wallet {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @id @map("utilisateur_id") @db.Uuid
+  userId String @id @map("user_id") @db.Uuid
 
   solde Int @default(0)
 
@@ -2834,7 +2834,7 @@ model WalletMovement {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   type      WalletMovementType
   montant   Int
@@ -2854,12 +2854,12 @@ model WardrobeItem {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   origine WardrobeItemOrigin @default(manual)
 
   commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String?   @map("commande_id") @db.Uuid
+  commandeId String?   @map("sales_order_id") @db.Uuid
 
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String?  @map("article_id") @db.Uuid
@@ -2879,10 +2879,10 @@ model Look {
   id String @id @default(uuid(7)) @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   nom       String
-  contenuId String? @map("contenu_id") @db.Uuid
+  contenuId String? @map("content_id") @db.Uuid
 
   creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
 
@@ -2920,7 +2920,7 @@ model GiftCart {
   compositriceId String @map("compositrice_id") @db.Uuid
 
   commande   SalesOrder? @relation(fields: [commandeId], references: [id], onDelete: Restrict)
-  commandeId String?   @unique @map("commande_id") @db.Uuid
+  commandeId String?   @unique @map("sales_order_id") @db.Uuid
 
   lienPartage String             @unique @map("lien_partage")
   statut      GiftCartStatus @default(composed)
@@ -2943,8 +2943,8 @@ model GiftCart {
 model ShopSubscription {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   tier   SubscriptionTier       @default(free)
   status ShopSubscriptionStatus @default(active)
@@ -2963,7 +2963,7 @@ model ShopSubscription {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([boutiqueId, status])
+  @@index([shopId, status])
   @@index([status, dueAt])
   @@map("shop_subscription")
 }
@@ -2971,7 +2971,7 @@ model ShopSubscription {
 /// JP Club, côté acheteuse : livraison offerte au-dessus d'un seuil.
 model ClubMembership {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @id @map("utilisateur_id") @db.Uuid
+  userId String @id @map("user_id") @db.Uuid
 
   amount                Int
   freeShippingThreshold Int      @map("free_shipping_threshold")
@@ -2988,8 +2988,8 @@ model ClubMembership {
 model Featured {
   id String @id @default(uuid(7)) @db.Uuid
 
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   type       FeaturedType
   targetType String       @map("target_type")
@@ -3080,7 +3080,7 @@ model Notification {
 /// et sans fenêtre glissante à recalculer.
 model NotificationCounter {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   senderId String   @map("sender_id") @db.Uuid
   type     String
@@ -3097,7 +3097,7 @@ model NotificationCounter {
 /// messages-là nuirait à la personne qui les coupe.
 model NotificationPreference {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userId String @map("utilisateur_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
 
   type    String
   channel NotificationChannel
@@ -3177,7 +3177,7 @@ model UsageEvent {
   id String @id @default(uuid(7)) @db.Uuid
 
   nom        String
-  userId     String? @map("utilisateur_id") @db.Uuid
+  userId     String? @map("user_id") @db.Uuid
   sessionId  String? @map("session_id") @db.Uuid
   proprietes Json?
 
@@ -3206,8 +3206,8 @@ model DailyAggregate {
 /// Statistiques de boutique par jour **et par origine** : sans l'origine, on ne
 /// sait pas si c'est le direct ou le catalogue qui vend, donc où investir.
 model ShopAggregate {
-  boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
-  boutiqueId String   @map("boutique_id") @db.Uuid
+  shop       Shop @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  shopId String   @map("shop_id") @db.Uuid
 
   jour    DateTime     @db.Date
   origine SaleOrigin
@@ -3219,7 +3219,7 @@ model ShopAggregate {
 
   calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
 
-  @@id([boutiqueId, jour, origine])
+  @@id([shopId, jour, origine])
   @@map("shop_aggregate")
 }
 
