@@ -257,7 +257,7 @@ describe('D4 — le cumul de promotions est impossible par la FORME de la table'
 describe('DP-15 — le barème est historisé, jamais modifié', () => {
   async function bareme(taux: number, univers = unique('u')): Promise<string> {
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO bareme_commission (id, universe_key, taux_pour_mille)
+      `INSERT INTO commission_schedule (id, universe_key, rate_per_mille)
        VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
       [univers, taux],
     );
@@ -269,14 +269,14 @@ describe('DP-15 — le barème est historisé, jamais modifié', () => {
     // plus prouver le taux qu'elle a subi (R-G3).
     const id = await bareme(80);
     await expect(
-      base.appli.query(`UPDATE bareme_commission SET taux_pour_mille = 120 WHERE id = $1`, [id]),
+      base.appli.query(`UPDATE commission_schedule SET rate_per_mille = 120 WHERE id = $1`, [id]),
     ).rejects.toMatchObject({ code: LEVEE_PLPGSQL });
   });
 
   it('clôturer une version passe — c’est la seule modification légitime', async () => {
     const id = await bareme(80);
     const { rowCount } = await base.appli.query(
-      `UPDATE bareme_commission SET fin_le = now() WHERE id = $1`,
+      `UPDATE commission_schedule SET ends_at = now() WHERE id = $1`,
       [id],
     );
     expect(rowCount).toBe(1);
@@ -294,7 +294,7 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     const b = await boutique();
     const poser = () =>
       base.appli.query(
-        `INSERT INTO abonnement_boutique (id, boutique_id, echeance_le)
+        `INSERT INTO shop_subscription (id, boutique_id, due_at)
          VALUES (gen_random_uuid(), $1, now() + interval '30 days')`,
         [b],
       );
@@ -307,7 +307,7 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     // modèle économique — invisible en relecture de code.
     await expect(
       base.appli.query(
-        `INSERT INTO abonnement_boutique (id, boutique_id, palier, montant, echeance_le)
+        `INSERT INTO shop_subscription (id, boutique_id, tier, amount, due_at)
          VALUES (gen_random_uuid(), $1, 'free', 50000, now() + interval '30 days')`,
         [await boutique()],
       ),

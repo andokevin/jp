@@ -110,40 +110,40 @@ enum SubscriptionTier {
   @@map("subscription_tier")
 }
 
-enum StatutAbonnementBoutique {
-  actif
-  en_retard
-  suspendu
-  resilie
+enum ShopSubscriptionStatus {
+  active
+  overdue
+  suspended
+  cancelled
 
-  @@map("statut_abonnement_boutique")
+  @@map("shop_subscription_status")
 }
 
-enum CanalNotification {
+enum NotificationChannel {
   push
   sms
   email
-  dans_app
+  in_app
 
-  @@map("canal_notification")
+  @@map("notification_channel")
 }
 
-enum StatutNotification {
-  en_attente
-  envoyee
-  echouee
-  lue
+enum NotificationStatus {
+  pending
+  sent
+  failed
+  read
 
-  @@map("statut_notification")
+  @@map("notification_status")
 }
 
-enum TypeMiseEnAvant {
-  fil
-  recherche
-  univers
-  evenement
+enum FeaturedType {
+  feed
+  search
+  universe
+  event
 
-  @@map("type_mise_en_avant")
+  @@map("featured_type")
 }
 
 enum StatutEcart {
@@ -421,27 +421,27 @@ enum ShipmentStatus {
   @@map("shipment_status")
 }
 
-enum TypeAbonnement {
-  boutique
-  createur
+enum SubscriptionType {
+  shop
+  creator
 
-  @@map("type_abonnement")
+  @@map("subscription_type")
 }
 
-enum StatutDirect {
-  planifie
-  en_cours
-  en_pause
-  termine
+enum LiveStatus {
+  scheduled
+  ongoing
+  paused
+  ended
 
-  @@map("statut_direct")
+  @@map("live_status")
 }
 
-enum StatutMessage {
-  publie
-  masque
+enum MessageStatus {
+  published
+  hidden
 
-  @@map("statut_message")
+  @@map("message_status")
 }
 
 /// Un événement JP rassemble plusieurs boutiques ; un événement de boutique
@@ -658,9 +658,9 @@ model User {
   paniers                 Panier[]
   questionsPosees         ArticleQuestion[]
   alertesStock            StockAlert[]
-  abonnementsSuivis       Abonnement[]             @relation("suiveur")
-  abonnes                 Abonnement[]             @relation("suivi")
-  messagesDirect          MessageDirect[]
+  abonnementsSuivis       Follow[]             @relation("suiveur")
+  abonnes                 Follow[]             @relation("suivi")
+  messagesDirect          LiveStreamMessage[]
   evenementsPossedes      Event[]              @relation("proprietaire_evenement")
   participations          EventParticipation[] @relation("participant")
   participationsDecidees  EventParticipation[] @relation("decideur_participation")
@@ -684,8 +684,8 @@ model User {
   blocagesSubis           UserBlock[]                @relation("bloque")
   motsBloques             BlockedWord[]
   clicsAffiliation        AffiliateClick[]
-  rangsClient             RangClient[]
-  notesClient             NoteClient[]
+  rangsClient             CustomerRank[]
+  notesClient             CustomerNote[]
   ventesConfirmees        ConfirmedSaleLog[]
   cagnotte                Cagnotte?
   mouvementsCagnotte      MouvementCagnotte[]
@@ -693,10 +693,10 @@ model User {
   looks                   Look[]
   paniersCadeauComposes   PanierCadeau[]           @relation("compositrice")
   notifications           Notification[]
-  compteursNotification   NotificationCompteur[]
-  preferencesNotification PreferenceNotification[]
-  adhesionClub            AdhesionClub?
-  liensPartage            LienPartage[]
+  compteursNotification   NotificationCounter[]
+  preferencesNotification NotificationPreference[]
+  adhesionClub            ClubMembership?
+  liensPartage            ShareLink[]
   documentsIdentite       DocumentIdentite[]
   identitesExternes       IdentiteExterne[]
   creatorProfile          CreatorProfile?
@@ -812,7 +812,7 @@ model Boutique {
   articles         Article[]
   extraits         ExtraitBoutique[]
   membres          MembreEquipe[]
-  directs          Direct[]
+  directs          LiveStream[]
   paliers          LoyaltyTier[]
   promotions       Promotion[]
   lignesVendues    OrderLine[]
@@ -820,11 +820,11 @@ model Boutique {
   expeditions      Shipment[]
   avis             Review[]
   score            TrustScore?
-  rangsClient      RangClient[]
-  notesClient      NoteClient[]
+  rangsClient      CustomerRank[]
+  notesClient      CustomerNote[]
   ventesConfirmees ConfirmedSaleLog[]
-  abonnements      AbonnementBoutique[]
-  misesEnAvant     MiseEnAvant[]
+  abonnements      ShopSubscription[]
+  misesEnAvant     Featured[]
   agregats         AgregatBoutique[]
 
   @@index([statutVerification])
@@ -1122,14 +1122,14 @@ model Article {
 
   variantes      Variant[]
   questions      ArticleQuestion[]
-  directs        DirectArticle[]
+  directs        LiveStreamArticle[]
   contenus       ContentArticle[]
   avis           Review[]
   selections     SelectionArticle[]
   clics          AffiliateClick[]
   precommande    Preorder?
   piecesDressing PieceDressing[]
-  aLecranDans    Direct[]           @relation("article_a_lecran")
+  aLecranDans    LiveStream[]           @relation("article_a_lecran")
 
   @@index([boutiqueId, status])
   @@index([expiryDate])
@@ -1235,7 +1235,7 @@ model LignePanier {
 ///
 /// Elle n'est **pas** rattachée à un direct : elle existe avant lui, et elle
 /// survit s'il est annulé. Le lien vers `direct` viendra avec le domaine
-/// Direct, en colonne facultative.
+/// LiveStream, en colonne facultative.
 model ExtraitBoutique {
   id String @id @default(uuid(7)) @db.Uuid
 
@@ -1255,7 +1255,7 @@ model ExtraitBoutique {
   /// `NULL` = brouillon, jamais montré.
   /// Le direct annoncé, s'il y en a un. **Facultatif** : l'extrait existe
   /// avant lui, et il survit s'il est annulé.
-  direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
+  direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("direct_id") @db.Uuid
 
   publieLe   DateTime? @map("publie_le") @db.Timestamptz(6)
@@ -1546,122 +1546,122 @@ model StockAlert {
 
 /// Suivre une boutique ou une créatrice. Clé primaire composite : on ne peut
 /// pas suivre deux fois la même personne, la base l'interdit.
-model Abonnement {
-  suiveur   User   @relation("suiveur", fields: [suiveurId], references: [id], onDelete: Restrict)
-  suiveurId String @map("suiveur_id") @db.Uuid
+model Follow {
+  follower   User   @relation("suiveur", fields: [followerId], references: [id], onDelete: Restrict)
+  followerId String @map("follower_id") @db.Uuid
 
-  suivi   User   @relation("suivi", fields: [suiviId], references: [id], onDelete: Restrict)
-  suiviId String @map("suivi_id") @db.Uuid
+  followed   User   @relation("suivi", fields: [followedId], references: [id], onDelete: Restrict)
+  followedId String @map("followed_id") @db.Uuid
 
-  type               TypeAbonnement
+  type               SubscriptionType
   /// Réglage **par boutique** et non global (R-Q6) : couper les promotions
   /// d'une boutique bavarde ne doit pas couper celles des autres.
-  notificationsPromo Boolean        @default(true) @map("notifications_promo")
+  promoNotifications Boolean @default(true) @map("promo_notifications")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@id([suiveurId, suiviId])
-  @@index([suiviId, creeLe])
-  @@map("abonnement")
+  @@id([followerId, followedId])
+  @@index([followedId, createdAt])
+  @@map("follow")
 }
 
 /// La diffusion en direct.
-model Direct {
+model LiveStream {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  titre      String
-  afficheUrl String?      @map("affiche_url")
-  statut     StatutDirect @default(planifie)
+  title     String
+  posterUrl String?    @map("poster_url")
+  status    LiveStatus @default(scheduled)
 
-  debutPrevuLe DateTime  @map("debut_prevu_le") @db.Timestamptz(6)
-  debutLe      DateTime? @map("debut_le") @db.Timestamptz(6)
-  finLe        DateTime? @map("fin_le") @db.Timestamptz(6)
+  scheduledStartAt DateTime  @map("scheduled_start_at") @db.Timestamptz(6)
+  startedAt        DateTime? @map("started_at") @db.Timestamptz(6)
+  endedAt          DateTime? @map("ended_at") @db.Timestamptz(6)
 
-  ingestRef         String? @map("ingest_ref")
-  lectureUrl        String? @map("lecture_url")
-  enregistrementUrl String? @map("enregistrement_url")
+  ingestRef    String? @map("ingest_ref")
+  playbackUrl  String? @map("playback_url")
+  recordingUrl String? @map("recording_url")
 
   /// L'article montré à l'instant. C'est lui qui pilote le « Je prends ».
-  articleALecran   Article? @relation("article_a_lecran", fields: [articleALecranId], references: [id], onDelete: SetNull)
-  articleALecranId String?  @map("article_a_lecran_id") @db.Uuid
+  onscreenArticle   Article? @relation("article_a_lecran", fields: [onscreenArticleId], references: [id], onDelete: SetNull)
+  onscreenArticleId String?  @map("onscreen_article_id") @db.Uuid
 
-  nbSpectateursPic    Int     @default(0) @map("nb_spectateurs_pic")
-  rediffusionFacebook Boolean @default(false) @map("rediffusion_facebook")
+  peakViewerCount     Int     @default(0) @map("peak_viewer_count")
+  facebookRebroadcast Boolean @default(false) @map("facebook_rebroadcast")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  articles     DirectArticle[]
-  messages     MessageDirect[]
+  articles     LiveStreamArticle[]
+  messages     LiveStreamMessage[]
   reservations Reservation[]
   commandes    SalesOrder[]
-  bilan        DirectBilan?
+  bilan        LiveStreamReport?
   extraits     ExtraitBoutique[]
 
-  @@index([boutiqueId, debutPrevuLe])
-  @@index([statut, debutPrevuLe])
-  @@map("direct")
+  @@index([boutiqueId, scheduledStartAt])
+  @@index([status, scheduledStartAt])
+  @@map("live_stream")
 }
 
 /// Les articles préparés pour un direct.
-model DirectArticle {
-  direct   Direct @relation(fields: [directId], references: [id], onDelete: Restrict)
-  directId String @map("direct_id") @db.Uuid
+model LiveStreamArticle {
+  liveStream   LiveStream @relation(fields: [liveStreamId], references: [id], onDelete: Restrict)
+  liveStreamId String     @map("live_stream_id") @db.Uuid
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict)
   articleId String  @map("article_id") @db.Uuid
 
-  position  Int       @default(0)
+  position   Int       @default(0)
   /// **Rend le replay achetable gratuit** (F2.16) : les marqueurs à la minute
   /// sont produits par l'usage, sans aucune saisie manuelle.
-  aLecranLe DateTime? @map("a_lecran_le") @db.Timestamptz(6)
+  onscreenAt DateTime? @map("onscreen_at") @db.Timestamptz(6)
 
-  @@id([directId, articleId])
-  @@map("direct_article")
+  @@id([liveStreamId, articleId])
+  @@map("live_stream_article")
 }
 
-model MessageDirect {
+model LiveStreamMessage {
   id String @id @default(uuid(7)) @db.Uuid
 
-  direct   Direct @relation(fields: [directId], references: [id], onDelete: Restrict)
-  directId String @map("direct_id") @db.Uuid
+  liveStream   LiveStream @relation(fields: [liveStreamId], references: [id], onDelete: Restrict)
+  liveStreamId String     @map("live_stream_id") @db.Uuid
 
-  auteur   User   @relation(fields: [auteurId], references: [id], onDelete: Restrict)
-  auteurId String @map("auteur_id") @db.Uuid
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  authorId String @map("author_id") @db.Uuid
 
-  texte       String
-  statut      StatutMessage @default(publie)
-  epingle     Boolean       @default(false)
+  text      String
+  status    MessageStatus @default(published)
+  pinned    Boolean       @default(false)
   /// Message posté par le système — « il reste 2 pièces » (F12.2).
-  automatique Boolean       @default(false)
+  automated Boolean       @default(false)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([directId, creeLe])
-  @@map("message_direct")
+  @@index([liveStreamId, createdAt])
+  @@map("live_stream_message")
 }
 
-/// Le bilan d'un direct. `articlesSansVente` est le signal le plus utile :
+/// Le bilan d'un direct. `unsoldArticles` est le signal le plus utile :
 /// un article montré et jamais pris est presque toujours un prix trop haut.
-model DirectBilan {
-  direct   Direct @relation(fields: [directId], references: [id], onDelete: Restrict)
-  directId String @id @map("direct_id") @db.Uuid
+model LiveStreamReport {
+  liveStream   LiveStream @relation(fields: [liveStreamId], references: [id], onDelete: Restrict)
+  liveStreamId String     @id @map("live_stream_id") @db.Uuid
 
-  dureeS             Int     @default(0) @map("duree_s")
-  spectateursUniques Int     @default(0) @map("spectateurs_uniques")
-  picAudience        Int     @default(0) @map("pic_audience")
-  nbVendus           Int     @default(0) @map("nb_vendus")
-  ca                 Int     @default(0)
-  tauxConversion     Decimal @default(0) @map("taux_conversion") @db.Decimal(5, 4)
-  nbExpirees         Int     @default(0) @map("nb_expirees")
-  articlesSansVente  Json?   @map("articles_sans_vente")
+  durationS       Int     @default(0) @map("duration_s")
+  uniqueViewers   Int     @default(0) @map("unique_viewers")
+  peakAudience    Int     @default(0) @map("peak_audience")
+  soldCount       Int     @default(0) @map("sold_count")
+  revenue         Int     @default(0)
+  conversionRate  Decimal @default(0) @map("conversion_rate") @db.Decimal(5, 4)
+  expiredCount    Int     @default(0) @map("expired_count")
+  unsoldArticles  Json?   @map("unsold_articles")
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@map("direct_bilan")
+  @@map("live_stream_report")
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -1811,7 +1811,7 @@ model LoyaltyTier {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   promotionsReservees Promotion[]  @relation("palier_min")
-  rangsClient         RangClient[]
+  rangsClient         CustomerRank[]
 
   @@unique([boutiqueId, rankOrder])
   @@map("loyalty_tier")
@@ -1900,7 +1900,7 @@ model Reservation {
   status ReservationStatus @default(active)
   origin SaleOrigin        @default(catalogue)
 
-  direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
+  direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("direct_id") @db.Uuid
 
   /// Le rang dans la file d'attente (R-S7). Quand une réservation expire, c'est
@@ -1976,7 +1976,7 @@ model SalesOrder {
   evenement   Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
   eventId String?    @map("event_id") @db.Uuid
 
-  direct   Direct? @relation(fields: [directId], references: [id], onDelete: SetNull)
+  direct   LiveStream? @relation(fields: [directId], references: [id], onDelete: SetNull)
   directId String? @map("direct_id") @db.Uuid
 
   /// La commande cadeau (RB8). **Une référence, pas une clé étrangère** : le
@@ -2771,7 +2771,7 @@ model ConfirmedSaleLog {
   @@map("confirmed_sale_log")
 }
 
-model RangClient {
+model CustomerRank {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
@@ -2780,40 +2780,40 @@ model RangClient {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  palier   LoyaltyTier? @relation(fields: [palierId], references: [id], onDelete: SetNull)
-  palierId String?         @map("palier_id") @db.Uuid
+  tier   LoyaltyTier? @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  tierId String?      @map("tier_id") @db.Uuid
 
-  score         Int @default(0)
-  montantCumule Int @default(0) @map("montant_cumule")
-  nbCommandes   Int @default(0) @map("nb_commandes")
+  score        Int @default(0)
+  totalAmount  Int @default(0) @map("total_amount")
+  orderCount   Int @default(0) @map("order_count")
 
-  derniereCommandeLe DateTime? @map("derniere_commande_le") @db.Timestamptz(6)
-  nbLitigesPerdus    Int       @default(0) @map("nb_litiges_perdus")
-  nbAnnulations      Int       @default(0) @map("nb_annulations")
+  lastOrderAt         DateTime? @map("last_order_at") @db.Timestamptz(6)
+  lostDisputesCount   Int       @default(0) @map("lost_disputes_count")
+  cancellationsCount  Int       @default(0) @map("cancellations_count")
 
-  calculeLe DateTime @default(now()) @map("calcule_le") @db.Timestamptz(6)
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(6)
 
   @@unique([boutiqueId, userId])
   @@index([boutiqueId, score])
-  @@index([boutiqueId, derniereCommandeLe])
-  @@map("rang_client")
+  @@index([boutiqueId, lastOrderAt])
+  @@map("customer_rank")
 }
 
 /// **Jamais visible du client.** C'est une note interne de boutique ; la rendre
 /// visible transformerait un outil de suivi en insulte publique.
-model NoteClient {
+model CustomerNote {
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  texte String
+  text String
 
-  majLe DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@id([boutiqueId, userId])
-  @@map("note_client")
+  @@map("customer_note")
 }
 
 /// `solde` est **dérivé** des mouvements. Il est stocké pour l'affichage, et un
@@ -2940,96 +2940,96 @@ model PanierCadeau {
 /// L'abonnement d'une boutique. Les quotas sont **dans la ligne**, pas dans le
 /// code : c'est ce qui permet d'ajuster un palier pendant le pilote sans
 /// déploiement, et de faire une exception nominative sans forker le code.
-model AbonnementBoutique {
+model ShopSubscription {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  palier SubscriptionTier         @default(gratuit)
-  statut StatutAbonnementBoutique @default(actif)
+  tier   SubscriptionTier       @default(free)
+  status ShopSubscriptionStatus @default(active)
 
   /// Portent R-B4. `NULL` = illimité.
-  quotaVentes  Int? @map("quota_ventes")
-  quotaDirects Int? @map("quota_directs")
+  salesQuota      Int? @map("sales_quota")
+  liveStreamQuota Int? @map("live_stream_quota")
 
   /// **Entier en Ariary** (D6). Zéro pour le palier gratuit.
-  montant Int @default(0)
+  amount Int @default(0)
 
-  debutLe    DateTime  @default(now()) @map("debut_le") @db.Timestamptz(6)
-  echeanceLe DateTime  @map("echeance_le") @db.Timestamptz(6)
-  resilieLe  DateTime? @map("resilie_le") @db.Timestamptz(6)
+  startsAt    DateTime  @default(now()) @map("starts_at") @db.Timestamptz(6)
+  dueAt       DateTime  @map("due_at") @db.Timestamptz(6)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
-  majLe  DateTime @default(now()) @updatedAt @map("maj_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([boutiqueId, statut])
-  @@index([statut, echeanceLe])
-  @@map("abonnement_boutique")
+  @@index([boutiqueId, status])
+  @@index([status, dueAt])
+  @@map("shop_subscription")
 }
 
 /// JP Club, côté acheteuse : livraison offerte au-dessus d'un seuil.
-model AdhesionClub {
+model ClubMembership {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @id @map("utilisateur_id") @db.Uuid
 
-  montant      Int
-  seuilOffert  Int      @map("seuil_offert")
-  debutLe      DateTime @default(now()) @map("debut_le") @db.Timestamptz(6)
-  echeanceLe   DateTime @map("echeance_le") @db.Timestamptz(6)
-  reconduction Boolean  @default(false)
+  amount                Int
+  freeShippingThreshold Int      @map("free_shipping_threshold")
+  startsAt              DateTime @default(now()) @map("starts_at") @db.Timestamptz(6)
+  dueAt                 DateTime @map("due_at") @db.Timestamptz(6)
+  autoRenew             Boolean  @default(false) @map("auto_renew")
 
-  @@index([echeanceLe])
-  @@map("adhesion_club")
+  @@index([dueAt])
+  @@map("club_membership")
 }
 
 /// Emplacements payés. **La mention « Sponsorisé » est obligatoire** — c'est
 /// une règle de loyauté, pas une préférence d'affichage.
-model MiseEnAvant {
+model Featured {
   id String @id @default(uuid(7)) @db.Uuid
 
   boutique   Boutique @relation(fields: [boutiqueId], references: [id], onDelete: Restrict)
   boutiqueId String   @map("boutique_id") @db.Uuid
 
-  type      TypeMiseEnAvant
-  cibleType String          @map("cible_type")
-  cibleId   String          @map("cible_id") @db.Uuid
+  type       FeaturedType
+  targetType String       @map("target_type")
+  targetId   String       @map("target_id") @db.Uuid
 
-  montant Int
-  debutLe DateTime @map("debut_le") @db.Timestamptz(6)
-  finLe   DateTime @map("fin_le") @db.Timestamptz(6)
+  amount   Int
+  startsAt DateTime @map("starts_at") @db.Timestamptz(6)
+  endsAt   DateTime @map("ends_at") @db.Timestamptz(6)
 
   impressions Int @default(0)
-  clics       Int @default(0)
+  clicks      Int @default(0)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([type, debutLe, finLe])
-  @@map("mise_en_avant")
+  @@index([type, startsAt, endsAt])
+  @@map("featured")
 }
 
 /// Liens courts et attribution — **le canal d'acquisition principal.** Un
 /// partage WhatsApp qu'on ne sait pas attribuer est un budget qu'on ne sait pas
 /// juger.
-model LienPartage {
+model ShareLink {
   id   String @id @default(uuid(7)) @db.Uuid
   code String @unique
 
-  createur   User?   @relation(fields: [createurId], references: [id], onDelete: Restrict)
-  createurId String? @map("createur_id") @db.Uuid
+  creator   User?   @relation(fields: [creatorId], references: [id], onDelete: Restrict)
+  creatorId String? @map("creator_id") @db.Uuid
 
-  cibleType String  @map("cible_type")
-  cibleId   String  @map("cible_id") @db.Uuid
-  canal     String?
+  targetType String  @map("target_type")
+  targetId   String  @map("target_id") @db.Uuid
+  channel    String?
 
-  clics        Int @default(0)
-  inscriptions Int @default(0)
-  commandes    Int @default(0)
+  clicks  Int @default(0)
+  signups Int @default(0)
+  orders  Int @default(0)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([cibleType, cibleId])
-  @@map("lien_partage")
+  @@index([targetType, targetId])
+  @@map("share_link")
 }
 
 /// Conversion **indicative**. `constateLe` existe pour qu'aucun taux périmé ne
@@ -3053,59 +3053,59 @@ model TauxChange {
 model Notification {
   id String @id @default(uuid(7)) @db.Uuid
 
-  destinataire   User   @relation(fields: [destinataireId], references: [id], onDelete: Restrict)
-  destinataireId String @map("destinataire_id") @db.Uuid
+  recipient   User   @relation(fields: [recipientId], references: [id], onDelete: Restrict)
+  recipientId String @map("recipient_id") @db.Uuid
 
-  type   String
-  canal  CanalNotification
-  statut StatutNotification @default(en_attente)
+  type    String
+  channel NotificationChannel
+  status  NotificationStatus @default(pending)
 
-  titre   String
-  corps   String
-  donnees Json?
+  title String
+  body  String
+  data  Json?
 
-  emetteurId String? @map("emetteur_id") @db.Uuid
+  senderId String? @map("sender_id") @db.Uuid
 
-  envoyeeLe DateTime? @map("envoyee_le") @db.Timestamptz(6)
-  lueLe     DateTime? @map("lue_le") @db.Timestamptz(6)
-  creeLe    DateTime  @default(now()) @map("cree_le") @db.Timestamptz(6)
+  sentAt    DateTime? @map("sent_at") @db.Timestamptz(6)
+  readAt    DateTime? @map("read_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([destinataireId, creeLe])
-  @@index([statut, creeLe])
+  @@index([recipientId, createdAt])
+  @@index([status, createdAt])
   @@map("notification")
 }
 
 /// **Les plafonds** (R-U4, R-W9). La clé primaire porte le jour : le compteur
 /// se remet à zéro par le simple fait de changer de date, sans tâche de purge
 /// et sans fenêtre glissante à recalculer.
-model NotificationCompteur {
+model NotificationCounter {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  emetteurId String   @map("emetteur_id") @db.Uuid
-  type       String
-  jour       DateTime @db.Date
+  senderId String   @map("sender_id") @db.Uuid
+  type     String
+  day      DateTime @db.Date
 
-  compte Int @default(0)
+  count Int @default(0)
 
-  @@id([userId, emetteurId, type, jour])
-  @@map("notification_compteur")
+  @@id([userId, senderId, type, day])
+  @@map("notification_counter")
 }
 
 /// Réglages par type. **Les notifications critiques ne sont pas
 /// désactivables** — une commande payée, un litige ouvert : couper ces
 /// messages-là nuirait à la personne qui les coupe.
-model PreferenceNotification {
+model NotificationPreference {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   userId String @map("utilisateur_id") @db.Uuid
 
-  type  String
-  canal CanalNotification
+  type    String
+  channel NotificationChannel
 
-  actif Boolean @default(true)
+  enabled Boolean @default(true)
 
-  @@id([userId, type, canal])
-  @@map("preference_notification")
+  @@id([userId, type, channel])
+  @@map("notification_preference")
 }
 
 /// Les SMS **et leur coût** : c'est une ligne de dépense à suivre, pas un
@@ -3115,15 +3115,15 @@ model NotificationSms {
 
   notificationId String? @map("notification_id") @db.Uuid
   msisdn         String
-  operateur      String?
+  operator       String?
 
-  statut     StatutNotification @default(en_attente)
-  coutAriary Int                @default(0) @map("cout_ariary")
+  status     NotificationStatus @default(pending)
+  costAriary Int                @default(0) @map("cost_ariary")
   reference  String?
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([creeLe])
+  @@index([createdAt])
   @@map("notification_sms")
 }
 
@@ -3228,21 +3228,21 @@ model AgregatBoutique {
 /// Jamais d'`UPDATE` : une nouvelle version à chaque changement. C'est ce qui
 /// permet à une commande de garder son taux (R-G3) — le barème dit ce qui
 /// s'appliquait à une date, il ne dit pas ce qui s'applique aujourd'hui.
-model BaremeCommission {
+model CommissionSchedule {
   id String @id @default(uuid(7)) @db.Uuid
 
   universeKey String           @map("universe_key")
-  palier      SubscriptionTier @default(gratuit)
+  tier        SubscriptionTier @default(free)
 
   /// En pour mille. 80 = 8 % (D6).
-  tauxPourMille Int @map("taux_pour_mille")
+  ratePerMille Int @map("rate_per_mille")
 
-  /// La version en vigueur est celle dont `finLe` est `NULL`.
-  debutLe DateTime  @default(now()) @map("debut_le") @db.Timestamptz(6)
-  finLe   DateTime? @map("fin_le") @db.Timestamptz(6)
+  /// La version en vigueur est celle dont `endsAt` est `NULL`.
+  startsAt DateTime  @default(now()) @map("starts_at") @db.Timestamptz(6)
+  endsAt   DateTime? @map("ends_at") @db.Timestamptz(6)
 
-  creeLe DateTime @default(now()) @map("cree_le") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([universeKey, palier, debutLe])
-  @@map("bareme_commission")
+  @@index([universeKey, tier, startsAt])
+  @@map("commission_schedule")
 }
