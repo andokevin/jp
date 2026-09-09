@@ -127,7 +127,7 @@ export function useAuthOtp(options: FlowOptions) {
         const session = await ref.current.client.verifyCode({
           email: state.email.trim(),
           code: assembledCode(state.boxes),
-          ...(prenom ? { prenom: prenom.trim() } : {}),
+          ...(prenom ? { firstName: prenom.trim() } : {}),
         });
         dispatch({ type: 'sessionOpened', session });
         if (session.user.firstName !== null) ref.current.onSession?.(session);

@@ -61,12 +61,12 @@ describe('le travailleur de référence', () => {
     // On appelle le traitement DEUX fois, comme BullMQ le ferait après une
     // redistribution.
     const faux = (n: number) =>
-      ({ data: { cleMetier: cle, cibleId: 'c1' }, attemptsMade: n }) as never;
+      ({ data: { cleMetier: cle, targetId: 'c1' }, attemptsMade: n }) as never;
     await traitement(faux(0));
     await traitement(faux(1));
 
-    const n = await base.prisma.journalAudit.count({
-      where: { action: 'socle.reference.traite', cibleId: cle },
+    const n = await base.prisma.auditLog.count({
+      where: { action: 'socle.reference.traite', targetId: cle },
     });
     expect(n).toBe(1); // ← la garantie
   });
@@ -75,7 +75,7 @@ describe('le travailleur de référence', () => {
     const cle = `tue-${crypto.randomUUID()}`;
     const nomFile = 'reconciliation';
     const q = new Queue(nomFile, { connection: connexion });
-    await q.add('reference', { cleMetier: cle, cibleId: 'c2' }, { jobId: cle, attempts: 3 });
+    await q.add('reference', { cleMetier: cle, targetId: 'c2' }, { jobId: cle, attempts: 3 });
 
     // Premier travailleur : il commence, puis on le TUE avant qu'il n'accuse
     // réception. BullMQ redistribuera le travail.
@@ -109,8 +109,8 @@ describe('le travailleur de référence', () => {
     });
     await survivant.close();
 
-    const n = await base.prisma.journalAudit.count({
-      where: { action: 'socle.reference.traite', cibleId: cle },
+    const n = await base.prisma.auditLog.count({
+      where: { action: 'socle.reference.traite', targetId: cle },
     });
     expect(n).toBe(1); // ← l'effet ne s'est produit QU'UNE FOIS
     await q.obliterate({ force: true });
@@ -122,14 +122,14 @@ describe('réconciliation au démarrage — S5.3', () => {
   it('retrouve le travail en souffrance DEPUIS LA BASE, pas depuis Redis', async () => {
     // Redis peut avoir perdu des travaux, ou en porter d'obsolètes. La base,
     // elle, sait ce qui n'a pas été traité (D2).
-    await base.prisma.cleIdempotence.create({
+    await base.prisma.idempotencyKey.create({
       data: {
-        cle: `souffrance-${crypto.randomUUID()}`,
-        methode: 'POST',
-        chemin: '/x',
-        empreinteRequete: 'abc',
-        creeLe: new Date(Date.now() - 10 * 60_000), // vieille de 10 min
-        expireLe: new Date(Date.now() + 3_600_000),
+        key: `souffrance-${crypto.randomUUID()}`,
+        method: 'POST',
+        path: '/x',
+        requestFingerprint: 'abc',
+        createdAt: new Date(Date.now() - 10 * 60_000), // vieille de 10 min
+        expiresAt: new Date(Date.now() + 3_600_000),
       },
     });
 
@@ -143,13 +143,13 @@ describe('réconciliation au démarrage — S5.3', () => {
 
   it('ignore ce qui est récent — une requête en cours n’est pas en souffrance', async () => {
     const cle = `recente-${crypto.randomUUID()}`;
-    await base.prisma.cleIdempotence.create({
+    await base.prisma.idempotencyKey.create({
       data: {
-        cle,
-        methode: 'POST',
-        chemin: '/x',
-        empreinteRequete: 'abc',
-        expireLe: new Date(Date.now() + 3_600_000),
+        key: cle,
+        method: 'POST',
+        path: '/x',
+        requestFingerprint: 'abc',
+        expiresAt: new Date(Date.now() + 3_600_000),
       },
     });
     const empilees: string[] = [];

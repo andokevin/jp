@@ -15,10 +15,10 @@ export const depot = {
    * effacerait le catalogue serait irréversible pour un geste réversible.
    */
   async basculerOuverture(db: PrismaClient, cle: string, ouvert: boolean) {
-    return db.univers.update({ where: { cle }, data: { ouvert } });
+    return db.universe.update({ where: { key: cle }, data: { isOpen: ouvert } });
   },
 
   async changerCommission(db: PrismaClient, cle: string, pourMille: number) {
-    return db.univers.update({ where: { cle }, data: { commissionPourMille: pourMille } });
+    return db.universe.update({ where: { key: cle }, data: { commissionPerMille: pourMille } });
   },
 } as const;

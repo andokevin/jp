@@ -35,8 +35,8 @@ export function traiterReference(db: PrismaClient) {
     // ── 1. A-t-on DÉJÀ fait ce travail ? ─────────────────────────────────
     // La marque est en base, pas en mémoire ni dans Redis : elle doit
     // survivre au redémarrage du travailleur.
-    const dejaFait = await db.journalAudit.findFirst({
-      where: { action: 'socle.reference.traite', cibleId: cleMetier },
+    const dejaFait = await db.auditLog.findFirst({
+      where: { action: 'socle.reference.traite', targetId: cleMetier },
       select: { id: true },
     });
     if (dejaFait) return; // rejeu : on ne refait rien, et on ne se plaint pas
@@ -48,7 +48,7 @@ export function traiterReference(db: PrismaClient) {
     await journaliser(db, {
       action: 'socle.reference.traite',
       cibleType: 'reference',
-      cibleId: cleMetier,
+      targetId: cleMetier,
       apres: { cibleId, essai: job.attemptsMade + 1 },
     });
   };
@@ -72,11 +72,11 @@ export async function reconcilier(
   // Ici, un vrai domaine ferait : « les lignes dont l'état demande un travail
   // et pour lesquelles aucune marque n'existe ». On empile ce qui manque, en
   // s'appuyant sur la clé métier pour ne pas créer de doublon.
-  const enSouffrance = await db.cleIdempotence.findMany({
-    where: { statut: null, creeLe: { lt: new Date(Date.now() - 5 * 60_000) } },
-    select: { cle: true },
+  const enSouffrance = await db.idempotencyKey.findMany({
+    where: { status: null, createdAt: { lt: new Date(Date.now() - 5 * 60_000) } },
+    select: { key: true },
     take: 500,
   });
-  for (const { cle } of enSouffrance) await empilerManquant(cle);
+  for (const { key } of enSouffrance) await empilerManquant(key);
   return enSouffrance.length;
 }

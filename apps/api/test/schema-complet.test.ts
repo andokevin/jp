@@ -31,7 +31,7 @@ function unique(prefixe: string): string {
 
 async function utilisateur(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO utilisateur (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
+    `INSERT INTO app_user (id, email) VALUES (gen_random_uuid(), $1) RETURNING id`,
     [`${unique('u')}@jp.mg`],
   );
   return rows[0]!.id;
@@ -39,7 +39,7 @@ async function utilisateur(): Promise<string> {
 
 async function boutique(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO boutique (id, utilisateur_id, nom, slug)
+    `INSERT INTO shop (id, user_id, name, slug)
      VALUES (gen_random_uuid(), $1, 'B', $2) RETURNING id`,
     [await utilisateur(), unique('slug')],
   );
@@ -48,7 +48,7 @@ async function boutique(): Promise<string> {
 
 async function article(): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, univers_cle, nom, prix_ariary)
+    `INSERT INTO article (id, shop_id, universe_key, name, price_ariary)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 40000) RETURNING id`,
     [await boutique()],
   );
@@ -57,7 +57,7 @@ async function article(): Promise<string> {
 
 async function commande(acheteurId?: string): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO commande (id, numero, acheteur_id, univers_cle, sous_total, total)
+    `INSERT INTO sales_order (id, numero, buyer_id, universe_key, subtotal, total)
      VALUES (gen_random_uuid(), $1, $2, 'mode', 40000, 40000) RETURNING id`,
     [unique('CMD'), acheteurId ?? (await utilisateur())],
   );
@@ -71,8 +71,8 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
     // immédiat refuserait une transaction pourtant valide.
     await base.appli.query('BEGIN');
     await base.appli.query(
-      `INSERT INTO contenu (id, auteur_id, type, media_url, statut)
-       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'publie')`,
+      `INSERT INTO content (id, author_id, type, media_url, status)
+       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'published')`,
       [await utilisateur()],
     );
     await expect(base.appli.query('COMMIT')).rejects.toMatchObject({ code: LEVEE_PLPGSQL });
@@ -86,11 +86,11 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
     const art = await article();
     await base.appli.query('BEGIN');
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO contenu (id, auteur_id, type, media_url, statut)
-       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'publie') RETURNING id`,
+      `INSERT INTO content (id, author_id, type, media_url, status)
+       VALUES (gen_random_uuid(), $1, 'clip', 'video://x', 'published') RETURNING id`,
       [auteur],
     );
-    await base.appli.query(`INSERT INTO contenu_article (contenu_id, article_id) VALUES ($1, $2)`, [
+    await base.appli.query(`INSERT INTO content_article (content_id, article_id) VALUES ($1, $2)`, [
       rows[0]!.id,
       art,
     ]);
@@ -99,8 +99,8 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
 
   it('un brouillon sans article passe — la règle ne porte que sur le publié', async () => {
     const { rowCount } = await base.appli.query(
-      `INSERT INTO contenu (id, auteur_id, type, media_url, statut)
-       VALUES (gen_random_uuid(), $1, 'photo', 'img://x', 'brouillon')`,
+      `INSERT INTO content (id, author_id, type, media_url, status)
+       VALUES (gen_random_uuid(), $1, 'photo', 'img://x', 'draft')`,
       [await utilisateur()],
     );
     expect(rowCount).toBe(1);
@@ -109,7 +109,7 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
   it('un déballage sans commande source est refusé (R-K2)', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO contenu (id, auteur_id, type, media_url)
+        `INSERT INTO content (id, author_id, type, media_url)
          VALUES (gen_random_uuid(), $1, 'unboxing', 'video://x')`,
         [await utilisateur()],
       ),
@@ -117,15 +117,15 @@ describe('RB5 — un contenu publié porte au moins un article', () => {
   });
 });
 
-describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', () => {
-  it('`compte_dans_le_score` ne peut pas diverger du statut', async () => {
+describe('order_dispute — le compteur EST la sanction (R-T8, DP-05)', () => {
+  it('`counts_in_score` ne peut pas diverger du statut', async () => {
     // Depuis DP-07 il n'y a plus ni séquestre ni arbitre : si ce booléen peut
     // mentir, un signalement ouvert cesse d'avoir la moindre conséquence.
     await expect(
       base.appli.query(
-        `INSERT INTO signalement_commande
-           (id, commande_id, ouvert_par_id, univers_cle, motif, statut, compte_dans_le_score)
-         VALUES (gen_random_uuid(), $1, $2, 'mode', 'non_recu', 'ouvert', false)`,
+        `INSERT INTO order_dispute
+           (id, order_id, opened_by_id, universe_key, reason, status, counts_in_score)
+         VALUES (gen_random_uuid(), $1, $2, 'mode', 'not_received', 'open', false)`,
         [await commande(), await utilisateur()],
       ),
     ).rejects.toMatchObject({ constraint: 'compteur_coherent' });
@@ -134,7 +134,7 @@ describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', (
   it("l'instruction a disparu : plus de colonne `decide_par_id`", async () => {
     const { rows } = await base.appli.query(
       `SELECT column_name FROM information_schema.columns
-       WHERE table_name = 'signalement_commande'
+       WHERE table_name = 'order_dispute'
          AND column_name IN ('decide_par_id', 'decision_texte', 'affecte_a_id')`,
     );
     expect(rows).toHaveLength(0);
@@ -143,28 +143,28 @@ describe('signalement_commande — le compteur EST la sanction (R-T8, DP-05)', (
   it('RB4 a déménagé : une sanction sans motif écrit est refusée', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO sanction (id, utilisateur_id, type, motif_texte, applique_par_id)
-         VALUES (gen_random_uuid(), $1, 'avertissement', '   ', $2)`,
+        `INSERT INTO sanction (id, user_id, type, reason_text, applied_by_id)
+         VALUES (gen_random_uuid(), $1, 'warning', '   ', $2)`,
         [await utilisateur(), await utilisateur()],
       ),
     ).rejects.toMatchObject({ constraint: 'sanction_motif_ecrit' });
   });
 });
 
-describe('ecriture_financiere — le cœur de la conformité (C4, D3)', () => {
+describe('ledger_entry — le cœur de la conformité (C4, D3)', () => {
   it('jp_app peut insérer', async () => {
     const { rowCount } = await base.appli.query(
-      `INSERT INTO ecriture_financiere (id, type, montant, sens, compte)
-       VALUES (gen_random_uuid(), 'essai', 1000, 'credit', 'boutique')`,
+      `INSERT INTO ledger_entry (id, type, amount, direction, account)
+       VALUES (gen_random_uuid(), 'essai', 1000, 'credit', 'shop')`,
     );
     expect(rowCount).toBe(1);
   });
 
   it('jp_app ne peut ni modifier ni supprimer', async () => {
     await expect(
-      base.appli.query(`UPDATE ecriture_financiere SET montant = 1`),
+      base.appli.query(`UPDATE ledger_entry SET amount = 1`),
     ).rejects.toMatchObject({ code: DROITS_REFUSES });
-    await expect(base.appli.query(`DELETE FROM ecriture_financiere`)).rejects.toMatchObject({
+    await expect(base.appli.query(`DELETE FROM ledger_entry`)).rejects.toMatchObject({
       code: DROITS_REFUSES,
     });
   });
@@ -172,8 +172,8 @@ describe('ecriture_financiere — le cœur de la conformité (C4, D3)', () => {
   it('un montant nul est refusé — une écriture de zéro ne trace rien', async () => {
     await expect(
       base.appli.query(
-        `INSERT INTO ecriture_financiere (id, type, montant, sens, compte)
-         VALUES (gen_random_uuid(), 'essai', 0, 'debit', 'commission_jp')`,
+        `INSERT INTO ledger_entry (id, type, amount, direction, account)
+         VALUES (gen_random_uuid(), 'essai', 0, 'debit', 'jp_commission')`,
       ),
     ).rejects.toMatchObject({ constraint: 'ecriture_montant_positif' });
   });
@@ -182,7 +182,7 @@ describe('ecriture_financiere — le cœur de la conformité (C4, D3)', () => {
 describe('réservation — ce qui porte RB1', () => {
   async function variante(stock = 5): Promise<string> {
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
       [await article(), stock],
     );
@@ -194,7 +194,7 @@ describe('réservation — ce qui porte RB1', () => {
     // ni payer ni libérer.
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variante_id, expire_le)
+        `INSERT INTO reservation (id, variant_id, expires_at)
          VALUES (gen_random_uuid(), $1, now() + interval '10 min')`,
         [await variante()],
       ),
@@ -202,7 +202,7 @@ describe('réservation — ce qui porte RB1', () => {
 
     await expect(
       base.appli.query(
-        `INSERT INTO reservation (id, variante_id, utilisateur_id, session_invitee_id, expire_le)
+        `INSERT INTO reservation (id, variant_id, user_id, guest_session_id, expires_at)
          VALUES (gen_random_uuid(), $1, $2, gen_random_uuid(), now() + interval '10 min')`,
         [await variante(), await utilisateur()],
       ),
@@ -215,38 +215,38 @@ describe('réservation — ce qui porte RB1', () => {
     const { rows } = await base.appli.query<{ indexdef: string }>(
       `SELECT indexdef FROM pg_indexes WHERE indexname = 'reservation_active_expire'`,
     );
-    expect(rows[0]!.indexdef).toContain("WHERE (statut = 'active'");
+    expect(rows[0]!.indexdef).toContain("WHERE (status = 'active'");
   });
 });
 
 describe('D4 — le cumul de promotions est impossible par la FORME de la table', () => {
-  it('`ligne_commande.promotion_id` est scalaire, pas une table de liaison', async () => {
+  it('`order_line.promotion_id` est scalaire, pas une table de liaison', async () => {
     // La décision de modélisation la plus importante du domaine commercial
     // (R-U7). Une table de liaison rouvrirait le cumul ; une colonne ne le peut
     // pas, quel que soit le code écrit au-dessus.
     const { rows } = await base.appli.query<{ data_type: string }>(
       `SELECT data_type FROM information_schema.columns
-       WHERE table_name = 'ligne_commande' AND column_name = 'promotion_id'`,
+       WHERE table_name = 'order_line' AND column_name = 'promotion_id'`,
     );
     expect(rows).toHaveLength(1);
 
     const { rows: liaison } = await base.appli.query(
       `SELECT table_name FROM information_schema.tables
-       WHERE table_schema = 'public' AND table_name = 'ligne_commande_promotion'`,
+       WHERE table_schema = 'public' AND table_name = 'order_line_promotion'`,
     );
     expect(liaison).toHaveLength(0);
   });
 
   it('une remise ne peut pas dépasser ce qu’elle remise', async () => {
     const { rows: v } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, 5) RETURNING id`,
       [await article()],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO ligne_commande
-           (id, commande_id, variante_id, boutique_id, quantite, prix_unitaire, remise_ligne)
+        `INSERT INTO order_line
+           (id, order_id, variant_id, shop_id, quantity, unit_price, line_discount)
          VALUES (gen_random_uuid(), $1, $2, $3, 2, 10000, 25000)`,
         [await commande(), v[0]!.id, await boutique()],
       ),
@@ -257,7 +257,7 @@ describe('D4 — le cumul de promotions est impossible par la FORME de la table'
 describe('DP-15 — le barème est historisé, jamais modifié', () => {
   async function bareme(taux: number, univers = unique('u')): Promise<string> {
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO bareme_commission (id, univers_cle, taux_pour_mille)
+      `INSERT INTO commission_schedule (id, universe_key, rate_per_mille)
        VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
       [univers, taux],
     );
@@ -269,14 +269,14 @@ describe('DP-15 — le barème est historisé, jamais modifié', () => {
     // plus prouver le taux qu'elle a subi (R-G3).
     const id = await bareme(80);
     await expect(
-      base.appli.query(`UPDATE bareme_commission SET taux_pour_mille = 120 WHERE id = $1`, [id]),
+      base.appli.query(`UPDATE commission_schedule SET rate_per_mille = 120 WHERE id = $1`, [id]),
     ).rejects.toMatchObject({ code: LEVEE_PLPGSQL });
   });
 
   it('clôturer une version passe — c’est la seule modification légitime', async () => {
     const id = await bareme(80);
     const { rowCount } = await base.appli.query(
-      `UPDATE bareme_commission SET fin_le = now() WHERE id = $1`,
+      `UPDATE commission_schedule SET ends_at = now() WHERE id = $1`,
       [id],
     );
     expect(rowCount).toBe(1);
@@ -294,7 +294,7 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     const b = await boutique();
     const poser = () =>
       base.appli.query(
-        `INSERT INTO abonnement_boutique (id, boutique_id, echeance_le)
+        `INSERT INTO shop_subscription (id, shop_id, due_at)
          VALUES (gen_random_uuid(), $1, now() + interval '30 days')`,
         [b],
       );
@@ -307,8 +307,8 @@ describe('DP-08 — un seul abonnement actif par boutique', () => {
     // modèle économique — invisible en relecture de code.
     await expect(
       base.appli.query(
-        `INSERT INTO abonnement_boutique (id, boutique_id, palier, montant, echeance_le)
-         VALUES (gen_random_uuid(), $1, 'gratuit', 50000, now() + interval '30 days')`,
+        `INSERT INTO shop_subscription (id, shop_id, tier, amount, due_at)
+         VALUES (gen_random_uuid(), $1, 'free', 50000, now() + interval '30 days')`,
         [await boutique()],
       ),
     ).rejects.toMatchObject({ constraint: 'abonnement_montant_coherent' });

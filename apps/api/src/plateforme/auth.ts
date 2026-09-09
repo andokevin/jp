@@ -17,7 +17,7 @@ import { erreurs } from './erreurs.js';
 export const DUREE_SESSION_MS = 90 * 24 * 60 * 60 * 1000;
 
 export interface Identite {
-  readonly utilisateurId: string;
+  readonly userId: string;
   readonly sessionId: string;
 }
 
@@ -37,26 +37,26 @@ export function nouveauJeton(): string {
 export async function ouvrirSession(
   db: PrismaClient,
   params: {
-    readonly utilisateurId: string;
-    readonly appareil?: string;
-    readonly adresseIp?: string;
-    /** Rattache à une famille existante lors d'une rotation. */
-    readonly famille?: string;
+    readonly userId: string;
+    readonly device?: string;
+    readonly ipAddress?: string;
+    /** Rattache à une family existante lors d'une rotation. */
+    readonly family?: string;
   },
-): Promise<{ jeton: string; sessionId: string; famille: string }> {
+): Promise<{ jeton: string; sessionId: string; family: string }> {
   const jeton = nouveauJeton();
-  const famille = params.famille ?? crypto.randomUUID();
+  const family = params.family ?? crypto.randomUUID();
   const session = await db.session.create({
     data: {
-      utilisateurId: params.utilisateurId,
-      jetonEmpreinte: empreinteJeton(jeton),
-      famille,
-      ...(params.appareil !== undefined ? { appareil: params.appareil } : {}),
-      ...(params.adresseIp !== undefined ? { adresseIp: params.adresseIp } : {}),
-      expireLe: new Date(Date.now() + DUREE_SESSION_MS),
+      userId: params.userId,
+      tokenHash: empreinteJeton(jeton),
+      family,
+      ...(params.device !== undefined ? { device: params.device } : {}),
+      ...(params.ipAddress !== undefined ? { ipAddress: params.ipAddress } : {}),
+      expiresAt: new Date(Date.now() + DUREE_SESSION_MS),
     },
   });
-  return { jeton, sessionId: session.id, famille };
+  return { jeton, sessionId: session.id, family };
 }
 
 /**
@@ -68,32 +68,32 @@ export async function ouvrirSession(
  */
 export async function verifierJeton(db: PrismaClient, jeton: string): Promise<Identite | null> {
   const session = await db.session.findUnique({
-    where: { jetonEmpreinte: empreinteJeton(jeton) },
-    select: { id: true, utilisateurId: true, expireLe: true, revoqueeLe: true, famille: true },
+    where: { tokenHash: empreinteJeton(jeton) },
+    select: { id: true, userId: true, expiresAt: true, revokedAt: true, family: true },
   });
   if (!session) return null;
-  if (session.revoqueeLe !== null) {
+  if (session.revokedAt !== null) {
     // Un jeton révoqué qui réapparaît est le signe d'un vol : on révoque
-    // TOUTE la famille, pas seulement celui-ci (F0.2).
-    await revoquerFamille(db, session.famille);
+    // TOUTE la family, pas seulement celui-ci (F0.2).
+    await revoquerFamille(db, session.family);
     return null;
   }
-  if (session.expireLe.getTime() <= Date.now()) return null;
-  return { utilisateurId: session.utilisateurId, sessionId: session.id };
+  if (session.expiresAt.getTime() <= Date.now()) return null;
+  return { userId: session.userId, sessionId: session.id };
 }
 
 export async function revoquerSession(db: PrismaClient, sessionId: string): Promise<void> {
   await db.session.updateMany({
-    where: { id: sessionId, revoqueeLe: null },
-    data: { revoqueeLe: new Date() },
+    where: { id: sessionId, revokedAt: null },
+    data: { revokedAt: new Date() },
   });
 }
 
 /** Révoque toute une chaîne de rotation — la réaction à une réutilisation de jeton. */
-export async function revoquerFamille(db: PrismaClient, famille: string): Promise<number> {
+export async function revoquerFamille(db: PrismaClient, family: string): Promise<number> {
   const { count } = await db.session.updateMany({
-    where: { famille, revoqueeLe: null },
-    data: { revoqueeLe: new Date() },
+    where: { family, revokedAt: null },
+    data: { revokedAt: new Date() },
   });
   return count;
 }

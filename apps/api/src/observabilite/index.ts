@@ -69,7 +69,7 @@ export function journal(niveau: Niveau, message: string, donnees: unknown = {}):
     niveau,
     message,
     correlation: ctx?.correlation ?? null,
-    utilisateurId: ctx?.utilisateurId ?? null,
+    userId: ctx?.userId ?? null,
     horodatage: new Date().toISOString(),
     ...(nettoyer(donnees) as object),
   });

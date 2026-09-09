@@ -26,16 +26,16 @@ export const service = {
    * dans la recherche, ni par un lien profond *(R-Y2)*.
    */
   async ouverts(db: PrismaClient): Promise<readonly UniversResolu[]> {
-    const enBase = await db.univers.findMany({
-      where: { ouvert: true },
-      orderBy: { rang: 'asc' },
+    const enBase = await db.universe.findMany({
+      where: { isOpen: true },
+      orderBy: { rank: 'asc' },
     });
     return enBase.flatMap((ligne) => {
-      const def = registre(ligne.cle);
+      const def = registre(ligne.key);
       // Une ligne en base sans définition dans le registre est une incohérence
       // de déploiement : on l'ignore plutôt que de servir un univers sans
       // règles, qui laisserait passer n'importe quel motif de litige.
-      return def ? [{ ...def, commissionEffective: ligne.commissionPourMille }] : [];
+      return def ? [{ ...def, commissionEffective: ligne.commissionPerMille }] : [];
     });
   },
 
@@ -46,9 +46,9 @@ export const service = {
   async ouvert(db: PrismaClient, cle: string): Promise<UniversResolu | null> {
     const def = registre(cle);
     if (!def) return null;
-    const ligne = await db.univers.findUnique({ where: { cle } });
-    if (!ligne || !ligne.ouvert) return null;
-    return { ...def, commissionEffective: ligne.commissionPourMille };
+    const ligne = await db.universe.findUnique({ where: { key: cle } });
+    if (!ligne || !ligne.isOpen) return null;
+    return { ...def, commissionEffective: ligne.commissionPerMille };
   },
 
   /**

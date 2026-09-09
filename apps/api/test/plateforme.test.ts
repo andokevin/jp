@@ -36,7 +36,7 @@ afterAll(async () => {
 });
 
 async function unUtilisateur(): Promise<string> {
-  const u = await base.prisma.utilisateur.create({
+  const u = await base.prisma.user.create({
     data: { email: `p-${crypto.randomUUID()}@jp.test` },
   });
   return u.id;
@@ -56,7 +56,7 @@ describe('idempotence — RB10', () => {
     let executions = 0;
     const action = async () => {
       executions++;
-      return { statut: 201, corps: { commandeId: 'cmd-1' } };
+      return { status: 201, corps: { commandeId: 'cmd-1' } };
     };
 
     const premier = await executerUneSeuleFois(base.prisma, requete(cle, { article: 'a' }), action);
@@ -71,13 +71,13 @@ describe('idempotence — RB10', () => {
     // Le pire cas : un client bogué recevrait la réponse d'une autre commande.
     const cle = crypto.randomUUID();
     await executerUneSeuleFois(base.prisma, requete(cle, { article: 'a' }), async () => ({
-      statut: 201,
+      status: 201,
       corps: { id: 1 },
     }));
 
     await expect(
       executerUneSeuleFois(base.prisma, requete(cle, { article: 'AUTRE' }), async () => ({
-        statut: 201,
+        status: 201,
         corps: { id: 2 },
       })),
     ).rejects.toMatchObject({ code: 'CLE_IDEMPOTENCE_REUTILISEE' });
@@ -90,13 +90,13 @@ describe('idempotence — RB10', () => {
 
     const premiere = executerUneSeuleFois(base.prisma, requete(cle, { x: 1 }), async () => {
       await enAttente;
-      return { statut: 201, corps: { ok: true } };
+      return { status: 201, corps: { ok: true } };
     });
 
     await new Promise((r) => setTimeout(r, 50));
     await expect(
       executerUneSeuleFois(base.prisma, requete(cle, { x: 1 }), async () => ({
-        statut: 201,
+        status: 201,
         corps: { ok: true },
       })),
     ).rejects.toMatchObject({ code: 'REQUETE_EN_COURS' });
@@ -115,7 +115,7 @@ describe('idempotence — RB10', () => {
 
     // La clé a été retirée : le rejeu exécute pour de bon.
     const apres = await executerUneSeuleFois(base.prisma, requete(cle, { x: 1 }), async () => ({
-      statut: 201,
+      status: 201,
       corps: { rattrape: true },
     }));
     expect(apres.corps).toEqual({ rattrape: true });
@@ -132,10 +132,10 @@ describe('idempotence — RB10', () => {
 describe('sessions', () => {
   it('ne stocke JAMAIS le jeton en clair', async () => {
     const id = await unUtilisateur();
-    const { jeton } = await ouvrirSession(base.prisma, { utilisateurId: id });
+    const { jeton } = await ouvrirSession(base.prisma, { userId: id });
 
     const { rows } = await base.proprietaire.query<{ n: string }>(
-      `SELECT count(*)::text AS n FROM session WHERE jeton_empreinte = $1`,
+      `SELECT count(*)::text AS n FROM session WHERE token_hash = $1`,
       [jeton],
     );
     expect(rows[0]!.n).toBe('0'); // le jeton en clair n'apparaît nulle part
@@ -143,29 +143,29 @@ describe('sessions', () => {
 
   it('reconnaît un jeton valide, refuse un inconnu', async () => {
     const id = await unUtilisateur();
-    const { jeton, sessionId } = await ouvrirSession(base.prisma, { utilisateurId: id });
-    expect(await verifierJeton(base.prisma, jeton)).toEqual({ utilisateurId: id, sessionId });
+    const { jeton, sessionId } = await ouvrirSession(base.prisma, { userId: id });
+    expect(await verifierJeton(base.prisma, jeton)).toEqual({ userId: id, sessionId });
     expect(await verifierJeton(base.prisma, 'jeton-inventé')).toBeNull();
   });
 
-  it('un jeton RÉVOQUÉ qui réapparaît fait tomber toute la famille', async () => {
+  it('un jeton RÉVOQUÉ qui réapparaît fait tomber toute la family', async () => {
     // Un jeton révoqué qui revient est le signe d'un vol (F0.2).
     const id = await unUtilisateur();
-    const a = await ouvrirSession(base.prisma, { utilisateurId: id });
-    const b = await ouvrirSession(base.prisma, { utilisateurId: id, famille: a.famille });
+    const a = await ouvrirSession(base.prisma, { userId: id });
+    const b = await ouvrirSession(base.prisma, { userId: id, family: a.family });
 
     await revoquerSession(base.prisma, a.sessionId);
     expect(await verifierJeton(base.prisma, a.jeton)).toBeNull();
 
-    // b appartenait à la même famille : il tombe aussi.
+    // b appartenait à la même family : il tombe aussi.
     expect(await verifierJeton(base.prisma, b.jeton)).toBeNull();
   });
 
-  it('révoquer une famille compte ce qu’elle a coupé', async () => {
+  it('révoquer une family compte ce qu’elle a coupé', async () => {
     const id = await unUtilisateur();
-    const a = await ouvrirSession(base.prisma, { utilisateurId: id });
-    await ouvrirSession(base.prisma, { utilisateurId: id, famille: a.famille });
-    expect(await revoquerFamille(base.prisma, a.famille)).toBe(2);
+    const a = await ouvrirSession(base.prisma, { userId: id });
+    await ouvrirSession(base.prisma, { userId: id, family: a.family });
+    expect(await revoquerFamille(base.prisma, a.family)).toBe(2);
   });
 
   it('lit un en-tête Bearer', () => {
@@ -178,9 +178,9 @@ describe('sessions', () => {
 
 // ═══════════════════════════════════════════════════════════════════════════
 describe('permissions — les DEUX outils', () => {
-  const employe: Acteur = { utilisateurId: 'e', roles: ['employe_vendeur'] };
-  const vendeur: Acteur = { utilisateurId: 'v', roles: ['vendeur'] };
-  const operateur: Acteur = { utilisateurId: 'o', roles: ['operateur'] };
+  const employe: Acteur = { userId: 'e', roles: ['employe_vendeur'] };
+  const vendeur: Acteur = { userId: 'v', roles: ['vendeur'] };
+  const operateur: Acteur = { userId: 'o', roles: ['operateur'] };
 
   it('outil 1 — la garde décide QUI entre', () => {
     expect(() => garde(vendeur, 'vendeur')).not.toThrow();
@@ -282,16 +282,16 @@ describe('pagination par curseur', () => {
 // ═══════════════════════════════════════════════════════════════════════════
 describe('journal d’audit', () => {
   it('écrit une entrée', async () => {
-    const acteurId = await unUtilisateur();
+    const actorId = await unUtilisateur();
     await journaliser(base.prisma, {
       action: 'exploitation.parametre.modifie',
       cibleType: 'parametre',
-      cibleId: 'taux_commission_defaut',
+      targetId: 'taux_commission_defaut',
       avant: { valeur: '80' },
       apres: { valeur: '90' },
-      acteurId,
+      actorId,
     });
-    const n = await base.prisma.journalAudit.count({ where: { acteurId } });
+    const n = await base.prisma.auditLog.count({ where: { actorId } });
     expect(n).toBe(1);
   });
 
@@ -301,7 +301,7 @@ describe('journal d’audit', () => {
       journaliser(base.prisma, {
         action: 'x',
         cibleType: 'y',
-        acteurId: '00000000-0000-0000-0000-000000000000',
+        actorId: '00000000-0000-0000-0000-000000000000',
       }),
     ).resolves.toBeUndefined();
   });

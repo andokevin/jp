@@ -33,7 +33,7 @@ function unique(prefixe: string): string {
 
 async function creerUtilisateur(genre: string | null = null): Promise<string> {
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO utilisateur (id, email, genre) VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
+    `INSERT INTO app_user (id, email, gender) VALUES (gen_random_uuid(), $1, $2) RETURNING id`,
     [`${unique('u')}@jp.mg`, genre],
   );
   return rows[0]!.id;
@@ -42,7 +42,7 @@ async function creerUtilisateur(genre: string | null = null): Promise<string> {
 async function creerBoutique(logo: string | null = null): Promise<string> {
   const proprietaire = await creerUtilisateur();
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO boutique (id, utilisateur_id, nom, slug, logo_url)
+    `INSERT INTO shop (id, user_id, name, slug, logo_url)
      VALUES (gen_random_uuid(), $1, 'Boutique', $2, $3) RETURNING id`,
     [proprietaire, unique('slug'), logo],
   );
@@ -52,26 +52,26 @@ async function creerBoutique(logo: string | null = null): Promise<string> {
 async function creerArticle(options: { pieceUnique?: boolean } = {}): Promise<string> {
   const boutique = await creerBoutique();
   const { rows } = await base.appli.query<{ id: string }>(
-    `INSERT INTO article (id, boutique_id, univers_cle, nom, prix_ariary, piece_unique)
+    `INSERT INTO article (id, shop_id, universe_key, name, price_ariary, one_of_a_kind)
      VALUES (gen_random_uuid(), $1, 'mode', 'Robe', 50000, $2) RETURNING id`,
     [boutique, options.pieceUnique ?? false],
   );
   return rows[0]!.id;
 }
 
-describe('utilisateur.genre — le facultatif qui reste distinguable', () => {
+describe('app_user.gender — le facultatif qui reste distinguable', () => {
   it("« non renseigné » n'est PAS « autre »", async () => {
-    // Si la colonne avait un défaut à 'autre', on ne saurait plus jamais qui a
+    // Si la colonne avait un défaut à 'other', on ne saurait plus jamais qui a
     // répondu et qui a sauté la question — et la statistique compterait comme
     // « autre » tous ceux qui n'ont rien dit.
     const sansReponse = await creerUtilisateur(null);
-    const aRepondu = await creerUtilisateur('autre');
+    const aRepondu = await creerUtilisateur('other');
 
-    const { rows } = await base.appli.query<{ id: string; genre: string | null }>(
-      `SELECT id, genre FROM utilisateur WHERE id = ANY($1::uuid[]) ORDER BY genre NULLS FIRST`,
+    const { rows } = await base.appli.query<{ id: string; gender: string | null }>(
+      `SELECT id, gender FROM app_user WHERE id = ANY($1::uuid[]) ORDER BY gender NULLS FIRST`,
       [[sansReponse, aRepondu]],
     );
-    expect(rows.map((r) => r.genre)).toEqual([null, 'autre']);
+    expect(rows.map((r) => r.gender)).toEqual([null, 'other']);
   });
 
   it('refuse une valeur hors des trois', async () => {
@@ -85,7 +85,7 @@ describe('profil_acheteur — trois préférences au plus', () => {
   it('accepte trois types de vêtements', async () => {
     const moi = await creerUtilisateur();
     const { rowCount } = await base.appli.query(
-      `INSERT INTO profil_acheteur (utilisateur_id, preferences_vetement)
+      `INSERT INTO buyer_profile (user_id, clothing_preferences)
        VALUES ($1, ARRAY['robe','jean','jupe'])`,
       [moi],
     );
@@ -96,7 +96,7 @@ describe('profil_acheteur — trois préférences au plus', () => {
     const moi = await creerUtilisateur();
     await expect(
       base.appli.query(
-        `INSERT INTO profil_acheteur (utilisateur_id, preferences_vetement)
+        `INSERT INTO buyer_profile (user_id, clothing_preferences)
          VALUES ($1, ARRAY['robe','jean','jupe','short'])`,
         [moi],
       ),
@@ -107,22 +107,22 @@ describe('profil_acheteur — trois préférences au plus', () => {
     const silencieux = await creerUtilisateur();
     const explicite = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO profil_acheteur (utilisateur_id, preferences_vetement) VALUES ($1, ARRAY[]::text[])`,
+      `INSERT INTO buyer_profile (user_id, clothing_preferences) VALUES ($1, ARRAY[]::text[])`,
       [explicite],
     );
 
-    const { rows } = await base.appli.query<{ utilisateur_id: string }>(
-      `SELECT utilisateur_id FROM profil_acheteur WHERE utilisateur_id = ANY($1::uuid[])`,
+    const { rows } = await base.appli.query<{ user_id: string }>(
+      `SELECT user_id FROM buyer_profile WHERE user_id = ANY($1::uuid[])`,
       [[silencieux, explicite]],
     );
-    expect(rows.map((r) => r.utilisateur_id)).toEqual([explicite]);
+    expect(rows.map((r) => r.user_id)).toEqual([explicite]);
   });
 
   it('un compte, au plus un profil', async () => {
     const moi = await creerUtilisateur();
-    await base.appli.query(`INSERT INTO profil_acheteur (utilisateur_id) VALUES ($1)`, [moi]);
+    await base.appli.query(`INSERT INTO buyer_profile (user_id) VALUES ($1)`, [moi]);
     await expect(
-      base.appli.query(`INSERT INTO profil_acheteur (utilisateur_id) VALUES ($1)`, [moi]),
+      base.appli.query(`INSERT INTO buyer_profile (user_id) VALUES ($1)`, [moi]),
     ).rejects.toMatchObject({ code: DOUBLON });
   });
 });
@@ -139,7 +139,7 @@ describe('boutique — logo facultatif, et plus de vendeur particulier (DP-01)',
     // Le test qui empêche la réintroduction silencieuse d'un acteur supprimé.
     const { rows } = await base.appli.query(
       `SELECT column_name FROM information_schema.columns
-       WHERE table_name = 'boutique' AND column_name = 'type_boutique'`,
+       WHERE table_name = 'shop' AND column_name = 'type_boutique'`,
     );
     expect(rows).toHaveLength(0);
   });
@@ -147,13 +147,13 @@ describe('boutique — logo facultatif, et plus de vendeur particulier (DP-01)',
   it('un compte, au plus une boutique (DP-02)', async () => {
     const proprietaire = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO boutique (id, utilisateur_id, nom, slug)
+      `INSERT INTO shop (id, user_id, name, slug)
        VALUES (gen_random_uuid(), $1, 'Une', $2)`,
       [proprietaire, unique('slug')],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO boutique (id, utilisateur_id, nom, slug)
+        `INSERT INTO shop (id, user_id, name, slug)
          VALUES (gen_random_uuid(), $1, 'Deux', $2)`,
         [proprietaire, unique('slug')],
       ),
@@ -166,7 +166,7 @@ describe("document_identite — la CIN suffit, le NIF-STAT n'est jamais exigé",
     const moi = await creerUtilisateur();
     for (const type of ['cin_recto', 'cin_verso', 'selfie']) {
       const { rowCount } = await base.appli.query(
-        `INSERT INTO document_identite (id, utilisateur_id, type, url_chiffree, empreinte)
+        `INSERT INTO identity_document (id, user_id, type, encrypted_url, fingerprint)
          VALUES (gen_random_uuid(), $1, $2, 'chiffre://x', $3)`,
         [moi, type, unique('h')],
       );
@@ -177,13 +177,13 @@ describe("document_identite — la CIN suffit, le NIF-STAT n'est jamais exigé",
   it('redéposer la même pièce ne l’empile pas', async () => {
     const moi = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO document_identite (id, utilisateur_id, type, url_chiffree, empreinte)
+      `INSERT INTO identity_document (id, user_id, type, encrypted_url, fingerprint)
        VALUES (gen_random_uuid(), $1, 'cin_recto', 'chiffre://a', 'a')`,
       [moi],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO document_identite (id, utilisateur_id, type, url_chiffree, empreinte)
+        `INSERT INTO identity_document (id, user_id, type, encrypted_url, fingerprint)
          VALUES (gen_random_uuid(), $1, 'cin_recto', 'chiffre://b', 'b')`,
         [moi],
       ),
@@ -196,11 +196,11 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     // En direct, la vendeuse essaie le vêtement devant la caméra. Exiger les
     // mesures fermerait le direct à celle qui ne les connaît pas.
     const article = await creerArticle();
-    const { rows } = await base.appli.query<{ mesures: unknown; etat_vetement: string | null }>(
-      `SELECT mesures, etat_vetement FROM article WHERE id = $1`,
+    const { rows } = await base.appli.query<{ measurements: unknown; clothing_condition: string | null }>(
+      `SELECT measurements, clothing_condition FROM article WHERE id = $1`,
       [article],
     );
-    expect(rows[0]).toEqual({ mesures: null, etat_vetement: null });
+    expect(rows[0]).toEqual({ measurements: null, clothing_condition: null });
   });
 
   it('la taille non renseignée vaut `taille_unique`, jamais NULL', async () => {
@@ -208,18 +208,18 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     // toutes les deux la clé unique, et le stock se dédoublerait.
     const article = await creerArticle();
     await base.appli.query(
-      `INSERT INTO variante (id, article_id, quantite_stock) VALUES (gen_random_uuid(), $1, 5)`,
+      `INSERT INTO variant (id, article_id, stock_quantity) VALUES (gen_random_uuid(), $1, 5)`,
       [article],
     );
     const { rows } = await base.appli.query<{ taille: string }>(
-      `SELECT taille FROM variante WHERE article_id = $1`,
+      `SELECT taille FROM variant WHERE article_id = $1`,
       [article],
     );
     expect(rows[0]!.taille).toBe('taille_unique');
 
     await expect(
       base.appli.query(
-        `INSERT INTO variante (id, article_id, quantite_stock) VALUES (gen_random_uuid(), $1, 3)`,
+        `INSERT INTO variant (id, article_id, stock_quantity) VALUES (gen_random_uuid(), $1, 3)`,
         [article],
       ),
     ).rejects.toMatchObject({ code: DOUBLON });
@@ -229,13 +229,13 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const article = await creerArticle();
     for (const taille of ['S', 'M', 'L']) {
       await base.appli.query(
-        `INSERT INTO variante (id, article_id, taille, quantite_stock)
+        `INSERT INTO variant (id, article_id, taille, stock_quantity)
          VALUES (gen_random_uuid(), $1, $2, 2)`,
         [article, taille],
       );
     }
     const { rows } = await base.appli.query<{ n: string }>(
-      `SELECT count(*)::text AS n FROM variante WHERE article_id = $1`,
+      `SELECT count(*)::text AS n FROM variant WHERE article_id = $1`,
       [article],
     );
     expect(rows[0]!.n).toBe('3');
@@ -245,7 +245,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const article = await creerArticle();
     await expect(
       base.appli.query(
-        `INSERT INTO variante (id, article_id, quantite_stock, quantite_reservee)
+        `INSERT INTO variant (id, article_id, stock_quantity, reserved_quantity)
          VALUES (gen_random_uuid(), $1, 2, 3)`,
         [article],
       ),
@@ -258,7 +258,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const article = await creerArticle({ pieceUnique: true });
     await expect(
       base.appli.query(
-        `INSERT INTO variante (id, article_id, quantite_stock) VALUES (gen_random_uuid(), $1, 2)`,
+        `INSERT INTO variant (id, article_id, stock_quantity) VALUES (gen_random_uuid(), $1, 2)`,
         [article],
       ),
     ).rejects.toMatchObject({ code: LEVEE_PLPGSQL });
@@ -268,7 +268,7 @@ describe('article et variante — le facultatif du direct, le garde-fou du stock
     const boutique = await creerBoutique();
     await expect(
       base.appli.query(
-        `INSERT INTO article (id, boutique_id, univers_cle, nom, prix_ariary)
+        `INSERT INTO article (id, shop_id, universe_key, name, price_ariary)
          VALUES (gen_random_uuid(), $1, 'mode', 'Gratuit', 0)`,
         [boutique],
       ),
@@ -280,11 +280,11 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
   it('un seul panier ACTIF par personne', async () => {
     const moi = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`,
+      `INSERT INTO cart (id, user_id) VALUES (gen_random_uuid(), $1)`,
       [moi],
     );
     await expect(
-      base.appli.query(`INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`, [
+      base.appli.query(`INSERT INTO cart (id, user_id) VALUES (gen_random_uuid(), $1)`, [
         moi,
       ]),
     ).rejects.toMatchObject({ constraint: 'panier_actif_unique' });
@@ -295,15 +295,15 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     // contrainte ne porte que sur `statut = 'actif'`.
     const moi = await creerUtilisateur();
     await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id, statut) VALUES (gen_random_uuid(), $1, 'valide')`,
+      `INSERT INTO cart (id, user_id, status) VALUES (gen_random_uuid(), $1, 'checked_out')`,
       [moi],
     );
     await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id, statut) VALUES (gen_random_uuid(), $1, 'abandonne')`,
+      `INSERT INTO cart (id, user_id, status) VALUES (gen_random_uuid(), $1, 'abandoned')`,
       [moi],
     );
     const { rowCount } = await base.appli.query(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1)`,
+      `INSERT INTO cart (id, user_id) VALUES (gen_random_uuid(), $1)`,
       [moi],
     );
     expect(rowCount).toBe(1);
@@ -313,23 +313,23 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     const moi = await creerUtilisateur();
     const article = await creerArticle();
     const { rows: v } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, 10) RETURNING id`,
       [article],
     );
     const { rows: p } = await base.appli.query<{ id: string }>(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO cart (id, user_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [moi],
     );
 
     await base.appli.query(
-      `INSERT INTO ligne_panier (id, panier_id, variante_id, quantite)
+      `INSERT INTO cart_line (id, cart_id, variant_id, quantity)
        VALUES (gen_random_uuid(), $1, $2, 1)`,
       [p[0]!.id, v[0]!.id],
     );
     await expect(
       base.appli.query(
-        `INSERT INTO ligne_panier (id, panier_id, variante_id, quantite)
+        `INSERT INTO cart_line (id, cart_id, variant_id, quantity)
          VALUES (gen_random_uuid(), $1, $2, 1)`,
         [p[0]!.id, v[0]!.id],
       ),
@@ -342,30 +342,30 @@ describe('panier — hors direct, et sans vérité sur le stock (D7 révisé)', 
     const moi = await creerUtilisateur();
     const article = await creerArticle();
     const { rows: v } = await base.appli.query<{ id: string }>(
-      `INSERT INTO variante (id, article_id, quantite_stock)
+      `INSERT INTO variant (id, article_id, stock_quantity)
        VALUES (gen_random_uuid(), $1, 7) RETURNING id`,
       [article],
     );
     const { rows: p } = await base.appli.query<{ id: string }>(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO cart (id, user_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [moi],
     );
     await base.appli.query(
-      `INSERT INTO ligne_panier (id, panier_id, variante_id, quantite)
+      `INSERT INTO cart_line (id, cart_id, variant_id, quantity)
        VALUES (gen_random_uuid(), $1, $2, 4)`,
       [p[0]!.id, v[0]!.id],
     );
 
-    const { rows } = await base.appli.query<{ quantite_stock: number; quantite_reservee: number }>(
-      `SELECT quantite_stock, quantite_reservee FROM variante WHERE id = $1`,
+    const { rows } = await base.appli.query<{ stock_quantity: number; reserved_quantity: number }>(
+      `SELECT stock_quantity, reserved_quantity FROM variant WHERE id = $1`,
       [v[0]!.id],
     );
-    expect(rows[0]).toEqual({ quantite_stock: 7, quantite_reservee: 0 });
+    expect(rows[0]).toEqual({ stock_quantity: 7, reserved_quantity: 0 });
   });
 });
 
 describe('suppression douce — le REVOKE, pas le commentaire', () => {
-  const douces = ['utilisateur', 'boutique', 'article', 'variante', 'extrait_boutique'] as const;
+  const douces = ['app_user', 'shop', 'article', 'variant', 'shop_snippet'] as const;
 
   it.each(douces)('jp_app ne peut PAS supprimer une ligne de %s', async (table) => {
     await expect(base.appli.query(`DELETE FROM "${table}"`)).rejects.toMatchObject({
@@ -376,7 +376,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer un compte supprimé passe, lui', async () => {
     const moi = await creerUtilisateur();
     const { rowCount } = await base.appli.query(
-      `UPDATE utilisateur SET statut = 'supprime' WHERE id = $1`,
+      `UPDATE app_user SET status = 'deleted' WHERE id = $1`,
       [moi],
     );
     expect(rowCount).toBe(1);
@@ -385,7 +385,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer une boutique supprimée passe, lui', async () => {
     const boutique = await creerBoutique();
     const { rowCount } = await base.appli.query(
-      `UPDATE boutique SET supprimee_le = now() WHERE id = $1`,
+      `UPDATE shop SET deleted_at = now() WHERE id = $1`,
       [boutique],
     );
     expect(rowCount).toBe(1);
@@ -394,7 +394,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer un article supprimé passe, lui', async () => {
     const article = await creerArticle();
     const { rowCount } = await base.appli.query(
-      `UPDATE article SET supprime_le = now() WHERE id = $1`,
+      `UPDATE article SET deleted_at = now() WHERE id = $1`,
       [article],
     );
     expect(rowCount).toBe(1);
@@ -403,12 +403,12 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('marquer un extrait supprimé passe, lui', async () => {
     const boutique = await creerBoutique();
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO extrait_boutique (id, boutique_id, type, video_url)
-       VALUES (gen_random_uuid(), $1, 'annonce', 'video://x') RETURNING id`,
+      `INSERT INTO shop_snippet (id, shop_id, type, video_url)
+       VALUES (gen_random_uuid(), $1, 'announcement', 'video://x') RETURNING id`,
       [boutique],
     );
     const { rowCount } = await base.appli.query(
-      `UPDATE extrait_boutique SET supprime_le = now() WHERE id = $1`,
+      `UPDATE shop_snippet SET deleted_at = now() WHERE id = $1`,
       [rows[0]!.id],
     );
     expect(rowCount).toBe(1);
@@ -418,7 +418,7 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
     // Sans ce test, un REVOKE mal écrit et un DELETE syntaxiquement invalide
     // donneraient le même vert. Il prouve qu'on mesure bien le RÔLE.
     const orphelin = await creerUtilisateur();
-    const { rowCount } = await base.proprietaire.query(`DELETE FROM utilisateur WHERE id = $1`, [
+    const { rowCount } = await base.proprietaire.query(`DELETE FROM app_user WHERE id = $1`, [
       orphelin,
     ]);
     expect(rowCount).toBe(1);
@@ -427,10 +427,10 @@ describe('suppression douce — le REVOKE, pas le commentaire', () => {
   it('panier et ligne_panier gardent DELETE — retirer un article est une vraie suppression', async () => {
     const moi = await creerUtilisateur();
     const { rows } = await base.appli.query<{ id: string }>(
-      `INSERT INTO panier (id, utilisateur_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
+      `INSERT INTO cart (id, user_id) VALUES (gen_random_uuid(), $1) RETURNING id`,
       [moi],
     );
-    const { rowCount } = await base.appli.query(`DELETE FROM panier WHERE id = $1`, [rows[0]!.id]);
+    const { rowCount } = await base.appli.query(`DELETE FROM cart WHERE id = $1`, [rows[0]!.id]);
     expect(rowCount).toBe(1);
   });
 });
