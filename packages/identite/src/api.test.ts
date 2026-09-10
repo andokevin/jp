@@ -122,3 +122,68 @@ describe('F0.1 — le client d’identité', () => {
     });
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// F0.1 · data-saver header — the opt-in signal
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('IdentityClient — data-saver header', () => {
+  it('when dataSaver:true, sends X-Data-Saver:1 on requestCode', async () => {
+    const { f, appels } = fauxFetch([{ statut: 202, body: { ok: true, expiresInS: 600 } }]);
+    const client = new IdentityClient({
+      base: 'https://api.jp.mg',
+      fetch: f,
+      newKey: () => 'k',
+      dataSaver: true,
+    });
+
+    await client.requestCode('hanta.r@gmail.com');
+
+    expect(appels[0]?.headers['X-Data-Saver']).toBe('1');
+  });
+
+  it('when dataSaver:false, the header is ABSENT (not `0`, not empty)', async () => {
+    // The absence itself is the signal — a server that reads any header
+    // presence as "enable" would be tricked by `X-Data-Saver: 0`. We assert
+    // the property does not exist on the sent headers.
+    const { f, appels } = fauxFetch([{ statut: 202, body: { ok: true, expiresInS: 600 } }]);
+    const client = new IdentityClient({
+      base: 'https://api.jp.mg',
+      fetch: f,
+      newKey: () => 'k',
+      dataSaver: false,
+    });
+
+    await client.requestCode('hanta.r@gmail.com');
+
+    expect(appels[0]?.headers).not.toHaveProperty('X-Data-Saver');
+  });
+
+  it('when dataSaver is omitted, the header is ABSENT (default is off)', async () => {
+    // The other tests in this file don't pass `dataSaver` and would break
+    // if the default were `true`. This test locks that default explicitly.
+    const { f, appels } = fauxFetch([{ statut: 202, body: { ok: true, expiresInS: 600 } }]);
+    const client = new IdentityClient({ base: 'https://api.jp.mg', fetch: f, newKey: () => 'k' });
+
+    await client.requestCode('hanta.r@gmail.com');
+
+    expect(appels[0]?.headers).not.toHaveProperty('X-Data-Saver');
+  });
+
+  it('the header applies to verifyCode too (it lives in the shared post())', async () => {
+    // Proves the option is set at the client level, not per-method. If a
+    // future refactor split post() into two, this test would break — which
+    // is what we want, because splitting would need to preserve the parity.
+    const { f, appels } = fauxFetch([{ statut: 200, body: SESSION_NOUVELLE }]);
+    const client = new IdentityClient({
+      base: 'https://api.jp.mg',
+      fetch: f,
+      newKey: () => 'k',
+      dataSaver: true,
+    });
+
+    await client.verifyCode({ email: 'hanta.r@gmail.com', code: '482153' });
+
+    expect(appels[0]?.headers['X-Data-Saver']).toBe('1');
+  });
+});

@@ -34,6 +34,16 @@ export interface IdentityClientOptions {
   readonly fetch?: typeof fetch;
   /** Injectable pour rendre les tests déterministes. */
   readonly newKey?: () => string;
+  /**
+   * When true, sends `X-Data-Saver: 1` on every request so the server can
+   * trim optional payload fields. The signal is opt-in : callers that
+   * don't pass this option get the full response, unchanged.
+   *
+   * Wired from `magasin.lire(CLES.economieDonnees)` on mobile ; the web
+   * client leaves it unset for now (there is no OS-level data-saving mode
+   * to inherit from).
+   */
+  readonly dataSaver?: boolean;
 }
 
 export class IdentityClient {
@@ -99,6 +109,10 @@ export class IdentityClient {
           // l'oublierait ouvrirait un trou dans RB10, invisible jusqu'au jour
           // où un renvoi de code compterait double.
           [HEADERS.idempotency]: this.newKey(),
+          // The data-saver header is CONDITIONAL. Sending `X-Data-Saver: 0`
+          // when disabled would be a lie — the standard reads the mere
+          // presence of the header as opt-in, so absence IS the opt-out.
+          ...(this.options.dataSaver ? { [HEADERS.dataSaver]: '1' } : {}),
         },
         body: JSON.stringify(body),
       });
