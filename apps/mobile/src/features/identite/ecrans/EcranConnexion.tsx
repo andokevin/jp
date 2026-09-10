@@ -45,6 +45,7 @@ import { IconeHorloge } from '../composants/icones.js';
 import { PALETTE } from '../theme.js';
 import { useAuthOtp } from '../hooks/useAuthOtp.js';
 import { langueDepuisEtiquettes } from '../../../noyau/langue.js';
+import { ordinaire } from '../../../noyau/stockage.js';
 
 export function EcranConnexion(props: {
   readonly base: string;
@@ -77,6 +78,9 @@ export function EcranConnexion(props: {
   const flow = useAuthOtp({
     base: props.base,
     language,
+    // `ordinaire` et non `secret` : la préférence économie de données n'est
+    // pas un secret — le trousseau est pour le jeton, et pour lui seul.
+    magasin: ordinaire,
     ...(props.onSession ? { onSession: props.onSession } : {}),
   });
   const { state, dispatch } = flow;

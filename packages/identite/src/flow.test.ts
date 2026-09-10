@@ -13,7 +13,14 @@
 import { describe, expect, it } from 'vitest';
 
 import { emptyBoxes, digitsOf, assembledCode, nextBox, setBox } from './otp-boxes.js';
-import { initialState, canSubmit, canResend, reduce, type FlowState } from './flow.js';
+import {
+  initialState,
+  canSubmit,
+  canResend,
+  reduce,
+  shouldAutoVerify,
+  type FlowState,
+} from './flow.js';
 
 const SESSION_NOUVELLE = {
   token: 'sess_9f2c',
@@ -122,6 +129,54 @@ describe('F0.1 — le renvoi de code', () => {
     e = reduce(e, { type: 'setCodeBox', index: 0, text: '111111' });
     e = reduce(e, { type: 'codeRequested', expiresInS: 600, now: 90_000 });
     expect(assembledCode(e.boxes)).toBe('');
+  });
+});
+
+describe('F0.1 — shouldAutoVerify : le prédicat de l’auto-verify au sixième chiffre', () => {
+  /** État de départ : étape code, six chiffres posés, rien en cours, en ligne. */
+  function codeComplet(): FlowState {
+    // On arrive à l'étape code par la seule voie légitime : le réducteur.
+    // Reconstruire un state à la main figerait la forme interne du state
+    // et ferait tomber ce test au premier changement de shape.
+    let s = initialState();
+    s = reduce(s, { type: 'setEmail', value: 'hanta.r@gmail.com' });
+    s = reduce(s, { type: 'submitStarted' });
+    s = reduce(s, { type: 'codeRequested', expiresInS: 600, now: 0 });
+    // On pose le code entier dans la première case — la fonction distribue.
+    s = reduce(s, { type: 'setCodeBox', index: 0, text: '482153' });
+    return s;
+  }
+
+  it('true quand tout est réuni : étape code, six chiffres, en ligne, rien en cours', () => {
+    expect(shouldAutoVerify(codeComplet())).toBe(true);
+  });
+
+  it('false quand on n’est pas à l’étape code — l’écran email ne doit rien déclencher', () => {
+    // initialState() ouvre à l'étape email ; les cases sont vides mais peu
+    // importe, c'est l'étape qui interdit avant même de regarder le code.
+    expect(shouldAutoVerify(initialState())).toBe(false);
+  });
+
+  it('false quand un appel est déjà en cours — ne pas rejouer par-dessus soi-même', () => {
+    const s = reduce(codeComplet(), { type: 'submitStarted' });
+    expect(s.pending).toBe(true);
+    expect(shouldAutoVerify(s)).toBe(false);
+  });
+
+  it('false quand hors ligne — le bandeau doit s’afficher, pas un appel qui va échouer', () => {
+    const s = reduce(codeComplet(), { type: 'wentOffline' });
+    expect(s.offline).toBe(true);
+    expect(shouldAutoVerify(s)).toBe(false);
+  });
+
+  it('false quand le code n’est pas encore complet — pas d’appel pour rien', () => {
+    let s = initialState();
+    s = reduce(s, { type: 'setEmail', value: 'hanta.r@gmail.com' });
+    s = reduce(s, { type: 'submitStarted' });
+    s = reduce(s, { type: 'codeRequested', expiresInS: 600, now: 0 });
+    // On ne pose que cinq chiffres — la sixième case reste vide.
+    s = reduce(s, { type: 'setCodeBox', index: 0, text: '48215' });
+    expect(shouldAutoVerify(s)).toBe(false);
   });
 });
 

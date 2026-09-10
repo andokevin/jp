@@ -9,13 +9,14 @@
  * Ne restent ici que les deux choses proprement natives : le client HTTP
  * construit sur l'URL de base, et l'écoute du réseau par NetInfo.
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import { IdentityClient, useAuthOtp as useFlow, type NetworkSubscription } from '@jp/identite';
 import type { Language } from '@jp/i18n';
 import type { auth } from '@jp/contracts';
 
 import { estEnLigne } from '../../../noyau/reseau.js';
+import { CLES, type MagasinLecture } from '../../../noyau/magasin.js';
 
 /**
  * L'écoute du réseau, version native.
@@ -58,22 +59,65 @@ export interface NativeFlowOptions {
   readonly subscribeNetwork?: NetworkSubscription;
   /** Appelé une fois la session ouverte ET le prénom connu. */
   readonly onSession?: (session: auth.SessionResponse) => void;
+  /**
+   * Le magasin dans lequel on lit la préférence « économie de données »
+   * (`CLES.economieDonnees`). Facultatif : sans magasin, la préférence est
+   * considérée à `false` — comportement historique, aucun changement pour
+   * les tests qui n'en passent pas.
+   *
+   * On lit UNIQUEMENT — d'où `MagasinLecture` (Pick<Magasin, 'lire'>).
+   * Écrire la préférence est le travail d'un écran de réglages, pas du
+   * hook d'authentification.
+   */
+  readonly magasin?: MagasinLecture;
 }
 
 export function useAuthOtp(options: NativeFlowOptions) {
+  // ── Lecture asynchrone de la préférence « économie de données » ──────────
+  //
+  // Le magasin est asynchrone (AsyncStorage). Tant que la lecture n'a pas
+  // rendu, on part sur le défaut historique (`false`) — comportement inchangé
+  // pour l'utilisatrice qui n'a jamais touché la préférence, et pas plus lent
+  // que ce qu'on avait avant l'ajout.
+  //
+  // AsyncStorage ne stocke que du texte : on compare à la string `'true'`.
+  // Toute autre valeur — `null`, `'false'`, une valeur corrompue — retombe
+  // sur le défaut. C'est intentionnel : une préférence illisible ne doit
+  // pas bloquer l'appli, elle doit reprendre le comportement standard.
+  const [dataSaver, setDataSaver] = useState(false);
+  useEffect(() => {
+    if (!options.magasin) return undefined;
+    // Cancel-guard : si le composant est démonté avant que la promesse
+    // se résolve, on ne veut pas appeler setDataSaver sur un hook mort
+    // (React râlerait avec « Can't perform a React state update on an
+    // unmounted component »).
+    let cancelled = false;
+    void options.magasin.lire(CLES.economieDonnees).then((valeur) => {
+      if (cancelled) return;
+      setDataSaver(valeur === 'true');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [options.magasin]);
+
   const client = useMemo(
     () =>
       new IdentityClient({
         base: options.base,
         language: options.language,
+        dataSaver,
         ...(options.fetch ? { fetch: options.fetch } : {}),
       }),
-    [options.base, options.language, options.fetch],
+    [options.base, options.language, options.fetch, dataSaver],
   );
 
   return useFlow({
     client,
     subscribeNetwork: options.subscribeNetwork ?? listenNetInfo,
+    // Data-saving désactive l'auto-verify au sixième chiffre : un appel de
+    // moins par tentative. Le bouton reste, l'utilisatrice valide elle-même.
+    autoVerifyOnComplete: !dataSaver,
     ...(options.onSession ? { onSession: options.onSession } : {}),
   });
 }

@@ -174,3 +174,27 @@ export function canResend(state: FlowState, now: number): boolean {
   if (state.pending || state.offline || state.resendAllowedAt === null) return false;
   return now >= state.resendAllowedAt;
 }
+
+/**
+ * L'auto-vérification au sixième chiffre (EP00 §4) a-t-elle du sens à cet
+ * instant ? Prédicat pur — extrait du hook pour être testable sans React et
+ * pour permettre à l'appelant de composer une décision par-dessus (par
+ * exemple : « pareil, mais avec un opt-out via une préférence de l'utilisatrice »).
+ *
+ * Trois conditions doivent être vraies :
+ *   1. on est sur l'écran du code (`step === 'code'`) — auto-verifier depuis
+ *      un autre écran serait un non-sens ;
+ *   2. rien n'est en cours ni offline — on ne rejoue pas par-dessus soi-même ;
+ *   3. les six chiffres sont posés — auto-verifier un code incomplet
+ *      déclencherait une 400 pour rien.
+ *
+ * **Ne rend PAS compte du garde-fou anti-rejeu** (« ai-je déjà envoyé CE code
+ * exact ? »). Celui-là vit dans le hook, avec la `useRef` qui garde le
+ * dernier code envoyé — c'est de la mécanique d'effet, pas de la règle métier.
+ */
+export function shouldAutoVerify(state: FlowState): boolean {
+  if (state.step !== 'code') return false;
+  if (state.pending || state.offline) return false;
+  if (!isComplete(state.boxes)) return false;
+  return true;
+}
