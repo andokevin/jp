@@ -22,12 +22,7 @@ import type { auth } from '@jp/contracts';
 
 import { Offline, type IdentityClient } from './api.js';
 import { assembledCode, isComplete } from './otp-boxes.js';
-import {
-  newEntry as newCacheEntry,
-  readCache,
-  remainingExpiresInS,
-  type CacheEntry,
-} from './otp-cache.js';
+import { sharedRequestCache } from './request-cache.js';
 import {
   initialState,
   canSubmit,
@@ -115,41 +110,24 @@ export function useAuthOtp(options: FlowOptions) {
     return () => clearInterval(t);
   }, [state.step]);
 
-  /**
-   * Cache 60 s des réponses OTP par email — voir `otp-cache.ts`.
-   *
-   * `useRef` et non `useState` : muter la Map ne doit surtout pas déclencher
-   * de re-rendu. C'est de la mémoire technique, pas de l'état affiché.
-   *
-   * Vit et meurt avec l'instance de hook : un remount repart avec une Map
-   * vide, `initialState()` est réappliqué, seul le premier appel dans une
-   * même instance est court-circuité.
-   */
-  const cache = useRef<Map<string, CacheEntry>>(new Map());
-
   const requestCode = useCallback(async () => {
     const email = state.email.trim();
-    const now = Date.now();
 
-    // Hit dans les 60 s : on rejoue la réponse serveur, en recalculant le
-    // décompte pour qu'il reste vrai à l'écran. Pas de `submitStarted` — le
-    // spinner ne clignote pas et l'écran bascule direct à l'étape « code ».
-    const hit = readCache(cache.current, email, now);
-    if (hit) {
-      dispatch({
-        type: 'codeRequested',
-        expiresInS: remainingExpiresInS(hit, now),
-        now,
-      });
+    // Cache court-terme partagé par TOUS les mounts de useAuthOtp — voir
+    // `request-cache.ts`. Un hit court-circuite l'appel réseau et rejoue la
+    // réponse serveur avec un décompte recalculé pour rester vrai à l'écran.
+    // Pas de `submitStarted` : le spinner ne clignote pas, l'écran bascule
+    // direct à l'étape « code ».
+    const cached = sharedRequestCache.get(email);
+    if (cached) {
+      dispatch({ type: 'codeRequested', expiresInS: cached.expiresInS, now: Date.now() });
       return;
     }
 
     dispatch({ type: 'submitStarted' });
     try {
       const r = await ref.current.client.requestCode(email);
-      // On pose l'entrée AVEC l'instant où la réponse est arrivée, pas celui
-      // du début de l'appel : c'est ce qui donne le décompte le plus juste.
-      cache.current.set(email, newCacheEntry(r, Date.now()));
+      sharedRequestCache.set(email, r);
       dispatch({ type: 'codeRequested', expiresInS: r.expiresInS, now: Date.now() });
     } catch (error) {
       if (error instanceof Offline) dispatch({ type: 'wentOffline' });

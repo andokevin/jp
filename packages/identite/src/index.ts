@@ -27,3 +27,4 @@ export * from './otp-boxes.js';
 export * from './labels.js';
 export * from './api.js';
 export * from './hook.js';
+export * from './request-cache.js';
