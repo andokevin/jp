@@ -21,13 +21,14 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'r
 import type { auth } from '@jp/contracts';
 
 import { Offline, type IdentityClient } from './api.js';
-import { assembledCode, isComplete } from './otp-boxes.js';
+import { assembledCode } from './otp-boxes.js';
 import { sharedRequestCache } from './request-cache.js';
 import {
   initialState,
   canSubmit,
   canResend,
   reduce,
+  shouldAutoVerify,
   type FlowState,
   type Failure,
 } from './flow.js';
@@ -70,6 +71,15 @@ export interface FlowOptions {
    * recevoir, ou à inventer une échéance.
    */
   readonly onSession?: (session: auth.SessionResponse) => void;
+  /**
+   * Fire `verifyCode` automatically when the sixth digit lands (EP00 §4).
+   *
+   * Defaults to `true` — the historical behaviour. Set to `false` from mobile
+   * when the user has opted into data-saving mode : one silent request per
+   * OTP attempt matters on a metered connection. The submit button remains
+   * available so the user can still validate herself.
+   */
+  readonly autoVerifyOnComplete?: boolean;
 }
 
 export function useAuthOtp(options: FlowOptions) {
@@ -157,15 +167,21 @@ export function useAuthOtp(options: FlowOptions) {
   // ── Auto-vérification au sixième chiffre (EP00 §4) ────────────────────────
   // Le garde-fou est le code lui-même : tant qu'il n'a pas changé, on ne
   // renvoie pas. Sans lui, un code refusé serait renvoyé en boucle.
+  //
+  // La règle métier vit dans `shouldAutoVerify` (pur, testé dans flow.test.ts).
+  // Le hook n'a plus qu'à composer : la règle, l'opt-out, l'anti-rejeu.
   const lastSent = useRef<string>('');
   useEffect(() => {
+    if (!shouldAutoVerify(state)) return;
+    // `=== false` et non `!options.autoVerifyOnComplete` : un appelant qui
+    // n'a pas passé l'option (undefined) doit garder l'auto-verify. Seul un
+    // `false` explicite le désactive.
+    if (ref.current.autoVerifyOnComplete === false) return;
     const code = assembledCode(state.boxes);
-    if (state.step !== 'code') return;
-    if (!isComplete(state.boxes) || state.pending || state.offline) return;
     if (code === lastSent.current) return;
     lastSent.current = code;
     void verifyCode();
-  }, [state.boxes, state.step, state.pending, state.offline, verifyCode]);
+  }, [state, verifyCode]);
 
   const submit = useCallback(() => {
     if (!canSubmit(state)) return;
